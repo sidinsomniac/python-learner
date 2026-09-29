@@ -25,8 +25,10 @@ Each Year is one tier. You must pass a Year's **Trial** (boss project) to advanc
 ## Year 1: first quests (the vertical slice)
 | # | Quest | Type | Concept |
 |---|---|---|---|
-| 1 | The First Incantation | Lecture + Spell Practice | `print`, strings |
-| 2 | Naming Your Familiar | Spell Practice | variables, `input` |
-| 3 | The Scrambled Scroll | Spell Scramble | statement order |
+| 1 | The First Incantation | Spell Practice | `print`, strings |
+| 2 | The Owl Knows Your Name | Spell Practice | variables, `input`, concatenation |
+| 3 | Peeves and the Scrambled Ledger | Spell Scramble | statement order, reassignment |
 | 4 | Divining the Cauldron | Divination | arithmetic and types (`int`/`float`/`str`) |
-| 5 | The Broken Greeting Potion | Potion Repair | f-strings, type conversion |
+| 5 | The Broken Letter Countdown | Potion Repair | `int()`, f-strings, reading errors |
+
+Every quest opens with a Lesson tab that has runnable examples and a practice sandbox.

@@ -1,4 +1,4 @@
-# Game Design Document: Serpentine Academy of Code-Craft
+# Game Design Document: Parseltongue Academy
 
 *A gamified Python learning game that goes from beginner to proficient.*
 
@@ -10,14 +10,14 @@ The defining rule: **the game never hands over the answer.** A Socratic mentor g
 ### Constraints
 - **Platform**: web app. Python runs in the browser through Pyodide (WebAssembly), so no server is needed.
 - **Audience**: a single personal learner. There are no accounts, and progress is stored locally.
-- **Theme**: an original wizarding-school fantasy RPG, inspired by the classic magic-school genre. It deliberately uses no names, houses or characters from existing franchises.
+- **Theme**: a Harry Potter fan setting. Python is *Parseltongue*, taught at Hogwarts. It has the real houses, spells and characters, used as cameos and easter eggs. This is a personal, non-commercial project, and all franchise references live in `src/lore/` so they can be swapped out in one place if it's ever shared.
 
 ---
 
 ## 1. World and metaphors
-- The learner is a first-year apprentice at the Academy. The **7 school Years** are the 7 curriculum tiers.
-- **Sorting**: at the start, pick one of 4 houses. This is only cosmetic: a house colour, and house points compared with your own past weeks.
-- **The Mentor**: a professor NPC who *only speaks in guiding questions*. This makes the "no answers" rule part of the character, not a restriction the player bumps into.
+- The learner is a first-year Hogwarts student studying Parseltongue. The **7 school Years** are the 7 curriculum tiers.
+- **Sorting**: a 4-question Sorting Hat quiz places you in Gryffindor, Hufflepuff, Ravenclaw or Slytherin, and you can ask the Hat to reconsider. The house is cosmetic: its colours, and house points for every quest.
+- **The Mentor**: Professor Ashwood, an original Hogwarts professor who *only speaks in guiding questions*. This makes the "no answers" rule part of the character, not a restriction the player bumps into. Canon characters appear as cameos: Hermione corrects "Leviosar", Peeves scrambles code, Dobby's sock is a badge, and Snape assigns page 394.
 
 | Game concept | Python meaning |
 |---|---|
@@ -90,8 +90,11 @@ When you submit code, it runs in Pyodide and goes through three checks:
 
   Each detector outputs a *question*, never a fix.
 
-### 5.3 Optional Claude mentor
-- It is turned on by pasting an API key into Settings. The key is stored locally, and calls go straight from the browser, which is acceptable for personal use.
+### 5.3 Optional AI mentor: Claude or DeepSeek
+- It is turned on by choosing a provider and pasting an API key into Settings. The key is stored locally.
+- **Claude**: the official `@anthropic-ai/sdk`, called directly from the browser. The default is `claude-opus-5-5` at low effort, with server-side refusal fallbacks turned on.
+- **DeepSeek**: an OpenAI-compatible `/chat/completions` endpoint, with `deepseek-chat` as the default. It goes through the Vite dev/preview proxy (`/llm/deepseek`) to avoid CORS, and falls back to a direct call if no proxy is found.
+- Both providers share one system prompt, context builder and leak guard (`src/mentor/`), so switching provider doesn't change the experience.
 - The prompt includes:
   - the quest goal
   - the learner's code
@@ -99,21 +102,37 @@ When you submit code, it runs in Pyodide and goes through three checks:
   - flaw-detector output
   - the hint rung reached
 - The system prompt enforces the Socratic rule.
-- **Leak guard**: a reply is rejected and regenerated if it contains code longer than 2 lines or matches the reference solution.
+- **Leak guard**: a reply with more than 2 lines of code (fenced or not) is regenerated once with a stricter instruction. If it still leaks, the code is redacted. Reference solutions never reach the browser, so the model can't be given them either.
 
 ---
+
+## 5.4 Easter eggs
+Printing spells triggers effects:
+- `Lumos` switches to the light theme, and `Nox` switches back.
+- `Expecto Patronum` sends a Patronus across the screen.
+- `Wingardium Leviosa` makes the editor float, and "Leviosar" gets corrected by Hermione.
+- The Marauder's Map oath unlocks a secret map, and "Mischief managed" closes it.
+- `Riddikulus` teaches rubber-duck debugging.
+- `import this` finds the Zen of Python.
+
+Hidden places and codes:
+- The brick wall between Platforms 9 and 10 leads to Platform 9¾.
+- There's a hidden Spellbook page 394.
+- The Konami code triggers Weasleys' Wizard Wheezes fireworks.
+
+Secret badges track the discoveries.
 
 ## 6. Technical architecture
 - **Frontend**:
   - Vite, React and TypeScript
   - CodeMirror 6 for the editor
   - Zustand for state
-  - Tailwind with a parchment/castle theme
+  - Plain CSS with theme tokens: "Hogwarts at night" by default, and parchment for Lumos
 - **Python runtime**:
   - Pyodide runs in a Web Worker.
   - A hard timeout terminates and restarts the worker, which handles infinite loops.
   - stdout and stdin are captured.
-- **Persistence**: IndexedDB (via Dexie) holds progress, XP, the SRS schedule and settings. JSON export/import serves as a backup.
+- **Persistence**: Zustand's `persist` middleware stores progress in localStorage. JSON export/import serves as a backup and never includes API keys. This can move to IndexedDB later if the SRS data grows.
 - **Content as data**: the curriculum lives in files, so it can grow without engine changes.
 
 ```
@@ -140,8 +159,8 @@ scripts/validate-content.ts
 ---
 
 ## 7. Build roadmap
-0. **Design docs**: this file and `curriculum.md`.
-1. **Vertical slice**:
+0. ✅ **Design docs**: this file and `curriculum.md`.
+1. ✅ **Vertical slice** (includes the DeepSeek/Claude mentor and the easter eggs):
    - scaffold the app and the Pyodide worker
    - quest loader and test runner
    - hint ladder and XP

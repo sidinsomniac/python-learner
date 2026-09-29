@@ -1,0 +1,30 @@
+id: y1-q5-broken-letter-potion
+year: 1
+order: 5
+title: The Broken Letter Countdown
+type: repair
+concepts: [f-strings, type conversion, int()]
+xp: 80
+galleons: 10
+summary: Fix the owl-post spell that tells young witches and wizards when their Hogwarts letter arrives.
+inputs: ["Hermione", "9"]
+intro: >
+  The Owlery is in chaos. The spell that tells young witches and wizards how
+  many years until their Hogwarts letter arrives (letters come at age 11) has
+  been cursed with bugs. Owls are flying in circles. Only you can repair it.
+success: >
+  The owls settle on their perches, and a hundred letters flutter out on
+  time. The spell is repaired, and you did it yourself.
+task: |
+  This spell is **broken**. Repair it so that, if someone types
+  `Hermione` and then `9`, it prints:
+
+  ```
+  Welcome Hermione! Your letter arrives in 2 years.
+  ```
+
+  It must work for **any** name and age under 11. Hogwarts letters arrive at
+  age 11, so the years left are `11 - age`.
+
+  Press **Run** first and read the error message carefully. Errors are
+  clues, not failures!

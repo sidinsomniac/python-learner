@@ -1,0 +1,23 @@
+id: y1-q4-divining-the-cauldron
+year: 1
+order: 4
+title: Divining the Cauldron
+type: divination
+concepts: [arithmetic, int, float, str]
+xp: 70
+galleons: 8
+summary: Gaze into the code and foresee its output before it runs.
+intro: >
+  In the misty Divination tower, the air smells of incense. "The inner eye,"
+  whispers the Divination teacher, "sees what a spell will print *before* it
+  is cast." Of course, in Parseltongue the future is completely predictable,
+  if you understand the rules.
+success: >
+  The crystal ball clears and shows exactly what you predicted. For once,
+  a Divination lesson with a correct prophecy!
+task: |
+  Read the spell below **without running it**. Type what you think it will
+  print, one line per output line, then press **Reveal the prophecy**.
+
+  Take your time and think about each line. You may try as many times as
+  you like.

@@ -1,0 +1,30 @@
+id: y1-q3-scrambled-scroll
+year: 1
+order: 3
+title: Peeves and the Scrambled Ledger
+type: scramble
+concepts: [statement order, reassignment]
+xp: 60
+galleons: 8
+summary: Put the goblin's ledger back in order before Gringotts notices.
+intro: >
+  Peeves the Poltergeist has shuffled a page from a Gringotts ledger and is
+  cackling from the chandelier. The goblins will be *most* displeased unless
+  the lines go back in the right order.
+success: >
+  The ledger lines snap back into place. Somewhere in the rafters, Peeves
+  blows a disappointed raspberry.
+lines:
+  - galleons = galleons * 2
+  - print("Gringotts balance:", galleons)
+  - galleons = 10
+  - galleons = galleons + 5
+task: |
+  The ledger should show a final balance of exactly **30** Galleons:
+
+  ```
+  Gringotts balance: 30
+  ```
+
+  Use the ▲ and ▼ buttons to reorder the lines, then press **Cast** to
+  check. Press **Run** at any time to see what the current order does.

@@ -1,0 +1,22 @@
+nudge: >
+  There are two separate bugs: one crashes the spell, and one makes the
+  message wrong. The crash comes first, so run the spell and read the error.
+question: >
+  When someone types 9, what type of value does `age` hold: a number or
+  text? And what does Python think about `11 - "9"`?
+pseudocode: |
+  get the name
+  get the age, and transfigure it from text into a whole number
+  years left = 11 minus the age
+  show the message, with the years-left value dropped into the f-string hole
+flaw: >
+  Line 2 stores text, so line 3's subtraction fails. And on line 4, look at
+  `years_left` inside the f-string: does it have the magic brackets that turn
+  a name into its value?
+analogous: |
+  A *different* spell with the same two fixes:
+
+  ```python
+  galleons = int(input("How many galleons? "))
+  print(f"Doubled, that is {galleons * 2} galleons!")
+  ```

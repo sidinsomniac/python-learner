@@ -1,0 +1,27 @@
+nudge: >
+  Two ideas are hiding here: the different kinds of division (`/`, `//`,
+  `%`), and the difference between the number 7 and the text "7".
+question: >
+  Which line did your prophecy get wrong? Say that line's calculation out
+  loud in words. What kind of value does it produce: a whole number, a
+  decimal, or text?
+pseudocode: |
+  line 3: add the two numbers
+  line 4: multiply them
+  line 5: true division -> always has a decimal point
+  line 6: floor division -> only the whole part
+  line 7: remainder -> what's left over after dividing by 2
+  line 8: text + text -> glued together, not added
+flaw: >
+  Common slips: forgetting that `/` always shows a `.0` or `.5`, mixing up
+  `//` (how many times it fits) with `%` (what's left over), and adding
+  "7" + "3" as numbers.
+analogous: |
+  A *different* prophecy, answered for you:
+
+  ```text
+  print(9 / 3)    -> 3.0
+  print(9 // 2)   -> 4
+  print(9 % 2)    -> 1
+  print("1" + "1") -> 11
+  ```
