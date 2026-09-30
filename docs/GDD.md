@@ -12,6 +12,14 @@ The defining rule: **the game never hands over the answer.** A Socratic mentor g
 - **Audience**: a single personal learner. There are no accounts, and progress is stored locally.
 - **Theme**: a Harry Potter fan setting. Python is *Parseltongue*, taught at Hogwarts. It has the real houses, spells and characters, used as cameos and easter eggs. This is a personal, non-commercial project, and all franchise references live in `src/lore/` so they can be swapped out in one place if it's ever shared.
 
+### Design documents
+| Document | Contents |
+|---|---|
+| This file | Systems, mechanics, architecture, roadmap |
+| [curriculum.md](curriculum.md) | The 7-year syllabus: every lesson, part, twist and ★ algorithm problem |
+| [exercise-design.md](exercise-design.md) | Lesson anatomy, tiers, the twist catalog, grades, and the authoring rules the validator enforces |
+| [story.md](story.md) | The cast, the yearly mystery arcs, and Year 1's scene-by-scene script |
+
 ---
 
 ## 1. World and metaphors
@@ -29,40 +37,81 @@ The defining rule: **the game never hands over the answer.** A Socratic mentor g
 | Galleons | coins, spent on cosmetics |
 | Owl post | daily challenges |
 
-## 2. Activity types
-| Activity | What it is | Why it matters |
-|---|---|---|
-| **Lecture** | Short lesson and a runnable snippet you can tweak | Information and learning |
-| **Spell Practice** | Write code that passes hidden tests | Core practical |
-| **Potion Repair** | Fix broken code | Debugging skill |
-| **Divination** | Predict the output of code | Mental model of execution |
-| **Spell Scramble** | Put shuffled lines into the right order (Parsons problems) | Low-anxiety practice for Years 1–2 |
-| **Duel** | Timed trivia, repeated on spaced review (SRS) | Retention |
-| **Trial (Boss)** | Multi-part project at the end of each Year | Unlocks the next Year |
+## 2. Learning design at a glance
+Full detail is in [exercise-design.md](exercise-design.md).
+
+- **About 98 lessons over 7 years**, 12–15 per year, plus *Revision in the Library* lessons that mix earlier topics.
+- **Every lesson has the same shape:**
+  1. A story beat.
+  2. A lecture with inline checkpoints and a sandbox.
+  3. Exercises: 🌱 Warm-up, 🔥 Core challenge with a **twist**, ⭐ optional Outstanding challenge.
+  4. A recap.
+- **Parts:** complex topics, or topics with gotchas, split into Part 1 / Part 2 (/ Part 3).
+- **No copy-paste:** the validator runs every lecture code block against each core challenge's tests, and they must fail. Core challenges always hide edge-case tests.
+- **The algorithms ladder:** small puzzles from Year 1, formal DSA from Year 3, and Easy → Medium → Hard problems up to dynamic programming and graphs in Year 7.
+- **Leaving Hogwarts** (Year 6–7 lessons): install Python, VS Code, venv, pip, git and pytest, then build a real project on your own machine.
+
+### Exercise formats
+| Format | What it is |
+|---|---|
+| **Spell Practice** | Write code that passes hidden tests |
+| **Function spell** (Year 2 onward) | Tests call your function with many inputs |
+| **Potion Repair** | Fix code that almost works |
+| **Divination** | Predict the output |
+| **Spell Scramble** | Put shuffled lines in order (Years 1–2) |
+| **Transfiguration** | Refactor working code to be cleaner, keeping behaviour. Checked by tests plus AST rules |
+| **Pensieve trace** | "What is `x` after line 4 on the third pass?" |
+| **Explain it back** (optional, needs AI) | Explain your solution in plain words |
+| **Trial** | The multi-stage boss at the end of each year, which unlocks the next year |
 
 ## 3. Core loop
-Pick a quest on the castle map, then:
-1. Lecture
-2. 2–4 practicals
-3. Mentor hints on demand
-4. Pass
-5. Earn XP, Galleons, a Spellbook page, and a badge
+1. **Enter the castle hub.** Check the House Cup and the Daily Prophet (the daily challenge).
+2. **Review.** Do today's **Time-Turner review**, about 5 spaced-repetition cards.
+3. **Take the next lesson:** story beat, lecture and checkpoints, Warm-up, then the Core challenge.
+4. **Optionally** attempt the ⭐ Outstanding challenge, or act on Snape's code review, for an **O** grade.
+5. **Collect rewards:** grade, XP, Galleons, house points, a Spellbook page, and maybe a Chocolate Frog card.
+6. **Move the story on.** Each lesson reveals a clue, and the Trial solves the year's mystery.
 
-Duels resurface concepts on an SRS schedule. When a Year's quests are done, its **Trial** unlocks, and passing the Trial unlocks the next Year.
+## 4. Progression, rewards and immersion
+**Rewards:**
+- **Grades.** Every exercise gets an O.W.L. grade (O, E, A, P; D and T are joke easter eggs). Grades never block progress, and a replay can improve one. There is a year-end report card.
+- **XP and levels.** Fewer hints earn more XP.
+- **Galleons.** Spent at the Hogsmeade shop on cosmetics: wands, editor themes, familiars, common-room decorations.
+- **House points and the House Cup.** Rival houses are simulated and earn points through the year. The cup is decided at each year-end ceremony.
+- **Chocolate Frog cards.** Collectible trivia about Python and computing history: Guido van Rossum, Ada Lovelace, Grace Hopper, Alan Turing, Donald Knuth, and more. Complete sets unlock easter eggs.
+- **Badges.** These include secret badges, and "Rivalry" badges for beating Draco's times.
 
-## 4. Rewards and progression
-- **XP and level**:
-  - Using fewer hints earns more XP. A clean first-try solve earns a bonus.
-  - Using hints never blocks progress.
-- **Galleons** buy cosmetics: wand skins, editor themes, and an owl avatar.
-- **Badges**, for example:
-  - "No-Hint Hex" for solving without hints
-  - "Bug Tamer" for 10 repairs
-  - streak badges for consecutive days
-- **Spellbook**: each concept you master unlocks a reference page. Over time this becomes your personal Python notes.
-- **Mastery gate**: a Year's Trial must be passed to advance. Mastery is tracked per *concept*, not just per quest.
+**Other immersion:**
+- **Story.** A yearly original mystery with the canon cast, told in short cutscenes with character portraits. Clues are printed by *your* correct programs.
+- **The Golden Snitch.** One hidden bonus challenge per year.
+- **Ambient sound**, optional and off by default.
 
----
+### The castle hub
+| Location | Purpose |
+|---|---|
+| Great Hall | House Cup, Daily Prophet challenge, feasts and ceremonies |
+| Classrooms | Lessons, grouped by subject |
+| Library | Spellbook (your notes), search, Revision lessons |
+| Pensieve room (kept by Grimwald Knott) | The mistake journal, step-through replays, the mastery map |
+| Room of Requirement | Free sandbox and open-ended projects |
+| Forbidden Forest | All ⭐ Outstanding and 🔴 Hard problems, any time |
+| Dueling Club | Timed trivia duels against NPCs, with Draco as rival |
+| Owlery | The daily challenge |
+| Hogsmeade | The shop |
+
+### Retention systems
+- **Time-Turner review.** Spaced repetition on intervals of 1, 3, 7, 16, then 35 days. Cards are predict-the-output, spot-the-bug, micro-writes and misconception multiple-choice. About 5 a day, weighted towards weak concepts.
+- **Mastery map.** Strength per concept, fed by exercises and review.
+- **Mistake journal.** Each error you hit is saved in the Pensieve and comes back later as a review card.
+- **Revision in the Library.** Interleaved practice about every 4 lessons.
+
+### The Pensieve step-through
+Replay any spell line by line: the current line is highlighted, and a panel shows the variables and data structures. It works by running the code under `sys.settrace` inside Pyodide and recording each step. It powers:
+- the debugging lessons
+- algorithm visualisations
+- "Pensieve trace" exercises
+
+This is the most important learning tool to build next.
 
 ## 5. The mentor: never give the answer
 
@@ -147,7 +196,7 @@ content/year-1/q03-fstrings/
 
 ### Repository layout
 ```
-docs/                   design docs (this file, curriculum.md)
+docs/                   design docs (GDD, curriculum, exercise design, story)
 src/engine/             quest runner, grading, progression, SRS
 src/runtime/            Pyodide web worker
 src/mentor/             hint ladder, error translation, LLM client
@@ -159,17 +208,20 @@ scripts/validate-content.ts
 ---
 
 ## 7. Build roadmap
-0. ✅ **Design docs**: this file and `curriculum.md`.
-1. ✅ **Vertical slice** (includes the DeepSeek/Claude mentor and the easter eggs):
-   - scaffold the app and the Pyodide worker
-   - quest loader and test runner
-   - hint ladder and XP
-   - Year 1, first 5 quests, covering each activity type
-2. **Progression**: castle map, badges, Galleons, Spellbook, SRS Duels, save/export.
-3. **Automated mentor**: error translator and the first 10 AST flaw detectors.
-4. **Claude mentor**: settings, prompt, leak guard.
-5. **Content expansion**: finish Years 1–3, then 4–7 with their Trials.
-6. **Polish**: theming, sound, animations, daily owl-post challenges.
+0. ✅ **Design docs v1** and the **First Year vertical slice**: Pyodide runtime, hint ladder, the Claude/DeepSeek mentor, easter eggs.
+1. ✅ **Design docs v2**: this revision, plus `curriculum.md`, `exercise-design.md` and `story.md`.
+2. **Engine upgrades**:
+   - lessons with parts and tiers, and inline checkpoints
+   - story cutscenes
+   - function-spell and scale tests
+   - grades, and Snape's code review (AST)
+   - the **Pensieve step-through**
+   - the validator's "lecture code must not solve the core challenge" rule
+3. **Rebuild Year 1 to the new spec.** The 5 existing quests become lessons 1–5, with tiers, and Year 1 is finished through the Trial. **You playtest it.**
+4. **Retention and immersion**: Time-Turner review, the mastery map, the castle hub, the House Cup, Chocolate Frog cards, the shop.
+5. **Years 2–7, one year at a time.** Each year's script is written first, then its content, then a playtest.
+6. **Leaving Hogwarts** (Years 6–7): guided local setup, verified by pasting terminal output.
+7. **Auror Academy**: daily challenges and interview sets after the game.
 
 ## 8. Verification
 - **Unit tests** (Vitest): grading, XP maths, SRS scheduling, hint unlocking.

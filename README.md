@@ -100,4 +100,6 @@ Tests run in order and stop at the first failure, so the student focuses on one 
 ## Docs
 
 - [Game Design Document](docs/GDD.md)
-- [Curriculum Map](docs/curriculum.md)
+- [Curriculum: the Seven Years](docs/curriculum.md)
+- [Exercise Design Guide](docs/exercise-design.md)
+- [Story Bible](docs/story.md)
