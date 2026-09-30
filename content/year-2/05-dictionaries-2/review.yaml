@@ -1,0 +1,21 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: count-pattern
+  type: predict
+  code: |
+    counts = {}
+    for ch in "hoot":
+        counts[ch] = counts.get(ch, 0) + 1
+    print(counts)
+  why: Each letter's count starts from 0 and goes up by one; keys keep first-seen order.
+- id: get-why
+  type: choice
+  q: In the counting pattern, why use `counts.get(x, 0)` rather than `counts[x]`?
+  options: ["The first time x appears it isn't a key yet", "get() is required for numbers", "It sorts the counts"]
+  answer: 0
+  why: "`counts[x]` would raise a KeyError on the first sighting."
+- id: sorted-dict
+  type: choice
+  q: 'What does `sorted({"toad": 1, "cat": 5})` give?'
+  options: ["`['cat', 'toad']`", "`[1, 5]`", "`{'cat': 5, 'toad': 1}`"]
+  answer: 0
+  why: Sorting a dictionary gives a list of its keys, in order.

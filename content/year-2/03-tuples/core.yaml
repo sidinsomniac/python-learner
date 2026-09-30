@@ -1,0 +1,71 @@
+tier: core
+type: practice
+title: Ginny's Map
+twist: edge case - a night with no vanishings, and a Snape-approved counter
+task: |
+  Ginny's map is a list of `(floor, corridor)` tuples, one per vanishing.
+  Keep the first line - the examiners will change the map. Then:
+
+  1. Print each vanishing, numbered from 1:
+     `1. Floor 2, east corridor`
+  2. Print the lowest and highest floor:
+     `Floors 2 to 2`
+
+  For the starting map, the output is:
+
+  ```
+  1. Floor 2, east corridor
+  2. Floor 2, west corridor
+  3. Floor 2, east corridor
+  Floors 2 to 2
+  ```
+
+  If the map is empty, print only `No vanishings yet.`
+
+  Unpack the tuples - don't index them with `[0]` and `[1]` - and don't keep
+  a counter by hand.
+starter: |
+  vanishings = [(2, "east"), (2, "west"), (2, "east")]
+tests: |
+  def _run(spots):
+      return run_with(vanishings=spots).lines
+
+  def test_example():
+      got = _run([(2, "east"), (2, "west"), (2, "east")])
+      check(got == ["1. Floor 2, east corridor", "2. Floor 2, west corridor", "3. Floor 2, east corridor", "Floors 2 to 2"],
+            f"For Ginny's map you printed {got}.")
+
+  def test_other_map():
+      got = _run([(5, "north"), (1, "south")])
+      check(got == ["1. Floor 5, north corridor", "2. Floor 1, south corridor", "Floors 1 to 5"],
+            f"For [(5, 'north'), (1, 'south')] you printed {got}. Is the lowest floor really the first one?")
+
+  def test_empty():
+      got = _run([])
+      check(got == ["No vanishings yet."], f"With an empty map, print only 'No vanishings yet.' You printed {got}.")
+
+  def test_unpacks():
+      check(not uses(ast.Subscript), "Unpack each tuple into two names instead of reaching in with [0] and [1].")
+      check(calls("enumerate"), "Let `enumerate` do the numbering for you.")
+hints:
+  nudge: Three parts - check for an empty map, a numbered loop that unpacks each pair, and a lowest and highest floor.
+  question: How can the loop header give you the number, the floor AND the corridor all at once? And how could you collect just the floors?
+  pseudocode: |
+    if the map is empty:
+        show the "no vanishings" message
+    otherwise:
+        floors = empty list
+        for each (number, (floor, corridor)) counting from 1:
+            show the numbered line
+            remember the floor
+        show the lowest and highest remembered floor
+  flaw: If the numbers start at 0, check where enumerate starts. If you get `ValueError` with `min`, you asked for the lowest floor of an empty map.
+  analogous: |
+    ```python
+    scores = [("Ron", 7), ("Hermione", 10)]
+    marks = []
+    for place, (name, mark) in enumerate(scores, start=1):
+        print(place, name)
+        marks.append(mark)
+    print(max(marks))
+    ```

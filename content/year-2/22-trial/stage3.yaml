@@ -1,0 +1,82 @@
+tier: stage
+type: practice
+title: "Stage 3: Cracking the Code"
+twist: design - try every shift, score each one, break ties fairly
+task: |
+  Write `crack(text)`, which works out the unknown shift of a coded message
+  and returns a tuple `(shift, plain_text)` - where
+  `caesar_shift(plain_text, shift)` gives the coded text back.
+
+  1. For **every** shift from 0 to 25, decode the text with that shift.
+  2. Score the attempt: for each letter in it, add its `ENGLISH` score times
+     how many times it appears. (Use `letter_frequencies`!)
+  3. The highest score wins. If two shifts score exactly the same, the
+     **smaller** shift wins.
+
+  A text with no letters scores 0 for every shift, so it returns
+  `(0, text)`.
+
+  Paste your `caesar_shift` and `letter_frequencies` above `crack`, and keep
+  the `ENGLISH` table.
+
+  ```python
+  crack("AOL JHIPULA OBUNLYZ.")
+  # -> (7, 'THE CABINET HUNGERS.')
+  crack("FKDPEHU RI FROOHFWLRQV LV RSHQ")
+  # -> (3, 'CHAMBER OF COLLECTIONS IS OPEN')
+  ```
+starter: |
+  ENGLISH = {"a": 8.2, "b": 1.5, "c": 2.8, "d": 4.3, "e": 12.7, "f": 2.2, "g": 2.0, "h": 6.1, "i": 7.0,
+               "j": 0.15, "k": 0.77, "l": 4.0, "m": 2.4, "n": 6.7, "o": 7.5, "p": 1.9, "q": 0.095, "r": 6.0,
+               "s": 6.3, "t": 9.1, "u": 2.8, "v": 0.98, "w": 2.4, "x": 0.15, "y": 2.0, "z": 0.074}
+
+  def crack(text):
+      pass
+tests: |
+  def test_cabinet():
+      fn = student_function("crack")
+      got = call(fn, "AOL JHIPULA OBUNLYZ.")
+      check(got == (7, "THE CABINET HUNGERS."), f"crack('AOL JHIPULA OBUNLYZ.') returned {got!r}.")
+      got = call(fn, "FKDPEHU RI FROOHFWLRQV LV RSHQ")
+      check(got == (3, "CHAMBER OF COLLECTIONS IS OPEN"), f"The feast message cracked to {got!r}.")
+
+  def test_short():
+      got = call(student_function("crack"), "Ihhg")
+      check(got == (3, "Feed"), f"crack('Ihhg') returned {got!r}.")
+      got = call(student_function("crack"), "abba")
+      check(got == (23, "deed"), f"crack('abba') returned {got!r}. The E-trick from Lesson 13 would say 22 - but 'deed' scores higher than 'effe'.")
+
+  def test_no_letters():
+      got = call(student_function("crack"), "12:00!")
+      check(got == (0, "12:00!"), f"With no letters, every shift ties at 0 - so the smallest, 0, wins. You returned {got!r}.")
+
+  def test_round_trip():
+      fn = student_function("crack")
+      message = "Meet me in the bathroom at midnight and bring the counter-spell."
+      for shift in (0, 1, 13, 25):
+          coded = "".join([chr((ord(c) - ord("a") + shift) % 26 + ord("a")) if "a" <= c <= "z" else
+                           chr((ord(c) - ord("A") + shift) % 26 + ord("A")) if "A" <= c <= "Z" else c for c in message])
+          got = call(fn, coded)
+          check(got == (shift, message), f"A message shifted by {shift} cracked to {got!r}.")
+
+  def test_uses_toolkit():
+      check(calls("letter_frequencies") and calls("caesar_shift"), "Build on your toolkit - crack should call caesar_shift and letter_frequencies.")
+hints:
+  nudge: A loop over the 26 shifts. Inside it, decode, score, and keep the best so far.
+  question: Which way do you shift to decode an attempt with shift s? When should a new score replace the best - when it's bigger, or bigger-or-equal?
+  pseudocode: |
+    best_shift = 0, best_score = -1, best_text = the text
+    for each shift from 0 to 25:
+        attempt = the text shifted back by that shift
+        score = sum of ENGLISH[letter] times count, for each letter in attempt's frequencies
+        if score is strictly bigger than best_score: remember shift, score, attempt
+    give back (best_shift, best_text)
+  flaw: If a no-letter text returns shift 25, you replaced on equal scores. If the shift is right but the text is scrambled, decode by -shift (not +shift).
+  analogous: |
+    ```python
+    best, best_n = None, -1
+    for n in range(5):
+        value = (n * 7) % 5
+        if value > best_n:
+            best, best_n = n, value
+    ```

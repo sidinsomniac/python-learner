@@ -1,0 +1,25 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: dict-comp
+  type: predict
+  code: |
+    prices = {"quill": 2, "cauldron": 15, "ink": 1}
+    print({k: v * 2 for k, v in prices.items() if v < 5})
+  why: Keep the cheap items and double their prices, in a new dictionary.
+- id: filter-vs-choose
+  type: choice
+  q: 'What is `[n if n > 1 else 0 for n in [1, 2, 3]]`?'
+  options: ["`[0, 2, 3]`", "`[2, 3]`", "`[1, 2, 3]`"]
+  answer: 0
+  why: An if/else in the expression keeps every item and chooses its value; only an `if` at the end filters.
+- id: set-comp
+  type: choice
+  q: 'What kind of thing is `{x.lower() for x in names}`?'
+  options: ["A set", "A dictionary", "A list"]
+  answer: 0
+  why: Curly brackets with no colon build a set.
+- id: any-all
+  type: predict
+  code: |
+    marks = [7, 0, 9]
+    print(any(m == 0 for m in marks), all(m > 5 for m in marks))
+  why: One mark is zero, so any is True; not every mark is above 5, so all is False.

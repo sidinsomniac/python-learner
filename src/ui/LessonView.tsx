@@ -72,6 +72,11 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
   const next = LESSONS[LESSONS.findIndex((l) => l.id === lesson.id) + 1];
   const exercise = lesson.exercises.find((e) => e.id === tab);
 
+  // The opening scene pops up even when the lesson reopens on an exercise tab.
+  useEffect(() => {
+    useFx.getState().queueScene({ id: lesson.id, lines: lesson.scene });
+  }, [lesson]);
+
   return (
     <div className="quest">
       <div className="quest-top">

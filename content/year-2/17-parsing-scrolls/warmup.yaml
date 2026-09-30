@@ -1,0 +1,47 @@
+tier: warmup
+type: practice
+title: One Line of the Receipt
+task: |
+  Write `parse_line(line)`. A receipt line looks like `"Item :  Vanishing Cabinet "`
+  - a key, a colon, and a value, with messy spaces anywhere.
+
+  Return a tuple `(key, value)`: the key in **lowercase**, both stripped. If
+  the line has no colon, return `None`. The value may contain more colons.
+
+  ```python
+  parse_line("Item :  Vanishing Cabinet ")
+  # -> ('item', 'Vanishing Cabinet')
+  parse_line("Time: 12:00")
+  # -> ('time', '12:00')
+  parse_line("smudge")
+  # -> None
+  ```
+starter: |
+  def parse_line(line):
+      pass
+tests: |
+  def test_basic():
+      fn = student_function("parse_line")
+      got = call(fn, "Item :  Vanishing Cabinet ")
+      check(got == ("item", "Vanishing Cabinet"), f"parse_line('Item :  Vanishing Cabinet ') returned {got!r}.")
+
+  def test_colon_in_value():
+      got = call(student_function("parse_line"), "Time: 12:00")
+      check(got == ("time", "12:00"), f"Only the FIRST colon separates key and value. You returned {got!r}.")
+
+  def test_no_colon():
+      got = call(student_function("parse_line"), "smudge")
+      check(got is None, f"A line without a colon isn't a key-value line - return None. You returned {got!r}.")
+hints:
+  nudge: One spell splits at the first colon and tells you whether there was a colon at all.
+  question: What does partition give back as its middle piece when the separator is missing?
+  pseudocode: |
+    split the line at the first colon into before, separator, after
+    if there was no separator: give back None
+    give back (before tidied and lowercased, after tidied)
+  flaw: If "12:00" comes back as "12", you split at every colon instead of only the first.
+  analogous: |
+    ```python
+    name, sep, house = "Luna = Ravenclaw".partition("=")
+    print(name.strip(), house.strip(), sep == "")
+    ```

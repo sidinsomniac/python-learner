@@ -1,0 +1,34 @@
+tier: warmup
+type: divination
+title: Lockhart's Demonstration
+task: Predict every line.
+snippet: |
+  def collect(item, shiny=True, times=1):
+      return f"{item}:{shiny}:{times}"
+
+  print(collect("cup"))
+  print(collect("sock", False))
+  print(collect("mirror", times=3))
+  print(collect(times=2, item="badge", shiny=False))
+
+  def span(nums):
+      return min(nums), max(nums)
+
+  lo, hi = span([4, 9, 1])
+  print(span([5]), hi - lo)
+hints:
+  nudge: For each call, write down which value each of the three parameters ends up with.
+  question: In the second call, which parameter does `False` fill - shiny or times? What does span return - one value or two?
+  pseudocode: |
+    call 1: all defaults except item
+    call 2: False fills the second parameter, by position
+    call 3: times is named
+    call 4: everything named, in any order
+    span returns a tuple
+  flaw: A common slip is thinking `False` in call 2 goes to `times`. Positions fill left to right.
+  analogous: |
+    ```text
+    def f(a, b=0): return (a, b)
+    f(1)       -> (1, 0)
+    f(b=5, a=2) -> (2, 5)
+    ```

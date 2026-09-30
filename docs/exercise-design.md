@@ -136,14 +136,48 @@ Every ★ lesson follows this pattern:
 
 ---
 
+## 7b. Function-style exercises (Year 2, Lesson 7 onwards)
+
+Once functions are taught, tests call the student's functions instead of reading printed output:
+
+```python
+def test_best():
+    fn = student_function("best_letter")
+    got = call(fn, [("Ann", 3), ("Dora", 5)])
+    check(got == "Dora (5 hearts)", f"best_letter returned {got!r}.")
+    check(printed() == "", "best_letter should return its string, not print it.")
+```
+
+- Always go through `call(fn, ...)`: a crash inside the student's function is reported as *their* error with a line number, and runaway loops are stopped.
+- `printed()` is what the last `call` printed - use it to insist on `return` rather than `print`.
+- For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
+
 ## 8. Time-Turner review cards
 
-Each lesson contributes small cards that come back on a spaced schedule: 1, 3, 7, 16, then 35 days, reset on a miss. Card types:
-- **Predict the output:** a 1–4 line snippet.
-- **Spot the bug:** 3–6 lines.
-- **Micro-write:** one line, e.g. "slice the last 3 letters of `word`".
-- **Concept question:** multiple choice. The distractors are real misconceptions.
+Each lesson contributes small cards that come back on a spaced schedule: 1, 3, 7, 16, then 35 days, reset on a miss. The same cards feed the Dueling Club. They live in the lesson's `review.yaml`:
 
-About 5 cards a day. Weak concepts, from the mastery map, are scheduled more often.
+```yaml
+- id: sort-none              # unique within the lesson
+  type: choice               # multiple choice - the Dueling Club uses these
+  q: After `result = nums.sort()`, what is `result`?
+  options: ["`[1, 2, 3]`", "`None`"]
+  answer: 1                  # index into options
+  why: "`.sort()` sorts in place and gives back None."
+- id: swap
+  type: predict              # the student types the output
+  code: |
+    a, b = 3, 8
+    a, b = b, a
+    print(a, b)
+  why: The right side is built first, then unpacked.
+```
+
+Rules (checked by the validator):
+- every ordinary lesson has **2–4 cards**, at least one of them `choice`;
+- a `predict` card's code must run cleanly and print something - and must print the **same thing every time** (sort sets before printing them);
+- distractors in `choice` cards are real misconceptions, not jokes;
+- YAML tip: quote any `q`, `why` or option containing `: `.
+
+Up to 5 cards a day, missed cards first.
 
 A **Revision in the Library** lesson appears about every 4 lessons. It mixes earlier concepts with no new material, using interleaved practice for retention.

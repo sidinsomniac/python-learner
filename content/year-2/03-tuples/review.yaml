@@ -1,0 +1,26 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: one-tuple
+  type: choice
+  q: Which of these is a tuple holding just the number 5?
+  options: ["`(5)`", "`(5,)`", "`tuple 5`"]
+  answer: 1
+  why: The comma makes the tuple. `(5)` is only 5 in brackets.
+- id: swap
+  type: predict
+  code: |
+    a, b = 3, 8
+    a, b = b, a
+    print(a, b)
+  why: The right side is built first, from the old values, then unpacked - a perfect swap.
+- id: tuple-order
+  type: choice
+  q: What does `sorted([(2, "a"), (1, "z"), (2, "0")])` give?
+  options: ["`[(1, 'z'), (2, '0'), (2, 'a')]`", "`[(2, '0'), (2, 'a'), (1, 'z')]`", "`[(1, 'z'), (2, 'a'), (2, '0')]`"]
+  answer: 0
+  why: First items decide (1 before 2); the tie between the 2s is broken by the second item, and '0' comes before 'a'.
+- id: enumerate-start
+  type: predict
+  code: |
+    for n, owl in enumerate(["Hedwig", "Errol"], start=1):
+        print(n, owl)
+  why: "`start=1` makes the numbering begin at 1 instead of 0."

@@ -1,0 +1,18 @@
+id: y2-l14
+year: 2
+order: 21
+number: 14
+title: Debugging Craft
+location: Professor Lockhart's office
+concepts: [reading tracebacks, error types, print debugging, assert, changing a list while looping, the Pensieve]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: lockhart
+    line: (pale, cornered, still smiling) All right, ALL right. Yes, the Cabinet is mine. A tiny bit of harmless decoration. And yes, I wrote a counter-spell. It's... nearly perfect.
+  - who: ginny
+    line: Nearly?
+  - who: lockhart
+    line: It un-collects most things. Some things. It un-collected my eyebrows once. Temporarily!
+  - who: ashwood
+    line: Then we debug it. Calmly, one clue at a time - read the error, form a guess, test it. Debugging isn't guessing wildly; it's detective work, and you're rather good at that now.
+clue: With its bugs fixed, Lockhart's counter-spell really works - it can **empty the Cabinet**. If only you knew the password to open it.

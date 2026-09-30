@@ -1,0 +1,19 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: split-kinds
+  type: predict
+  code: |
+    print("  one  cabinet ".split())
+    print("a,,b".split(","))
+  why: split() drops empty pieces; split(",") keeps the empty piece between the commas.
+- id: partition-first
+  type: choice
+  q: 'What is `"Time: 12:00".partition(":")[2].strip()`?'
+  options: ["'12:00'", "'12'", "'00'"]
+  answer: 0
+  why: partition only splits at the FIRST colon.
+- id: join-strings
+  type: choice
+  q: 'What does `", ".join([1, 2])` do?'
+  options: ["Gives '1, 2'", "Raises a TypeError", "Gives '[1, 2]'"]
+  answer: 1
+  why: join only glues strings. Convert first - `[str(n) for n in nums]`.

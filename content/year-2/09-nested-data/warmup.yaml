@@ -1,0 +1,44 @@
+tier: warmup
+type: practice
+title: Reading the Post
+task: |
+  Keep the first line - the examiners change the post. Print:
+
+  1. The first delivery's origin: `First from: Diagon Alley`
+  2. The last item of the last delivery: `Last item: sweets`
+  3. The total number of items in all deliveries: `Items: 4`
+
+  For the starting post:
+
+  ```
+  First from: Diagon Alley
+  Last item: sweets
+  Items: 4
+  ```
+starter: |
+  post = [{"from": "Diagon Alley", "items": ["quills", "ink", "parchment"]}, {"from": "Hogsmeade", "items": ["sweets"]}]
+tests: |
+  def _run(p):
+      return run_with(post=p).lines
+
+  def test_example():
+      got = _run([{"from": "Diagon Alley", "items": ["quills", "ink", "parchment"]}, {"from": "Hogsmeade", "items": ["sweets"]}])
+      check(got == ["First from: Diagon Alley", "Last item: sweets", "Items: 4"], f"You printed {got}.")
+
+  def test_other():
+      got = _run([{"from": "Knockturn Alley", "items": []}, {"from": "Hogsmeade", "items": ["a"]}, {"from": "Paris", "items": ["b", "c"]}])
+      check(got == ["First from: Knockturn Alley", "Last item: c", "Items: 3"], f"You printed {got}.")
+hints:
+  nudge: Two chained lookups, then a loop that adds up the length of every delivery's items list.
+  question: Which position is the LAST delivery? And the last item in its list?
+  pseudocode: |
+    show the first record's origin
+    show the last item of the last record's items
+    total = 0; for each record: add the length of its items
+    show the total
+  flaw: If Items is 2, you counted deliveries rather than items.
+  analogous: |
+    ```python
+    classes = [{"name": "Charms", "pupils": ["Ron", "Harry"]}]
+    print(classes[-1]["pupils"][-1])
+    ```

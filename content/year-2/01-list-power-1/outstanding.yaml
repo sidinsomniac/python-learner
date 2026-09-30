@@ -1,0 +1,54 @@
+tier: outstanding
+type: practice
+title: The Rotating Shelf
+twist: constraint - pop and insert only, and k may be bigger than the shelf
+task: |
+  A rotating shelf in Filch's office turns **right** by `k` places: each turn,
+  the last item moves to the front. For `shelf = ["a", "b", "c", "d"]` and
+  `k = 1`, the shelf becomes `['d', 'a', 'b', 'c']`.
+
+  Keep the first two lines, turn the shelf `k` times **in place**, and print
+  it.
+
+  **Constraints:** no slicing - only `pop` and `insert`. And be efficient:
+  turning a 4-item shelf 1,000,002 times is the same as turning it twice.
+starter: |
+  shelf = ["a", "b", "c", "d"]
+  k = 1
+tests: |
+  import time
+
+  def _run(items, turns):
+      r = run_with(shelf=items, k=turns)
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_slicing():
+      check(not uses(ast.Slice), "No slicing in this one - use pop and insert.")
+
+  def test_one_turn():
+      check(_run(["a", "b", "c", "d"], 1) == "['d', 'a', 'b', 'c']", f"One turn right gives ['d', 'a', 'b', 'c']. You printed {_run(['a', 'b', 'c', 'd'], 1)}.")
+
+  def test_several():
+      check(_run([1, 2, 3, 4, 5], 2) == "[4, 5, 1, 2, 3]", f"Two turns of [1, 2, 3, 4, 5] gives [4, 5, 1, 2, 3]. You printed {_run([1, 2, 3, 4, 5], 2)}.")
+      check(_run([1, 2, 3], 3) == "[1, 2, 3]", "Three turns of a 3-item shelf brings it back to the start.")
+
+  def test_huge_k():
+      start = time.perf_counter()
+      got = _run(["a", "b", "c", "d"], 1000002)
+      check(got == "['c', 'd', 'a', 'b']", f"1,000,002 turns of a 4-item shelf is the same as 2 turns. You printed {got}.")
+      check(time.perf_counter() - start < 2, "That took far too long! If a full turn of the shelf brings it back to the start, how many turns actually matter?")
+
+  def test_empty_shelf():
+      check(_run([], 5) == "[]", "An empty shelf stays empty - and mustn't crash!")
+hints:
+  nudge: One turn is "take the last item, put it at the front". But do you really need to do all k turns?
+  question: If the shelf has 4 items, after 4 turns it's back where it started. What does `%` tell you about how many turns are left over?
+  pseudocode: |
+    if the shelf has items:
+        turns = k, but only the leftover after removing full circles
+        repeat that many times:
+            take the last item off, and insert it at the front
+    show the shelf
+  flaw: A ZeroDivisionError means an empty shelf reached the `%`. If it's slow, you're doing every one of the million turns.
+  analogous: |
+    A clock hand moving 26 hours from 3 o'clock lands at the same place as moving 2 hours: 26 % 12 is 2.

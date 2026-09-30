@@ -1,0 +1,64 @@
+tier: outstanding
+type: practice
+title: The Word Index
+twist: constraint - comprehensions only; punctuation and capitals don't count
+task: |
+  Hermione wants an index of Lockhart's notes: for every distinct word, the
+  **positions** (0, 1, 2...) where it appears.
+
+  Words are separated by spaces, compared in lowercase, and stripped of the
+  punctuation `.,!?` at either end.
+
+  Keep the first line. Build `index` (word -> list of positions) and print
+  every word that appears **more than once**, alphabetically:
+  `shiny: [1, 4, 5, 9]`. If no word repeats, print `No repeats.`
+
+  For the starting notes:
+
+  ```
+  every: [0, 3, 8]
+  shiny: [1, 4, 5, 9]
+  thing: [2, 10]
+  ```
+
+  (The lone `-` counts as a word too - it isn't in the punctuation list.)
+
+  **Constraint:** no `for` statements - comprehensions only (`enumerate`
+  works inside them).
+starter: |
+  notes = "Every shiny thing. EVERY shiny, shiny? no - every shiny thing!"
+tests: |
+  def _run(n):
+      r = run_with(notes=n)
+      return r.lines, r.ns.get("index")
+
+  def test_example():
+      lines, index = _run("Every shiny thing, every shiny mirror!")
+      check(lines == ["every: [0, 3]", "shiny: [1, 4]"], f"For 'Every shiny thing, every shiny mirror!' you printed {lines}.")
+      check(index is not None and index.get("mirror") == [5], f"`index` should map every word - 'mirror' to [5]. It is {index}.")
+
+  def test_starter():
+      lines, _ = _run("Every shiny thing. EVERY shiny, shiny? no - every shiny thing!")
+      check(lines == ["every: [0, 3, 8]", "shiny: [1, 4, 5, 9]", "thing: [2, 10]"], f"You printed {lines}.")
+
+  def test_no_repeats():
+      lines, _ = _run("Lumos Nox")
+      check(lines == ["No repeats."], f"You printed {lines}.")
+
+  def test_no_for():
+      check(not uses(ast.For), "Comprehensions only - no `for` statements.")
+      check(uses(ast.DictComp), "`index` is a dictionary - build it with a dictionary comprehension.")
+hints:
+  nudge: First make a clean list of words (a list comprehension). Then, for each DISTINCT word, collect the positions where it appears.
+  question: How do you get each word together with its position inside a comprehension? And how do you get each distinct word just once?
+  pseudocode: |
+    words = [each word of the notes, stripped of .,!? and lowercased]
+    index = {w: [every position p whose word is w] for each distinct w}
+    repeats = sorted [w for each w in index if it has more than one position]
+    show each repeat with its positions, or "No repeats."
+  flaw: If "every" and "EVERY" are separate, lowercase before comparing. A `for` statement to print the lines breaks the rule - a comprehension inside print("\n".join(...)) does the job.
+  analogous: |
+    ```python
+    letters = ["a", "b", "a"]
+    print({ch: [i for i, x in enumerate(letters) if x == ch] for ch in set(letters)})
+    ```

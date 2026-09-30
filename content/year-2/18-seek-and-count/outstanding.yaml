@@ -1,0 +1,57 @@
+tier: outstanding
+type: practice
+title: The Anagram Shelves
+twist: scale - 20,000 words, grouped in one pass
+task: |
+  The Cabinet shelves its hoard by **anagram** - words made of exactly the
+  same letters (`"listen"`, `"Silent"`, `"enlist"`) share a shelf.
+
+  Write `group_anagrams(words)`, which returns a list of shelves (lists of
+  words). Capitals don't matter when comparing, but each word keeps its
+  original spelling.
+
+  - Shelves appear in the order of their **first** word.
+  - Words on a shelf keep their original order.
+
+  ```python
+  group_anagrams(["listen", "owl", "Silent", "low", "cat", "enlist"])
+  # [['listen', 'Silent', 'enlist'], ['owl', 'low'], ['cat']]
+  ```
+
+  It must shelve 20,000 words in well under a second.
+starter: |
+  def group_anagrams(words):
+      pass
+tests: |
+  import time
+
+  def test_example():
+      got = call(student_function("group_anagrams"), ["listen", "owl", "Silent", "low", "cat", "enlist"])
+      check(got == [["listen", "Silent", "enlist"], ["owl", "low"], ["cat"]], f"group_anagrams returned {got!r}.")
+
+  def test_edges():
+      fn = student_function("group_anagrams")
+      check(call(fn, []) == [], "No words, no shelves.")
+      check(call(fn, ["a", "a"]) == [["a", "a"]], "Identical words share a shelf.")
+      check(call(fn, ["ab", "abb"]) == [["ab"], ["abb"]], "'ab' and 'abb' use different NUMBERS of letters - different shelves.")
+
+  def test_fast():
+      words = [("abcdefgh"[i % 8:] + "abcdefgh"[:i % 8]) + str(i % 2500) for i in range(20000)]
+      start = time.perf_counter()
+      got = call(student_function("group_anagrams"), words)
+      check(time.perf_counter() - start < 1, "Correct but slow - are you comparing every word with every shelf? What single key could send a word straight to its shelf?")
+      check(len(got) == 633 and sum(len(s) for s in got) == 20000, f"20,000 words should fill 633 shelves; you made {len(got)}.")
+hints:
+  nudge: Every word needs a signature that's the same for all its anagrams. Then it's the grouping pattern.
+  question: What do "listen" and "Silent" have in common if you lowercase them and put their letters in order? Can a list be a dictionary key - or do you need to turn it into something else?
+  pseudocode: |
+    shelves = empty dictionary (signature -> list of words)
+    for each word:
+        signature = the word's lowercase letters, sorted, glued back into a string
+        add the word to that signature's shelf
+    give back the shelves as a list, in first-seen order
+  flaw: A TypeError "unhashable type list" means your signature is a list - join it into a string (or make it a tuple). A timeout means a loop over the shelves for every word.
+  analogous: |
+    ```python
+    print("".join(sorted("Tea".lower())))   # aet
+    ```

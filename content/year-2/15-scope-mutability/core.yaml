@@ -1,0 +1,70 @@
+tier: core
+type: repair
+title: Un-Cursing the Collecting Charm
+twist: debug - the mutable default argument
+task: |
+  Here is Lockhart's Collecting Charm, exactly as scratched on the Cabinet.
+
+  `collect(item, bag)` should add `item` to `bag` and return the bag. If no
+  bag is given, it should start a **fresh, empty** bag every time.
+
+  ```python
+  collect("mirror")
+  # -> ['mirror']
+  collect("cup")
+  # -> ['cup'], not ['mirror', 'cup']
+  mine = ["wand"]
+  collect("quill", mine)
+  # -> ['wand', 'quill'] (the same list as mine)
+  ```
+
+  Repair it - and keep the name and parameters.
+starter: |
+  def collect(item, bag=[]):
+      bag.append(item)
+      return bag
+
+  print(collect("mirror"))
+  print(collect("cup"))
+tests: |
+  def test_fresh_each_time():
+      fn = student_function("collect")
+      first = call(fn, "mirror")
+      snapshot = list(first)
+      second = call(fn, "cup")
+      check(snapshot == ["mirror"] and second == ["cup"],
+            f"collect('mirror') returned {snapshot!r}, then collect('cup') returned {second!r}. Each should hold only its own item. Is every call getting its own bag - or sharing one made when the def line ran?")
+      check(first is not second, "Each call without a bag must get its OWN new list.")
+
+  def test_given_bag():
+      fn = student_function("collect")
+      mine = ["wand"]
+      got = call(fn, "quill", mine)
+      check(got == ["wand", "quill"], f"collect('quill', ['wand']) returned {got!r}.")
+      check(got is mine, "When a bag is given, add to THAT bag and return it.")
+
+  def test_many():
+      fn = student_function("collect")
+      results = [call(fn, str(i)) for i in range(5)]
+      check(all(r == [str(i)] for i, r in enumerate(results)), f"Five fresh calls returned {results}.")
+
+  def test_keyword():
+      fn = student_function("collect")
+      check(call(fn, "x", bag=["y"]) == ["y", "x"], "collect should still accept `bag=` by name.")
+hints:
+  nudge: The body is fine. The problem is when the default list is created.
+  question: How many lists does `bag=[]` make - one per call, or one ever? What could the default be instead, to mean "no bag given"?
+  pseudocode: |
+    define collect with the bag defaulting to "nothing given"
+        if nothing was given: make a brand new empty bag
+        add the item to the bag
+        give back the bag
+  flaw: The `[]` on the def line runs exactly once. Every call that relies on it shares that single list - Lockhart's Cabinet in one line.
+  analogous: |
+    ```python
+    def register(name, roll=None):
+        if roll is None:
+            roll = []
+        roll.append(name)
+        return roll
+    ```

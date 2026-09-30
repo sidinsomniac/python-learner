@@ -1,0 +1,52 @@
+tier: warmup
+type: practice
+title: Filch's Inventory
+task: |
+  Keep the first line - the examiners will change the inventory. Then:
+
+  1. The **last** item vanishes: remove it and print `Vanished: ITEM`.
+  2. Filch confiscates a `Screaming Yo-yo` - put it at the **front** of the list.
+  3. Print the inventory **sorted alphabetically** - but without changing the order of `inventory` itself.
+  4. Print `inventory` as it really is.
+
+  For the starting inventory, the output is:
+
+  ```
+  Vanished: Extendable Ear
+  ['Dungbomb', 'Fanged Frisbee', 'Nose-Biting Teacup', 'Screaming Yo-yo']
+  ['Screaming Yo-yo', 'Fanged Frisbee', 'Dungbomb', 'Nose-Biting Teacup']
+  ```
+starter: |
+  inventory = ["Fanged Frisbee", "Dungbomb", "Nose-Biting Teacup", "Extendable Ear"]
+tests: |
+  def _run(items):
+      return run_with(inventory=items).lines
+
+  def test_example():
+      got = _run(["Fanged Frisbee", "Dungbomb", "Nose-Biting Teacup", "Extendable Ear"])
+      check(len(got) == 3, f"Three lines expected; you printed {len(got)}.")
+      check(got[0] == "Vanished: Extendable Ear", f"Line 1 should say which item vanished from the END. Yours: '{got[0]}'.")
+      check(got[1] == "['Dungbomb', 'Fanged Frisbee', 'Nose-Biting Teacup', 'Screaming Yo-yo']", f"Line 2 should be the sorted list. Yours: {got[1]}")
+      check(got[2] == "['Screaming Yo-yo', 'Fanged Frisbee', 'Dungbomb', 'Nose-Biting Teacup']",
+            f"Line 3 should be the real inventory - with the Yo-yo at the front, and NOT sorted. Yours: {got[2]}. Did sorting change the original?")
+
+  def test_other_inventory():
+      got = _run(["Wand", "Cauldron"])
+      check(got == ["Vanished: Cauldron", "['Screaming Yo-yo', 'Wand']", "['Screaming Yo-yo', 'Wand']"], f"For ['Wand', 'Cauldron'] you printed {got}.")
+hints:
+  nudge: Four list abilities from the lesson - one that removes AND gives back the last item, one that adds at a position, and the sorting spell that doesn't change the original.
+  question: Which sorting spell gives you a new list and leaves the original alone? What does the other one give back?
+  pseudocode: |
+    vanished = remove the last item (and keep it)
+    show "Vanished: " and vanished
+    put the Yo-yo at position 0
+    show a sorted copy
+    show the inventory itself
+  flaw: If line 3 comes out sorted, you used the in-place sort. If you see None, you printed what `.sort()` returned.
+  analogous: |
+    ```python
+    queue = ["Neville", "Luna"]
+    first = queue.pop(0)
+    queue.insert(0, "Ginny")
+    print(first, sorted(queue), queue)
+    ```

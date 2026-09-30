@@ -159,7 +159,9 @@ def run_with(inputs=(), allow_error=False, **values):
                 isinstance(node, ast.Assign) and len(node.targets) == 1
                 and isinstance(node.targets[0], ast.Name) and node.targets[0].id == name
             ):
-                node.value = ast.copy_location(ast.Constant(value), node.value)
+                # repr() round-trips lists, dicts, tuples, strings and numbers.
+                node.value = ast.copy_location(ast.parse(repr(value), mode="eval").body, node.value)
+                ast.fix_missing_locations(node)
                 break
         else:
             check(False, f"Keep the line that sets `{name}` near the top of your spell - the examiners change its value to test you.")
@@ -261,6 +263,41 @@ def student_function(name, inputs=()):
     return fn
 
 
+_last_printed = ""
+
+
+def call(fn, *args, **kwargs):
+    """Call one of the learner's functions like a test would.
+
+    Anything it prints is captured (read it with printed()), a runaway loop is
+    stopped by the step guard, and an error inside it is reported as the
+    learner's crash - with its line number - rather than as a broken test.
+    """
+    global _last_printed
+    out = io.StringIO()
+    guard = _step_guard() if STEP_LIMIT else None
+    try:
+        with contextlib.redirect_stdout(out):
+            if guard:
+                sys.settrace(guard)
+            try:
+                return fn(*args, **kwargs)
+            finally:
+                if guard:
+                    sys.settrace(None)
+    except (CheckFailed, StudentCrashed):
+        raise
+    except BaseException as exc:  # noqa: BLE001 - we report every error kind
+        raise StudentCrashed(_error_info(exc)) from None
+    finally:
+        _last_printed = out.getvalue()
+
+
+def printed():
+    """What the learner's function printed during the last call()."""
+    return _last_printed
+
+
 def calls(name):
     """Does the learner's code call `name(...)` or `something.name(...)`?"""
     for node in ast.walk(tree()):
@@ -294,6 +331,8 @@ TEST_HELPERS = {
     "check": check,
     "run_student": run_student,
     "student_function": student_function,
+    "call": call,
+    "printed": printed,
     "run_with": run_with,
     "source": source,
     "tree": tree,
@@ -406,6 +445,69 @@ def _rv_repeated(module):
                     return cur.lineno, "Four or more near-identical lines, ending on line {line}. Repeating yourself is not magic. It is *typing*. Was there no loop in your repertoire?"
 
 
+def _is_zero_assign(stmt, name):
+    return (
+        isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name)
+        and stmt.targets[0].id == name and isinstance(stmt.value, ast.Constant) and stmt.value.value == 0
+    )
+
+
+def _rv_enumerate(module):
+    for node in ast.walk(module):
+        body = getattr(node, "body", None)
+        if not isinstance(body, list):
+            continue
+        for before, loop in zip(body, body[1:]):
+            if not isinstance(loop, ast.For):
+                continue
+            for stmt in loop.body:
+                if (
+                    isinstance(stmt, ast.AugAssign) and isinstance(stmt.op, ast.Add) and isinstance(stmt.target, ast.Name)
+                    and isinstance(stmt.value, ast.Constant) and stmt.value.value == 1 and _is_zero_assign(before, stmt.target.id)
+                ):
+                    return loop.lineno, "A counter you add 1 to by hand on every pass, line {line}. `enumerate` counts for you - have you met it?"
+
+
+def _rv_dict_keys(module):
+    for node in ast.walk(module):
+        if isinstance(node, (ast.For, ast.comprehension)) and isinstance(node.iter, ast.Call):
+            func = node.iter.func
+            if isinstance(func, ast.Attribute) and func.attr == "keys" and not node.iter.args:
+                line = getattr(node, "lineno", getattr(node.iter, "lineno", 0))
+                return line, "Looping over `.keys()`, line {line}. A dictionary already loops over its keys. Redundant."
+
+
+def _rv_append_loop(module):
+    for node in ast.walk(module):
+        body = getattr(node, "body", None)
+        if not isinstance(body, list):
+            continue
+        for before, loop in zip(body, body[1:]):
+            if not (isinstance(loop, ast.For) and len(loop.body) == 1 and not loop.orelse):
+                continue
+            inner = loop.body[0]
+            if isinstance(inner, ast.If) and len(inner.body) == 1 and not inner.orelse:
+                inner = inner.body[0]
+            if not (isinstance(inner, ast.Expr) and isinstance(inner.value, ast.Call)):
+                continue
+            func = inner.value.func
+            if (
+                isinstance(func, ast.Attribute) and func.attr == "append" and isinstance(func.value, ast.Name)
+                and isinstance(before, ast.Assign) and isinstance(before.value, ast.List) and not before.value.elts
+                and len(before.targets) == 1 and isinstance(before.targets[0], ast.Name)
+                and before.targets[0].id == func.value.id
+            ):
+                return loop.lineno, "An empty list, then a loop that only appends to it, line {line}. A list comprehension says that in one line."
+
+
+def _rv_mutable_default(module):
+    for node in ast.walk(module):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            for default in node.args.defaults + node.args.kw_defaults:
+                if isinstance(default, (ast.List, ast.Dict, ast.Set)):
+                    return node.lineno, "A list or dict as a default argument, line {line}. It is created ONCE and shared by every call. A classic, catastrophic mistake."
+
+
 def _rv_unused(module):
     flaw = _detect_unused_variable(module)
     if flaw:
@@ -429,6 +531,10 @@ REVIEW_RULES = {
     "repeated-lines": _rv_repeated,
     "range-len": _rv_range_len,
     "augmented-assign": _rv_augment,
+    "enumerate-counter": _rv_enumerate,
+    "dict-keys": _rv_dict_keys,
+    "append-comprehension": _rv_append_loop,
+    "mutable-default": _rv_mutable_default,
 }
 
 

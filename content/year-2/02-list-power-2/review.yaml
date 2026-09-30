@@ -1,0 +1,20 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: grid-trap
+  type: predict
+  code: |
+    grid = [[0] * 2] * 2
+    grid[0][1] = 5
+    print(grid)
+  why: "`[row] * 2` repeats the SAME row object, so changing one row changes both."
+- id: shallow
+  type: choice
+  q: "`b = a.copy()` where `a = [[1], [2]]`. Then `b[0].append(9)`. What is `a`?"
+  options: ["`[[1], [2]]`", "`[[1, 9], [2]]`", "An error"]
+  answer: 1
+  why: A shallow copy makes a new outer list, but the inner lists are still shared.
+- id: alias
+  type: choice
+  q: Which line makes a separate grid of 3 rows?
+  options: ["`g = [[0] * 3] * 3`", "`g = []` then append `[0] * 3` three times in a loop", "`g = [0] * 3 * 3`"]
+  answer: 1
+  why: Each pass through the loop builds a brand-new row.

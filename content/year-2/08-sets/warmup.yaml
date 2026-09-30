@@ -1,0 +1,26 @@
+tier: warmup
+type: divination
+title: Who Was There?
+task: Predict every line.
+snippet: |
+  hall = {"Draco", "Ginny", "Draco"}
+  library = set(["Ginny", "Hermione", "Myrtle"])
+  print(len(hall), sorted(hall & library))
+  print(sorted(library - hall), sorted(hall | {"Nick"}))
+  empty = {}
+  print(type(empty).__name__, type(set()).__name__)
+  hall.add("Ginny")
+  print(len(hall), "Draco" in hall, {1, 2} <= {1, 2, 3})
+hints:
+  nudge: Write down each set with its duplicates removed, then apply each operator.
+  question: How many Dracos does `hall` really hold? What type is `{}` on its own?
+  pseudocode: |
+    hall = Draco, Ginny
+    & = in both; - = only in the first; | = in either
+    {} is an empty dictionary
+    adding Ginny again changes nothing
+  flaw: The trap is thinking `{}` is an empty set. It's a dictionary!
+  analogous: |
+    ```text
+    {"a", "b"} & {"b", "c"}  ->  {'b'}
+    ```

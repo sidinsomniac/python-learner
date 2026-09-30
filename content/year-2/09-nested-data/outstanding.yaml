@@ -1,0 +1,78 @@
+tier: outstanding
+type: practice
+title: Who Sent What?
+twist: design - build an index from item to senders, with no repeats
+task: |
+  Some items arrive from more than one shop - suspicious! Build an index from
+  each item to the **set of shops** that sent it, then print every item sent
+  by **two or more different shops**, items alphabetically, shops
+  alphabetically:
+
+  ```
+  Vanishing Cabinet: Borgin and Burkes, Dodgy Dealings Ltd
+  ```
+
+  Item names are compared ignoring capitals and surrounding spaces, and printed
+  in lowercase-then-capitalised form (`.capitalize()`: `"vanishing cabinet"`
+  -> `"Vanishing cabinet"`). The same shop sending an item twice counts once.
+
+  If no item has more than one sender, print `No item has two senders.`
+
+  Keep the first line. For the starting post:
+
+  ```
+  Mirror: Borgin and Burkes, Gladrags
+  Vanishing cabinet: Borgin and Burkes, Dodgy Dealings Ltd
+  ```
+starter: |
+  post = [
+      {"shop": "Borgin and Burkes", "items": ["Vanishing Cabinet", "mirror"]},
+      {"shop": "Gladrags", "items": ["Mirror ", "Socks"]},
+      {"shop": "Dodgy Dealings Ltd", "items": ["vanishing cabinet"]},
+      {"shop": "Gladrags", "items": ["socks"]},
+  ]
+tests: |
+  def _run(p):
+      return run_with(post=p).lines
+
+  def test_example():
+      got = _run([
+          {"shop": "Borgin and Burkes", "items": ["Vanishing Cabinet", "mirror"]},
+          {"shop": "Gladrags", "items": ["Mirror ", "Socks"]},
+          {"shop": "Dodgy Dealings Ltd", "items": ["vanishing cabinet"]},
+          {"shop": "Gladrags", "items": ["socks"]},
+      ])
+      check(got == ["Mirror: Borgin and Burkes, Gladrags", "Vanishing cabinet: Borgin and Burkes, Dodgy Dealings Ltd"],
+            f"You printed {got}. (Gladrags sent socks twice - that's still just one shop.)")
+
+  def test_none():
+      got = _run([{"shop": "A", "items": ["x", "x"]}, {"shop": "B", "items": ["y"]}])
+      check(got == ["No item has two senders."], f"You printed {got}.")
+
+  def test_three_shops():
+      got = _run([{"shop": "C", "items": ["cup"]}, {"shop": "A", "items": [" CUP"]}, {"shop": "B", "items": ["Cup"]}])
+      check(got == ["Cup: A, B, C"], f"You printed {got}.")
+
+  def test_empty():
+      check(_run([]) == ["No item has two senders."], "An empty post has no suspicious items.")
+hints:
+  nudge: The index maps a tidied item name to a SET of shops - sets ignore the repeats for you.
+  question: What should the index's key be - the item exactly as written, or a tidied version? What should each value start as?
+  pseudocode: |
+    senders = empty dictionary
+    for each delivery:
+        for each item:
+            key = the item, stripped and lowercased
+            add the delivery's shop to the set for key (making the set if needed)
+    remember that nothing is found yet
+    for each key alphabetically:
+        if its set has two or more shops:
+            show the capitalised key and its sorted shops, and remember something was found
+    if nothing was found: show the message
+  flaw: If Gladrags appears twice, your values are lists instead of sets. If "Mirror" and "mirror " are separate, tidy BEFORE using the key.
+  analogous: |
+    ```python
+    fans = {}
+    for star, fan in [("Lockhart", "Ann"), ("Lockhart", "Ann")]:
+        fans.setdefault(star, set()).add(fan)
+    ```

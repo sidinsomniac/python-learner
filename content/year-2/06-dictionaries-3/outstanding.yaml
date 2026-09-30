@@ -1,0 +1,71 @@
+tier: outstanding
+type: practice
+title: Two Ghosts, One Report
+twist: design - merge two nested records without changing either
+task: |
+  Myrtle and Nick each kept a report: night -> place -> clanks. Merge them
+  into one `merged` report, **adding** the clanks where both heard the same
+  place on the same night.
+
+  Then print every entry of `merged`, nights alphabetically and places
+  alphabetically within each night: `Mon bathroom 5`
+
+  Keep the first two lines. For the starting reports:
+
+  ```
+  Mon bathroom 5
+  Mon hall 1
+  Tue pipes 2
+  ```
+
+  **Careful:** neither original report may change - the Headmaster wants both
+  kept as evidence.
+starter: |
+  myrtle = {"Mon": {"bathroom": 3}, "Tue": {"pipes": 2}}
+  nick = {"Mon": {"bathroom": 2, "hall": 1}}
+tests: |
+  import copy
+
+  def _run(a, b):
+      a0, b0 = copy.deepcopy(a), copy.deepcopy(b)
+      r = run_with(myrtle=a, nick=b)
+      check(r.ns["myrtle"] == a0 and r.ns["nick"] == b0,
+            "One of the original reports changed! Did you add into an inner dictionary that still belongs to Myrtle or Nick?")
+      return r.lines, r.ns.get("merged")
+
+  def test_example():
+      lines, merged = _run({"Mon": {"bathroom": 3}, "Tue": {"pipes": 2}}, {"Mon": {"bathroom": 2, "hall": 1}})
+      check(lines == ["Mon bathroom 5", "Mon hall 1", "Tue pipes 2"], f"You printed {lines}.")
+      check(merged == {"Mon": {"bathroom": 5, "hall": 1}, "Tue": {"pipes": 2}}, f"`merged` should hold the combined report. It is {merged}.")
+
+  def test_nick_only_night():
+      lines, _ = _run({"Tue": {"hall": 1}}, {"Mon": {"tower": 4}, "Tue": {"hall": 1}})
+      check(lines == ["Mon tower 4", "Tue hall 2"], f"You printed {lines}.")
+
+  def test_untouched_when_shared():
+      _run({"Mon": {"a": 1}}, {"Mon": {"a": 1}, "Wed": {"b": 1}})
+
+  def test_empty():
+      lines, _ = _run({}, {})
+      check(lines == [], "Two empty reports merge into nothing.")
+hints:
+  nudge: Build `merged` from scratch, adding numbers into it from BOTH reports. Never reuse an inner dictionary that belongs to someone else.
+  question: If you write `merged["Mon"] = myrtle["Mon"]`, how many dictionaries are there for Monday? What happens to Myrtle's when you then add Nick's numbers?
+  pseudocode: |
+    merged = empty dictionary
+    for each report of the two:
+        for each night and its places:
+            make sure merged has a NEW inner dictionary for that night
+            for each place and clanks:
+                add clanks to merged's count for that night and place
+    for each night alphabetically:
+        for each place alphabetically:
+            show night, place and count
+  flaw: If Myrtle's report changed, `merged` is sharing her inner dictionaries - the Filch's-copy bug from Lesson 1 in disguise.
+  analogous: |
+    ```python
+    total = {}
+    for part in [{"a": 1}, {"a": 2, "b": 1}]:
+        for key, n in part.items():
+            total[key] = total.get(key, 0) + n
+    ```

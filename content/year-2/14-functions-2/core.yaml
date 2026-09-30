@@ -1,0 +1,70 @@
+tier: core
+type: practice
+title: The Collecting Charm, Done Right
+twist: design - defaults and keyword arguments that change behaviour
+task: |
+  Write `find_items(items, shiny=True, limit=None)`.
+
+  `items` is a list of `(name, is_shiny)` tuples. Return a list of the names
+  whose shininess matches `shiny`, in their original order. If `limit` is
+  given, return at most that many.
+
+  ```python
+  things = [("mirror", True), ("sock", False), ("cup", True), ("hat", False)]
+  find_items(things)
+  # -> ['mirror', 'cup']
+  find_items(things, shiny=False)
+  # -> ['sock', 'hat']
+  find_items(things, limit=1)
+  # -> ['mirror']
+  find_items(things, False, 5)
+  # -> ['sock', 'hat']
+  ```
+
+  Give your function a docstring. A `limit` of `0` means "none at all", which
+  is **not** the same as "no limit"!
+starter: |
+  def find_items(items):
+      pass
+tests: |
+  THINGS = [("mirror", True), ("sock", False), ("cup", True), ("hat", False)]
+
+  def test_defaults():
+      got = call(student_function("find_items"), THINGS)
+      check(got == ["mirror", "cup"], f"find_items(things) returned {got!r}. By default it looks for shiny things.")
+
+  def test_keyword():
+      fn = student_function("find_items")
+      got = call(fn, THINGS, shiny=False)
+      check(got == ["sock", "hat"], f"find_items(things, shiny=False) returned {got!r}.")
+      got = call(fn, THINGS, False, 5)
+      check(got == ["sock", "hat"], f"find_items(things, False, 5) returned {got!r}.")
+
+  def test_limit():
+      fn = student_function("find_items")
+      check(call(fn, THINGS, limit=1) == ["mirror"], f"With limit=1, only the first match. You returned {call(fn, THINGS, limit=1)!r}.")
+      got = call(fn, THINGS, limit=0)
+      check(got == [], f"limit=0 means NO items - different from no limit at all. You returned {got!r}.")
+
+  def test_docstring():
+      fn = student_function("find_items")
+      check(bool(fn.__doc__ and fn.__doc__.strip()), "Give find_items a docstring - a string on the first line of its body.")
+hints:
+  nudge: Filter first, then cut the list down only if a limit was actually given.
+  question: When limit is 0, what's the difference between asking whether limit is truthy and asking whether it is None?
+  pseudocode: |
+    define find_items with shiny defaulting to True and limit to None
+        a docstring saying what it returns
+        matches = [name for each (name, is_shiny) if is_shiny equals the wanted shininess]
+        if a limit was given (it isn't None): give back the first `limit` matches
+        give back matches
+  flaw: If limit=0 returns everything, you tested `if limit:` - and 0 counts as false!
+  analogous: |
+    ```python
+    def first_words(text, count=None):
+        """Return the words, or just the first `count`."""
+        words = text.split()
+        if count is not None:
+            return words[:count]
+        return words
+    ```

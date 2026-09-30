@@ -1,0 +1,21 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: sort-none
+  type: choice
+  q: After `nums = [3, 1, 2]` and `result = nums.sort()`, what is `result`?
+  options: ["`[1, 2, 3]`", "`None`", "`[3, 1, 2]`"]
+  answer: 1
+  why: "`.sort()` sorts in place and gives back None. `sorted(nums)` returns a new list."
+- id: pop-insert
+  type: predict
+  code: |
+    owls = ["Hedwig", "Errol", "Pig"]
+    last = owls.pop()
+    owls.insert(0, last)
+    print(owls)
+  why: pop removes and returns the last item; insert(0, ...) puts it at the front.
+- id: remove-first
+  type: choice
+  q: What does `[1, 2, 1].remove(1)` leave behind?
+  options: ["`[2]`", "`[2, 1]`", "`[1, 2]`"]
+  answer: 1
+  why: "`remove` takes out only the FIRST match."

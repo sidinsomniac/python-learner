@@ -1,0 +1,82 @@
+tier: outstanding
+type: practice
+title: The Rescaling Charm
+twist: edge cases - an empty list, and a list where every score is equal
+task: |
+  Lockhart marks essays on a mad scale. Write two functions:
+
+  1. `bounds(scores)` returns a tuple `(lowest, highest)` - in **one pass**
+     through the list, without `min` or `max`. For an empty list it returns
+     `(None, None)`.
+  2. `rescale(scores, low=0, high=100)` returns a new list where the lowest
+     score becomes `low`, the highest becomes `high`, and everything else is
+     spread proportionally between them, **rounded** to whole numbers. Use
+     `bounds`.
+
+  ```python
+  bounds([30, 10, 20])
+  # -> (10, 30)
+  rescale([30, 10, 20])
+  # -> [100, 0, 50]
+  rescale([30, 10, 20], high=10)
+  # -> [10, 0, 5]
+  rescale([4, 4])
+  # -> [0, 0]   - all equal: everyone gets low
+  rescale([])
+  # -> []
+  ```
+
+  The formula: `low + (score - lowest) * (high - low) / (highest - lowest)`.
+starter: |
+  def bounds(scores):
+      pass
+
+  def rescale(scores):
+      pass
+tests: |
+  def test_bounds():
+      fn = student_function("bounds")
+      check(call(fn, [30, 10, 20]) == (10, 30), f"bounds([30, 10, 20]) returned {call(fn, [30, 10, 20])!r}.")
+      check(call(fn, [-5]) == (-5, -5), "With one score, it is both lowest and highest.")
+      check(call(fn, []) == (None, None), f"bounds([]) should be (None, None). You returned {call(fn, [])!r}.")
+
+  def test_bounds_by_hand():
+      check(not calls("min") and not calls("max") and not calls("sorted") and not calls("sort"), "Find the bounds yourself, in one pass - no min, max or sorting.")
+
+  def test_rescale():
+      fn = student_function("rescale")
+      check(call(fn, [30, 10, 20]) == [100, 0, 50], f"rescale([30, 10, 20]) returned {call(fn, [30, 10, 20])!r}.")
+      check(call(fn, [30, 10, 20], high=10) == [10, 0, 5], f"rescale(..., high=10) returned {call(fn, [30, 10, 20], high=10)!r}.")
+      check(call(fn, [1, 2, 4], 10, 40) == [10, 20, 40], f"rescale([1, 2, 4], 10, 40) returned {call(fn, [1, 2, 4], 10, 40)!r}.")
+
+  def test_edges():
+      fn = student_function("rescale")
+      check(call(fn, [4, 4]) == [0, 0], f"All scores equal - everyone gets low. You returned {call(fn, [4, 4])!r}.")
+      check(call(fn, []) == [], "An empty list rescales to an empty list.")
+      check(calls("bounds"), "rescale should use your bounds spell.")
+hints:
+  nudge: bounds keeps two running values; rescale unpacks them and applies the formula to every score - but watch out for dividing by zero.
+  question: What should the running lowest and highest start as? What happens in the formula when every score is the same?
+  pseudocode: |
+    bounds:
+        if no scores: give back (None, None)
+        lowest and highest both start as the first score
+        for each score: update whichever it beats
+        give back both
+    rescale (low defaults to 0, high to 100):
+        unpack lowest and highest from bounds
+        if there are no scores: give back an empty list
+        if lowest equals highest: give back low for every score
+        otherwise: give back the rounded formula for every score
+  flaw: A ZeroDivisionError means all the scores were equal. A TypeError about None means rescale didn't stop early for an empty list.
+  analogous: |
+    ```python
+    def span(words):
+        shortest = longest = words[0]
+        for w in words:
+            if len(w) < len(shortest):
+                shortest = w
+            if len(w) > len(longest):
+                longest = w
+        return shortest, longest
+    ```

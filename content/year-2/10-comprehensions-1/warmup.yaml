@@ -1,0 +1,49 @@
+tier: warmup
+type: practice
+title: One-Line Spells
+task: |
+  Keep the first line - the examiners change `hearts`. Using **one list
+  comprehension per line**, print:
+
+  1. every heart count doubled,
+  2. only the counts of 3 or more,
+  3. the total of the counts that are **odd**.
+
+  For the starting hearts:
+
+  ```
+  [10, 2, 6, 14, 4]
+  [5, 3, 7]
+  Odd total: 16
+  ```
+starter: |
+  hearts = [5, 1, 3, 7, 2]
+tests: |
+  def _run(h):
+      return run_with(hearts=h).lines
+
+  def test_example():
+      got = _run([5, 1, 3, 7, 2])
+      check(got == ["[10, 2, 6, 14, 4]", "[5, 3, 7]", "Odd total: 16"], f"You printed {got}.")
+
+  def test_other():
+      got = _run([2, 4])
+      check(got == ["[4, 8]", "[4]", "Odd total: 0"], f"For [2, 4] you printed {got}.")
+
+  def test_comprehensions():
+      check(count_nodes(ast.ListComp) >= 3, "Use a list comprehension for each of the three lines.")
+      check(not uses(ast.For), "No `for` loops this time - only comprehensions.")
+hints:
+  nudge: Each line is "what to keep, for each count, if some condition" - leave out whichever part you don't need.
+  question: How do you test whether a number is odd? Which built-in adds up a list?
+  pseudocode: |
+    show [each count times two]
+    show [each count, if it's at least 3]
+    show the sum of [each count, if it's odd]
+  flaw: A SyntaxError often means the `if` came before the `for` - in a filter it goes at the end.
+  analogous: |
+    ```python
+    ages = [11, 12, 17]
+    print([a + 1 for a in ages])
+    print(sum([a for a in ages if a > 11]))
+    ```

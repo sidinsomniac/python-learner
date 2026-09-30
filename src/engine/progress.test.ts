@@ -141,6 +141,43 @@ describe("Year 1 content", () => {
   });
 });
 
+describe("Year 2 content", () => {
+  const year1 = YEARS.find((y) => y.year === 1)!;
+  const year2 = YEARS.find((y) => y.year === 2)!;
+
+  it("has 14 lessons (with parts), 3 revisions and a Trial, each lesson with a clue", () => {
+    const lessons = year2.lessons.filter((l) => l.kind === "lesson");
+    expect(new Set(lessons.map((l) => l.number)).size).toBe(14);
+    expect(year2.lessons.filter((l) => l.kind === "revision")).toHaveLength(3);
+    expect(year2.lessons.at(-1)?.kind).toBe("trial");
+    for (const lesson of lessons) {
+      expect(lesson.exercises.map((e) => e.tier)).toEqual(["warmup", "core", "outstanding"]);
+      expect(lesson.clue).toBeTruthy();
+      expect(lesson.review.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("has its own colour theme", () => {
+    expect(year2.theme.gold).not.toBe(year1.theme.gold);
+    expect(year2.theme.bg).not.toBe(year1.theme.bg);
+  });
+
+  it("opens once Year 1 is complete", () => {
+    const first = year2.lessons[0];
+    expect(isLessonUnlocked(first, YEARS, {})).toBe(false);
+    expect(isLessonUnlocked(first, YEARS, completeLessons(year1.lessons.map((l) => l.id)))).toBe(true);
+  });
+
+  it("switches on Snape's collection rules as they are taught", () => {
+    expect(reviewRulesFor("y2-l01a")).not.toContain("enumerate-counter");
+    expect(reviewRulesFor("y2-l02")).toContain("enumerate-counter");
+    expect(reviewRulesFor("y2-l08")).not.toContain("mutable-default");
+    expect(reviewRulesFor("y2-trial")).toEqual(
+      expect.arrayContaining(["enumerate-counter", "dict-keys", "append-comprehension", "mutable-default"]),
+    );
+  });
+});
+
 describe("lecture checkpoints", () => {
   it("splits a lecture into Markdown and checkpoints", () => {
     const md = "# Intro\n\n```checkpoint\nq: Two plus two?\noptions: ['3', '4']\nanswer: 1\nwhy: Maths.\n```\n\nMore text.\n";

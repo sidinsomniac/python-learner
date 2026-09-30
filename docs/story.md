@@ -72,11 +72,74 @@
 
 ---
 
-## Years 2–7: arcs in outline
-*Each year's full scene-by-scene script is written when that year is built.*
+## Year 2: The Hoarder's Cabinet
 
-### Year 2: The Hoarder's Cabinet
-Coded messages appear on the castle walls, and prized items vanish: Hermione's notes, the Quidditch cup, Nearly Headless Nick's head. Everything is sorted, counted and stored somewhere. Your cipher toolkit decodes the messages. They lead to a cursed Vanishing Cabinet in Moaning Myrtle's bathroom that **collects** everything it sees: a data structure gone mad. Myrtle helps, grudgingly. **Trial:** crack the final message and empty the Cabinet.
+**The premise.** Second year begins on the Hogwarts Express. At the castle, messages in a strange code are painted on the walls - and prized things start to vanish:
+- Nearly Headless Nick's head;
+- Filch's confiscated treasures;
+- the Quidditch Cup;
+- Mrs Norris.
+
+Everything taken is *shiny*. Everything is taken in order, counted and catalogued, as if by something that loves **collections**.
+
+**Suspects (red herrings):**
+- **Filch**, a notorious collector of confiscated things.
+- **Draco**, whose family owns shares in Borgin and Burkes.
+- **Peeves**, as ever.
+
+**The truth.** Professor **Gilderoy Lockhart** bought a Vanishing Cabinet from Borgin and Burkes to display his trophies. He enchanted it with a "self-filling" spell of his own invention: *collect everything that shines, and never give it back*. Being Lockhart, he got the spell wrong. It has a **mutable default argument**: every call adds to the *same* bag, forever. The Cabinet sits in Moaning Myrtle's bathroom on the second floor. It is growing, and it writes coded messages on the walls asking to be fed.
+
+**How it ends.** Lockhart never meant any harm. He's mortified, and he tries to take the credit anyway. Myrtle gets her bathroom back, and Nick gets his head.
+
+**New cast:**
+| Character | Role |
+|---|---|
+| **Moaning Myrtle** | Witness. Dramatic, lonely, and surprisingly helpful |
+| **Nearly Headless Nick** | A victim, and a ghostly guide to the castle's history |
+| **Ginny** | Quick and clever, joins the investigation |
+| **Professor Lockhart** | Vain, cheerful, and author of the worst spells in the castle. His buggy code drives the debugging lessons |
+| **Filch** | A suspect, and furious about it |
+
+### Scene-by-scene
+
+| Lesson | Where | Story beat | The clue your code reveals |
+|---|---|---|---|
+| Prologue | Hogwarts Express, then the Great Hall | Ron and Hermione on the train. At the feast, a message appears on the wall in strange letters: `FKDPEHU RI FROOHFWLRQV LV RSHQ`. | The mystery begins (the message is decoded in Lesson 13) |
+| 1 List Power (Pt1) | Filch's office | Filch's list of confiscated items is shrinking by itself. | Every vanished item was taken from the **end** of a list, as if someone kept calling `.pop()` |
+| 1 List Power (Pt2) | Filch's office | Filch keeps a "safe copy" of his list, and it shrinks too! | Filch's "copy" is the **same list**. Whoever is taking things reads Filch's inventory directly |
+| 2 Tuples and Unpacking | The Grand Staircase | Ginny maps each vanishing as a (floor, corridor) pair. | Every vanishing point is on the **second floor** |
+| 3 Dictionaries (Pt1) | Trophy Room | Nick's head is gone, and the trophy cabinet is in chaos. | Only **Lockhart's** trophies came back, freshly polished |
+| 3 Dictionaries (Pt2) | Trophy Room | Tally what's missing, by type. | Most of what vanished is **shiny**: mirrors, trophies, badges |
+| 3 Dictionaries (Pt3) | Second-floor corridor | Myrtle's nested report of strange noises, by night and by hour. | Clanking from **Myrtle's bathroom** every night at midnight |
+| R1 | Filch's office | Ron accuses Filch. Filch is outraged: "I *confiscate*. I don't *steal*." | Filch is cleared |
+| 4 Sets | The Great Hall | Who was near every vanishing? | *Nobody* was at all of them, so the thief isn't a person. **It's an object** |
+| 5 Nested Data | Owl Post office | Delivery records from Diagon Alley and Knockturn Alley. | A **Vanishing Cabinet** was delivered to Hogwarts, signed "G.L." |
+| 6 Comprehensions (Pt1) | Lockhart's office | Sorting Lockhart's mountain of fan mail. | The Cabinet arrived the same week as Lockhart's biggest fan-mail delivery |
+| 6 Comprehensions (Pt2) | Lockhart's office | A page from Lockhart's notes: a spell written as one line. | The Cabinet's spell *is* a comprehension: collect every item **if it shines** |
+| 7 Functions (Pt1) | Defence Against the Dark Arts | Lockhart's "brilliant" spells print things but never *return* anything. | His spellbook contains `collect_admirers()`, which takes and takes and never gives back |
+| R2 | The Library | Hermione lays the clues out. Ginny spots the pattern. | Recap: an object, on the second floor, that loves shiny things |
+| 8 Functions (Pt2) | Defence classroom | Lockhart demonstrates default arguments, badly. | The Cabinet's spell targets `shiny=True` by default |
+| 9 Scope and Mutability | Myrtle's bathroom | The famous `bag=[]` bug. | **Every call adds to the same bag.** The Cabinet's hoard can only ever grow |
+| 10 Modules | Divination tower | The Cabinet strikes at "random" times, but random numbers can be *seeded*. | With the seed, the next vanishing can be predicted: **tonight, at midnight** |
+| 11 Parsing Scrolls | Owl Post office | The Borgin and Burkes receipt, as a messy scroll. | "One cabinet, self-filling. Charm by G. Lockhart. Deliver to: second-floor girls' bathroom." |
+| 12 ★ Seek and Count | Inside the Cabinet's inventory | A catalogue of 2,000 hoarded items. | Mrs Norris is in there, **alive**, at index 1337 |
+| R3 | The Library | Draco, embarrassed about Borgin and Burkes, quietly hands over the shop's cipher notes. | Draco helps. The rivalry becomes respect |
+| 13 ★ Cipher Craft | Myrtle's bathroom | The wall messages turn out to be Caesar ciphers. | The Cabinet itself writes them: "THE CABINET HUNGERS. FEED IT SHINY THINGS." |
+| 14 Debugging Craft | Lockhart's office | Lockhart's "un-collection" counter-spell is full of bugs. | Fixed, it can empty the Cabinet, if you can open it |
+| 🏁 Trial | Myrtle's bathroom, at midnight | The Cabinet is sealed with an enciphered password. Build a cipher toolkit, crack the unknown shift, and speak the password. | The Cabinet opens. Everything comes home |
+
+**Outro.**
+1. The Cabinet disgorges two hundred shiny objects, a very cross Mrs Norris, and Nick's head, which he reattaches with dignity.
+2. Lockhart tries to claim he planned it all along.
+3. Myrtle cries happily.
+4. Dumbledore: "Collections are wonderful things - as long as we remember to give back what we borrow."
+
+**Draco's thread:** from rival to reluctant ally, when he supplies the cipher notes in R3.
+
+---
+
+## Years 3–7: arcs in outline
+*Each year's full scene-by-scene script is written when that year is built.*
 
 ### Year 3: The Prisoner of the Loop
 A figure keeps appearing in the same corridor at the same time every day, like a prisoner caught in time. It's a wizard trapped inside a broken Time-Turner's **recursion**, who never reached his base case. Errors (the Dementors) swarm wherever the loop touches. You learn recursion, exceptions and searching to find where his loop began. **Trial:** the Time-Turner Escape maze that frees him.

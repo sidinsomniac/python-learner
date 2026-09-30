@@ -1,0 +1,18 @@
+id: y2-l04
+year: 2
+order: 8
+number: 4
+title: Sets
+location: The Great Hall
+concepts: [set, add and discard, membership speed, union, intersection, difference]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: hermione
+    line: New approach. For every vanishing, we list everyone who was nearby. Whoever was near ALL of them is our thief.
+  - who: ron
+    line: That's loads of names. Some people will be on the lists twice...
+  - who: ashwood
+    line: Then you want a set - a collection with no duplicates, built for exactly this question. "Who is in every group?" is a single spell.
+  - who: draco
+    line: (passing) I hope you've written my name down, Weasley. I'd hate to be left out.
+clue: The sets don't lie. **Nobody** was near every vanishing - not one person. So the thief isn't a person at all. **It's an object.**

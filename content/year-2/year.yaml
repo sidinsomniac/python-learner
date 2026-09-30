@@ -1,0 +1,27 @@
+year: 2
+title: The Chamber of Collections
+mystery: The Hoarder's Cabinet
+theme:
+  mood: The Chamber - serpent green and stone
+  gold: "#8fd6a4"
+  gold2: "#c9f2d4"
+  bg: "#0a1411"
+  bg2: "#11211b"
+  card: "#15251f"
+  card2: "#1c3129"
+  line: "#2d4a3d"
+intro:
+  - who: narrator
+    line: The Hogwarts Express rattles north through the hills. Rain streaks the windows of your compartment, and the trolley witch has just sold Ron his fourth Chocolate Frog.
+  - who: ron
+    line: Second year, {name}. Reckon it'll be quieter than last year? No haunted Ledgers, no grumpy portraits...
+  - who: hermione
+    line: "I've read ahead. This year we learn about **collections** - lists, dictionaries, sets - and how to write our own spells, called *functions*."
+  - who: narrator
+    line: That night at the Welcome Feast, as the pudding appears, red letters bleed across the wall of the Great Hall. Nobody can read them.
+  - who: narrator
+    line: "`FKDPEHU RI FROOHFWLRQV LV RSHQ`"
+  - who: nick
+    line: Most unsettling. And - has anyone seen my head? I set it down for a moment before the feast, and now it's simply... gone.
+  - who: ashwood
+    line: "Letters in code, and things going missing. Welcome back, {name}. It seems Hogwarts has a new mystery - and this time, the answers are hidden in **collections**."

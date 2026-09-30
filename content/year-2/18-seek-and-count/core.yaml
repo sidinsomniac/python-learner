@@ -1,0 +1,73 @@
+tier: core
+type: practice
+title: Merging the Catalogues
+twist: constraint - no sorting spells; and it must stay fast at 20,000 items each
+task: |
+  The Cabinet keeps two catalogues, each **already sorted**. Write
+  `merge_sorted(a, b)`, which returns one new sorted list containing
+  everything from both (duplicates kept), without changing `a` or `b`.
+
+  ```python
+  merge_sorted([1, 4, 9], [2, 3, 10])   # [1, 2, 3, 4, 9, 10]
+  merge_sorted([], [5])                 # [5]
+  merge_sorted([2, 2], [2])             # [2, 2, 2]
+  ```
+
+  **Constraint:** no `sort`, `sorted`, `min` or `max` - use the two-pointer
+  method from the lesson. It must merge two lists of 20,000 items each in well
+  under a second.
+starter: |
+  def merge_sorted(a, b):
+      pass
+tests: |
+  import time
+
+  def test_examples():
+      fn = student_function("merge_sorted")
+      check(call(fn, [1, 4, 9], [2, 3, 10]) == [1, 2, 3, 4, 9, 10], f"merge_sorted([1, 4, 9], [2, 3, 10]) returned {call(fn, [1, 4, 9], [2, 3, 10])!r}.")
+      check(call(fn, [2, 2], [2]) == [2, 2, 2], "Keep duplicates - every item from both lists.")
+
+  def test_empty_sides():
+      fn = student_function("merge_sorted")
+      check(call(fn, [], [5]) == [5], f"merge_sorted([], [5]) returned {call(fn, [], [5])!r}.")
+      check(call(fn, [1, 2], []) == [1, 2], f"merge_sorted([1, 2], []) returned {call(fn, [1, 2], [])!r}. Did you add what's left of BOTH lists?")
+      check(call(fn, [], []) == [], "Two empty lists merge into an empty list.")
+
+  def test_words():
+      got = call(student_function("merge_sorted"), ["ant", "owl"], ["bat", "cat", "yak"])
+      check(got == ["ant", "bat", "cat", "owl", "yak"], f"It should work for words too. You returned {got!r}.")
+
+  def test_untouched():
+      a, b = [1, 3], [2]
+      call(student_function("merge_sorted"), a, b)
+      check(a == [1, 3] and b == [2], "merge_sorted changed its arguments! Leave them as they were.")
+
+  def test_no_sorting():
+      check(not any(calls(n) for n in ("sort", "sorted", "min", "max")), "No sort, sorted, min or max - the lists are already sorted. Use two pointers.")
+
+  def test_fast():
+      a = list(range(0, 40000, 2))
+      b = list(range(1, 40000, 2))
+      start = time.perf_counter()
+      got = call(student_function("merge_sorted"), a, b)
+      check(time.perf_counter() - start < 1, "Correct but slow. Does each step do a small, fixed amount of work - or does it search or shift the whole list?")
+      check(got == list(range(40000)), "The big merge came out wrong.")
+hints:
+  nudge: Two position counters, one per list. Each step, compare the two items they point at, take the smaller, and move that counter on.
+  question: When does the main loop have to stop? And what happens to the items still waiting in the other list?
+  pseudocode: |
+    merged = empty list; i and j both start at 0
+    while i hasn't reached the end of a AND j hasn't reached the end of b:
+        if a's item at i is smaller than or equal to b's item at j: take it, move i on
+        otherwise: take b's item at j, move j on
+    add whatever is left of a from i, and of b from j
+    give back merged
+  flaw: If items go missing at the end, you forgot the leftovers. If it's slow, look for `pop(0)`, `insert` or `in` - each can walk the whole list.
+  analogous: |
+    ```text
+    a = [1, 5]   b = [2, 3]
+    1 < 2  take 1  (i moves)
+    5 > 2  take 2  (j moves)
+    5 > 3  take 3  (j moves) - b is used up
+    leftovers: [5]
+    ```

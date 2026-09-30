@@ -1,0 +1,81 @@
+tier: stage
+type: practice
+title: "Stage 4: Open the Cabinet"
+twist: edge case - messages that start with punctuation, and no messages at all
+task: |
+  Six coded notes are stuck to Myrtle's pipes. Write
+  `open_cabinet(messages)`, which cracks every message and returns a tuple
+  `(password, decoded)`:
+
+  - `decoded` is the list of decoded messages, in order;
+  - `password` is the **first letter** of each decoded message (skip any
+    characters before the first letter), in **capitals**, joined together.
+
+  A message with no letters at all adds nothing to the password.
+
+  Paste your stage 1-3 spells above it (with the `ENGLISH` table). The
+  starter's last lines try your spell on the real notes from the pipes.
+starter: |
+  ENGLISH = {"a": 8.2, "b": 1.5, "c": 2.8, "d": 4.3, "e": 12.7, "f": 2.2, "g": 2.0, "h": 6.1, "i": 7.0,
+               "j": 0.15, "k": 0.77, "l": 4.0, "m": 2.4, "n": 6.7, "o": 7.5, "p": 1.9, "q": 0.095, "r": 6.0,
+               "s": 6.3, "t": 9.1, "u": 2.8, "v": 0.98, "w": 2.4, "x": 0.15, "y": 2.0, "z": 0.074}
+
+  def open_cabinet(messages):
+      pass
+
+  notes = [
+      "Wjrjrgjw jajwd xmnsd ymnsl dtz jajw yttp.",
+      "Xoxkr lmhexg mkxtlnkx bl zhbgz ahfx mhgbzam.",
+      "Bzwxpqma jmtwvo bw bpmqz wevmza.",
+      "Rkilzh qeb allop xq jfakfdeq.",
+      "Dqfgdz ftq omf fa ftq omdqfmwqd.",
+      "Pqvjkpi eqnngevgf ku gxgt vtwna aqwtu.",
+  ]
+  print(open_cabinet(notes))
+tests: |
+  NOTES = [
+      "Wjrjrgjw jajwd xmnsd ymnsl dtz jajw yttp.",
+      "Xoxkr lmhexg mkxtlnkx bl zhbgz ahfx mhgbzam.",
+      "Bzwxpqma jmtwvo bw bpmqz wevmza.",
+      "Rkilzh qeb allop xq jfakfdeq.",
+      "Dqfgdz ftq omf fa ftq omdqfmwqd.",
+      "Pqvjkpi eqnngevgf ku gxgt vtwna aqwtu.",
+  ]
+
+  def test_the_cabinet():
+      got = call(student_function("open_cabinet"), NOTES)
+      check(isinstance(got, tuple) and len(got) == 2, f"open_cabinet should return (password, decoded). You returned {got!r}.")
+      password, decoded = got
+      check(decoded[0] == "Remember every shiny thing you ever took.", f"The first note decoded to {decoded[0]!r}.")
+      check(password == "RETURN", f"The password came out as {password!r}.")
+
+  def test_punctuation_first():
+      coded = ["...Oiit izivc wigvix weji, oiitiv.", "'Xynw cqn mxxab,' bjrm cqn ljkrwnc."]
+      got = call(student_function("open_cabinet"), coded)
+      check(got == ("KO", ["...Keep every secret safe, keeper.", "'Open the doors,' said the cabinet."]),
+            f"Skip anything before the first letter, and use capitals. You returned {got!r}.")
+
+  def test_no_messages():
+      check(call(student_function("open_cabinet"), []) == ("", []), "No messages, no password.")
+      got = call(student_function("open_cabinet"), ["!!!", "Ihhg"])
+      check(got == ("F", ["!!!", "Feed"]), f"A message with no letters adds nothing to the password. You returned {got!r}.")
+
+  def test_uses_crack():
+      check(calls("crack"), "Use your crack spell on each message.")
+hints:
+  nudge: Crack every message into a list. Then, for each decoded message, find its first letter.
+  question: How do you find the first character of a string that is a letter - and what if there isn't one?
+  pseudocode: |
+    decoded = [the plain text from crack, for each message]
+    password = empty string
+    for each decoded message:
+        for each character: if it's a letter, add it in capitals to the password and stop looking
+    give back (password, decoded)
+  flaw: If the password is lowercase, use `.upper()`. If a message starting with "..." adds "." to the password, you took the first CHARACTER, not the first letter.
+  analogous: |
+    ```python
+    for ch in "--owl":
+        if ch.isalpha():
+            print(ch.upper())
+            break
+    ```

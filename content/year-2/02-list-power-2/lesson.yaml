@@ -1,0 +1,17 @@
+id: y2-l01b
+year: 2
+order: 2
+number: 1
+part: { n: 2, of: 2 }
+title: "List Power: Copies and Grids"
+location: Filch's office
+concepts: [shallow copies, lists of lists, the grid trap]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: filch
+    line: I'm not a fool. I made a *copy* of my list and hid it under Mrs Norris's cushion. And the copy... is shrinking too!
+  - who: hermione
+    line: A copy that changes when the original changes isn't a copy at all, Mr Filch.
+  - who: ashwood
+    line: Lists inside lists are where copying gets subtle. Let's find out exactly what Filch's "copy" really is.
+clue: Filch's "safe copy" is really the **same list** under another name. Whoever is taking things is reading Filch's inventory *directly*.

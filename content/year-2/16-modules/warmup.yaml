@@ -1,0 +1,52 @@
+tier: warmup
+type: practice
+title: Arithmancy with math
+task: |
+  Write two functions using the `math` module:
+
+  1. `cauldron_volume(radius, height)` returns the volume of a cylindrical
+     cauldron, `pi x radius x radius x height`, rounded to 2 decimal places.
+  2. `trips_needed(potion, cauldron)` returns how many cauldron-loads it
+     takes to brew `potion` litres when each load holds `cauldron` litres -
+     a part-full load still counts as a trip. (Use `math.ceil`.)
+
+  ```python
+  cauldron_volume(1, 2)      # 6.28
+  trips_needed(10, 4)        # 3
+  trips_needed(8, 4)         # 2
+  ```
+starter: |
+  def cauldron_volume(radius, height):
+      pass
+
+  def trips_needed(potion, cauldron):
+      pass
+tests: |
+  def test_volume():
+      fn = student_function("cauldron_volume")
+      check(call(fn, 1, 2) == 6.28, f"cauldron_volume(1, 2) returned {call(fn, 1, 2)!r}.")
+      check(call(fn, 0.5, 10) == 7.85, f"cauldron_volume(0.5, 10) returned {call(fn, 0.5, 10)!r}.")
+
+  def test_trips():
+      fn = student_function("trips_needed")
+      check(call(fn, 10, 4) == 3, f"10 litres in 4-litre loads takes 3 trips. You returned {call(fn, 10, 4)!r}.")
+      check(call(fn, 8, 4) == 2, f"8 litres in 4-litre loads takes exactly 2. You returned {call(fn, 8, 4)!r}.")
+      check(call(fn, 0, 4) == 0, "No potion, no trips.")
+
+  def test_math():
+      check("math" in source(), "Use the math module - import it at the top.")
+hints:
+  nudge: Import math once at the top; then `math.pi` and `math.ceil` do the hard parts.
+  question: Which math spell rounds UP to a whole number? Where does `round(..., 2)` go?
+  pseudocode: |
+    import the math module
+    cauldron_volume: give back pi times radius squared times height, rounded to 2 places
+    trips_needed: give back potion divided by cauldron, rounded UP
+  flaw: If 10 litres gives 2 trips, you used `//` (which rounds down) - the last half-load was forgotten.
+  analogous: |
+    ```python
+    import math
+
+    def boxes(eggs):
+        return math.ceil(eggs / 12)
+    ```

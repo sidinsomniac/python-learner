@@ -1,0 +1,62 @@
+tier: core
+type: practice
+title: Sorting the Fan Mail
+twist: edge case - a week with no keen fans; and Snape wants no append-loops
+task: |
+  Each letter is a tuple `(sender, week, hearts)`. Keep the first two lines.
+  Then print:
+
+  1. The senders from week `week` with **3 or more** hearts, alphabetically:
+     `Keen fans: Ann, Dora`  (or `Keen fans: none`)
+  2. The total hearts that week: `Hearts this week: 12`
+  3. Every week that had any letters, in order, without repeats:
+     `Weeks: [1, 2, 3]`
+
+  For the starting values:
+
+  ```
+  Keen fans: Ann, Dora
+  Hearts this week: 12
+  Weeks: [1, 2, 3]
+  ```
+
+  Use comprehensions - Professor Snape will be reading.
+starter: |
+  letters = [("Dora", 2, 5), ("Bill", 2, 1), ("Ann", 2, 6), ("Cho", 1, 9), ("Eve", 3, 4)]
+  week = 2
+tests: |
+  def _run(l, w):
+      return run_with(letters=l, week=w).lines
+
+  def test_example():
+      got = _run([("Dora", 2, 5), ("Bill", 2, 1), ("Ann", 2, 6), ("Cho", 1, 9), ("Eve", 3, 4)], 2)
+      check(got == ["Keen fans: Ann, Dora", "Hearts this week: 12", "Weeks: [1, 2, 3]"], f"You printed {got}.")
+
+  def test_other_week():
+      got = _run([("Dora", 2, 5), ("Cho", 1, 9), ("Eve", 3, 4)], 1)
+      check(got == ["Keen fans: Cho", "Hearts this week: 9", "Weeks: [1, 2, 3]"], f"For week 1 you printed {got}.")
+
+  def test_no_keen():
+      got = _run([("Zed", 4, 1), ("Amy", 4, 2), ("Bo", 9, 3)], 4)
+      check(got == ["Keen fans: none", "Hearts this week: 3", "Weeks: [4, 9]"], f"You printed {got}.")
+
+  def test_empty_week():
+      got = _run([("Zed", 4, 1)], 7)
+      check(got == ["Keen fans: none", "Hearts this week: 0", "Weeks: [4]"], f"For a week with no letters you printed {got}.")
+
+  def test_comprehensions():
+      check(count_nodes(ast.ListComp) >= 2, "Build your lists with comprehensions.")
+hints:
+  nudge: Three comprehensions, each unpacking `(sender, w, hearts)`. The weeks need their repeats removed and sorting.
+  question: How do you remove repeats from a list, and then put the result in order?
+  pseudocode: |
+    keen = sorted [sender, for each letter, if its week matches and hearts are 3+]
+    show keen joined with ", ", or "none"
+    show the sum of [hearts, for each letter in this week]
+    show the sorted set of [week, for each letter]
+  flaw: If "Weeks" shows `{1, 2, 3}`, you printed a set - sort it into a list. If the keen fans aren't alphabetical, sort them.
+  analogous: |
+    ```python
+    scores = [("Ron", "Charms", 6), ("Ron", "Potions", 2)]
+    subjects = sorted(set([s for _, s, _ in scores]))
+    ```

@@ -1,0 +1,25 @@
+tier: warmup
+type: divination
+title: Reading Lockhart's Notes
+task: Predict every line.
+snippet: |
+  shine = {"mirror": 9, "sock": 0, "cup": 7}
+  print({k: v for k, v in shine.items() if v > 5})
+  print({v: k for k, v in shine.items()})
+  print(sorted({w[0] for w in ["cup", "cat", "dog"]}))
+  print(["shiny" if v else "dull" for v in shine.values()])
+  print(any(v == 0 for v in shine.values()), all(v > 0 for v in shine.values()))
+hints:
+  nudge: Look at each bracket's contents - is there a colon (dictionary), no colon (set), or square brackets (list)?
+  question: In line 4 the expression has `if ... else` - does that remove any items, or only choose what goes in?
+  pseudocode: |
+    line 2 keeps pairs with values above 5
+    line 3 flips keys and values
+    line 4 is a set of first letters, sorted
+    line 5 chooses a word for every value
+    line 6 asks "is any value zero?" and "are all above zero?"
+  flaw: The trap is thinking the `if ... else` in line 5 filters out the sock.
+  analogous: |
+    ```text
+    ["big" if n > 2 else "small" for n in [1, 3]]  ->  ['small', 'big']
+    ```

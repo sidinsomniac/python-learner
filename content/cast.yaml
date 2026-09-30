@@ -18,3 +18,9 @@ hooch: { name: Madam Hooch, portrait: "🧹" }
 hat: { name: The Sorting Hat, portrait: "🎩" }
 grimwald: { name: The Portrait, portrait: "🖼️" }
 narrator: { name: "", portrait: "📜" }
+myrtle: { name: Moaning Myrtle, portrait: "😢" }
+nick: { name: Nearly Headless Nick, portrait: "🤵" }
+ginny: { name: Ginny, portrait: "👧" }
+lockhart: { name: Professor Lockhart, portrait: "💁‍♂️" }
+filch: { name: Argus Filch, portrait: "🔦" }
+cabinet: { name: The Cabinet, portrait: "🗄️" }

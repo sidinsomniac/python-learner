@@ -1,0 +1,19 @@
+id: y2-l08
+year: 2
+order: 14
+number: 8
+part: { n: 2, of: 2 }
+title: "Functions: Defaults, Keywords, and Many Returns"
+location: The Defence Against the Dark Arts classroom
+concepts: [default arguments, keyword arguments, returning tuples, docstrings]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: lockhart
+    line: Advanced spell-crafting! A truly great wizard's spell does the right thing even when you forget to tell it what to do. Defaults, class!
+  - who: lockhart
+    line: Take my Collecting Charm - collect(item, shiny=True). Unless you say otherwise, it simply assumes you want shiny things. Everyone does!
+  - who: hermione
+    line: (writing furiously) Professor... did you say *collecting* charm?
+  - who: ashwood
+    line: Default and keyword arguments make functions friendly to use. Let's learn them properly - and keep an ear on what Lockhart lets slip.
+clue: Lockhart's Collecting Charm has a default - `shiny=True`. Unless told otherwise, **it goes for shiny things**. Just like the Cabinet.

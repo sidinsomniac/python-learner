@@ -1,0 +1,19 @@
+id: y2-l06a
+year: 2
+order: 10
+number: 6
+part: { n: 1, of: 2 }
+title: List Comprehensions
+location: Professor Lockhart's office
+concepts: [list comprehensions, filtering with if, transforming, sum over a comprehension]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: lockhart
+    line: Ah, my young fans! Come in, come in. You'll be wanting to help me with my fan mail - everyone does. Four thousand letters this week alone!
+  - who: ron
+    line: We're, er, actually here about...
+  - who: lockhart
+    line: Sort them by week, would you? And only the ones with three hearts or more. I simply don't have time for the one-heart people.
+  - who: ashwood
+    line: A perfect job for a list comprehension - building a whole new list in a single, readable line. (Quietly) And a good chance to look around his office.
+clue: The fan-mail dates line up exactly - the Vanishing Cabinet arrived in **the same week** as Lockhart's biggest ever delivery of fan mail.

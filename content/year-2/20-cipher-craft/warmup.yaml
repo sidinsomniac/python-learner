@@ -1,0 +1,51 @@
+tier: warmup
+type: practice
+title: One Letter at a Time
+task: |
+  Write `shift_letter(ch, k)`, which shifts a single character `k` places
+  along the alphabet, wrapping round from Z to A.
+
+  - Capital letters stay capital; lowercase stay lowercase.
+  - Anything that isn't a letter A-Z or a-z is returned unchanged.
+  - `k` may be negative, or bigger than 26.
+
+  ```python
+  shift_letter("A", 3)    # 'D'
+  shift_letter("y", 3)    # 'b'
+  shift_letter("B", -3)   # 'Y'
+  shift_letter("!", 5)    # '!'
+  ```
+starter: |
+  def shift_letter(ch, k):
+      pass
+tests: |
+  def test_basic():
+      fn = student_function("shift_letter")
+      check(call(fn, "A", 3) == "D", f"shift_letter('A', 3) returned {call(fn, 'A', 3)!r}.")
+      check(call(fn, "a", 1) == "b", f"shift_letter('a', 1) returned {call(fn, 'a', 1)!r}. Lowercase stays lowercase.")
+
+  def test_wrap():
+      fn = student_function("shift_letter")
+      check(call(fn, "y", 3) == "b", f"shift_letter('y', 3) should wrap round to 'b'. You returned {call(fn, 'y', 3)!r}.")
+      check(call(fn, "B", -3) == "Y", f"shift_letter('B', -3) should wrap backwards to 'Y'. You returned {call(fn, 'B', -3)!r}.")
+      check(call(fn, "C", 52) == "C", "A shift of 52 goes round the alphabet exactly twice.")
+
+  def test_other():
+      fn = student_function("shift_letter")
+      for ch in "! 7.,":
+          check(call(fn, ch, 5) == ch, f"{ch!r} isn't a letter - leave it alone. You returned {call(fn, ch, 5)!r}.")
+hints:
+  nudge: Decide which "start" to measure from - capital A or lowercase a - then position, shift, wrap, and turn back into a letter.
+  question: How can you tell whether a character is a capital letter A-Z? (What about `"A" <= ch <= "Z"`?) What should happen for anything else?
+  pseudocode: |
+    if ch is between "A" and "Z": start is the code of "A"
+    otherwise if ch is between "a" and "z": start is the code of "a"
+    otherwise: give ch back unchanged
+    position = code of ch minus start
+    give back the character at start plus ((position + k) wrapped to 0-25)
+  flaw: If "y" becomes a strange symbol, the wrap is missing. If "B" shifted by -3 goes wrong, check you use % 26 after adding k.
+  analogous: |
+    ```python
+    digit = "8"
+    print(chr((ord(digit) - ord("0") + 5) % 10 + ord("0")))   # 3
+    ```

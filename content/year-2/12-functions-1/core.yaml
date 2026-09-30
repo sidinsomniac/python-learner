@@ -1,0 +1,75 @@
+tier: core
+type: practice
+title: Honest Spells
+twist: design - small functions that build on each other, and never print
+task: |
+  Write three functions. None of them may print - they **return**.
+
+  1. `is_shiny(material)` returns `True` if the material (in any case) is
+     `silver`, `gold` or `glass`, otherwise `False`.
+  2. `shiny_items(castle)` takes a dictionary of item -> material and returns
+     a **sorted list** of the shiny items. Use `is_shiny`!
+  3. `report(castle)` returns a one-line summary string:
+     `2 of 3 items shine: cup, mirror`
+     or, when nothing shines: `0 of 2 items shine`
+
+  ```python
+  castle = {"mirror": "Silver", "sock": "wool", "cup": "GOLD"}
+  print(report(castle))   # 2 of 3 items shine: cup, mirror
+  ```
+starter: |
+  def is_shiny(material):
+      pass
+
+  def shiny_items(castle):
+      pass
+
+  def report(castle):
+      pass
+
+  print(report({"mirror": "Silver", "sock": "wool", "cup": "GOLD"}))
+tests: |
+  def test_is_shiny():
+      fn = student_function("is_shiny")
+      check(call(fn, "gold") is True, f"is_shiny('gold') returned {call(fn, 'gold')!r} - it should return True.")
+      check(call(fn, "  GLASS".strip()) is True, "is_shiny('GLASS') should be True - capitals don't matter.")
+      check(call(fn, "wool") is False, f"is_shiny('wool') returned {call(fn, 'wool')!r} - it should return False.")
+      check(printed() == "", "is_shiny should return, not print.")
+
+  def test_shiny_items():
+      fn = student_function("shiny_items")
+      got = call(fn, {"mirror": "Silver", "sock": "wool", "cup": "GOLD"})
+      check(got == ["cup", "mirror"], f"shiny_items returned {got!r}. It should be a sorted list.")
+      check(call(fn, {"hat": "felt"}) == [], "With nothing shiny, return an empty list.")
+
+  def test_report():
+      fn = student_function("report")
+      got = call(fn, {"mirror": "Silver", "sock": "wool", "cup": "GOLD"})
+      check(got == "2 of 3 items shine: cup, mirror", f"report returned {got!r}.")
+      check(printed() == "", "report should return its string. Printing is the caller's job.")
+
+  def test_report_none():
+      got = call(student_function("report"), {"hat": "felt", "sock": "wool"})
+      check(got == "0 of 2 items shine", f"When nothing shines, report returned {got!r}.")
+
+  def test_reuse():
+      check(calls("is_shiny") and calls("shiny_items"), "Build on your own spells: shiny_items can use is_shiny, and report can use shiny_items.")
+hints:
+  nudge: Write and test them one at a time, smallest first. Each later function should call the one before it.
+  question: Can `is_shiny` return the result of the comparison directly, without an if? How can `report` get the list of shiny items without redoing the work?
+  pseudocode: |
+    is_shiny: give back whether the lowercased material is one of the three
+    shiny_items: give back the sorted items whose material is shiny (ask is_shiny)
+    report:
+        shiny = ask shiny_items
+        if there are any: give back "N of M items shine: " and the joined names
+        otherwise: give back "0 of M items shine"
+  flaw: If a test says your function returned None, it's missing a `return` - or it printed its answer instead.
+  analogous: |
+    ```python
+    def is_even(n):
+        return n % 2 == 0
+
+    def evens(nums):
+        return [n for n in nums if is_even(n)]
+    ```

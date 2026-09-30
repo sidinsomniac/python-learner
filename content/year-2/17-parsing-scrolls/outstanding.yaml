@@ -1,0 +1,79 @@
+tier: outstanding
+type: practice
+title: The Owl Post Ledger
+twist: design - parse a table, then print it back out perfectly aligned
+task: |
+  The Owl Post ledger is a table: a header line, then rows, with columns
+  separated by `|` and messy spaces.
+
+  1. `parse_table(text)` returns a list of dictionaries, one per row, keyed by
+     the (stripped) header names. Values are stripped; all-digit values become
+     `int`s. Blank lines are skipped. A row with the wrong number of columns
+     is skipped too.
+  2. `format_table(rows, columns)` returns a single string: the column names,
+     then one line per row, each column **left-aligned** and padded to the
+     width of its longest entry (header included), columns separated by
+     ` | `. Lines are joined with `\n`, with no trailing spaces.
+
+  ```python
+  ledger = """ owl | to | parcels
+  Errol | The Burrow | 2
+  Hedwig|Hogwarts|  11
+  broken | row
+  """
+  rows = parse_table(ledger)
+  # [{'owl': 'Errol', 'to': 'The Burrow', 'parcels': 2}, {'owl': 'Hedwig', 'to': 'Hogwarts', 'parcels': 11}]
+  print(format_table(rows, ["owl", "parcels"]))
+  # owl    | parcels
+  # Errol  | 2
+  # Hedwig | 11
+  ```
+starter: |
+  def parse_table(text):
+      pass
+
+  def format_table(rows, columns):
+      pass
+tests: |
+  LEDGER = " owl | to | parcels\nErrol | The Burrow | 2\nHedwig|Hogwarts|  11\nbroken | row\n"
+
+  def test_parse():
+      got = call(student_function("parse_table"), LEDGER)
+      check(got == [{"owl": "Errol", "to": "The Burrow", "parcels": 2}, {"owl": "Hedwig", "to": "Hogwarts", "parcels": 11}],
+            f"parse_table returned {got!r}.")
+
+  def test_parse_empty():
+      check(call(student_function("parse_table"), "a | b\n\n") == [], "A header with no rows gives an empty list.")
+
+  def test_format():
+      rows = [{"owl": "Errol", "to": "The Burrow", "parcels": 2}, {"owl": "Hedwig", "to": "Hogwarts", "parcels": 11}]
+      got = call(student_function("format_table"), rows, ["owl", "parcels"])
+      want = "owl    | parcels\nErrol  | 2\nHedwig | 11"
+      check(got == want, f"format_table returned:\n{got}\n\nExpected:\n{want}")
+
+  def test_format_last_column():
+      rows = [{"a": "x", "b": "long value"}, {"a": "yy", "b": "z"}]
+      got = call(student_function("format_table"), rows, ["b", "a"])
+      want = "b          | a\nlong value | x\nz          | yy"
+      check(got == want, f"format_table returned:\n{got}\n\nExpected:\n{want}\n(No spaces at the end of any line!)")
+hints:
+  nudge: parse_table - the first non-blank line gives the names; every later line is split the same way and zipped up with them. format_table - work out each column's width first, then build each line.
+  question: How wide must each column be? (Think about every value in it, as a string, AND its header.) How do you stop trailing spaces appearing on the last column?
+  pseudocode: |
+    parse_table:
+        lines = the non-blank lines
+        names = the first line split at "|", each stripped
+        for each later line: split and strip the cells; skip it if the count is wrong
+            make a dictionary pairing names with cells (digits become numbers)
+    format_table:
+        widths = for each column, the longest of its header and every value as text
+        for the header and each row: pad each cell to its column's width, join with " | ", strip the right end
+        join the lines with newlines
+  flaw: If numbers break the width, convert every value with str() before measuring. If a test shows spaces at the end of a line, strip the right-hand end of each line.
+  analogous: |
+    ```python
+    cells = ["ab", "c"]
+    width = max([len(c) for c in cells])
+    print("|".join([c.ljust(width) for c in cells]))
+    print(dict(zip(["x", "y"], [1, 2])))
+    ```

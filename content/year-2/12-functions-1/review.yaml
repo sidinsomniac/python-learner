@@ -1,0 +1,28 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: print-none
+  type: predict
+  code: |
+    def shout(word):
+        print(word.upper())
+
+    result = shout("nox")
+    print(result)
+  why: shout prints NOX, but never returns anything - so result is None.
+- id: print-vs-return
+  type: choice
+  q: Which is true?
+  options: ["`print` gives a value back to the caller", "`return` gives a value back to the caller; `print` only shows it", "They do the same thing"]
+  answer: 1
+  why: Only return hands a value back that the program can use.
+- id: early-return
+  type: predict
+  code: |
+    def grade(score):
+        if score >= 90:
+            return "O"
+        if score >= 70:
+            return "E"
+        return "A"
+
+    print(grade(95), grade(70), grade(3))
+  why: Each call stops at the first return it reaches.

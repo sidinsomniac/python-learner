@@ -1,0 +1,18 @@
+id: y2-l10
+year: 2
+order: 16
+number: 10
+title: Modules
+location: The Divination Tower
+concepts: [import, from ... import, math, random, seeds, the standard library]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: luna
+    line: The Cabinet doesn't strike at the same time every night. Professor Trelawney says it's random. I think it's just shy.
+  - who: hermione
+    line: Nothing a computer does is truly random, Luna. Python's random numbers come from a formula - start it from the same *seed*, and you get the same numbers every time.
+  - who: ginny
+    line: So if we found the Cabinet's seed... we could predict exactly when it strikes next?
+  - who: ashwood
+    line: Precisely. Today you'll learn to borrow spells from Python's vast library of modules - including the one that makes randomness predictable.
+clue: The Cabinet's seed is scratched on its door. Run it forward and the next strike is certain - **tonight, at midnight**.

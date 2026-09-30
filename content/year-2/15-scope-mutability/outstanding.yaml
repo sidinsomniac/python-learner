@@ -1,0 +1,74 @@
+tier: outstanding
+type: practice
+title: The Un-Collection
+twist: design - return new data, never change the evidence
+task: |
+  The Cabinet's `hoard` is a list of `(item, owner)` tuples. Write two
+  functions that **never change** `hoard` or anything inside it:
+
+  1. `give_back(hoard)` returns a dictionary of owner -> list of their items,
+     in hoard order.
+  2. `without_owner(hoard, owner)` returns a **new** hoard list with that
+     owner's items removed.
+
+  ```python
+  hoard = [("mirror", "Myrtle"), ("head", "Nick"), ("cup", "Myrtle")]
+  give_back(hoard)
+  # -> {'Myrtle': ['mirror', 'cup'], 'Nick': ['head']}
+  without_owner(hoard, "Myrtle")
+  # -> [('head', 'Nick')]
+  ```
+
+  Calling either function twice must give two **independent** results: if
+  someone changes the first result, the second must not change.
+starter: |
+  def give_back(hoard):
+      pass
+
+  def without_owner(hoard, owner):
+      pass
+tests: |
+  import copy
+
+  HOARD = [("mirror", "Myrtle"), ("head", "Nick"), ("cup", "Myrtle")]
+
+  def test_give_back():
+      h = list(HOARD)
+      got = call(student_function("give_back"), h)
+      check(got == {"Myrtle": ["mirror", "cup"], "Nick": ["head"]}, f"give_back returned {got!r}.")
+      check(h == HOARD, "give_back changed the hoard! Leave the evidence alone.")
+
+  def test_independent():
+      fn = student_function("give_back")
+      first = call(fn, HOARD)
+      first["Myrtle"].append("tiara")
+      second = call(fn, HOARD)
+      check(second["Myrtle"] == ["mirror", "cup"], f"Changing the first result changed the second: {second['Myrtle']!r}. Is some list being shared between calls?")
+
+  def test_without():
+      fn = student_function("without_owner")
+      h = list(HOARD)
+      got = call(fn, h, "Myrtle")
+      check(got == [("head", "Nick")], f"without_owner(hoard, 'Myrtle') returned {got!r}.")
+      check(h == HOARD, "without_owner changed the hoard itself! Build a new list instead.")
+      check(got is not h, "Return a NEW list, not the hoard itself.")
+      check(call(fn, h, "Filch") == HOARD, "Removing an owner with no items leaves everything.")
+
+  def test_empty():
+      check(call(student_function("give_back"), []) == {}, "An empty hoard gives back nothing.")
+hints:
+  nudge: Both functions BUILD something new from the hoard, instead of editing the hoard. Watch out for anything shared between calls.
+  question: Where should the dictionary in give_back be created - inside the function or outside it? Which kind of `if` in a comprehension leaves items out?
+  pseudocode: |
+    give_back:
+        owners = a new empty dictionary, made inside the function
+        for each (item, owner): add the item to that owner's list (making a new list if needed)
+        give back owners
+    without_owner:
+        give back [each pair from the hoard, if its owner isn't the one given]
+  flaw: If the second call sees the "tiara", your dictionary or lists were made once and shared (the Cabinet's bug again). If the hoard shrank, you used `.remove` on it.
+  analogous: |
+    ```python
+    def evens_only(nums):
+        return [n for n in nums if n % 2 == 0]
+    ```

@@ -1,0 +1,53 @@
+tier: review
+type: practice
+title: The First Repeat
+task: |
+  Write `first_repeat(items)`, which returns the first item that appears for
+  a **second** time as you read the list from the start - or `None` if
+  nothing repeats.
+
+  ```python
+  first_repeat(["cup", "owl", "mirror", "owl", "cup"])
+  # -> 'owl'  (seen again before cup is)
+  first_repeat(["a", "b"])
+  # -> None
+  ```
+
+  It must handle 50,000 items in well under a second.
+starter: |
+  def first_repeat(items):
+      pass
+tests: |
+  import time
+
+  def test_examples():
+      fn = student_function("first_repeat")
+      got = call(fn, ["cup", "owl", "mirror", "owl", "cup"])
+      check(got == "owl", f"owl is the first to be seen a second time. You returned {got!r}.")
+      check(call(fn, ["a", "b"]) is None, "Nothing repeats - return None.")
+      check(call(fn, []) is None, "An empty list has no repeats.")
+      check(call(fn, [5, 5]) == 5, "It should work for numbers too.")
+
+  def test_fast():
+      big = list(range(50000)) + [49999]
+      start = time.perf_counter()
+      got = call(student_function("first_repeat"), big)
+      check(got == 49999, f"For the big list you returned {got!r}.")
+      check(time.perf_counter() - start < 1, "Correct but slow. How many steps does `item in seen` take if `seen` is a list?")
+hints:
+  nudge: Read the list once, remembering everything you've seen so far - in something that answers "have I seen this?" in one step.
+  question: What should `seen` be - a list or a set - and why? When exactly do you return?
+  pseudocode: |
+    seen = an empty set
+    for each item:
+        if it has been seen: give it back
+        remember it
+    give back None
+  flaw: A timeout means `seen` is a list, or you used `items.count`. If you get the wrong repeat, you may be finding the item that repeats FIRST in the list rather than the one whose second copy appears first.
+  analogous: |
+    ```python
+    names = set()
+    for n in ["Ron", "Luna"]:
+        names.add(n)
+    print("Ron" in names)
+    ```

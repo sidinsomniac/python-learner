@@ -1,0 +1,78 @@
+tier: outstanding
+type: repair
+title: Lockhart's Ledger
+twist: debug - four bugs, one of them only appears on the second call
+task: |
+  `ledger_summary(lines, totals=...)` reads ledger lines like `"mirror: 2"`
+  and returns a tuple `(totals, grand_total)`:
+
+  - `totals` maps each item (stripped) to the sum of its counts;
+  - `grand_total` is the sum of every count.
+
+  Lines without a colon are ignored. If the caller passes in a `totals`
+  dictionary, the counts are **added to it**; otherwise every call starts
+  fresh.
+
+  ```python
+  ledger_summary(["mirror: 2", "cup:3", "smudge", "mirror : 1"])
+  # ({'mirror': 3, 'cup': 3}, 6)
+  ledger_summary(["cup: 1"])
+  # ({'cup': 1}, 1)      <- fresh, not added to the last call!
+  ```
+
+  Lockhart's version has **four** bugs. Snape will also want a word about a
+  certain variable name.
+starter: |
+  def ledger_summary(lines, totals={}):
+      for line in lines:
+          item, count = line.split(":")
+          totals[item] = totals.get(item, 0) + count
+      sum = 0
+      for item in totals:
+          sum += totals[item]
+      return totals, sum
+
+  print(ledger_summary(["mirror: 2", "cup:3", "smudge", "mirror : 1"]))
+tests: |
+  def _fn():
+      fn = run_student(allow_error=True).ns.get("ledger_summary")
+      check(callable(fn), "I can't find `ledger_summary` - keep its name.")
+      return fn
+
+  def test_example():
+      got = call(_fn(), ["mirror: 2", "cup:3", "smudge", "mirror : 1"])
+      check(got == ({"mirror": 3, "cup": 3}, 6), f"ledger_summary returned {got!r}.")
+
+  def test_fresh():
+      fn = _fn()
+      call(fn, ["mirror: 2"])
+      got = call(fn, ["cup: 1"])
+      check(got == ({"cup": 1}, 1), f"A second call returned {got!r}. Is it still carrying the first call's totals?")
+
+  def test_given_totals():
+      mine = {"cup": 10}
+      got = call(_fn(), ["cup: 5", "owl: 1"], mine)
+      check(got == ({"cup": 15, "owl": 1}, 16), f"With totals passed in, you returned {got!r}.")
+      check(mine == {"cup": 15, "owl": 1}, "When the caller passes totals, add into THAT dictionary.")
+
+  def test_empty():
+      check(call(_fn(), []) == ({}, 0), "No lines: ({}, 0).")
+hints:
+  nudge: Test it with the example first (read the crash), then call it twice in a row and compare.
+  question: What does `" 2"` plus a number give? What happens when a line has no colon - or two? And where is the default dictionary created?
+  pseudocode: |
+    totals defaults to "not given"; make a fresh dictionary if so
+    for each line:
+        split it at the first colon; skip it if there's no colon
+        add the count, as a number, to the stripped item's total
+    give back totals and the sum of all its values
+  flaw: Adding text to a number is a TypeError; "smudge" can't be unpacked into two names; `totals={}` is shared between calls; and "mirror " and "mirror" become different items unless you strip. (Naming a variable `sum` hides the built-in sum - Snape will notice.)
+  analogous: |
+    ```python
+    def tally(words, counts=None):
+        if counts is None:
+            counts = {}
+        for w in words:
+            counts[w] = counts.get(w, 0) + 1
+        return counts
+    ```

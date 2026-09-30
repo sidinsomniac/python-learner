@@ -1,0 +1,31 @@
+tier: review
+type: divination
+title: Filch's Filing System
+task: Predict every line.
+snippet: |
+  drawer = ["quill", "yo-yo"]
+  box = drawer
+  box.append("frisbee")
+  spare = drawer[:]
+  spare.pop(0)
+  print(drawer, spare)
+  seen = {}
+  for thing in ["yo-yo", "quill", "yo-yo"]:
+      seen[thing] = seen.get(thing, 0) + 1
+  print(seen)
+  a, b = seen["yo-yo"], len(drawer)
+  a, b = b, a
+  print(a, b, sorted([(b, "z"), (a, "a")]))
+hints:
+  nudge: Three separate puzzles - aliasing, counting, and a swap followed by a tuple sort.
+  question: Which names share a list, and which is a copy? After the swap, which variable holds which number?
+  pseudocode: |
+    box shares drawer's list; spare is a real copy
+    seen counts each thing in first-seen order
+    a and b swap, then the tuples sort by their first items
+  flaw: The usual slip is to think `box` is a copy, so drawer loses the frisbee.
+  analogous: |
+    ```text
+    x, y = 1, 5
+    x, y = y, x   ->  5 1
+    ```

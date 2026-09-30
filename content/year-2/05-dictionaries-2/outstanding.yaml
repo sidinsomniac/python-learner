@@ -1,0 +1,67 @@
+tier: outstanding
+type: practice
+title: The Most Wanted
+twist: scale - 50,000 items, and ties
+task: |
+  The castle's full vanishing record, `record`, is enormous. Print the kind
+  (or kinds) that vanished **most often**, with the count:
+
+  ```
+  Most wanted: mirror, trophy (3 each)
+  ```
+
+  - Ties are listed alphabetically, joined by `, `.
+  - With a single winner: `Most wanted: mirror (3)`
+  - With an empty record: `Nothing vanished.`
+
+  Keep the first line. It must cope with 50,000 items in well under a
+  second - so no `.count()` inside a loop, and no `Counter` or `max(key=...)`
+  either: build it yourself.
+starter: |
+  record = ["mirror", "trophy", "mirror", "sock", "trophy", "mirror", "trophy"]
+tests: |
+  import time
+
+  def _run(items):
+      return run_with(record=items).lines
+
+  def test_tie():
+      got = _run(["mirror", "trophy", "mirror", "sock", "trophy", "mirror", "trophy"])
+      check(got == ["Most wanted: mirror, trophy (3 each)"], f"You printed {got}.")
+
+  def test_single():
+      got = _run(["cup", "sock", "cup"])
+      check(got == ["Most wanted: cup (2)"], f"You printed {got}.")
+
+  def test_empty():
+      check(_run([]) == ["Nothing vanished."], f"With an empty record you printed {_run([])}.")
+
+  def test_all_tied():
+      got = _run(["c", "a", "b"])
+      check(got == ["Most wanted: a, b, c (1 each)"], f"Everything once means a three-way tie, alphabetically. You printed {got}.")
+
+  def test_scale():
+      big = ["k" + str(i % 499) for i in range(50000)]
+      start = time.perf_counter()
+      got = _run(big)
+      check(time.perf_counter() - start < 2, "Correct, but far too slow for 50,000 items. How many times does your spell walk the whole record?")
+      check(got and got[0].startswith("Most wanted: k0, k1, k10"), f"For the huge record you printed {got[:1]}.")
+
+  def test_no_shortcuts():
+      check(not calls("count") and not calls("Counter") and "key=" not in source().replace(" ", ""), "Build the tally yourself this time.")
+hints:
+  nudge: Two passes - one to tally everything, one to find the biggest count. Then pick out every kind that has it.
+  question: Once you know the highest count, how do you collect ALL the kinds that reach it, in alphabetical order? How will you choose between "(3)" and "(3 each)"?
+  pseudocode: |
+    if the record is empty: show "Nothing vanished." and stop
+    tally every kind in one pass
+    top = the largest count
+    winners = every kind (alphabetically) whose count is top
+    if there is one winner: show it with "(top)"
+    otherwise: show them joined with ", " and "(top each)"
+  flaw: A timeout means `.count()` or a nested loop over the record. An error on an empty record means max() of nothing.
+  analogous: |
+    ```python
+    names = ["b", "a"]
+    print(", ".join(sorted(names)))   # a, b
+    ```

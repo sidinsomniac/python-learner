@@ -1,0 +1,17 @@
+id: y2-l01a
+year: 2
+order: 1
+number: 1
+part: { n: 1, of: 2 }
+title: List Power
+location: Filch's office
+concepts: [insert, pop, remove, index, sort vs sorted]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: filch
+    line: Look at it! My list of confiscated items - shrinking all by itself! Fanged Frisbees, Nose-Biting Teacups... gone!
+  - who: ginny
+    line: Things don't just vanish off a list, Mr Filch. Something is *taking* them.
+  - who: ashwood
+    line: Then let's learn what a list can really do - adding, removing, reordering - so we can see exactly *how* they're being taken.
+clue: Every vanished item was taken from the **end** of a list, one at a time - exactly as if something kept calling `.pop()`.

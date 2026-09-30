@@ -1,0 +1,25 @@
+id: y2-l09
+year: 2
+order: 15
+number: 9
+title: Scope and Mutability
+location: Moaning Myrtle's bathroom
+concepts: [local and global scope, mutating arguments, the mutable default trap, None defaults, returning new data]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: myrtle
+    line: Oh, come in, come in. Everyone else does now. The clanking, the dripping, the *collecting*... it's in there. Behind the cubicle that nobody uses.
+  - who: narrator
+    line: Behind the last cubicle door stands a tall black cabinet, humming faintly. Scratched into the wood are three lines of Lockhart's handwriting.
+  - who: ginny
+    line: '"def collect(item, bag=[]): bag.append(item); return bag". That''s it. That''s his Collecting Charm.'
+  - who: ashwood
+    line: And that tiny `bag=[]` is one of the most famous bugs in all of Parseltongue. To see why it's so dangerous, we need to understand where variables live, and what happens when two names share one list.
+clue: "**Every call adds to the same bag.** The default list is made once, when the spell is written - so the Cabinet's hoard can only ever grow, forever."
+outro:
+  - who: hermione
+    line: So Lockhart meant each call to have its own fresh bag. Instead there's one bag, shared by every call, since the day he wrote the spell.
+  - who: myrtle
+    line: (floating upside down) A cabinet that never lets anything go. How... relatable.
+  - who: ashwood
+    line: We know WHAT it is now. Next we need to know WHEN it strikes - and how to open it.

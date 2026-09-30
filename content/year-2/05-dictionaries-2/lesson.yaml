@@ -1,0 +1,19 @@
+id: y2-l03b
+year: 2
+order: 5
+number: 3
+part: { n: 2, of: 3 }
+title: "Dictionaries: Counting and Grouping"
+location: The Trophy Room
+concepts: [counting with get, grouping into lists, sorted over a dict, setdefault]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: filch
+    line: Three hundred and twelve items gone from this castle! I've written every one down. Do you think anyone's *read* my list?
+  - who: hermione
+    line: A list that long hides its own pattern. We need to tally it - how many of each kind of thing went missing.
+  - who: ron
+    line: Tally? Like counting sheep, but with... stolen sheep?
+  - who: ashwood
+    line: Exactly like that, Ron. A dictionary can keep a running count for every kind of thing at once. It's one of the most useful patterns in all of Parseltongue.
+clue: The tally speaks for itself - almost everything that vanished is **shiny**. Mirrors, trophies, badges, silver cups.

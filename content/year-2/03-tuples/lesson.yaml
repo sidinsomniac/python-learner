@@ -1,0 +1,18 @@
+id: y2-l02
+year: 2
+order: 3
+number: 2
+title: Tuples and Unpacking
+location: The Grand Staircase
+concepts: [tuples, unpacking, swapping, enumerate, tuple comparison]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: ginny
+    line: I've been marking every vanishing on a map. Each one is a pair - the floor, and the corridor. Two numbers that belong together.
+  - who: ron
+    line: Why not just use a list?
+  - who: ginny
+    line: Because a place doesn't *change*, Ron. The second floor, east corridor is always the second floor, east corridor.
+  - who: ashwood
+    line: Ginny has just discovered the tuple - a list that promises never to change. Let's put her map into Parseltongue.
+clue: Line the vanishings up and one number never changes - every single one happened on the **second floor**.

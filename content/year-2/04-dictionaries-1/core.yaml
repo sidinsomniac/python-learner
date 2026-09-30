@@ -1,0 +1,73 @@
+tier: core
+type: repair
+title: What Came Back?
+twist: debug - a KeyError, a missing trophy, and a count that never counts
+task: |
+  Filch has a list of `lost` trophies and a dictionary `returned` of
+  trophies that have come back (trophy -> owner). His spell should print,
+  for each lost trophy in order, either `NAME: back with OWNER` or
+  `NAME: still missing`. Then it prints how many returned trophies belong to
+  Lockhart.
+
+  It crashes. Repair it so the starting values print:
+
+  ```
+  Quidditch Cup: still missing
+  Award for Charm: back with Lockhart
+  Nick's Head: still missing
+  Smile of the Year: back with Lockhart
+  Lockhart's trophies: 2
+  ```
+
+  Keep the first two lines - the examiners change them.
+starter: |
+  lost = ["Quidditch Cup", "Award for Charm", "Nick's Head", "Smile of the Year"]
+  returned = {"Award for Charm": "Lockhart", "Smile of the Year": "Lockhart"}
+  for trophy in lost:
+      print(f"{trophy}: back with {returned[trophy]}")
+  lockharts = 0
+  for trophy in returned.keys():
+      if trophy == "Lockhart":
+          lockharts += 1
+  print(f"Lockhart's trophies: {lockharts}")
+tests: |
+  def _run(lost, returned):
+      r = run_with(lost=lost, returned=returned, allow_error=True)
+      if r.error:
+          check(False, f"The spell crashes with {r.error['type']}: {r.error['message']}. What happens when you look up a trophy that isn't a key?")
+      return r.lines
+
+  def test_example():
+      got = _run(["Quidditch Cup", "Award for Charm", "Nick's Head", "Smile of the Year"],
+                 {"Award for Charm": "Lockhart", "Smile of the Year": "Lockhart"})
+      check(got == ["Quidditch Cup: still missing", "Award for Charm: back with Lockhart", "Nick's Head: still missing",
+                    "Smile of the Year: back with Lockhart", "Lockhart's trophies: 2"], f"You printed {got}.")
+
+  def test_mixed_owners():
+      got = _run(["Cup", "Shield"], {"Shield": "Hufflepuff", "Mirror": "Lockhart", "Cup": "Lockhart"})
+      check(got == ["Cup: back with Lockhart", "Shield: back with Hufflepuff", "Lockhart's trophies: 2"],
+            f"You printed {got}. The count is about the OWNERS - the values - of every returned trophy.")
+
+  def test_nothing_returned():
+      got = _run(["Cup"], {})
+      check(got == ["Cup: still missing", "Lockhart's trophies: 0"], f"With nothing returned you printed {got}.")
+hints:
+  nudge: Two bugs - one crashes, one counts the wrong half of each pair. (And Snape has an opinion about `.keys()`.)
+  question: Which dictionary check lets you decide BEFORE looking a trophy up? And in the second loop, is "Lockhart" a key or a value?
+  pseudocode: |
+    for each lost trophy:
+        if it is a key in returned: show "back with" its owner
+        otherwise: show "still missing"
+    count how many owners (values) are Lockhart
+    show the count
+  flaw: Line 4 looks up every lost trophy, even ones that never came back. Line 7 compares trophy NAMES with "Lockhart" - but his name is on the other side of each pair.
+  analogous: |
+    ```python
+    pets = {"Hedwig": "Harry", "Trevor": "Neville"}
+    if "Scabbers" in pets:
+        print(pets["Scabbers"])
+    harrys = 0
+    for pet, owner in pets.items():
+        if owner == "Harry":
+            harrys += 1
+    ```

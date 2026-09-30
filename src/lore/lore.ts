@@ -141,10 +141,10 @@ export const LOADING_LINES = [
 
 export const YEAR_NAMES = [
   "First Year - The Philosopher's Syntax",
-  "Second Year - The Chamber of Conditionals",
-  "Third Year - The Prisoner of Collections",
-  "Fourth Year - The Goblet of Functions",
-  "Fifth Year - The Order of Objects",
-  "Sixth Year - The Half-Blood Generators",
+  "Second Year - The Chamber of Collections",
+  "Third Year - The Prisoner of Recursion",
+  "Fourth Year - The Goblet of Objects",
+  "Fifth Year - The Order of Algorithms",
+  "Sixth Year - The Half-Blood Pythonista",
   "Seventh Year - The Deathly Algorithms",
 ];

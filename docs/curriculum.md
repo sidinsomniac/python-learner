@@ -69,30 +69,30 @@ The story is [The Jinxed Ledger](story.md#year-1-the-jinxed-ledger); each lesson
 | 15 | Wizard's Chess | nested loops, grids | 🌱 a cauldron pyramid · 🔥 an n×n chessboard *(spec reading, edge case)* · ⭐ an aligned multiplication grid *(combination)* |
 | 🏁 | **Trial: Sorting Hat Reforged** | everything | **Stage 1:** ask until the answer is valid. **Stage 2:** tally the houses. **Stage 3:** the tie-breaking rule. **Stage 4:** the full ceremony, which unmasks the culprit. |
 
-## Year 2: The Chamber of Collections
+## Year 2: The Chamber of Collections ✅ built
 
 *Requires Year 1. Ends able to model data with dictionaries and sets and write reusable functions.*
 
 | # | Lesson | Concepts | Core twist, and ★ problems |
 |---|---|---|---|
-| 1 | List Power **Pt1/Pt2** | `insert/pop/remove/index/sort` vs `sorted`, copying and why nested lists copy shallowly | debug a shared-list bug in nested lists |
-| 2 | Tuples and Unpacking | tuples, unpacking, `enumerate`, `zip` | rank the Quidditch scores with `enumerate`, where ties matter *(spec reading)* |
-| 3 | Dictionaries **Pt1/Pt2/Pt3** | `get`, `in`, `items`; counting; KeyError; changing a dict while looping over it; nested dicts | ★ frequency map of spells cast; a nested house-points ledger |
-| R1 | Library Revision I | | |
-| 4 | Sets | uniqueness, union and intersection, fast membership | ★ students in both Charms *and* Potions; time `in` on a list versus a set *(scale taste)* |
-| 5 | Nested Data | lists of dicts, records, filtering and aggregating | total points per house from 50 records *(combination)* |
-| 6 | Comprehensions **Pt1/Pt2** | list, dict and set comprehensions; filters; nesting; readability | refactor 3 loops into comprehensions *(refactor)* |
-| 7 | Your Own Spells: Functions **Pt1** | `def`, parameters, `return` vs `print` (the `None` gotcha) | debug a function that prints instead of returning |
-| R2 | Library Revision II | | |
-| 8 | Functions **Pt2** | defaults, keyword arguments, several return values, docstrings | spec-heavy `brew(potion, doses=1, strength="normal")` |
-| 9 | Scope and Mutability | local vs global, passing lists into functions, the mutable default argument | repair the famous `def add(item, bag=[])` bug |
-| 10 | Borrowed Magic: Modules | `math`, `random` (seeded), import styles | a reproducible dice game using a seed *(spec reading)* |
-| 11 | Parsing Scrolls | `split`, `join`, parsing `name:house:year` lines | messy input with extra spaces and blank lines *(edge case)* |
-| 12 | ★ Seek and Count | linear search (first, last, all), frequency, merging two sorted lists, anagrams | 🟢 find every index · 🟡 merge two sorted lists with two pointers · 🔴 group anagrams |
-| R3 | Library Revision III | | |
-| 13 | ★ Cipher Craft | `ord`/`chr`, the Caesar cipher, Atbash, frequency analysis | 🟢 encode · 🟡 decode with a known shift · 🔴 crack an unknown shift by letter frequency |
-| 14 | Debugging Craft | reading tracebacks, print-debugging, **Pensieve step-through**, `assert`, rubber duck | find 3 bugs in a 30-line spell using only the Pensieve |
-| 🏁 | **Trial: Messages of the Chamber** | | Build a cipher toolkit as functions. Crack the unknown messages on the walls. The last message names the culprit. |
+| 1 | List Power **Pt1/Pt2** | `insert/pop/remove/index`, `sort` vs `sorted`, copies, grids and the shallow-copy trap | the Top Three spell (`sort()` returns None) · Filch's safe copy of a nested list · ⭐ a rotating shelf (pop/insert only, huge k) · ⭐ noughts and crosses |
+| 2 | Tuples and Unpacking | tuples, unpacking, swapping, `enumerate`, tuple comparison, `divmod` | Ginny's map, with no manual counter · ⭐ order events with tuple sorting and no `key=` |
+| 3 | Dictionaries **Pt1/Pt2/Pt3** | `get`, `in`, `items`, `del`; counting and grouping; nested dicts | what came back (KeyError repair) · ⭐ reverse lookup with clashes · the tally of the missing (messy keys) · ⭐ most wanted at 50,000 items · the loudest place · ⭐ merge two nested reports without changing either |
+| R1 | Revision I: Filch Objects | | aliasing, a duplicate detector, Filch's alibi |
+| 4 | Sets | uniqueness, `& \| - ^`, fast membership | present at every vanishing · ⭐ 20,000-name registry, fast and in order |
+| 5 | Nested Data | lists of dicts, missing fields, building an index | the delivery ledger (unsigned deliveries) · ⭐ items sent by two shops |
+| 6 | Comprehensions **Pt1/Pt2** | list, dict and set comprehensions; filters; `x if c else y`; `any`/`all` | sorting the fan mail · ⭐ flip, transpose and flatten with no `for` · Lockhart's one-line spell · ⭐ a word index, comprehensions only |
+| 7 | Functions **Pt1** | `def`, parameters, `return` vs `print`, `None` | honest spells that build on each other · ⭐ `collect_admirers` and `top_admirer` (returns None on purpose) |
+| R2 | Revision II: The Clues So Far | | print-inside-a-call trap, `common_floor` repair, a case file |
+| 8 | Functions **Pt2** | defaults, keyword arguments, returning tuples, docstrings, `None` as "not given" | `find_items(items, shiny=True, limit=None)` where limit=0 matters · ⭐ one-pass bounds and rescaling |
+| 9 | Scope and Mutability | local vs global, shared list arguments, the mutable default | repair `collect(item, bag=[])` · ⭐ un-collect without touching the evidence |
+| 10 | Modules | `math`, `random`, seeds, import styles | predict the Cabinet from its seed · ⭐ farthest pair and a seeded patrol |
+| 11 | Parsing Scrolls | `split`, `join`, `partition`, `splitlines`, `zip`, `ljust` | the Borgin and Burkes receipt (repeats, numbers, smudges) · ⭐ parse and pretty-print a table |
+| 12 | ★ Seek and Count | linear search, counting steps (O(n), O(n²)), two pointers, signatures | 🟢 find every index · 🟡 merge two sorted lists, fast · 🔴 group 20,000 anagrams |
+| R3 | Revision III: An Unexpected Ally | | a None-default tally, Lockhart's search charm, the first repeat (fast) |
+| 13 | ★ Cipher Craft | `ord`/`chr`, `%` wrapping, Caesar ciphers, frequency analysis | 🟢 shift a letter · 🟡 encode and decode · 🔴 crack by E |
+| 14 | Debugging Craft | tracebacks, print-debugging, `assert`, removing while looping, the Pensieve | the glimmer gauge · the un-collecting counter-spell · ⭐ Lockhart's ledger (four bugs) |
+| 🏁 | **Trial: Messages of the Chamber** | | `caesar_shift` → `letter_frequencies` → `crack` (English scoring, fair ties) → `open_cabinet`: decode six notes and speak the password |
 
 ## Year 3: The Prisoner of Recursion
 

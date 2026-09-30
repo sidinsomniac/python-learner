@@ -1,0 +1,60 @@
+tier: core
+type: repair
+title: The Top Three Spell
+twist: debug - sort() gives back None, and destroys the original order
+task: |
+  Filch wants the **three highest** detention scores, biggest first - but his
+  spell crashes. He also insists the original list stays in its original
+  order (it's evidence!).
+
+  Repair it. For the starting scores it must print:
+
+  ```
+  Top three: [90, 90, 72]
+  Original order: [55, 90, 72, 90, 18]
+  ```
+
+  Keep the first line - the examiners change the scores.
+starter: |
+  scores = [55, 90, 72, 90, 18]
+  ranked = scores.sort(reverse=True)
+  top_three = ranked[:3]
+  print("Top three:", top_three)
+  print("Original order:", scores)
+tests: |
+  def _run(nums):
+      r = run_with(scores=nums, allow_error=True)
+      if r.error:
+          check(False, f"The spell crashes with {r.error['type']}: {r.error['message']}. What does `.sort()` give back?")
+      return r.lines
+
+  def test_example():
+      got = _run([55, 90, 72, 90, 18])
+      check(got[:1] == ["Top three: [90, 90, 72]"], f"You printed '{got[0] if got else ''}' for the top three.")
+      check(got[1:2] == ["Original order: [55, 90, 72, 90, 18]"], f"The original list must stay in its original order. You printed '{got[1] if len(got) > 1 else ''}'.")
+
+  def test_other_scores():
+      got = _run([3, 8, 1, 9])
+      check(got == ["Top three: [9, 8, 3]", "Original order: [3, 8, 1, 9]"], f"For [3, 8, 1, 9] you printed {got}.")
+
+  def test_short_list():
+      got = _run([7, 2])
+      check(got == ["Top three: [7, 2]", "Original order: [7, 2]"], f"With only two scores, both are in the 'top three'. You printed {got}.")
+
+  def test_empty():
+      got = _run([])
+      check(got == ["Top three: []", "Original order: []"], f"With no scores at all you printed {got}.")
+hints:
+  nudge: Read the error on line 3. Then ask what the line before it gave `ranked`.
+  question: What does `.sort()` return? And does it leave `scores` as it was?
+  pseudocode: |
+    ranked = a NEW list of the scores, biggest first (the original untouched)
+    top three = the first three of ranked
+    show both lines
+  flaw: Line 2 sorts `scores` in place (destroying the evidence) and stores None in `ranked`. You need the other sorting spell.
+  analogous: |
+    ```python
+    heights = [4, 9, 2]
+    tallest_first = sorted(heights, reverse=True)
+    print(tallest_first[:2], heights)
+    ```

@@ -1,0 +1,71 @@
+tier: core
+type: practice
+title: The Tally of the Missing
+twist: edge case - Filch's handwriting is messy (capitals and stray spaces)
+task: |
+  Filch's `missing` list records the KIND of each vanished item - but he
+  writes carelessly: `"Mirror "`, `"mirror"` and `" MIRROR"` are all the same
+  kind.
+
+  Keep the first two lines. Then:
+
+  1. Print how many of each kind vanished, in **alphabetical** order, in
+     lowercase: `mirror: 3`
+  2. Print how many vanished things were shiny, using the `shiny` list of
+     kinds: `Shiny: 5 of 7`
+
+  For the starting values:
+
+  ```
+  badge: 1
+  mirror: 3
+  sock: 1
+  sweet: 1
+  trophy: 1
+  Shiny: 5 of 7
+  ```
+
+  If nothing is missing, print just `Shiny: 0 of 0`.
+starter: |
+  missing = ["Mirror ", "sock", "trophy", " MIRROR", "badge", "mirror", "Sweet"]
+  shiny = ["mirror", "trophy", "badge", "cup"]
+tests: |
+  def _run(miss, shine=("mirror", "trophy", "badge", "cup")):
+      return run_with(missing=miss, shiny=list(shine)).lines
+
+  def test_example():
+      got = _run(["Mirror ", "sock", "trophy", " MIRROR", "badge", "mirror", "Sweet"])
+      check(got == ["badge: 1", "mirror: 3", "sock: 1", "sweet: 1", "trophy: 1", "Shiny: 5 of 7"], f"You printed {got}.")
+
+  def test_other():
+      got = _run(["cup", "Cup", "hat"], ["cup"])
+      check(got == ["cup: 2", "hat: 1", "Shiny: 2 of 3"], f"For ['cup', 'Cup', 'hat'] with shiny ['cup'] you printed {got}.")
+
+  def test_empty():
+      got = _run([])
+      check(got == ["Shiny: 0 of 0"], f"With nothing missing you printed {got}.")
+
+  def test_uses_dictionary():
+      check(not calls("count"), "Tally with a dictionary rather than calling .count() over and over.")
+hints:
+  nudge: Tidy each kind BEFORE you count it. Then the counting pattern, then a second walk through the tally for the shiny total.
+  question: What two string spells turn " MIRROR" into "mirror"? Once you have the counts, how do you add up only the shiny ones?
+  pseudocode: |
+    counts = empty dictionary
+    for each kind in missing:
+        tidy it (strip and lowercase)
+        add one to its count
+    a running shiny total starts at zero
+    for each kind in the counts, alphabetically:
+        show the kind and its count
+        if the kind is shiny: add its count to shiny_total
+    show the shiny line, out of the length of missing
+  flaw: If "mirror" appears twice with different counts, you counted before tidying. If the shiny total is too small, check you add the COUNT, not 1.
+  analogous: |
+    ```python
+    votes = ["Owl", "owl ", "cat"]
+    tally = {}
+    for v in votes:
+        v = v.strip().lower()
+        tally[v] = tally.get(v, 0) + 1
+    ```

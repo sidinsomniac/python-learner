@@ -1,0 +1,19 @@
+id: y2-r2
+year: 2
+order: 13
+number: R2
+kind: revision
+title: Revision II - The Clues So Far
+location: The Library
+concepts: [sets, nested data, comprehensions, functions]
+exercises: [r1, r2, r3]
+scene:
+  - who: hermione
+    line: (spreading parchment over three tables) Right. Everything we know. Every clue, in order.
+  - who: pince
+    line: Three tables, Miss Granger. THREE.
+  - who: ginny
+    line: Look at them together - it's not a person, it's on the second floor, and it loves shiny things. And it arrived with Lockhart's fan mail.
+  - who: ashwood
+    line: Revision, then - sets, nested data, comprehensions and functions. Let's make sure every clue is solid before we go any further.
+clue: "Laid out together, the clues agree: **an object, on the second floor, that loves shiny things** - and it came to Hogwarts with Lockhart's post."

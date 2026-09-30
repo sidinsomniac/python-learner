@@ -28,11 +28,14 @@ function completed(lessons: string[]) {
   const rec = { completedAt: "2026-01-01", attempts: 1, hintsUsed: 0, xpEarned: 1, grade: "E" };
   const out: Record<string, typeof rec> = {};
   for (const id of lessons) {
-    const slots = id.includes("-r") ? ["r1", "r2", "r3"] : ["warmup", "core"];
+    const slots = id.endsWith("-trial") ? ["stage1", "stage2", "stage3", "stage4"] : id.includes("-r") ? ["r1", "r2", "r3"] : ["warmup", "core"];
     for (const slot of slots) out[`${id}.${slot}`] = rec;
   }
   return out;
 }
+
+const YEAR1 = ["y1-l01", "y1-l02", "y1-l03", "y1-r1", "y1-l04a", "y1-l04b", "y1-l05", "y1-l06", "y1-l07", "y1-l08a", "y1-l08b", "y1-r2", "y1-l09", "y1-l10a", "y1-l10b", "y1-l11", "y1-l12", "y1-l13a", "y1-l13b", "y1-r3", "y1-l14a", "y1-l14b", "y1-l15"];
+const YEAR2_TO_L06 = ["y2-l01a", "y2-l01b", "y2-l02", "y2-l03a", "y2-l03b", "y2-l03c", "y2-r1", "y2-l04", "y2-l05", "y2-l06a", "y2-l06b"];
 
 async function setCode(page: Page, code: string) {
   const editor = page.getByLabel("Quest code editor").locator(".cm-content");
@@ -238,8 +241,7 @@ test("Peeves' Bargain skips a lesson for Galleons and XP", async ({ page }) => {
 });
 
 test("the Trial can never be skipped", async ({ page }) => {
-  const year1 = ["y1-l01", "y1-l02", "y1-l03", "y1-r1", "y1-l04a", "y1-l04b", "y1-l05", "y1-l06", "y1-l07", "y1-l08a", "y1-l08b", "y1-r2", "y1-l09", "y1-l10a", "y1-l10b", "y1-l11", "y1-l12", "y1-l13a", "y1-l13b", "y1-r3", "y1-l14a", "y1-l14b", "y1-l15"];
-  await seed(page, { galleons: 999, exercises: completed(year1) });
+  await seed(page, { galleons: 999, exercises: completed(YEAR1) });
   await page.goto("/#/lesson/y1-trial");
   await expect(page.getByRole("heading", { name: "Trial Sorting Hat Reforged", exact: true })).toBeVisible();
   await expect(page.getByTestId("skip-lesson")).toHaveCount(0);
@@ -302,4 +304,51 @@ test("reduced motion turns the living background off", async ({ browser }) => {
   await expect(page.getByRole("heading", { name: "The Great Hall" })).toBeVisible();
   await expect(page.getByTestId("ambience")).toHaveCount(0);
   await context.close();
+});
+
+test("each year has its own colours, and Year 2 opens after the Trial", async ({ page }) => {
+  await seed(page, { exercises: completed([...YEAR1, "y1-trial"]) });
+  await page.goto("/#/lesson/y1-l01");
+  await expect(page.locator("html")).toHaveAttribute("data-year", "1");
+  const year1Bg = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim());
+  await page.goto("/#/lesson/y2-l01a");
+  await expect(page.locator("html")).toHaveAttribute("data-year", "2");
+  await expect(page.getByRole("heading", { name: /List Power/ }).first()).toBeVisible();
+  const year2Bg = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim());
+  expect(year2Bg).not.toBe(year1Bg);
+  await page.goto("/");
+  await expect(page.getByTestId("lesson-y2-l01a")).toBeEnabled();
+  await expect(page.getByTestId("lesson-y2-l01b")).toBeDisabled();
+});
+
+test("Year 2 grades functions by calling them, and asks about print versus return", async ({ page }) => {
+  await seed(page, { exercises: completed([...YEAR1, "y1-trial", ...YEAR2_TO_L06]) });
+  await page.goto("/#/lesson/y2-l07");
+  await waitForPython(page);
+  await page.getByTestId("tab-warmup").click();
+  const best = [
+    "def best_letter(letters):",
+    "    best_name, best_hearts = letters[0]",
+    "    for name, hearts in letters:",
+    "        if hearts > best_hearts:",
+    "            best_name, best_hearts = name, hearts",
+    '    return f"{best_name} ({best_hearts} hearts)"',
+  ].join("\n");
+  await setCode(page, `def count_admirers(letters):\n    print(len(letters))\n\n${best}`);
+  await page.getByTestId("cast").click();
+  await expect(page.getByTestId("feedback")).toContainText("Did it RETURN the number");
+  await setCode(page, `def count_admirers(letters):\n    return len(letters)\n\n${best}`);
+  await page.getByTestId("cast").click();
+  await expect(page.getByTestId("reward")).toBeVisible();
+});
+
+test("a lesson's story pops up even when the lesson reopens on an exercise", async ({ page }) => {
+  // No auto-dismiss here: the pop-up itself is what's being checked.
+  await page.addInitScript((key) => {
+    const warmup = { completedAt: "x", attempts: 1, hintsUsed: 0, xpEarned: 1, grade: "E" };
+    localStorage.setItem(key, JSON.stringify({ state: { name: "Tester", house: "ravenclaw", exercises: { "y1-l01.warmup": warmup } }, version: 3 }));
+  }, SAVE_KEY);
+  await page.goto("/#/lesson/y1-l01");
+  await expect(page.getByTestId("tab-core")).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByTestId("cutscene")).toContainText("Every witch and wizard begins");
 });

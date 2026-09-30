@@ -1,0 +1,52 @@
+tier: warmup
+type: repair
+title: The Glimmer Gauge
+task: |
+  Lockhart's `glimmer(values)` should return the **average** shine of a list
+  of values, rounded to 1 decimal place - or `0` for an empty list.
+
+  ```python
+  glimmer([10, 20, 30])   # 20.0
+  glimmer([7])            # 7.0
+  glimmer([])             # 0
+  ```
+
+  It has **two** bugs (and it crashes on one of the examples). Use the error
+  message, then a debug print, to find them.
+starter: |
+  def glimmer(values):
+      total = 0
+      for i in range(1, len(values)):
+          total += values[i]
+      return round(total / len(values), 1)
+
+  print(glimmer([10, 20, 30]))
+  print(glimmer([]))
+tests: |
+  def test_average():
+      fn = run_student(allow_error=True).ns.get("glimmer")
+      check(callable(fn), "I can't find `glimmer` - keep its name.")
+      got = call(fn, [10, 20, 30])
+      check(got == 20.0, f"glimmer([10, 20, 30]) returned {got!r}. Print the total inside the loop - which value never gets added?")
+      check(call(fn, [7]) == 7.0, f"glimmer([7]) returned {call(fn, [7])!r}.")
+
+  def test_empty():
+      fn = run_student(allow_error=True).ns.get("glimmer")
+      check(callable(fn), "I can't find `glimmer` - keep its name.")
+      got = call(fn, [])
+      check(got == 0, f"glimmer([]) should be 0. You returned {got!r}.")
+hints:
+  nudge: One bug shows up as a crash (read its last line); the other shows up as a wrong answer (print the total).
+  question: Which position does `range(1, len(values))` start at - and which value does that leave out? What is `len([])`, and what happens when you divide by it?
+  pseudocode: |
+    if there are no values: give back 0
+    add up every value (all of them)
+    give back the total divided by the count, rounded to 1 place
+  flaw: The loop starts at position 1, so the first value is never added. And an empty list makes `len(values)` zero - ZeroDivisionError.
+  analogous: |
+    ```python
+    def mean(nums):
+        if not nums:
+            return 0
+        return sum(nums) / len(nums)
+    ```

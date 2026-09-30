@@ -1,0 +1,86 @@
+tier: outstanding
+type: practice
+title: The Farthest Vanishings
+twist: design - compare every pair exactly once, and leave the caller's list alone
+task: |
+  The vanishings are a dictionary of name -> `(x, y)` position on Ginny's
+  map.
+
+  1. `farthest_pair(spots)` returns a tuple of the two names that are
+     **farthest apart** (straight-line distance), in the dictionary's order.
+     On a tie, the pair found first wins (walk the names in order, pairing
+     each only with the names after it). With fewer than two spots, return
+     `None`.
+  2. `patrol(names, seed)` returns a **new** shuffled list of the names -
+     seed the generator with `seed`, shuffle a **copy**, and leave `names`
+     untouched.
+
+  ```python
+  spots = {"mirror": (0, 0), "cup": (3, 4), "head": (1, 1)}
+  farthest_pair(spots)       # ('mirror', 'cup')   - 5.0 apart
+  ```
+starter: |
+  def farthest_pair(spots):
+      pass
+
+  def patrol(names, seed):
+      pass
+tests: |
+  import random as _r
+
+  def test_pair():
+      fn = student_function("farthest_pair")
+      got = call(fn, {"mirror": (0, 0), "cup": (3, 4), "head": (1, 1)})
+      check(got == ("mirror", "cup"), f"farthest_pair returned {got!r}.")
+      got = call(fn, {"a": (5, 5), "b": (0, 0), "c": (10, 10)})
+      check(got == ("b", "c"), f"b and c are farthest apart. You returned {got!r}.")
+
+  def test_tie():
+      fn = student_function("farthest_pair")
+      got = call(fn, {"p": (0, 0), "q": (3, 0), "r": (0, 3)})
+      check(got == ("q", "r"), f"q and r are 4.24 apart - farther than p is from either. You returned {got!r}.")
+      got = call(fn, {"p": (0, 0), "q": (2, 0), "r": (1, 0), "s": (-2, 0), "t": (0, 0)})
+      check(got == ("q", "s"), f"q and s are 4 apart. You returned {got!r}.")
+      got = call(fn, {"w": (0, 0), "x": (1, 0), "y": (0, 0), "z": (1, 0)})
+      check(got == ("w", "x"), f"Every distance is 0 or 1, so the FIRST pair found at distance 1, (w, x), wins. You returned {got!r}.")
+
+  def test_small():
+      fn = student_function("farthest_pair")
+      check(call(fn, {"only": (1, 1)}) is None, "With one spot, there's no pair - return None.")
+      check(call(fn, {}) is None, "With no spots, return None.")
+
+  def test_patrol():
+      fn = student_function("patrol")
+      names = ["Ginny", "Ron", "Hermione", "Luna", "Neville"]
+      before = list(names)
+      got = call(fn, names, 3)
+      expected = list(before)
+      _r.seed(3)
+      _r.shuffle(expected)
+      check(got == expected, f"patrol(names, 3) returned {got!r}. Seed with 3, then shuffle a copy.")
+      check(names == before, "patrol changed the original list! Shuffle a copy.")
+      check(call(fn, names, 3) == got, "The same seed should give the same patrol.")
+hints:
+  nudge: For the pair, you need every pair once - an outer loop over positions and an inner loop over the positions AFTER it. For the patrol, copy first, then shuffle the copy.
+  question: How do you get the names in order with their positions, so the inner loop can start just after the outer one? Which random spell shuffles in place - and what does it return?
+  pseudocode: |
+    farthest_pair:
+        names = the spot names in order
+        best = None, best distance = -1
+        for each position i:
+            for each position j after i:
+                d = the distance between those two spots
+                if d is strictly bigger than the best: remember the pair and d
+        give back best
+    patrol:
+        seed with seed; copy the names; shuffle the copy; give back the copy
+  flaw: If patrol returns None, you returned what shuffle gave back. If the pair comes back in the wrong order, pair each name only with the names AFTER it.
+  analogous: |
+    ```python
+    import math
+    words = ["a", "b", "c"]
+    for i in range(len(words)):
+        for j in range(i + 1, len(words)):
+            print(words[i], words[j])
+    print(math.dist((0, 0), (3, 4)))
+    ```

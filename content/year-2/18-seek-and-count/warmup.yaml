@@ -1,0 +1,43 @@
+tier: warmup
+type: practice
+title: Find Every Match
+task: |
+  Write `find_all(items, target)`, which returns a list of **every** position
+  where `target` appears, in order - or an empty list if it's nowhere.
+
+  ```python
+  find_all(["cup", "cat", "cup"], "cup")   # [0, 2]
+  find_all(["cup"], "Mrs Norris")          # []
+  ```
+
+  The examiners will search the Cabinet's full catalogue with it. Don't use
+  `.index` - it only ever finds the first one.
+starter: |
+  def find_all(items, target):
+      pass
+tests: |
+  def test_small():
+      fn = student_function("find_all")
+      check(call(fn, ["cup", "cat", "cup"], "cup") == [0, 2], f"find_all(['cup', 'cat', 'cup'], 'cup') returned {call(fn, ['cup', 'cat', 'cup'], 'cup')!r}.")
+      check(call(fn, ["cup"], "Mrs Norris") == [], "When the target is nowhere, return an empty list.")
+      check(call(fn, [], "cup") == [], "Searching nothing finds nothing.")
+
+  def test_catalogue():
+      catalogue = [f"trinket {i}" for i in range(2000)]
+      catalogue[1337] = "Mrs Norris"
+      got = call(student_function("find_all"), catalogue, "Mrs Norris")
+      check(got == [1337], f"Searching the Cabinet's catalogue returned {got!r}.")
+
+  def test_no_index():
+      check(not calls("index"), "`.index` only finds the first match - walk the list yourself.")
+hints:
+  nudge: Walk the list with the positions as well as the items, and keep every position that matches.
+  question: Which spell hands you each position together with its item? Could the whole thing be one comprehension?
+  pseudocode: |
+    give back [each position, for each (position, item), if the item equals target]
+  flaw: If you only get the first match, you returned inside the loop.
+  analogous: |
+    ```python
+    marks = [7, 3, 7]
+    print([i for i, m in enumerate(marks) if m > 5])
+    ```

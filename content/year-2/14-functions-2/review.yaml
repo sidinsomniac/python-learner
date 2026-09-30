@@ -1,0 +1,30 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: default-arg
+  type: predict
+  code: |
+    def brew(potion, doses=1):
+        return f"{doses} x {potion}"
+
+    print(brew("Pepperup"), brew("Polyjuice", doses=3))
+  why: Leave doses out and it takes its default; name it to change it.
+- id: positional-order
+  type: choice
+  q: With `def f(a, b=1, c=2)`, what does `f(0, 5)` set c to?
+  options: ["2", "5", "0"]
+  answer: 0
+  why: 5 fills the second position, b. c keeps its default.
+- id: limit-zero
+  type: choice
+  q: "`limit` defaults to None. Why test `if limit is not None:` rather than `if limit:`?"
+  options: ["`is not` is faster", "`if limit:` treats 0 like 'not given'", "There's no difference"]
+  answer: 1
+  why: 0 is falsy, so `if limit:` would ignore a genuine limit of 0.
+- id: tuple-return
+  type: predict
+  code: |
+    def span(nums):
+        return min(nums), max(nums)
+
+    lo, hi = span([4, 9, 1])
+    print(lo, hi, span([5]))
+  why: The function returns a tuple, which can be unpacked - or printed as a tuple.

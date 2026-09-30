@@ -1,0 +1,19 @@
+id: y2-l03a
+year: 2
+order: 4
+number: 3
+part: { n: 1, of: 3 }
+title: Dictionaries
+location: The Trophy Room
+concepts: [dict, keys and values, get, in, items, del]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: nick
+    line: My HEAD, {name}! Five hundred years I've carried it about - well, mostly carried it - and this morning it was simply... gone.
+  - who: filch
+    line: And my Trophy Room's in chaos. Half the trophies gone, the other half back in the wrong places.
+  - who: ginny
+    line: We need a ledger that goes straight from a trophy's name to its owner. No hunting through lists.
+  - who: ashwood
+    line: Then you need a dictionary - Python's most useful collection. Ask it a question with a key, and it answers instantly.
+clue: The ledger reveals something odd - the only trophies that came back belong to **Gilderoy Lockhart**, and they've been freshly polished.

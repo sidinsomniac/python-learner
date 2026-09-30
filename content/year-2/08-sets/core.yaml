@@ -1,0 +1,66 @@
+tier: core
+type: practice
+title: Present at Every Vanishing
+twist: edge case - no vanishings at all, and nobody common to them all
+task: |
+  `sightings` is a list with one list per vanishing: the names of everyone
+  seen nearby (sometimes written down twice).
+
+  Keep the first line. Print:
+
+  1. Everyone seen at **every** vanishing, alphabetically:
+     `At every vanishing: Ginny, Myrtle`
+     or, if there is nobody: `At every vanishing: nobody - it isn't a person!`
+  2. How many different people were seen at least once: `Seen at least once: 5`
+
+  For the starting sightings:
+
+  ```
+  At every vanishing: nobody - it isn't a person!
+  Seen at least once: 5
+  ```
+
+  If there are no sightings at all, print only `No vanishings recorded.`
+starter: |
+  sightings = [["Draco", "Ginny", "Filch", "Draco"], ["Ginny", "Myrtle"], ["Myrtle", "Draco", "Nick"]]
+tests: |
+  def _run(s):
+      return run_with(sightings=s).lines
+
+  def test_example():
+      got = _run([["Draco", "Ginny", "Filch", "Draco"], ["Ginny", "Myrtle"], ["Myrtle", "Draco", "Nick"]])
+      check(got == ["At every vanishing: nobody - it isn't a person!", "Seen at least once: 5"], f"You printed {got}.")
+
+  def test_common():
+      got = _run([["Myrtle", "Ginny", "Nick"], ["Nick", "Ginny", "Myrtle"], ["Ginny", "Myrtle"]])
+      check(got == ["At every vanishing: Ginny, Myrtle", "Seen at least once: 3"], f"You printed {got}.")
+
+  def test_single():
+      got = _run([["Ron", "Ron", "Harry"]])
+      check(got == ["At every vanishing: Harry, Ron", "Seen at least once: 2"], f"With one vanishing, everyone there was at 'every' vanishing. You printed {got}.")
+
+  def test_empty():
+      check(_run([]) == ["No vanishings recorded."], f"With no sightings you printed {_run([])}.")
+
+  def test_sets():
+      check(calls("set") or uses(ast.Set), "This is a job for sets.")
+hints:
+  nudge: Start with everyone at the FIRST vanishing, then narrow down with each later one. Separately, gather everyone ever seen.
+  question: Which set operator keeps only people in both groups? Which one gathers people from either?
+  pseudocode: |
+    if there are no sightings: show the message and stop
+    every = a set of the first vanishing's names
+    anyone = an empty set
+    for each vanishing's names:
+        narrow every down to those also here
+        add these names to anyone
+    show every (sorted, joined) or the "nobody" line
+    show the size of anyone
+  flaw: If "Draco" is counted twice, you counted a list instead of a set. If everyone disappears, check you started from the first group, not an empty set.
+  analogous: |
+    ```python
+    groups = [{"a", "b"}, {"b", "c"}]
+    both = set(groups[0])
+    for g in groups:
+        both &= g
+    ```

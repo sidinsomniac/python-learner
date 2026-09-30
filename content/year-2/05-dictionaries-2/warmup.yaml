@@ -1,0 +1,27 @@
+tier: warmup
+type: divination
+title: Tallying Owls
+task: Predict every line.
+snippet: |
+  seen = ["owl", "bat", "owl", "rat", "owl", "bat"]
+  counts = {}
+  for creature in seen:
+      counts[creature] = counts.get(creature, 0) + 1
+  print(counts)
+  groups = {}
+  for word in ["ant", "bee", "asp", "bat"]:
+      groups.setdefault(word[0], []).append(word)
+  print(groups)
+  print(sorted(counts), max(counts.values()))
+hints:
+  nudge: Walk through the first loop one creature at a time, writing the dictionary down after each step.
+  question: What order are keys kept in - alphabetical, or the order they were first added? And what does sorting a dictionary sort?
+  pseudocode: |
+    counts grows in first-seen order: owl, bat, rat
+    groups is keyed by first letters, in first-seen order
+    sorted(counts) sorts the keys
+  flaw: A common slip is printing the counts in alphabetical order - dictionaries keep insertion order.
+  analogous: |
+    ```text
+    tally of "abca" -> {'a': 2, 'b': 1, 'c': 1}
+    ```

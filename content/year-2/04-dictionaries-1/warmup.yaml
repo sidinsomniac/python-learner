@@ -1,0 +1,54 @@
+tier: warmup
+type: practice
+title: The Trophy Ledger
+task: |
+  Keep the first line - the examiners change the ledger. Then:
+
+  1. The `"Quidditch Cup"` now belongs to `"Gryffindor"`: record it (whether or not it's already there).
+  2. Print who owns the `"Silver Mirror"`, or `unknown` if it isn't in the ledger:
+     `Silver Mirror: unknown`
+  3. The `"Dented Goblet"` is thrown away: remove it if it's there.
+  4. Print how many trophies are in the ledger: `Trophies: 3`
+
+  For the starting ledger, the output is:
+
+  ```
+  Silver Mirror: unknown
+  Trophies: 3
+  ```
+starter: |
+  ledger = {"Dented Goblet": "Filch", "Award for Charm": "Lockhart", "Shield": "Hufflepuff"}
+tests: |
+  def _run(led):
+      r = run_with(ledger=led)
+      return r.lines, r.ns["ledger"]
+
+  def test_example():
+      lines, led = _run({"Dented Goblet": "Filch", "Award for Charm": "Lockhart", "Shield": "Hufflepuff"})
+      check(lines == ["Silver Mirror: unknown", "Trophies: 3"], f"You printed {lines}.")
+      check(led.get("Quidditch Cup") == "Gryffindor", "The Quidditch Cup should now be recorded as Gryffindor's.")
+      check("Dented Goblet" not in led, "The Dented Goblet should be gone from the ledger.")
+
+  def test_mirror_known_no_goblet():
+      lines, led = _run({"Silver Mirror": "Myrtle", "Quidditch Cup": "Slytherin"})
+      check(lines == ["Silver Mirror: Myrtle", "Trophies: 2"],
+            f"When the mirror IS in the ledger, name its owner. There's no goblet to remove - and the cup is replaced, not added twice. You printed {lines}.")
+      check(led["Quidditch Cup"] == "Gryffindor", "The Quidditch Cup's owner should be replaced with Gryffindor.")
+hints:
+  nudge: Four dictionary spells - assign to a key, a safe lookup with a default, a careful removal, and len.
+  question: Which lookup never crashes when the key is missing? And how can you check a key is present before deleting it?
+  pseudocode: |
+    set the cup's owner to Gryffindor
+    owner = safe lookup of the mirror, defaulting to "unknown"
+    show the mirror line
+    if the goblet is a key: delete it
+    show how many pairs remain
+  flaw: A KeyError on the last step means you deleted the goblet without checking it was there.
+  analogous: |
+    ```python
+    pets = {"Hedwig": "owl"}
+    pets["Trevor"] = "toad"
+    print(pets.get("Crookshanks", "no idea"))
+    if "Hedwig" in pets:
+        del pets["Hedwig"]
+    ```

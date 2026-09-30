@@ -1,0 +1,72 @@
+tier: core
+type: practice
+title: The Delivery Ledger
+twist: edge case - unsigned deliveries, and origins with nothing to Hogwarts
+task: |
+  Each delivery is a dictionary with `"from"`, `"to"`, `"items"` and
+  (sometimes) `"signed"`.
+
+  Keep the first line. Then:
+
+  1. For every delivery **to Hogwarts**, print each item with its origin and
+     signature: `Vanishing Cabinet from Knockturn Alley (signed G.L.)`.
+     A delivery without a signature shows `(unsigned)`.
+  2. Finally, print how many items reached Hogwarts from each origin,
+     origins alphabetically: `Knockturn Alley: 1`
+
+  For the starting post:
+
+  ```
+  Fan mail from Diagon Alley (signed G.L.)
+  Vanishing Cabinet from Knockturn Alley (signed G.L.)
+  Sweets from Hogsmeade (unsigned)
+  Toffee from Hogsmeade (unsigned)
+  Diagon Alley: 1
+  Hogsmeade: 2
+  Knockturn Alley: 1
+  ```
+starter: |
+  post = [
+      {"from": "Diagon Alley", "to": "Hogwarts", "items": ["Fan mail"], "signed": "G.L."},
+      {"from": "Knockturn Alley", "to": "Hogwarts", "items": ["Vanishing Cabinet"], "signed": "G.L."},
+      {"from": "Diagon Alley", "to": "The Burrow", "items": ["Gnome repellent"], "signed": "M.W."},
+      {"from": "Hogsmeade", "to": "Hogwarts", "items": ["Sweets", "Toffee"]},
+  ]
+tests: |
+  def _run(p):
+      return run_with(post=p).lines
+
+  def test_example():
+      got = _run([
+          {"from": "Diagon Alley", "to": "Hogwarts", "items": ["Fan mail"], "signed": "G.L."},
+          {"from": "Knockturn Alley", "to": "Hogwarts", "items": ["Vanishing Cabinet"], "signed": "G.L."},
+          {"from": "Diagon Alley", "to": "The Burrow", "items": ["Gnome repellent"], "signed": "M.W."},
+          {"from": "Hogsmeade", "to": "Hogwarts", "items": ["Sweets", "Toffee"]},
+      ])
+      check(got == ["Fan mail from Diagon Alley (signed G.L.)", "Vanishing Cabinet from Knockturn Alley (signed G.L.)",
+                    "Sweets from Hogsmeade (unsigned)", "Toffee from Hogsmeade (unsigned)",
+                    "Diagon Alley: 1", "Hogsmeade: 2", "Knockturn Alley: 1"], f"You printed {got}.")
+
+  def test_not_hogwarts():
+      got = _run([{"from": "Paris", "to": "Beauxbatons", "items": ["cheese"], "signed": "O.M."}])
+      check(got == [], f"Nothing went to Hogwarts, so nothing should print. You printed {got}.")
+
+  def test_empty_items():
+      got = _run([{"from": "Zonko's", "to": "Hogwarts", "items": []}, {"from": "Zonko's", "to": "Hogwarts", "items": ["Dungbomb"], "signed": "F.W."}])
+      check(got == ["Dungbomb from Zonko's (signed F.W.)", "Zonko's: 1"], f"You printed {got}.")
+hints:
+  nudge: One loop over the deliveries, skipping any not bound for Hogwarts; an inner loop over the items; and a counting dictionary for the summary.
+  question: How do you show "unsigned" without a KeyError? Which counting pattern totals items per origin?
+  pseudocode: |
+    per_origin = empty dictionary
+    for each delivery:
+        if it isn't going to Hogwarts: skip it
+        signature = its "signed", or "unsigned"
+        for each item: show the item line, and add one to its origin's count
+    for each origin alphabetically: show its count
+  flaw: If "(signed unsigned)" appears, build the whole bracket in the default. If an origin shows 0, you counted a delivery with no items.
+  analogous: |
+    ```python
+    for pupil in [{"name": "Ron"}, {"name": "Luna", "pet": "none"}]:
+        print(pupil["name"], pupil.get("pet", "no pet"))
+    ```

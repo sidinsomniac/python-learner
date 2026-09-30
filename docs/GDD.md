@@ -76,7 +76,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 **Rewards:**
 - **Grades.** Every exercise gets an O.W.L. grade (O, E, A, P; D and T are joke easter eggs). Grades never block progress, and a replay can improve one. There is a year-end report card.
 - **XP and levels.** Fewer hints earn more XP.
-- **Galleons.** Spent at the Hogsmeade shop on cosmetics: wands, editor themes, familiars, common-room decorations.
+- **Galleons.** Spent in **Diagon Alley** (see *The economy* below) on cosmetics and a few rare learning aids, or on Peeves' Bargain to skip a lesson.
 - **House points and the House Cup.** Rival houses are simulated and earn points through the year. The cup is decided at each year-end ceremony.
 - **Chocolate Frog cards.** Collectible trivia about Python and computing history: Guido van Rossum, Ada Lovelace, Grace Hopper, Alan Turing, Donald Knuth, and more. Complete sets unlock easter eggs.
 - **Badges.** These include secret badges, and "Rivalry" badges for beating Draco's times.
@@ -85,6 +85,42 @@ Full detail is in [exercise-design.md](exercise-design.md).
 - **Story.** A yearly original mystery with the canon cast, told in short cutscenes with character portraits. Clues are printed by *your* correct programs.
 - **The Golden Snitch.** One hidden bonus challenge per year.
 - **Ambient sound**, optional and off by default.
+
+### The economy ✅ built
+**Diagon Alley** (`#/shop`, catalogue in `src/lore/shop.ts`):
+
+| Kind | Examples | Shows up |
+|---|---|---|
+| Wands | holly (starting wand), yew, vine... elder (level 5+, Ollivanders) | header icon |
+| Familiars | toad, cat, owl, phoenix | header; cheers in the corner when you pass an exercise |
+| Robes | house-neutral colours | header accent |
+| Editor themes | parchment, dungeon, starlight | the code editor |
+| Titles | "the Unflappable"... | under your name |
+| Common-room banners | | the Great Hall map |
+
+**Learning aids** (rare; 3 of each per year; they never reveal answers):
+- **Felix Felicis** (60 Galleons): your next hint costs no XP and doesn't lower your grade.
+- **Time-Turner Sand** (80 Galleons): resets a finished exercise's hints and attempts, so you can replay it for a better grade.
+
+**Peeves' Bargain (skipping).** Only the next unfinished lesson can be skipped, never a Trial. The price rises by half with each skip that year: 75 Galleons and 60 XP, then 113 and 90, then 150 and 120... XP can't go below zero, and levels already reached (and their rewards) are kept. A skipped lesson opens the next one but gives no clue, grade or Spellbook page. Finishing it later removes the "skipped" mark.
+
+**Levels** run to 20 (`src/lore/levels.ts`). Every level from 2 gives something:
+
+| Level | Unlocks |
+|---|---|
+| 2 | the Time-Turner |
+| 3 | the Dueling Club |
+| 5 | Ollivanders' premium wands in Diagon Alley |
+| 8 | the Duel Masters (Hermione and Snape) |
+| others | free familiars, editor themes, titles, banners and Galleon bonuses |
+
+A level-up pop-up shows the reward; the Trophy Room shows the whole track.
+
+### Living castle ✅ built
+- **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2.
+- **Story pop-ups.** Prologues, lesson scenes and outros open as a modal the first time - click through line by line, or Skip. Afterwards they stay on the page as a "📜 Story" card that can be read again.
+- **Living backgrounds** (`src/ui/Ambience.tsx`). Ten weather presets, picked at random for each screen and never the same twice in a row: Enchanted Ceiling (floating candles), First Snow, Storm over the Lake, Goblet Embers, Dementor Mist, Forbidden Forest fireflies, Autumn Grounds, Aurora, Astronomy Tower shooting stars and Owl Post. They draw in the current year's colours, pause when the tab is hidden, and switch off in Settings or with the system's reduced-motion setting.
+- **Celebrations.** Sparkles when you pass, a golden flare for an O, fireworks on level-up, a dawn glow when a year's mystery is solved.
 
 ### The castle hub
 | Location | Purpose |
@@ -95,12 +131,12 @@ Full detail is in [exercise-design.md](exercise-design.md).
 | Pensieve room (kept by Grimwald Knott) | The mistake journal, step-through replays, the mastery map |
 | Room of Requirement | Free sandbox and open-ended projects |
 | Forbidden Forest | All ⭐ Outstanding and 🔴 Hard problems, any time |
-| Dueling Club | Timed trivia duels against NPCs, with Draco as rival |
+| Dueling Club ✅ | Five 20-second rounds of review cards against Neville, Draco, Hermione or Snape; speed earns bonus points, wins pay Galleons and badges |
 | Owlery | The daily challenge |
 | Hogsmeade | The shop |
 
 ### Retention systems
-- **Time-Turner review.** Spaced repetition on intervals of 1, 3, 7, 16, then 35 days. Cards are predict-the-output, spot-the-bug, micro-writes and misconception multiple-choice. About 5 a day, weighted towards weak concepts.
+- **Time-Turner review** ✅. Spaced repetition on intervals of 1, 3, 7, 16, then 35 days; a miss sends a card back to the start. Cards from finished lessons (predict-the-output and misconception multiple-choice) join your deck. Up to 5 a day, missed cards first. Days in a row earn streak badges.
 - **Mastery map.** Strength per concept, fed by exercises and review.
 - **Mistake journal.** Each error you hit is saved in the Pensieve and comes back later as a review card.
 - **Revision in the Library.** Interleaved practice about every 4 lessons.
@@ -218,7 +254,8 @@ scripts/validate-content.ts
    - the **Pensieve step-through**
    - the validator's "lecture code must not solve the core challenge" rule
 3. ✅ **Rebuild Year 1 to the new spec**: 24 lessons and 73 exercises, including the Trial. Saves from the first slice are carried over automatically. **Next: you playtest it.**
-4. **Retention and immersion**: Time-Turner review, the mastery map, the castle hub, the House Cup, Chocolate Frog cards, the shop.
+4. ✅ **Economy and immersion**: story pop-ups, year themes, living backgrounds, Diagon Alley, Peeves' Bargain, level rewards, the Time-Turner and the Dueling Club. *Still to come:* the mastery map, the House Cup, Chocolate Frog cards.
+   ✅ **Year 2: The Chamber of Collections**: 22 lesson units and 67 exercises. From Lesson 7, tests call the student's functions.
 5. **Years 2–7, one year at a time.** Each year's script is written first, then its content, then a playtest.
 6. **Leaving Hogwarts** (Years 6–7): guided local setup, verified by pasting terminal output.
 7. **Auror Academy**: daily challenges and interview sets after the game.
@@ -235,4 +272,4 @@ scripts/validate-content.ts
   - Hints unlock one rung at a time.
   - Correct code awards XP and unlocks the next quest.
   - An infinite loop is killed by the timeout.
-- **Manual check**: play through all of Year 1 in the browser.
+- **Manual check**: play through each new year in the browser.

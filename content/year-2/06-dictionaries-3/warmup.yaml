@@ -1,0 +1,54 @@
+tier: warmup
+type: practice
+title: Myrtle's Notebook
+task: |
+  `notes` maps each night to a dictionary of `place -> noise`. Keep the first
+  line. Then:
+
+  1. Print what was heard in the `"bathroom"` on `"Monday"`: `Monday bathroom: clank`
+  2. Record that on `"Friday"` the `"pipes"` went `"gurgle"` (Friday may not exist yet!).
+  3. Print what was heard in the `"tower"` on `"Tuesday"`, or `silence`: `Tuesday tower: silence`
+  4. Print the number of nights: `Nights: 3`
+
+  For the starting notes:
+
+  ```
+  Monday bathroom: clank
+  Tuesday tower: silence
+  Nights: 3
+  ```
+starter: |
+  notes = {"Monday": {"bathroom": "clank", "hall": "sob"}, "Tuesday": {"bathroom": "clank"}}
+tests: |
+  def _run(n):
+      r = run_with(notes=n)
+      return r.lines, r.ns["notes"]
+
+  def test_example():
+      lines, n = _run({"Monday": {"bathroom": "clank", "hall": "sob"}, "Tuesday": {"bathroom": "clank"}})
+      check(lines == ["Monday bathroom: clank", "Tuesday tower: silence", "Nights: 3"], f"You printed {lines}.")
+      check(n.get("Friday", {}).get("pipes") == "gurgle", "Friday's pipes should be recorded as 'gurgle'.")
+
+  def test_friday_exists():
+      lines, n = _run({"Monday": {"bathroom": "drip"}, "Tuesday": {"tower": "hoot"}, "Friday": {"hall": "sigh"}})
+      check(lines == ["Monday bathroom: drip", "Tuesday tower: hoot", "Nights: 3"], f"You printed {lines}.")
+      check(n["Friday"] == {"hall": "sigh", "pipes": "gurgle"}, f"Add to Friday's dictionary without wiping what's there. Friday is now {n['Friday']}.")
+
+  def test_no_tuesday():
+      lines, _ = _run({"Monday": {"bathroom": "clank"}})
+      check(lines[1:] == ["Tuesday tower: silence", "Nights: 2"], f"With no Tuesday at all you printed {lines[1:]}.")
+hints:
+  nudge: Two-level lookups, a safe two-level lookup, and adding to an inner dictionary that might not exist.
+  question: What default should the FIRST get give, so the second get has something to ask? How do you make Friday's dictionary only if it's missing?
+  pseudocode: |
+    show Monday's bathroom (two lookups)
+    make sure Friday has a dictionary, then set its pipes
+    show Tuesday's tower using two safe gets
+    show the number of nights
+  flaw: If Friday's hall disappears, you replaced Friday's whole dictionary with a new one.
+  analogous: |
+    ```python
+    marks = {"Ron": {"Charms": 6}}
+    marks.setdefault("Harry", {})["Potions"] = 3
+    print(marks.get("Neville", {}).get("Herbology", "none"))
+    ```

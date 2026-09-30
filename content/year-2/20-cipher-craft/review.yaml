@@ -1,0 +1,25 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: ord-chr
+  type: predict
+  code: |
+    print(ord("C") - ord("A"))
+    print(chr(ord("a") + 25))
+  why: C is position 2; the letter 25 places after a is z.
+- id: wrap
+  type: choice
+  q: 'Shifting "Y" (position 24) forward by 3 lands on which position?'
+  options: ["27", "1", "3"]
+  answer: 1
+  why: (24 + 3) % 26 = 1, which is B.
+- id: decode
+  type: choice
+  q: How do you decode a Caesar message that was shifted by k?
+  options: ["Shift it by k again", "Shift it by -k", "Reverse the string"]
+  answer: 1
+  why: Moving every letter back by the same amount undoes the cipher.
+- id: frequency
+  type: choice
+  q: In frequency analysis of English text, which letter is the coded message's most common letter most likely to stand for?
+  options: ["A", "E", "Z"]
+  answer: 1
+  why: E is the most common letter in English.

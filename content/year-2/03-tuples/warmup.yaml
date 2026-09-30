@@ -1,0 +1,27 @@
+tier: warmup
+type: divination
+title: Unpacking on the Staircase
+task: Predict every line. The staircases move - so do the values!
+snippet: |
+  a, b = 1, 2
+  a, b = b, a + b
+  print(a, b)
+  spot = (2, "east")
+  floor, side = spot
+  print(side, floor)
+  for i, name in enumerate(["Nick", "Myrtle"], start=1):
+      print(i, name)
+  print((2, "b") < (2, "a"), sorted([(3, 1), (1, 9), (1, 2)]))
+hints:
+  nudge: On line 2, the whole right-hand side is worked out FIRST, using the old values, then unpacked.
+  question: On line 2, which `a` is used in `a + b` - the old one or the new one? And where does `enumerate` start counting when you give it `start=1`?
+  pseudocode: |
+    line 2: build (old b, old a + old b), then pour into a and b
+    the loop numbers from 1
+    tuples compare the first items, then the second on a tie
+  flaw: The classic slip is to update `a` first and then use the NEW a to compute b. Python never does that in one unpacking line.
+  analogous: |
+    ```text
+    x, y = 5, 7
+    x, y = y, x - y     ->  x is 7, y is -2
+    ```

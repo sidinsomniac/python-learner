@@ -1,0 +1,19 @@
+id: y2-l03c
+year: 2
+order: 6
+number: 3
+part: { n: 3, of: 3 }
+title: "Dictionaries: Inside Dictionaries"
+location: The second-floor corridor
+concepts: [nested dictionaries, chained lookups, safe nested access, dictionaries of lists]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: myrtle
+    line: Oh, NOBODY ever asks Myrtle what she's heard. Nobody cares about Myrtle... (sniff) ...but I wrote it ALL down anyway.
+  - who: ginny
+    line: We care, Myrtle. Honestly. What did you hear?
+  - who: myrtle
+    line: Noises! Every night, every hour, every place. It's all in my report. Organised by night, then by place. I'm VERY organised when I'm miserable.
+  - who: ashwood
+    line: A dictionary of dictionaries. Each night leads to another dictionary, of places. Let's learn to walk through it without getting lost.
+clue: Myrtle's report points one way - a **clank** from **Myrtle's own bathroom**, every single night at midnight.

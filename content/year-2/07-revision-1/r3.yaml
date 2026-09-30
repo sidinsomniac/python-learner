@@ -1,0 +1,63 @@
+tier: review
+type: practice
+title: Filch's Alibi
+task: |
+  `vanishings` is a list of `(night, place)` tuples - when and where each
+  thing vanished. `filch` is a dictionary of where Filch was on each night:
+  night -> place.
+
+  For each vanishing, print whether Filch was there:
+
+  - `Night 3: Filch was in the dungeons, not the trophy room`
+  - `Night 5: Filch WAS in the trophy room!`
+  - `Night 7: no record of Filch` (if that night isn't in his dictionary)
+
+  Then print `Filch is cleared.` if he was never at a vanishing, or
+  `Filch is a suspect.` if he was at any.
+
+  Keep the first two lines. For the starting values:
+
+  ```
+  Night 3: Filch was in the dungeons, not the trophy room
+  Night 4: Filch was in the office, not the bathroom
+  Filch is cleared.
+  ```
+starter: |
+  vanishings = [(3, "trophy room"), (4, "bathroom")]
+  filch = {3: "dungeons", 4: "office", 5: "trophy room"}
+tests: |
+  def _run(v, f):
+      return run_with(vanishings=v, filch=f).lines
+
+  def test_example():
+      got = _run([(3, "trophy room"), (4, "bathroom")], {3: "dungeons", 4: "office", 5: "trophy room"})
+      check(got == ["Night 3: Filch was in the dungeons, not the trophy room", "Night 4: Filch was in the office, not the bathroom", "Filch is cleared."],
+            f"You printed {got}.")
+
+  def test_suspect():
+      got = _run([(5, "trophy room")], {5: "trophy room"})
+      check(got == ["Night 5: Filch WAS in the trophy room!", "Filch is a suspect."], f"You printed {got}.")
+
+  def test_no_record():
+      got = _run([(7, "hall"), (1, "hall")], {1: "hall"})
+      check(got == ["Night 7: no record of Filch", "Night 1: Filch WAS in the hall!", "Filch is a suspect."], f"You printed {got}.")
+hints:
+  nudge: Unpack each vanishing, look Filch up safely for that night, then compare places. Keep a True/False flag for the verdict.
+  question: What should happen when the night isn't a key in `filch`? How can one flag remember whether he was EVER at a vanishing?
+  pseudocode: |
+    start with the flag down (not a suspect)
+    for each (night, place):
+        if night isn't in filch's records: show "no record"
+        otherwise, if his place matches: show "WAS in", and mark him a suspect
+        otherwise: show where he was instead
+    show the verdict using the flag
+  flaw: A KeyError means a night with no record. If he's always cleared, check the flag is set inside the loop.
+  analogous: |
+    ```python
+    found = False
+    for x in [1, 5, 3]:
+        if x == 5:
+            found = True
+    if found:
+        print("yes")
+    ```

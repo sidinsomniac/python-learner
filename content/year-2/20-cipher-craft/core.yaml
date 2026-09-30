@@ -1,0 +1,66 @@
+tier: core
+type: practice
+title: The Caesar Toolkit
+twist: design - decode is just encode, backwards
+task: |
+  Write two functions (you may include `shift_letter` from the warm-up, too):
+
+  1. `caesar(text, k)` returns `text` with every letter shifted `k` places,
+     keeping case, leaving everything else alone.
+  2. `decode(text, k)` undoes `caesar(text, k)`. Don't write the shifting
+     twice - **use `caesar`**.
+
+  ```python
+  caesar("Feed it!", 3)                     # 'Ihhg lw!'
+  decode("Ihhg lw!", 3)                     # 'Feed it!'
+  decode("FKDPEHU RI FROOHFWLRQV LV RSHQ", 3)
+  ```
+
+  (Try that last one - it's the message from the feast.)
+starter: |
+  def caesar(text, k):
+      pass
+
+  def decode(text, k):
+      pass
+
+  print(decode("FKDPEHU RI FROOHFWLRQV LV RSHQ", 3))
+tests: |
+  def test_encode():
+      fn = student_function("caesar")
+      check(call(fn, "Feed it!", 3) == "Ihhg lw!", f"caesar('Feed it!', 3) returned {call(fn, 'Feed it!', 3)!r}.")
+      check(call(fn, "xyz ABC", 3) == "abc DEF", f"caesar('xyz ABC', 3) returned {call(fn, 'xyz ABC', 3)!r}. Does it wrap round?")
+      check(call(fn, "", 5) == "", "An empty message stays empty.")
+
+  def test_decode():
+      fn = student_function("decode")
+      got = call(fn, "FKDPEHU RI FROOHFWLRQV LV RSHQ", 3)
+      check(got == "CHAMBER OF COLLECTIONS IS OPEN", f"The feast message decoded to {got!r}.")
+      check(call(fn, "AOL JHIPULA OBUNLYZ.", 7) == "THE CABINET HUNGERS.", "Decoding with 7 should reveal the Cabinet's message.")
+
+  def test_round_trip():
+      enc = student_function("caesar")
+      dec = student_function("decode")
+      message = "Meet me at Midnight - 2nd floor, OK?"
+      for k in (0, 1, 13, 25, 26, 40, -9):
+          check(call(dec, call(enc, message, k), k) == message, f"Encoding then decoding with shift {k} didn't give the message back.")
+
+  def test_reuse():
+      check(calls("caesar") and count_nodes(ast.FunctionDef) >= 2, "decode should call caesar rather than repeat its work.")
+      check(calls("chr") and calls("ord"), "Use ord and chr to turn letters into numbers and back.")
+hints:
+  nudge: caesar shifts every character and joins the results; decode calls caesar with the opposite shift.
+  question: If shifting by k encodes, what shift undoes it? Can caesar be a single join over a comprehension that uses shift_letter?
+  pseudocode: |
+    shift_letter as in the warm-up
+    caesar: join together [each character shifted by k]
+    decode: give back caesar of the text with the opposite shift
+  flaw: If spaces turn into odd symbols, non-letters are being shifted. If decoding a big shift fails, check the wrap uses % 26.
+  analogous: |
+    ```python
+    def shout(text):
+        return "".join([ch.upper() for ch in text])
+
+    def whisper(text):
+        return shout(text).lower()
+    ```

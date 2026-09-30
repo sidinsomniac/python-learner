@@ -1,0 +1,53 @@
+tier: outstanding
+type: practice
+title: Noughts and Crosses in the Common Room
+twist: combination - build a real grid, then play moves on it
+task: |
+  Build an `n x n` board filled with `"."`, then play the moves in order.
+  Players alternate, starting with `"X"`. Each move is `[row, col]`. Print the
+  board one row per line, like `['X', '.', '.']`.
+
+  For `n = 3` and `moves = [[0, 0], [1, 1], [0, 2]]`:
+
+  ```
+  ['X', '.', 'X']
+  ['.', 'O', '.']
+  ['.', '.', '.']
+  ```
+
+  Keep the first two lines. (Beware the grid trap!)
+starter: |
+  n = 3
+  moves = [[0, 0], [1, 1], [0, 2]]
+tests: |
+  def _board(size, played):
+      return run_with(n=size, moves=played).lines
+
+  def test_example():
+      got = _board(3, [[0, 0], [1, 1], [0, 2]])
+      check(got == ["['X', '.', 'X']", "['.', 'O', '.']", "['.', '.', '.']"],
+            f"You printed {got}. If a move shows up in every row, each row is the SAME list - the grid trap!")
+
+  def test_bigger():
+      got = _board(4, [[3, 3], [0, 1], [2, 0]])
+      check(got == ["['.', 'O', '.', '.']", "['.', '.', '.', '.']", "['X', '.', '.', '.']", "['.', '.', '.', 'X']"], f"On a 4x4 board you printed {got}.")
+
+  def test_no_moves():
+      check(_board(2, []) == ["['.', '.']", "['.', '.']"], "With no moves, the board is empty.")
+hints:
+  nudge: Two separate jobs - build a board whose rows are truly separate lists, then walk through the moves, switching player each time.
+  question: How can you make sure each row is a NEW list? And how will you know whose turn it is?
+  pseudocode: |
+    board = empty list
+    repeat n times: add a new row of n dots
+    the player starts as X
+    for each move: put player at board[row][col], then switch player
+    show each row
+  flaw: If every row changes together, you used `[row] * n` for the outer list. If only X appears, the player never switches.
+  analogous: |
+    ```python
+    rows = []
+    for _ in range(2):
+        rows.append(["-"] * 3)
+    rows[1][2] = "#"
+    ```

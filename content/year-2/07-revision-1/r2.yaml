@@ -1,0 +1,58 @@
+tier: review
+type: repair
+title: Filch's Duplicate Detector
+task: |
+  Filch suspects someone is registering the same item twice. His spell should
+  print every item that appears **more than once** in `register`, in the
+  order it first appears, with its count: `Dungbomb x3`. Then
+  `Duplicates: N`.
+
+  It prints nonsense. Repair it so the starting register gives:
+
+  ```
+  Dungbomb x3
+  Yo-yo x2
+  Duplicates: 2
+  ```
+
+  Keep the first line.
+starter: |
+  register = ["Dungbomb", "Yo-yo", "Dungbomb", "Quill", "Yo-yo", "Dungbomb"]
+  counts = {}
+  for item in register:
+      counts[item] = 1
+  duplicates = 0
+  for item, n in counts.items():
+      if n > 1:
+          print(f"{item} x{n}")
+  print(f"Duplicates: {duplicates}")
+tests: |
+  def _run(reg):
+      return run_with(register=reg).lines
+
+  def test_example():
+      got = _run(["Dungbomb", "Yo-yo", "Dungbomb", "Quill", "Yo-yo", "Dungbomb"])
+      check(got == ["Dungbomb x3", "Yo-yo x2", "Duplicates: 2"], f"You printed {got}.")
+
+  def test_none():
+      got = _run(["a", "b"])
+      check(got == ["Duplicates: 0"], f"With no duplicates you printed {got}.")
+
+  def test_order():
+      got = _run(["z", "a", "a", "z"])
+      check(got == ["z x2", "a x2", "Duplicates: 2"], f"Duplicates come in first-seen order. You printed {got}.")
+hints:
+  nudge: Two bugs - one in the counting, one in the final total.
+  question: What does the first loop store for an item it has already seen? Where does `duplicates` ever change?
+  pseudocode: |
+    for each item: add one to its count (starting from 0)
+    for each item and count:
+        if the count is above one: show it, and add one to duplicates
+    show duplicates
+  flaw: Line 4 resets every count to 1 instead of adding. And duplicates is never increased.
+  analogous: |
+    ```python
+    tally = {}
+    for w in ["a", "a"]:
+        tally[w] = tally.get(w, 0) + 1
+    ```

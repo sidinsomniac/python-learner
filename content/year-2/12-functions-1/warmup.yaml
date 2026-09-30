@@ -1,0 +1,59 @@
+tier: warmup
+type: repair
+title: Lockhart's Admirer Counter
+twist: debug - printing is not returning
+task: |
+  Lockhart's two spells print their answers instead of giving them back, so
+  nothing else can use them:
+
+  - `count_admirers(letters)` should **return** how many letters there are.
+  - `best_letter(letters)` should **return** the letter with the most hearts
+    as a string like `"Dora (5 hearts)"`. Each letter is a `(name, hearts)`
+    tuple; on a tie, the first one wins.
+
+  Repair them so they return their answers - and print nothing themselves.
+  (The last line of the starter shows them in use.)
+starter: |
+  def count_admirers(letters):
+      print(len(letters))
+
+  def best_letter(letters):
+      best_name, best_hearts = letters[0]
+      for name, hearts in letters:
+          if hearts > best_hearts:
+              best_name, best_hearts = name, hearts
+      print(f"{best_name} ({best_hearts} hearts)")
+
+  fan_mail = [("Ann", 3), ("Dora", 5), ("Bill", 5)]
+  print(f"{count_admirers(fan_mail)} letters - the best from {best_letter(fan_mail)}")
+tests: |
+  def test_count():
+      fn = student_function("count_admirers")
+      got = call(fn, [("Ann", 3), ("Dora", 5)])
+      check(got == 2, f"count_admirers([('Ann', 3), ('Dora', 5)]) returned {got!r}. Did it RETURN the number, or only print it?")
+      check(printed() == "", "count_admirers should give its answer back, not print it.")
+
+  def test_best():
+      fn = student_function("best_letter")
+      got = call(fn, [("Ann", 3), ("Dora", 5), ("Bill", 5)])
+      check(got == "Dora (5 hearts)", f"best_letter returned {got!r}.")
+      check(printed() == "", "best_letter should return its string, not print it.")
+
+  def test_other():
+      fn = student_function("best_letter")
+      check(call(fn, [("Zed", 1)]) == "Zed (1 hearts)", "With one letter, it is the best.")
+      check(call(student_function("count_admirers"), []) == 0, "No letters means 0 admirers.")
+hints:
+  nudge: Each function has exactly one line that should hand its answer back instead of showing it.
+  question: What does a function give back if it never uses `return`? What does the last line of the starter print right now?
+  pseudocode: |
+    count_admirers: give back the number of letters
+    best_letter: find the best as before, then give back the formatted string
+  flaw: "`print(...)` inside a function shows text but returns None - so the caller gets None."
+  analogous: |
+    ```python
+    def total(nums):
+        return sum(nums)
+
+    print(total([1, 2]) + 10)
+    ```

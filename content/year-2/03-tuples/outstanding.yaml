@@ -1,0 +1,65 @@
+tier: outstanding
+type: practice
+title: The Order of Events
+twist: constraint - no `key=`; let tuple comparison do the work
+task: |
+  Nick has a pile of events as `(what, day, hour)` tuples, in no particular
+  order. Print them in **time order** - earliest day first, and within a day
+  earliest hour first - as `Day 3, 23:00 - Nick's head vanishes`.
+
+  If two events share a day and hour, order them alphabetically by what
+  happened.
+
+  Keep the first line. For the starting events the output is:
+
+  ```
+  Day 1, 09:00 - Filch counts his items
+  Day 1, 23:00 - A clank from upstairs
+  Day 3, 00:00 - Nick's head vanishes
+  ```
+
+  **Constraint:** don't use `key=` or `lambda` - you haven't learned them yet,
+  and you don't need them. Hours print with two digits (`{hour:02d}`).
+starter: |
+  events = [("Nick's head vanishes", 3, 0), ("A clank from upstairs", 1, 23), ("Filch counts his items", 1, 9)]
+tests: |
+  def _run(evs):
+      return run_with(events=evs).lines
+
+  def test_example():
+      got = _run([("Nick's head vanishes", 3, 0), ("A clank from upstairs", 1, 23), ("Filch counts his items", 1, 9)])
+      check(got == ["Day 1, 09:00 - Filch counts his items", "Day 1, 23:00 - A clank from upstairs", "Day 3, 00:00 - Nick's head vanishes"],
+            f"You printed {got}.")
+
+  def test_ties():
+      got = _run([("b", 2, 5), ("a", 2, 5), ("c", 1, 12)])
+      check(got == ["Day 1, 12:00 - c", "Day 2, 05:00 - a", "Day 2, 05:00 - b"],
+            f"Same day and hour means alphabetical by what happened. You printed {got}.")
+
+  def test_day_beats_hour():
+      got = _run([("late", 1, 23), ("early", 2, 1)])
+      check(got == ["Day 1, 23:00 - late", "Day 2, 01:00 - early"], f"Day 1 at 23:00 still comes before day 2. You printed {got}.")
+
+  def test_no_key():
+      check(not uses(ast.Lambda) and "key=" not in source().replace(" ", ""), "No key= or lambda this time - reshape the tuples instead.")
+
+  def test_empty():
+      check(_run([]) == [], "No events, no output.")
+hints:
+  nudge: Sorting tuples compares their FIRST items first. But here the first item is the text, which is the least important!
+  question: What if you built new tuples with the most important thing first? In what order should day, hour and text go?
+  pseudocode: |
+    reordered = empty list
+    for each (what, day, hour):
+        add (day, hour, what) to reordered
+    for each (day, hour, what) in the sorted reordered list:
+        show the line with a two-digit hour
+  flaw: If events come out alphabetically, you sorted the original tuples - Python compared the text first.
+  analogous: |
+    ```python
+    people = [("Zed", 11), ("Amy", 12)]
+    flipped = []
+    for name, age in people:
+        flipped.append((age, name))
+    print(sorted(flipped))
+    ```

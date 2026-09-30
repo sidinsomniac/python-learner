@@ -1,0 +1,22 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: traceback-read
+  type: choice
+  q: Where should you start reading a traceback?
+  options: ["The top line", "The bottom line - the error type and message", "The middle"]
+  answer: 1
+  why: The last line says what went wrong; the lines above say where.
+- id: remove-while-looping
+  type: predict
+  code: |
+    items = [1, 2, 2, 3]
+    for x in items:
+        if x == 2:
+            items.remove(x)
+    print(items)
+  why: Removing the first 2 shifts the second into a spot the loop already passed, so it survives.
+- id: none-attribute
+  type: choice
+  q: "`'NoneType' object has no attribute 'append'` usually means..."
+  options: ["The list is empty", "A variable is None - perhaps from a function with no return, or from .sort()", "append is misspelled"]
+  answer: 1
+  why: Only None lacks list methods like that. Find where the None came from.

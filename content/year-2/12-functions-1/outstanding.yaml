@@ -1,0 +1,73 @@
+tier: outstanding
+type: practice
+title: collect_admirers
+twist: edge case - returning None on purpose, and ties
+task: |
+  Recreate Lockhart's spells - properly. Letters are `(sender, hearts)` tuples.
+
+  1. `collect_admirers(letters, minimum)` returns the list of senders with at
+     least `minimum` hearts, **in the order they wrote**, each sender only
+     once (some write again and again!).
+  2. `top_admirer(letters)` returns the sender whose letters add up to the
+     **most hearts in total**. On a tie, whoever wrote **first** wins. With no
+     letters at all it returns `None` - deliberately.
+
+  ```python
+  mail = [("Ann", 3), ("Bob", 5), ("Ann", 4), ("Cy", 7)]
+  collect_admirers(mail, 4)
+  # -> ['Bob', 'Ann', 'Cy']
+  top_admirer(mail)
+  # -> 'Ann'  (3 + 4 = 7, ties with Cy but wrote first)
+  ```
+starter: |
+  def collect_admirers(letters, minimum):
+      pass
+
+  def top_admirer(letters):
+      pass
+tests: |
+  MAIL = [("Ann", 3), ("Bob", 5), ("Ann", 4), ("Cy", 7)]
+
+  def test_collect():
+      fn = student_function("collect_admirers")
+      got = call(fn, MAIL, 4)
+      check(got == ["Bob", "Ann", "Cy"], f"collect_admirers(mail, 4) returned {got!r}.")
+      got = call(fn, [("Ann", 9), ("Ann", 9)], 1)
+      check(got == ["Ann"], f"Each sender only once! You returned {got!r}.")
+      check(call(fn, MAIL, 100) == [], "Nobody reaches 100 hearts - return an empty list.")
+
+  def test_top():
+      fn = student_function("top_admirer")
+      got = call(fn, MAIL)
+      check(got == "Ann", f"Ann has 3 + 4 = 7 hearts and wrote before Cy. You returned {got!r}.")
+      check(call(fn, [("Zed", 1), ("Amy", 2)]) == "Amy", "Amy has more hearts than Zed.")
+
+  def test_top_empty():
+      got = call(student_function("top_admirer"), [])
+      check(got is None, f"With no letters, return None. You returned {got!r}.")
+
+  def test_quiet():
+      call(student_function("top_admirer"), MAIL)
+      check(printed() == "", "Return the answer - don't print it.")
+hints:
+  nudge: collect_admirers needs to remember who it has already added. top_admirer needs a total per sender - which pattern gives you that?
+  question: A dictionary keeps the order keys were FIRST added. How could that help with "whoever wrote first wins"?
+  pseudocode: |
+    collect_admirers:
+        chosen = empty list
+        for each (sender, hearts): if enough hearts and sender not yet chosen, add them
+        give back chosen
+    top_admirer:
+        totals = a count of hearts per sender (first-written order)
+        best = nobody yet
+        for each sender in totals: replace best only if strictly more hearts
+        give back best
+  flaw: If Cy wins, you replaced the best on an EQUAL total. If the empty case crashes, look for `letters[0]` or `max` of nothing.
+  analogous: |
+    ```python
+    def first_long_word(words):
+        for w in words:
+            if len(w) > 5:
+                return w
+        return None
+    ```

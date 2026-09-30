@@ -1,0 +1,21 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: in-keys
+  type: choice
+  q: 'With `d = {"owl": "Hedwig"}`, what is `"Hedwig" in d`?'
+  options: ["True", "False", "A KeyError"]
+  answer: 1
+  why: "`in` checks keys only - \"Hedwig\" is a value."
+- id: get-default
+  type: predict
+  code: |
+    pets = {"Trevor": "toad"}
+    print(pets.get("Hedwig", "unknown"))
+    pets["Trevor"] = "frog?"
+    print(pets, len(pets))
+  why: get gives the default for a missing key; assigning to an existing key replaces it.
+- id: items-loop
+  type: choice
+  q: Which loop gives you each key AND its value?
+  options: ["`for k in d:`", "`for k, v in d.items():`", "`for k, v in d:`"]
+  answer: 1
+  why: "`.items()` yields (key, value) tuples to unpack. Looping over d alone gives just keys."

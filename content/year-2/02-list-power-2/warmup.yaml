@@ -1,0 +1,30 @@
+tier: warmup
+type: divination
+title: Which Lists Are Shared?
+task: Predict the output. Draw boxes and arrows if it helps!
+snippet: |
+  a = [1, 2]
+  b = a
+  c = a[:]
+  b.append(3)
+  c.append(4)
+  print(a, b, c)
+  grid = [[0] * 2] * 2
+  grid[0][0] = 9
+  print(grid)
+  nest = [[1], [2]]
+  copy = nest.copy()
+  copy[0].append(5)
+  print(nest)
+hints:
+  nudge: For each assignment, ask - is this a NEW list, or another name for an existing one?
+  question: How many different outer lists exist after line 3? How many different rows does `grid` really have?
+  pseudocode: |
+    b is a; c is a new copy
+    grid's two rows are one row
+    copy is new on the outside, shared on the inside
+  flaw: The traps are thinking `b` is a copy, and thinking the grid has two separate rows.
+  analogous: |
+    ```text
+    x = [[0]] * 3; x[1][0] = 7 -> [[7], [7], [7]]
+    ```

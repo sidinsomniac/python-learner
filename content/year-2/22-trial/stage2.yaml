@@ -1,0 +1,52 @@
+tier: stage
+type: practice
+title: "Stage 2: Counting the Letters"
+twist: design - a clean dictionary, ignoring case and everything that isn't A-Z
+task: |
+  Write `letter_frequencies(text)`, which returns a dictionary of lowercase
+  letter -> how many times it appears in `text`, ignoring case. Only the 26
+  letters count - no spaces, punctuation, digits or accented letters. Letters
+  that never appear are left out.
+
+  ```python
+  letter_frequencies("Feed ME!")
+  # -> {'f': 1, 'e': 3, 'd': 1, 'm': 1}
+  letter_frequencies("123")
+  # -> {}
+  ```
+starter: |
+  def letter_frequencies(text):
+      pass
+tests: |
+  def test_basic():
+      got = call(student_function("letter_frequencies"), "Feed ME!")
+      check(got == {"f": 1, "e": 3, "d": 1, "m": 1}, f"letter_frequencies('Feed ME!') returned {got!r}.")
+
+  def test_nothing():
+      fn = student_function("letter_frequencies")
+      check(call(fn, "123 !?") == {}, f"No letters, empty dictionary. You returned {call(fn, '123 !?')!r}.")
+      check(call(fn, "") == {}, "An empty text has no letters.")
+
+  def test_only_letters():
+      got = call(student_function("letter_frequencies"), "Café, zoo")
+      check(got == {"c": 1, "a": 1, "f": 1, "z": 1, "o": 2}, f"Only a-z count - not é. You returned {got!r}.")
+
+  def test_big():
+      got = call(student_function("letter_frequencies"), "ab" * 20000)
+      check(got == {"a": 20000, "b": 20000}, "Counting a long message went wrong.")
+hints:
+  nudge: The counting pattern from Lesson 3, with a filter so only a-z get counted.
+  question: If you lowercase the whole text first, what's the one check each character needs?
+  pseudocode: |
+    counts = empty dictionary
+    for each character of the lowercased text:
+        if it's between a and z: add one to its count
+    give back counts
+  flaw: If "é" or " " appear as keys, your filter lets too much through.
+  analogous: |
+    ```python
+    votes = {}
+    for v in "a b a":
+        if v != " ":
+            votes[v] = votes.get(v, 0) + 1
+    ```

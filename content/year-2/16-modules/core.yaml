@@ -1,0 +1,75 @@
+tier: core
+type: practice
+title: Predict the Cabinet
+twist: edge case - the same seed must give the same answer, every time
+task: |
+  The Cabinet picks its strike hour each night with `random.randint(0, 23)`,
+  starting from a seed.
+
+  1. `strike_hours(seed, nights)` returns the list of strike hours for that
+     many nights: seed the generator with `seed`, then draw one hour per night.
+  2. `first_midnight(seed, nights)` returns the number of the first night
+     (counting from **1**) on which the Cabinet strikes at hour `0`, or `None`
+     if it doesn't strike at midnight within that many nights. Use
+     `strike_hours`.
+
+  Calling either function twice with the same arguments must give the same
+  answer - even if other code uses `random` in between.
+starter: |
+  import random
+
+  def strike_hours(seed, nights):
+      pass
+
+  def first_midnight(seed, nights):
+      pass
+tests: |
+  import random as _r
+
+  def _expected(seed, nights):
+      _r.seed(seed)
+      return [_r.randint(0, 23) for _ in range(nights)]
+
+  def test_hours():
+      fn = student_function("strike_hours")
+      got = call(fn, 42, 5)
+      check(got == _expected(42, 5), f"strike_hours(42, 5) returned {got!r}. Did you seed first, then draw one randint(0, 23) per night?")
+      check(call(fn, 1, 0) == [], "Zero nights, zero strikes.")
+
+  def test_repeatable():
+      fn = student_function("strike_hours")
+      first = call(fn, 7, 4)
+      _r.random()
+      _r.random()
+      check(call(fn, 7, 4) == first, "The same seed gave different hours the second time. Where does the seeding happen?")
+
+  def test_midnight():
+      fn = student_function("first_midnight")
+      for seed in range(60):
+          hours = _expected(seed, 30)
+          want = hours.index(0) + 1 if 0 in hours else None
+          got = call(fn, seed, 30)
+          check(got == want, f"first_midnight({seed}, 30) returned {got!r}; the hours are {hours[:12]}...")
+
+  def test_uses_helper():
+      check(calls("strike_hours"), "first_midnight should use strike_hours rather than redo its work.")
+hints:
+  nudge: strike_hours seeds and draws; first_midnight asks strike_hours for the hours and looks for the first 0.
+  question: If you seed OUTSIDE the function (once, at the top), what happens the second time it's called? How do you count nights from 1 while you look?
+  pseudocode: |
+    strike_hours:
+        seed the random generator with seed
+        give back [a random hour from 0 to 23, once for each night]
+    first_midnight:
+        for each (night number from 1, hour) of the strike hours:
+            if the hour is 0: give back the night number
+        give back None
+  flaw: If a test says the second call differs, your seeding happens once instead of on every call.
+  analogous: |
+    ```python
+    import random
+
+    def dice(start, rolls):
+        random.seed(start)
+        return [random.randint(1, 6) for _ in range(rolls)]
+    ```

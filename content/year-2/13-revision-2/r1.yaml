@@ -1,0 +1,32 @@
+tier: review
+type: divination
+title: Hermione's Summary
+task: Predict every line.
+snippet: |
+  clues = [{"where": 2, "shiny": True}, {"where": 2, "shiny": False}, {"where": 2, "shiny": True}]
+  floors = {c["where"] for c in clues}
+  print(floors, len(clues))
+  shiny = [i for i, c in enumerate(clues) if c["shiny"]]
+  print(shiny)
+
+  def verdict(evidence):
+      if len(evidence) > 1:
+          return "object"
+      print("person?")
+
+  print(verdict(shiny), verdict([]))
+hints:
+  nudge: The set removes repeats; the comprehension keeps positions; and look carefully at what verdict does when it DOESN'T reach a return.
+  question: In the last line, both calls to verdict run before anything prints on that line. What does each one print, and what does each one return?
+  pseudocode: |
+    floors is the set of floors - only one distinct floor
+    shiny holds the positions of the shiny clues
+    verdict(shiny) returns "object"
+    verdict([]) prints "person?" and returns None
+    then the final print shows both returned values
+  flaw: The trap is the order - "person?" is printed while the arguments of the last print are being worked out, so it comes first.
+  analogous: |
+    ```text
+    def f(): print("a")
+    print(f(), "b")   ->  a   then   None b
+    ```

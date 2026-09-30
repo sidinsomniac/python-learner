@@ -1,0 +1,26 @@
+id: y2-l06b
+year: 2
+order: 11
+number: 6
+part: { n: 2, of: 2 }
+title: "Comprehensions: Dicts, Sets, and Choices"
+location: Professor Lockhart's office
+concepts: [dict comprehensions, set comprehensions, conditional expressions, any and all]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: ginny
+    line: (whispering) Look - on his desk, under the signed photographs. A page of notes. "My Finest Spell", it says.
+  - who: hermione
+    line: It's written in one line. Curly brackets, a `for`, an `if`... it's a comprehension! But not a list one.
+  - who: lockhart
+    line: (from the next room) Don't touch the photographs! Well - you may touch ONE.
+  - who: ashwood
+    line: Comprehensions can build dictionaries and sets, too - and choose between two values as they go. Let's learn to read Lockhart's spell.
+clue: Lockhart's "finest spell" is a comprehension that collects every item **if it shines** - the Cabinet's hunger, written by his own hand.
+outro:
+  - who: hermione
+    line: '"{item: owner for item, owner in castle.items() if shines(item)}" - it takes everything shiny, and remembers who it belonged to.'
+  - who: ginny
+    line: So he wrote the spell. But Lockhart couldn't hoard a whole castle by himself...
+  - who: ashwood
+    line: No. But a spell can run inside something else. Something that sits very still, and collects.

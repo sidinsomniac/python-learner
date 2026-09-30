@@ -10,3 +10,7 @@ redundant-bool: y1-l10a
 repeated-lines: y1-l12
 range-len: y1-l12
 augmented-assign: y1-l13a
+enumerate-counter: y2-l02
+dict-keys: y2-l03a
+append-comprehension: y2-l06a
+mutable-default: y2-l09

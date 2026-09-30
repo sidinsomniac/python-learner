@@ -1,0 +1,52 @@
+tier: stage
+type: practice
+title: "Stage 1: The Shifting Charm"
+twist: edge case - huge and negative shifts, and everything that isn't a letter
+task: |
+  Write `caesar_shift(text, k)`: shift every letter of `text` by `k` places,
+  wrapping round the alphabet. Capitals stay capital, lowercase stays
+  lowercase, and everything else (spaces, digits, punctuation, accented
+  letters) is left alone. `k` can be any whole number - negative, or in the
+  thousands.
+
+  ```python
+  caesar_shift("Feed it!", 3)     # 'Ihhg lw!'
+  caesar_shift("Ihhg lw!", -3)    # 'Feed it!'
+  caesar_shift("Zz", 27)          # 'Aa'
+  ```
+starter: |
+  def caesar_shift(text, k):
+      pass
+tests: |
+  def test_basic():
+      fn = student_function("caesar_shift")
+      check(call(fn, "Feed it!", 3) == "Ihhg lw!", f"caesar_shift('Feed it!', 3) returned {call(fn, 'Feed it!', 3)!r}.")
+      check(call(fn, "Ihhg lw!", -3) == "Feed it!", "A negative shift should undo a positive one.")
+
+  def test_wrap():
+      fn = student_function("caesar_shift")
+      check(call(fn, "Zz", 27) == "Aa", f"caesar_shift('Zz', 27) returned {call(fn, 'Zz', 27)!r}.")
+      check(call(fn, "abc", -1000) == call(fn, "abc", -1000 % 26), "A shift of -1000 is the same as -1000 % 26.")
+
+  def test_untouched():
+      fn = student_function("caesar_shift")
+      text = "2nd floor, 12:00 - café!"
+      got = call(fn, text, 5)
+      check(got == "2si kqttw, 12:00 - hfké!", f"Only A-Z and a-z move. You returned {got!r}.")
+      check(call(fn, "", 9) == "", "An empty message stays empty.")
+hints:
+  nudge: The Lesson 13 toolkit, in one function. Pick the right starting code for capitals or lowercase; anything else passes through.
+  question: Is "é" between "a" and "z"? How will your spell treat it?
+  pseudocode: |
+    pieces = empty list
+    for each character:
+        if it's A-Z: shift it, measuring from A
+        otherwise if it's a-z: shift it, measuring from a
+        otherwise: keep it as it is
+    give back the pieces joined
+  flaw: If "é" changes, you used `.isalpha()` - which says True for accented letters too. Compare with "A"-"Z" and "a"-"z" instead.
+  analogous: |
+    ```python
+    def rotate_digit(d, k):
+        return chr((ord(d) - ord("0") + k) % 10 + ord("0"))
+    ```

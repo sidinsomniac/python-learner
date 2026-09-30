@@ -1,0 +1,34 @@
+tier: review
+type: divination
+title: Draco's Notes
+task: Predict every line.
+snippet: |
+  def tally(word, counts=None):
+      if counts is None:
+          counts = {}
+      for ch in word:
+          counts[ch] = counts.get(ch, 0) + 1
+      return counts
+
+  print(tally("noon"))
+  print(tally("ox"))
+  shared = {}
+  tally("ab", shared)
+  tally("b", shared)
+  print(shared)
+  line = "Shift: 3 : letters"
+  key, _, value = line.partition(":")
+  print(key.lower(), value.split(":")[0].strip())
+hints:
+  nudge: The None default gives each plain call its own dictionary; passing `shared` in makes two calls fill the same one.
+  question: Does the second call to tally remember "noon"? After the two calls with `shared`, what is in it?
+  pseudocode: |
+    tally("noon") counts n twice and o twice - in a fresh dictionary
+    tally("ox") starts fresh again
+    both shared calls add to the same dictionary
+    partition splits at the first colon only
+  flaw: The trap is thinking the second call still holds noon's counts - that would be the mutable-default bug, but this spell uses None correctly.
+  analogous: |
+    ```text
+    "a:b:c".partition(":")  ->  ('a', ':', 'b:c')
+    ```

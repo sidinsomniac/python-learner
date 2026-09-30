@@ -1,0 +1,20 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: chained-lookup
+  type: predict
+  code: |
+    post = [{"from": "Hogsmeade", "items": ["sweets", "toffee"]}]
+    print(post[0]["items"][-1])
+    print(post[0].get("signed", "unsigned"))
+  why: Read left to right - first record, its items, the last one. The missing key falls back to the default.
+- id: extend-append
+  type: choice
+  q: "`bag = [\"a\"]`, then `bag.append([\"b\", \"c\"])`. What is `len(bag)`?"
+  options: ["2", "3", "1"]
+  answer: 0
+  why: append adds the whole list as ONE item. extend would add each item, giving 3.
+- id: records-shape
+  type: choice
+  q: What's the usual Python shape for a table of records (one row per delivery)?
+  options: ["A list of dictionaries", "A set of lists", "One long string"]
+  answer: 0
+  why: One dictionary per record, all with the same keys, in a list.

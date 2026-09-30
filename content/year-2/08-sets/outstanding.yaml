@@ -1,0 +1,70 @@
+tier: outstanding
+type: practice
+title: The Portrait Registry
+twist: scale - thousands of names checked against thousands more
+task: |
+  The castle keeps two registries of portrait residents, built by the lines at
+  the top of the starter (the examiners change `n`, making them huge).
+
+  Print how many names appear in **both** registries, then the first three of
+  them **in the order they appear in `old`**:
+
+  ```
+  In both: 4
+  First: wizard0, wizard6, wizard12
+  ```
+
+  If there are fewer than three, print as many as there are. If there are none,
+  the second line is `First: none`.
+
+  Keep the starter's first lines as they are. With `n = 20000` your spell must
+  still finish in well under two seconds.
+starter: |
+  n = 10
+  old = []
+  new = []
+  for i in range(n):
+      old.append(f"wizard{i * 2}")
+      new.append(f"wizard{i * 3}")
+tests: |
+  import time
+
+  def _run(size):
+      start = time.perf_counter()
+      r = run_with(n=size)
+      return r.lines, time.perf_counter() - start
+
+  def test_example():
+      lines, _ = _run(10)
+      check(lines == ["In both: 4", "First: wizard0, wizard6, wizard12"], f"For n = 10 you printed {lines}.")
+
+  def test_tiny():
+      lines, _ = _run(2)
+      check(lines == ["In both: 1", "First: wizard0"], f"For n = 2 only wizard0 is in both. You printed {lines}.")
+
+  def test_none():
+      lines, _ = _run(0)
+      check(lines == ["In both: 0", "First: none"], f"For n = 0 you printed {lines}.")
+
+  def test_scale():
+      lines, took = _run(20000)
+      check(lines[:1] == ["In both: 6667"], f"For n = 20000 you printed {lines[:1]}.")
+      check(took < 2, "Correct - but far too slow. How many steps does `name in new` take when `new` is a list of 20,000 names?")
+hints:
+  nudge: The ORDER comes from walking through `old`. The SPEED comes from checking each name against something faster than a list.
+  question: What should `new` become before you start asking "is this name in there?" 20,000 times?
+  pseudocode: |
+    lookup = a set made from new
+    shared = empty list
+    for each name in old:
+        if the name is in lookup: add it to shared
+    show the count of shared
+    show the first three of shared, or "none"
+  flaw: If it times out, you're checking names against the list `new` directly. If the order is wrong, you used `&` on two sets - a set forgets the order.
+  analogous: |
+    ```python
+    banned = set(["Peeves", "Filch"])
+    for guest in ["Luna", "Peeves"]:
+        if guest in banned:
+            print("No entry for", guest)
+    ```

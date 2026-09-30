@@ -1,0 +1,76 @@
+tier: core
+type: practice
+title: The Borgin and Burkes Receipt
+twist: edge cases - blank lines, smudges, repeated keys, and numbers
+task: |
+  Write `parse_receipt(text)`, which reads a whole receipt and returns a
+  dictionary of its fields.
+
+  - Each useful line is `key: value`. Keys are stripped and lowercased;
+    values are stripped. Only the first colon separates them.
+  - Blank lines, and lines with no colon, are skipped.
+  - If a key appears more than once, the **values are joined** with `, ` in
+    order (`"Item: cabinet"` then `"Item: key"` gives `"cabinet, key"`).
+  - A value made only of digits becomes an `int`.
+
+  ```python
+  receipt = """Item: One cabinet, self-filling
+  ~~ smudge ~~
+  Charm by :  G. Lockhart
+  Price: 400
+
+  Deliver to: Second-floor girls' bathroom"""
+  parse_receipt(receipt)
+  # {'item': 'One cabinet, self-filling', 'charm by': 'G. Lockhart',
+  #  'price': 400, 'deliver to': "Second-floor girls' bathroom"}
+  ```
+
+  (A repeated key's joined value stays a string, even if the parts are digits.)
+starter: |
+  def parse_receipt(text):
+      pass
+tests: |
+  RECEIPT = """Item: One cabinet, self-filling
+  ~~ smudge ~~
+  Charm by :  G. Lockhart
+  Price: 400
+
+  Deliver to: Second-floor girls' bathroom"""
+
+  def test_receipt():
+      got = call(student_function("parse_receipt"), RECEIPT)
+      want = {"item": "One cabinet, self-filling", "charm by": "G. Lockhart", "price": 400, "deliver to": "Second-floor girls' bathroom"}
+      check(got == want, f"parse_receipt returned {got!r}.")
+
+  def test_colons_and_numbers():
+      got = call(student_function("parse_receipt"), "Time: 12:00\nOwls: 3\nCode: 3a")
+      check(got == {"time": "12:00", "owls": 3, "code": "3a"}, f"You returned {got!r}. Only all-digit values become numbers.")
+
+  def test_repeated():
+      got = call(student_function("parse_receipt"), "Item: cabinet\nITEM :key\nitem: 7")
+      check(got == {"item": "cabinet, key, 7"}, f"Repeated keys join their values with ', '. You returned {got!r}.")
+
+  def test_empty():
+      check(call(student_function("parse_receipt"), "") == {}, "An empty receipt has no fields.")
+      check(call(student_function("parse_receipt"), "\n  \nsmudge") == {}, "Blank lines and smudges are skipped.")
+hints:
+  nudge: Walk the lines. For each, try to split it into key and value - skip it if you can't. Then decide whether to store, join, or convert.
+  question: If a key repeats and the first value was converted to a number, what happens when you try to join? When is the right moment to convert digits?
+  pseudocode: |
+    raw = empty dictionary of key -> list of value strings
+    for each line:
+        split it at the first colon; skip it if there's no colon
+        add the tidied value to the list for the tidied, lowercased key
+    fields = empty dictionary
+    for each key and its values:
+        if there's exactly one value and it's all digits: store it as a number
+        otherwise: store the values joined with ", "
+    give back fields
+  flaw: If a digit value becomes a number and THEN a repeat arrives, joining crashes - collect everything as text first, convert at the end.
+  analogous: |
+    ```python
+    pairs = {}
+    for word in ["a:1", "b:2", "a:3"]:
+        k, _, v = word.partition(":")
+        pairs.setdefault(k, []).append(v)
+    ```

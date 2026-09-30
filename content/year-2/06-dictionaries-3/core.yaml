@@ -1,0 +1,71 @@
+tier: core
+type: practice
+title: The Loudest Place
+twist: edge case - quiet nights, and ties between places
+task: |
+  Myrtle's `report` maps night -> place -> **number of clanks**.
+
+  Keep the first line. Then:
+
+  1. For each night, in the report's order, print the night's total:
+     `Monday: 4 clanks`
+  2. Add up each place over **all** nights, and print the loudest:
+     `Loudest: bathroom (7 clanks)`
+     If places tie, choose the one that comes first alphabetically.
+
+  For the starting report:
+
+  ```
+  Monday: 4 clanks
+  Tuesday: 0 clanks
+  Wednesday: 4 clanks
+  Loudest: bathroom (7 clanks)
+  ```
+
+  If no clanks were heard anywhere at all, the last line is `Loudest: nowhere`.
+starter: |
+  report = {"Monday": {"bathroom": 3, "hall": 1}, "Tuesday": {}, "Wednesday": {"bathroom": 4}}
+tests: |
+  def _run(r):
+      return run_with(report=r).lines
+
+  def test_example():
+      got = _run({"Monday": {"bathroom": 3, "hall": 1}, "Tuesday": {}, "Wednesday": {"bathroom": 4}})
+      check(got == ["Monday: 4 clanks", "Tuesday: 0 clanks", "Wednesday: 4 clanks", "Loudest: bathroom (7 clanks)"], f"You printed {got}.")
+
+  def test_spread_out():
+      got = _run({"Mon": {"tower": 2, "hall": 1}, "Tue": {"hall": 2}})
+      check(got == ["Mon: 3 clanks", "Tue: 2 clanks", "Loudest: hall (3 clanks)"],
+            f"The hall is loudest over ALL nights (1 + 2), even though the tower wins on Monday. You printed {got}.")
+
+  def test_tie():
+      got = _run({"Mon": {"tower": 2, "pipes": 2}})
+      check(got == ["Mon: 4 clanks", "Loudest: pipes (2 clanks)"], f"Ties go to the alphabetically-first place. You printed {got}.")
+
+  def test_silent():
+      got = _run({"Mon": {}, "Tue": {"hall": 0}})
+      check(got == ["Mon: 0 clanks", "Tue: 0 clanks", "Loudest: nowhere"], f"No clanks at all means 'Loudest: nowhere'. You printed {got}.")
+hints:
+  nudge: A nested walk that does two jobs at once - summing each night, and adding to a running total for each place.
+  question: Which dictionary pattern from Part 2 builds the per-place totals? When you look through the places alphabetically, when should a new place replace the current best?
+  pseudocode: |
+    place_totals = empty dictionary
+    for each night and its places:
+        start a night total at zero
+        for each place and clanks:
+            add clanks to night_total
+            add clanks to that place's running total
+        show the night's line
+    best = none yet
+    for each place alphabetically:
+        if its total beats best's total (strictly): it becomes best
+    show best, or "nowhere" if best found no clanks
+  flaw: If the tie goes the wrong way, you replaced the best on an EQUAL total. If "hall 0" wins a silent report, check that zero clanks can never be loudest.
+  analogous: |
+    ```python
+    scores = {"a": 2, "b": 5}
+    best = None
+    for name in sorted(scores):
+        if best is None or scores[name] > scores[best]:
+            best = name
+    ```

@@ -1,0 +1,18 @@
+id: y2-l11
+year: 2
+order: 17
+number: 11
+title: Parsing Scrolls
+location: The Owl Post office
+concepts: [split, join, strip, partition, splitlines, turning text into data]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: ginny
+    line: The Owl Post found the Borgin and Burkes receipt! It's... a mess. Smudged, crooked, half of it written sideways.
+  - who: ron
+    line: Can't we just read it?
+  - who: hermione
+    line: We could read ONE receipt. But the Owl Post has four hundred of them, and we need to know which ones matter.
+  - who: ashwood
+    line: Then we teach Python to read them for us. Turning messy text into tidy data is called *parsing* - and it's half of what real programmers do all day.
+clue: 'Parsed properly, the receipt reads: "One cabinet, self-filling. Charm by G. Lockhart. Deliver to: second-floor girls'' bathroom."'

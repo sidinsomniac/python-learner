@@ -1,0 +1,61 @@
+tier: review
+type: practice
+title: The Case File
+task: |
+  Write `case_file(clues)`. Each clue is a dictionary with a `"text"` and a
+  set of `"tags"`. Return a dictionary with:
+
+  - `"count"`: the number of clues;
+  - `"tags"`: a **sorted list** of every tag used by any clue;
+  - `"everywhere"`: a sorted list of the tags that appear on **every** clue;
+  - `"shiny"`: the texts of the clues tagged `"shiny"`, in their original order.
+
+  ```python
+  clues = [
+      {"text": "Mirrors gone", "tags": {"shiny", "floor2"}},
+      {"text": "Clanking at midnight", "tags": {"floor2", "noise"}},
+  ]
+  case_file(clues)
+  # {"count": 2, "tags": ["floor2", "noise", "shiny"], "everywhere": ["floor2"], "shiny": ["Mirrors gone"]}
+  ```
+
+  With no clues: count 0 and three empty lists.
+starter: |
+  def case_file(clues):
+      pass
+tests: |
+  CLUES = [
+      {"text": "Mirrors gone", "tags": {"shiny", "floor2"}},
+      {"text": "Clanking at midnight", "tags": {"floor2", "noise"}},
+      {"text": "Cup polished", "tags": {"shiny", "floor2", "lockhart"}},
+  ]
+
+  def test_example():
+      got = call(student_function("case_file"), CLUES[:2])
+      check(got == {"count": 2, "tags": ["floor2", "noise", "shiny"], "everywhere": ["floor2"], "shiny": ["Mirrors gone"]}, f"case_file returned {got!r}.")
+
+  def test_three():
+      got = call(student_function("case_file"), CLUES)
+      check(got == {"count": 3, "tags": ["floor2", "lockhart", "noise", "shiny"], "everywhere": ["floor2"],
+                    "shiny": ["Mirrors gone", "Cup polished"]}, f"case_file returned {got!r}.")
+
+  def test_empty():
+      got = call(student_function("case_file"), [])
+      check(got == {"count": 0, "tags": [], "everywhere": [], "shiny": []}, f"With no clues, case_file returned {got!r}.")
+hints:
+  nudge: Four values, four small pieces - two set operations, one comprehension, one len. Then return them in one dictionary.
+  question: For "everywhere", what should you start from, and which operator narrows it down? What if there are no clues to start from?
+  pseudocode: |
+    if there are no clues: give back the empty file
+    all_tags = union of every clue's tags
+    everywhere = the first clue's tags, narrowed by each clue's tags
+    shiny = [text of each clue, if "shiny" is in its tags]
+    give back the dictionary, with the sets sorted into lists
+  flaw: If "everywhere" is empty when it shouldn't be, you started from an empty set - intersecting with nothing gives nothing.
+  analogous: |
+    ```python
+    groups = [{1, 2}, {2, 3}]
+    common = set(groups[0])
+    for g in groups:
+        common &= g
+    ```

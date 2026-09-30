@@ -39,7 +39,17 @@ After you pass, **Professor Snape reviews your code**. Act on his remarks to ear
 
 Every exercise gets an O.W.L. grade (**O**utstanding, **E**xceeds Expectations, **A**cceptable, **P**oor). Grades never block you, and you can replay to improve them. The **Case File** holds your clues and your report card. You also collect XP, levels, Galleons, house points, badges and Spellbook pages.
 
-**Coming next:** Years 2–7 (see the [curriculum](docs/curriculum.md)), Time-Turner spaced review, the castle hub, and the House Cup.
+**Second Year: The Chamber of Collections.** 14 lessons, 3 revisions and a Trial - 67 exercises on lists, tuples, dictionaries, sets, comprehensions, your own functions, modules, parsing, a first taste of algorithms, ciphers and debugging. The mystery is **The Hoarder's Cabinet**: coded messages on the walls, shiny things vanishing, and a cursed Cabinet with a very famous bug.
+
+**Around the castle:**
+- **🪙 Diagon Alley.** Spend Galleons on wands, familiars, robes, editor themes, titles and banners - and on rare learning aids (Felix Felicis, Time-Turner Sand) that never give answers away.
+- **👻 Peeves' Bargain.** Skip a lesson if you must - for Galleons *and* XP, dearer every time. Trials can't be skipped.
+- **⭐ Levels 1–20.** Every level gives something: the Time-Turner, the Dueling Club, Ollivanders, familiars, themes and more.
+- **⏳ The Time-Turner.** A few review cards a day from lessons you've finished, spaced out so you remember them.
+- **⚔️ The Dueling Club.** Quick-fire duels against Neville, Draco, Hermione and Snape.
+- **The living castle.** Each year has its own colours; ten kinds of moving weather drift behind the lessons (switch them off in Settings); and the story pops up as scenes you click through.
+
+**Coming next:** Years 3–7 (see the [curriculum](docs/curriculum.md)), one year at a time, then the mastery map and the House Cup.
 
 ## The AI Professor: Claude or DeepSeek
 
@@ -93,11 +103,14 @@ core.yaml               inputs, starter, tests, hints (nudge / question /
 outstanding.yaml        pseudocode / flaw / analogous), snippet or lines
 warmup.solution.py      reference solutions - used only by the validator,
 core.solution.py        never shipped to the browser
+review.yaml             2-4 Time-Turner / Dueling Club cards (choice or predict)
 ```
+
+Each year folder also has a `year.yaml`: title, mystery, the prologue scene, and the year's colour `theme`.
 
 `tests` can use these helpers from `src/runtime/harness.py`:
 - `run_student(inputs)` and `run_with(name=value)` run the student's code, the second with some starting values swapped for others. They return `.stdout`, `.lines` and `.ns`.
-- `student_function(name)` gets a function the student defined.
+- `student_function(name)` gets a function the student defined; `call(fn, ...)` calls it safely (the student's crashes are reported as theirs), and `printed()` returns what that call printed.
 - `source()` and `tree()` give the student's code as text or as an AST.
 - `calls(name)`, `uses(ast.For)` and `count_nodes(...)` check the code's structure.
 - `timed(fn, ...)` fails a slow solution.

@@ -1,0 +1,71 @@
+tier: outstanding
+type: practice
+title: The Portrait Passwords
+twist: design - build a reverse dictionary once, and catch clashes
+task: |
+  Every portrait has a password: `passwords` maps portrait -> password. A
+  student has just `spoken` a password. Which portrait opens?
+
+  Looking through every portrait for each spoken word is slow, so build a
+  **reverse** dictionary (password -> portrait) once, and use that.
+
+  But beware: if two portraits share a password, print a warning for each
+  clash **before** anything else, in the order the second portrait appears:
+  `Clash: Fat Lady and Sir Cadogan share Caput Draconis`
+
+  Then print `The PORTRAIT swings open!`, or `Nothing happens.`
+
+  Keep the first two lines. The starting values print:
+
+  ```
+  Clash: Fat Lady and Sir Cadogan share Caput Draconis
+  The Fat Lady swings open!
+  ```
+
+  (With a clash, the **first** portrait to use a password keeps it.)
+starter: |
+  passwords = {"Fat Lady": "Caput Draconis", "Gargoyle": "Sherbet Lemon", "Sir Cadogan": "Caput Draconis"}
+  spoken = "Caput Draconis"
+tests: |
+  def _run(pw, said):
+      return run_with(passwords=pw, spoken=said).lines
+
+  def test_example():
+      got = _run({"Fat Lady": "Caput Draconis", "Gargoyle": "Sherbet Lemon", "Sir Cadogan": "Caput Draconis"}, "Caput Draconis")
+      check(got == ["Clash: Fat Lady and Sir Cadogan share Caput Draconis", "The Fat Lady swings open!"], f"You printed {got}.")
+
+  def test_no_clash():
+      got = _run({"Fat Lady": "Fortuna Major", "Gargoyle": "Sherbet Lemon"}, "Sherbet Lemon")
+      check(got == ["The Gargoyle swings open!"], f"You printed {got}.")
+
+  def test_wrong_word():
+      got = _run({"Fat Lady": "Fortuna Major"}, "fortuna major")
+      check(got == ["Nothing happens."], f"Passwords are exact - capitals matter. You printed {got}.")
+
+  def test_three_way():
+      got = _run({"A": "x", "B": "x", "C": "y", "D": "x"}, "x")
+      check(got == ["Clash: A and B share x", "Clash: A and D share x", "The A swings open!"],
+            f"Each later portrait clashes with the FIRST owner of the password. You printed {got}.")
+
+  def test_reverse_built():
+      check(count_nodes(ast.For) <= 1, "Build the reverse dictionary in ONE loop, then answer with a single lookup - no second search through the portraits.")
+hints:
+  nudge: One loop over the pairs builds the reverse dictionary. While you build it, you'll notice when a password is already taken.
+  question: As you add password -> portrait, how can you tell that password already belongs to someone else? What should happen then?
+  pseudocode: |
+    opens = empty dictionary
+    for each (portrait, password) pair:
+        if the password is already a key of opens:
+            show the clash, naming the portrait it belongs to
+        otherwise:
+            record that the password opens this portrait
+    look up spoken in opens safely, and show the right line
+  flaw: If the LAST portrait wins, you overwrote the reverse entry instead of checking first.
+  analogous: |
+    ```python
+    wands = {"Harry": "holly", "Voldemort": "yew"}
+    owner_of = {}
+    for person, wood in wands.items():
+        owner_of[wood] = person
+    print(owner_of.get("holly", "nobody"))
+    ```

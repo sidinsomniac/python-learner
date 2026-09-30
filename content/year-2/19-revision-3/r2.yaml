@@ -1,0 +1,62 @@
+tier: review
+type: repair
+title: Lockhart's Search Charm
+task: |
+  Lockhart's `first_shiny(items, shiny=...)` should return the **position** of
+  the first item that is in the `shiny` list, or `-1` if there isn't one. Its
+  `shiny` list defaults to `["mirror", "cup", "badge"]`.
+
+  It has **three** bugs. Repair it.
+
+  ```python
+  first_shiny(["sock", "cup", "mirror"])          # 1
+  first_shiny(["sock"])                            # -1
+  first_shiny(["hat", "wand"], shiny=["wand"])     # 1
+  ```
+starter: |
+  def first_shiny(items, shiny=["mirror", "cup", "badge"]):
+      for i in range(len(items)):
+          if items[i] in shiny:
+              shiny.append(items[i])
+              return items[i]
+          else:
+              return -1
+tests: |
+  def test_found():
+      fn = student_function("first_shiny")
+      got = call(fn, ["sock", "cup", "mirror"])
+      check(got == 1, f"first_shiny(['sock', 'cup', 'mirror']) returned {got!r}. Should it return the item, or its position? And does it look past the first item?")
+
+  def test_missing():
+      got = call(student_function("first_shiny"), ["sock", "hat"])
+      check(got == -1, f"With nothing shiny, return -1. You returned {got!r}.")
+
+  def test_custom():
+      got = call(student_function("first_shiny"), ["hat", "wand"], shiny=["wand"])
+      check(got == 1, f"first_shiny(['hat', 'wand'], shiny=['wand']) returned {got!r}.")
+
+  def test_no_side_effects():
+      fn = student_function("first_shiny")
+      mine = ["wand"]
+      call(fn, ["wand"], shiny=mine)
+      check(mine == ["wand"], "first_shiny changed the caller's shiny list! A search should only look.")
+      call(fn, ["sock", "cup"])
+      check(call(fn, ["sock", "hat"]) == -1, "After one search, a later search behaves differently - is something being added to a shared default?")
+hints:
+  nudge: One bug gives up too early, one returns the wrong thing, and one quietly changes a list it has no business changing.
+  question: >-
+    When does the `else: return -1` run - after checking every item, or after the first? Why would a search ever append?
+  pseudocode: |
+    for each (position, item):
+        if the item is shiny: give back the position
+    after the loop (every item checked): give back -1
+  flaw: >-
+    The else inside the loop gives up after the very first item. `return items[i]` returns the item, not its position. And the append grows the shared default list - the Cabinet's bug again. (Professor Snape would rather the default were a tuple, which can't change at all.)
+  analogous: |
+    ```python
+    def first_even(nums):
+        for i, n in enumerate(nums):
+            if n % 2 == 0:
+                return i
+        return -1
+    ```

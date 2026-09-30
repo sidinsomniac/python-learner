@@ -56,7 +56,7 @@ export function Page394() {
       </p>
       <p>
         If your spell ever seems frozen, the castle will stop it after a few seconds and ask you: <em>"Is something
-        looping forever?"</em> You'll meet loops properly in Second Year: The Chamber of Conditionals.
+        looping forever?"</em> You'll meet loops properly later this year, when the candles start counting down.
       </p>
       <p className="muted small">(Your professor would prefer you didn't read ahead. But she's secretly pleased that you did.)</p>
       <a href="#/spellbook">← Back to your Spellbook</a>

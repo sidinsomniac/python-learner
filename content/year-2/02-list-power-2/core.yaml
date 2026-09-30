@@ -1,0 +1,61 @@
+tier: core
+type: repair
+title: Filch's Safe Copy
+twist: debug - a shallow copy of nested lists
+task: |
+  Filch keeps his confiscated items by floor. He makes a backup, then adds a
+  new item to the **backup only**. But the new item also appears in his real
+  records!
+
+  Repair the spell so the backup is truly separate. For the starting data it
+  must print:
+
+  ```
+  Floors: [['mirror', 'trophy'], ['badge']]
+  Backup: [['mirror', 'trophy', 'goblet'], ['badge']]
+  ```
+
+  Keep the first line - the examiners change the floors.
+starter: |
+  floors = [["mirror", "trophy"], ["badge"]]
+  backup = floors.copy()
+  backup[0].append("goblet")
+  print("Floors:", floors)
+  print("Backup:", backup)
+tests: |
+  def _run(data):
+      return run_with(floors=data).lines
+
+  def test_original_untouched():
+      got = _run([["mirror", "trophy"], ["badge"]])
+      check(got[0] == "Floors: [['mirror', 'trophy'], ['badge']]",
+            f"The goblet leaked into Filch's real records: {got[0]}. What did `.copy()` copy - the outer list, the inner lists, or both?")
+
+  def test_backup_has_goblet():
+      got = _run([["mirror", "trophy"], ["badge"]])
+      check(got[1] == "Backup: [['mirror', 'trophy', 'goblet'], ['badge']]", f"The backup should have the goblet. Yours: {got[1]}")
+
+  def test_three_floors():
+      got = _run([["a"], ["b"], ["c", "d"]])
+      check(got == ["Floors: [['a'], ['b'], ['c', 'd']]", "Backup: [['a', 'goblet'], ['b'], ['c', 'd']]"], f"With three floors you printed {got}.")
+
+  def test_backup_rows_separate():
+      r = run_with(floors=[["x"], ["y"]])
+      floors, backup = r.ns["floors"], r.ns["backup"]
+      check(all(f is not b for f, b in zip(floors, backup)), "Every inner list of the backup must be a new list - otherwise changes still leak both ways.")
+hints:
+  nudge: '`.copy()` makes a new outer list. What about the lists inside it?'
+  question: After line 2, is `backup[0]` the same list as `floors[0]`? How could each floor be copied too?
+  pseudocode: |
+    backup = an empty list
+    for each floor in floors:
+        add a copy of that floor to backup
+    then add the goblet and print, as before
+  flaw: Line 2 copies only the outside. Every inner list is still shared, so appending to `backup[0]` changes `floors[0]`.
+  analogous: |
+    ```python
+    teams = [["Harry"], ["Cho"]]
+    photos = []
+    for team in teams:
+        photos.append(team[:])
+    ```

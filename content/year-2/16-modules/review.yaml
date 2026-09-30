@@ -1,0 +1,29 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: from-import
+  type: choice
+  q: After `from math import sqrt`, which call works?
+  options: ["`math.sqrt(9)`", "`sqrt(9)`", "Both"]
+  answer: 1
+  why: Only the name sqrt was imported, not the module name math.
+- id: seed-repeat
+  type: predict
+  code: |
+    import random
+    random.seed(1)
+    a = random.randint(1, 100)
+    random.seed(1)
+    b = random.randint(1, 100)
+    print(a == b)
+  why: The same seed restarts the same sequence, so the first number matches.
+- id: randint-range
+  type: choice
+  q: Which values can `random.randint(1, 6)` give?
+  options: ["1 to 5", "1 to 6, including 6", "0 to 6"]
+  answer: 1
+  why: Unlike range, randint includes its top value.
+- id: ceil-floor
+  type: predict
+  code: |
+    import math
+    print(math.floor(2.9), math.ceil(2.1), math.ceil(4.0))
+  why: floor rounds down, ceil rounds up; a whole number stays put.

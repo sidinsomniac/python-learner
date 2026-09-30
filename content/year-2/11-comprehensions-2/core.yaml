@@ -1,0 +1,68 @@
+tier: core
+type: practice
+title: Lockhart's One-Line Spell
+twist: edge case - materials written in any case; nothing shiny at all
+task: |
+  `castle` maps each item to its material. `shiny_materials` lists the
+  materials that shine. Keep the first two lines. Then, using
+  comprehensions:
+
+  1. Build `hoard`: a dictionary of just the shiny items, item -> material in
+     **lowercase**. Print `Hoard: ` and the sorted item names, joined with
+     `, ` (or `Hoard: empty`).
+  2. Print a label for **every** item, in the castle's order:
+     `mirror*` for a shiny item, plain `sock` otherwise, all joined with
+     spaces.
+  3. Print `Every item shines!` if all items are shiny, otherwise
+     `Something is dull.`
+
+  Materials may be written in any case: `"Silver"` counts as `"silver"`.
+
+  For the starting values:
+
+  ```
+  Hoard: cup, mirror
+  mirror* sock cup*
+  Something is dull.
+  ```
+starter: |
+  castle = {"mirror": "Silver", "sock": "wool", "cup": "GOLD"}
+  shiny_materials = ["silver", "gold", "glass"]
+tests: |
+  def _run(c, s=("silver", "gold", "glass")):
+      r = run_with(castle=c, shiny_materials=list(s))
+      return r.lines, r.ns.get("hoard")
+
+  def test_example():
+      lines, hoard = _run({"mirror": "Silver", "sock": "wool", "cup": "GOLD"})
+      check(lines == ["Hoard: cup, mirror", "mirror* sock cup*", "Something is dull."], f"You printed {lines}.")
+      check(hoard == {"mirror": "silver", "cup": "gold"}, f"`hoard` should be {{'mirror': 'silver', 'cup': 'gold'}}. It is {hoard}.")
+
+  def test_all_shiny():
+      lines, _ = _run({"badge": "Glass", "cup": "gold"})
+      check(lines == ["Hoard: badge, cup", "badge* cup*", "Every item shines!"], f"You printed {lines}.")
+
+  def test_nothing_shiny():
+      lines, hoard = _run({"sock": "wool", "hat": "felt"})
+      check(lines == ["Hoard: empty", "sock hat", "Something is dull."], f"You printed {lines}.")
+      check(hoard == {}, f"With nothing shiny, `hoard` should be empty. It is {hoard}.")
+
+  def test_comprehensions():
+      check(uses(ast.DictComp), "Build `hoard` with a dictionary comprehension.")
+      check(not uses(ast.For), "Comprehensions only - no `for` statements this time.")
+hints:
+  nudge: One dictionary comprehension that filters, one list comprehension that chooses a label for EVERY item, and all(...).
+  question: Where does the lowercase happen - in the filter test, in the stored value, or both? Which kind of `if` keeps every item but changes its label?
+  pseudocode: |
+    hoard = {item: lowercased material, for each item and material, if the lowercased material shines}
+    show "Hoard: " and the sorted items joined, or "empty"
+    labels = [item with a star if it shines, else just the item, for each item and material]
+    show the labels joined by spaces
+    show the right line depending on whether all items shine
+  flaw: If "cup" is missing, you compared "GOLD" to "gold" without lowercasing. If the sock vanishes from line 2, you filtered instead of choosing.
+  analogous: |
+    ```python
+    ages = {"Ron": 12, "Percy": 16}
+    print({n: a for n, a in ages.items() if a > 13})
+    print([n + "!" if a > 13 else n for n, a in ages.items()])
+    ```

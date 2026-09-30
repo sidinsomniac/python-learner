@@ -1,0 +1,40 @@
+tier: warmup
+type: divination
+title: Whose List Is It?
+task: Predict every line.
+snippet: |
+  points = 10
+
+  def award(p):
+      p += 5
+      points = 99
+      return p
+
+  print(award(points), points)
+
+  def add(bag, item):
+      bag.append(item)
+      bag = ["new"]
+      return bag
+
+  mine = ["wand"]
+  print(add(mine, "quill"), mine)
+
+  def collect(item, hoard=[]):
+      hoard.append(item)
+      return len(hoard)
+
+  print(collect("cup"), collect("mirror"), collect("sock", []))
+hints:
+  nudge: Three puzzles. In each one, ask - is this name local to the function, or is it pointing at something from outside?
+  question: In `add`, after `bag.append`, what does `bag = ["new"]` do to `mine`? In `collect`, how many different hoard lists are there?
+  pseudocode: |
+    award works on its own copy of the number; the global points is untouched
+    add appends to the shared list, then points its local name somewhere new
+    collect's default list is shared between the first two calls; the third brings its own list
+  flaw: The traps are thinking `points = 99` changes the global, and thinking the second collect starts from an empty hoard.
+  analogous: |
+    ```text
+    def f(x=[]): x.append(1); return x
+    f(); f()  ->  [1, 1]
+    ```

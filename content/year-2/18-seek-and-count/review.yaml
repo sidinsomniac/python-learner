@@ -1,0 +1,19 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: nested-steps
+  type: choice
+  q: A loop over 1,000 items, inside a loop over the same 1,000 items. Roughly how many steps?
+  options: ["2,000", "1,000,000", "1,000"]
+  answer: 1
+  why: 1,000 inner steps for each of 1,000 outer steps - O(n²).
+- id: two-pointers
+  type: choice
+  q: Merging sorted lists [2, 7] and [3, 4] with two pointers - what order are items taken?
+  options: ["2, 3, 4, 7", "2, 7, 3, 4", "3, 4, 2, 7"]
+  answer: 0
+  why: Always take the smaller of the two front items, then add the leftovers.
+- id: signature
+  type: predict
+  code: |
+    print("".join(sorted("Silent".lower())))
+    print("".join(sorted("listen")))
+  why: Anagrams share the same sorted letters - a perfect dictionary key.

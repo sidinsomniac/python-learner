@@ -1,0 +1,20 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: chain
+  type: predict
+  code: |
+    report = {"Mon": {"bathroom": 3}, "Tue": {}}
+    print(report["Mon"]["bathroom"])
+    print(report.get("Fri", {}).get("hall", 0))
+  why: The first lookup gives the inner dictionary; the chained gets fall back to {} and then 0.
+- id: safe-first-default
+  type: choice
+  q: Why is the first default `{}` in `d.get(night, {}).get(place, 0)`?
+  options: ["So the second .get has a dictionary to call it on", "Because {} is faster than None", "It sorts the result"]
+  answer: 0
+  why: "`None.get(...)` would crash; an empty dictionary answers every get with its default."
+- id: shared-inner
+  type: choice
+  q: "`merged[\"Mon\"] = myrtle[\"Mon\"]`, then `merged[\"Mon\"][\"hall\"] = 1`. What happens to Myrtle's report?"
+  options: ["Nothing", "Her Monday gains a hall entry too", "A KeyError"]
+  answer: 1
+  why: Both names point at the SAME inner dictionary.

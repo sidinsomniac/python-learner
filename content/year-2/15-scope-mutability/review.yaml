@@ -1,0 +1,34 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: mutable-default
+  type: predict
+  code: |
+    def collect(item, bag=[]):
+        bag.append(item)
+        return bag
+
+    collect("mirror")
+    print(collect("cup"))
+  why: The default list is made once and shared, so the second call still holds the mirror.
+- id: none-fix
+  type: choice
+  q: What's the right way to give a function a fresh list each call?
+  options: ["`def f(x, bag=[]):`", "`def f(x, bag=None):` then `if bag is None: bag = []`", "`def f(x, bag=list):`"]
+  answer: 1
+  why: None means "not given"; the new list is made inside the function, on every call.
+- id: local-assign
+  type: predict
+  code: |
+    points = 10
+
+    def award():
+        points = 50
+        return points
+
+    print(award(), points)
+  why: Assigning inside the function makes a separate local variable; the global stays 10.
+- id: shared-arg
+  type: choice
+  q: "`def add(bag): bag.append(1)`. After `mine = []` and `add(mine)`, what is `mine`?"
+  options: ["`[]`", "`[1]`", "An error"]
+  answer: 1
+  why: The parameter is another name for the same list, so the append is seen outside.

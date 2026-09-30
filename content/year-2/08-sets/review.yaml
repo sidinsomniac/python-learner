@@ -1,0 +1,21 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: empty-set
+  type: choice
+  q: How do you make an EMPTY set?
+  options: ["`{}`", "`set()`", "`[]`"]
+  answer: 1
+  why: "`{}` is an empty dictionary."
+- id: set-ops
+  type: predict
+  code: |
+    a = {"Ginny", "Draco", "Nick"}
+    b = {"Nick", "Myrtle", "Ginny"}
+    print(sorted(a & b))
+    print(sorted(a - b))
+  why: "& keeps names in both; - keeps names only in the first set."
+- id: set-speed
+  type: choice
+  q: You must check 20,000 names against a list of 20,000 names. What's the fast way?
+  options: ["Loop over the list for each name", "Turn the list into a set first, then use `in`", "Sort both lists"]
+  answer: 1
+  why: A set lookup takes one step, however big the set is.

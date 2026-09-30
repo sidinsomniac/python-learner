@@ -1,0 +1,59 @@
+tier: outstanding
+type: practice
+title: Crack It with E
+twist: edge case - capitals, punctuation, ties, and messages with no letters
+task: |
+  Write `crack_by_e(text)`: assume the most common letter in the coded text
+  stands for `E`, work out the shift, and return a tuple
+  `(shift, decoded_text)`.
+
+  - Count letters ignoring case; ignore everything that isn't a letter.
+  - If several letters tie for most common, use the one that comes **first
+    in the alphabet**.
+  - The shift is between 0 and 25 (so `caesar(plain, shift)` gives the coded
+    text back).
+  - If the text has no letters at all, return `(0, text)`.
+
+  You'll need your `caesar`/`decode` spells from the core challenge - include
+  them in your answer.
+
+  ```python
+  crack_by_e("AOL JHIPULA OBUNLYZ. MLLK PA ZOPUF AOPUNZ.")
+  # (7, 'THE CABINET HUNGERS. FEED IT SHINY THINGS.')
+  ```
+starter: |
+  def crack_by_e(text):
+      pass
+tests: |
+  def test_cabinet():
+      got = call(student_function("crack_by_e"), "AOL JHIPULA OBUNLYZ. MLLK PA ZOPUF AOPUNZ.")
+      check(got == (7, "THE CABINET HUNGERS. FEED IT SHINY THINGS."), f"crack_by_e returned {got!r}.")
+
+  def test_mixed_case():
+      coded = "Xppe xp le xtoytrse, esp mlesczzx ypgpc dwppad. Qppo esp nlmtype pgpcjestyr."
+      got = call(student_function("crack_by_e"), coded)
+      check(got == (11, "Meet me at midnight, the bathroom never sleeps. Feed the cabinet everything."), f"You returned {got!r}. Capitals shouldn't split the count.")
+
+  def test_small_shift():
+      got = call(student_function("crack_by_e"), "Ihhg")
+      check(got == (3, "Feed"), f"The most common letter h stands for e, so the shift is 3. You returned {got!r}.")
+      got = call(student_function("crack_by_e"), "abba")
+      check(got == (22, "effe"), f"a and b tie; a comes first, so a stands for e - a shift of 22 (e + 22 wraps round to a). You returned {got!r}.")
+
+  def test_no_letters():
+      got = call(student_function("crack_by_e"), "123 !!")
+      check(got == (0, "123 !!"), f"With no letters, return (0, text). You returned {got!r}.")
+hints:
+  nudge: Three steps - tally the letters, pick the most common (alphabetical ties), and turn "this letter is really E" into a shift.
+  question: If coded letter X stands for E, how far did E move to become X? How do you keep that distance between 0 and 25?
+  pseudocode: |
+    counts = tally of each lowercased letter (skip non-letters)
+    if there are no letters: give back (0, text)
+    top = the alphabetically-first letter with the highest count
+    shift = (position of top - position of e), wrapped to 0-25
+    give back (shift, text decoded by shift)
+  flaw: A negative shift means the wrap is missing. If a tie picks the wrong letter, go through the letters in alphabetical order and only replace on a strictly higher count.
+  analogous: |
+    ```python
+    print((ord("b") - ord("e")) % 26)   # 23 - e moved 23 places to become b
+    ```

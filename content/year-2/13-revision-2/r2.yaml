@@ -1,0 +1,55 @@
+tier: review
+type: repair
+title: Ginny's Pattern Finder
+task: |
+  Ginny wrote `common_floor(sightings)`. Each sighting is a dictionary with a
+  `"floor"` key. The function should return the floor that appears most often
+  (on a tie, the lowest floor), or `None` if there are no sightings.
+
+  It has **three** bugs. Repair it.
+
+  ```python
+  common_floor([{"floor": 2}, {"floor": 3}, {"floor": 2}])
+  # -> 2
+  common_floor([{"floor": 4}, {"floor": 1}])
+  # -> 1
+  common_floor([])
+  # -> None
+  ```
+starter: |
+  def common_floor(sightings):
+      counts = {}
+      for s in sightings:
+          counts[s] = counts.get(s, 0) + 1
+      best = None
+      for floor in counts:
+          if best is None or counts[floor] > counts[best]:
+              best = floor
+      print(best)
+tests: |
+  def test_simple():
+      got = call(student_function("common_floor"), [{"floor": 2}, {"floor": 3}, {"floor": 2}])
+      check(got == 2, f"common_floor returned {got!r}. Does it RETURN its answer?")
+
+  def test_tie_lowest():
+      got = call(student_function("common_floor"), [{"floor": 4}, {"floor": 1}])
+      check(got == 1, f"On a tie, the LOWEST floor wins. You returned {got!r}.")
+      got = call(student_function("common_floor"), [{"floor": 7}, {"floor": 5}, {"floor": 7}, {"floor": 5}])
+      check(got == 5, f"Floors 7 and 5 tie, so 5 wins. You returned {got!r}.")
+
+  def test_empty():
+      got = call(student_function("common_floor"), [])
+      check(got is None, f"No sightings means None. You returned {got!r}.")
+hints:
+  nudge: One bug crashes, one ignores the tie rule, and one hides the answer from the caller.
+  question: What is `s` in the first loop - a floor, or a whole dictionary? In what order does the second loop visit the floors?
+  pseudocode: |
+    count each sighting's FLOOR
+    visit the floors from lowest to highest, keeping the first with the most
+    give back the best
+  flaw: A dictionary can't be a key (TypeError); the floors are visited in first-seen order, not lowest first; and print is not return.
+  analogous: |
+    ```python
+    for level in sorted({3: "x", 1: "y"}):
+        print(level)
+    ```
