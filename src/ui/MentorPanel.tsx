@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGame } from "../engine/store";
+import { useFx, useGame } from "../engine/store";
 import type { Exercise, HintLadder, Lesson } from "../engine/types";
 import { MENTOR } from "../lore/lore";
 import type { FeedbackItem } from "../mentor/feedback";
@@ -28,6 +28,7 @@ export function MentorPanel({
 }) {
   const unlocked = useGame((s) => s.hintsUnlocked[exercise.id] ?? 0);
   const unlockHint = useGame((s) => s.unlockHint);
+  const felix = useGame((s) => s.aids.felix ?? 0);
   const done = useGame((s) => Boolean(s.exercises[exercise.id]));
 
   return (
@@ -75,6 +76,18 @@ export function MentorPanel({
               : unlocked < 4
                 ? `Unlock hint ${unlocked + 1}: ${RUNGS[unlocked].label}`
                 : "Still stuck? Show me a similar spell"}
+          </button>
+        )}
+        {unlocked < 4 && felix > 0 && (
+          <button
+            className="btn ghost small felix-btn"
+            onClick={() => {
+              const r = useGame.getState().drinkFelix(exercise.id);
+              if (!r.ok) useFx.getState().toast(r.reason);
+            }}
+            data-testid="drink-felix"
+          >
+            🧪 Drink Felix Felicis ({felix}): this hint is free - no XP or grade cost
           </button>
         )}
         {unlocked >= RUNGS.length && (

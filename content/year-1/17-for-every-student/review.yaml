@@ -1,0 +1,25 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: range
+  type: choice
+  q: What does `range(2, 6)` give?
+  options:
+  - 2 3 4 5 6
+  - 2 3 4 5
+  - 3 4 5 6
+  answer: 1
+  why: The stop value is never included.
+- id: for-string
+  type: predict
+  code: |-
+    for ch in "owl":
+        print(ch.upper())
+  why: The loop visits each character in turn.
+- id: range-step
+  type: choice
+  q: How many numbers does `range(10, 0, -3)` give?
+  options:
+  - '3'
+  - '4'
+  - '10'
+  answer: 1
+  why: 10, 7, 4, 1 - four numbers.

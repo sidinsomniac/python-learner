@@ -6,6 +6,7 @@ import {
   type Exercise,
   type HintLadder,
   type Lesson,
+  type ReviewCard,
   type SceneLine,
   type Tier,
   type Year,
@@ -14,8 +15,9 @@ import {
 // Only these files are bundled. `*.solution.py` files never are.
 const yearFiles = import.meta.glob("/content/*/year.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const lessonFiles = import.meta.glob("/content/*/*/lesson.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
-const exerciseFiles = import.meta.glob(["/content/*/*/*.yaml", "!**/lesson.yaml"], { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+const exerciseFiles = import.meta.glob(["/content/*/*/*.yaml", "!**/lesson.yaml", "!**/review.yaml"], { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const lectures = import.meta.glob("/content/*/*/lecture.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+const reviewFiles = import.meta.glob("/content/*/*/review.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const spellbooks = import.meta.glob("/content/*/*/spellbook.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
 export const CAST = loadYaml(castRaw) as Record<string, CastMember>;
@@ -103,6 +105,9 @@ function buildYears(): Year[] {
       lecture: lectures[`${dir}lecture.md`] ?? "",
       spellbook: spellbooks[`${dir}spellbook.md`] ?? "",
       exercises: meta.exercises.map((slot) => buildExercise(meta.id, dir, slot)),
+      review: ((loadYaml(reviewFiles[`${dir}review.yaml`] ?? "[]") ?? []) as Omit<ReviewCard, "lessonId">[]).map(
+        (card) => ({ ...card, id: `${meta.id}#${card.id}`, lessonId: meta.id }) as ReviewCard,
+      ),
     };
   });
 
@@ -121,6 +126,7 @@ function buildYears(): Year[] {
 export const YEARS: Year[] = buildYears();
 export const LESSONS: Lesson[] = YEARS.flatMap((y) => y.lessons);
 export const EXERCISES: Exercise[] = LESSONS.flatMap((l) => l.exercises);
+export const REVIEW_CARDS: ReviewCard[] = LESSONS.flatMap((l) => l.review);
 
 export const lessonById = (id: string) => LESSONS.find((l) => l.id === id);
 export const exerciseById = (id: string) => EXERCISES.find((e) => e.id === id);

@@ -2,6 +2,7 @@ import { python as pythonLang } from "@codemirror/lang-python";
 import CodeMirror from "@uiw/react-codemirror";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "../engine/store";
+import { itemById } from "../lore/shop";
 import { applyEggs } from "../lore/applyEggs";
 import { translateError } from "../mentor/errorTranslator";
 import { python } from "../runtime/pythonRunner";
@@ -26,8 +27,9 @@ export function CodeEditor({
   label: string;
 }) {
   const theme = useGame((s) => s.theme);
+  const editorTheme = useGame((s) => (s.equipped.editor ? itemById(s.equipped.editor)?.value : undefined));
   return (
-    <div className="editor" aria-label={label}>
+    <div className={`editor ${editorTheme ? `editor-${editorTheme}` : ""}`} aria-label={label}>
       <CodeMirror
         value={value}
         onChange={onChange}

@@ -1,0 +1,19 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: countdown
+  type: predict
+  code: |-
+    n = 3
+    while n > 0:
+        print(n)
+        n -= 1
+    print('Go')
+  why: It prints 3, 2, 1 and stops when n reaches 0.
+- id: forever
+  type: choice
+  q: 'Why would `while x > 0: print(x)` run forever?'
+  options:
+  - print is slow
+  - Nothing inside changes x
+  - while needs a colon
+  answer: 1
+  why: Every while loop needs something inside that moves it towards stopping.

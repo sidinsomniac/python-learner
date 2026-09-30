@@ -1,6 +1,15 @@
 year: 1
 title: The Philosopher's Syntax
 mystery: The Jinxed Ledger
+theme:
+  mood: Candlelit Great Hall
+  gold: "#d9b45a"
+  gold2: "#f3d58a"
+  bg: "#0f1424"
+  bg2: "#161d33"
+  card: "#1b2340"
+  card2: "#222c50"
+  line: "#34406b"
 intro:
   - who: narrator
     line: The Welcome Feast. Hundreds of candles float above the four House tables, and the enchanted ceiling glitters with stars.

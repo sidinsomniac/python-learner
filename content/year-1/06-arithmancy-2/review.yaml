@@ -1,0 +1,24 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: float-eq
+  type: choice
+  q: Is `0.1 + 0.2 == 0.3`?
+  options:
+  - 'True'
+  - 'False'
+  answer: 1
+  why: The sum is really 0.30000000000000004 - compare floats with a tolerance instead.
+- id: round-even
+  type: predict
+  code: |-
+    print(round(2.5))
+    print(round(3.5))
+  why: 'Exactly halfway rounds to the nearest EVEN number: 2 and 4.'
+- id: abs
+  type: choice
+  q: What does `abs(-7)` give?
+  options:
+  - '-7'
+  - '7'
+  - '0'
+  answer: 1
+  why: abs removes the sign.

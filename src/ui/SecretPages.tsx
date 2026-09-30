@@ -75,7 +75,8 @@ export function MaraudersMap() {
     );
   }
   const all = YEARS.flatMap((y) => y.lessons);
-  const current = all.find((l) => !isLessonComplete(l, exercises) && isLessonUnlocked(l, YEARS, exercises));
+  const skipped = useGame.getState().skipped;
+  const current = all.find((l) => !isLessonComplete(l, exercises) && isLessonUnlocked(l, YEARS, exercises, skipped));
   return (
     <div className="card secret marauder">
       <h1>🗺️ The Marauder's Map</h1>

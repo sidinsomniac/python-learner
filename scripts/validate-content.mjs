@@ -72,6 +72,9 @@ for (const yearDir of readdirSync(contentDir, { withFileTypes: true })) {
   const year = yaml(`${yearDir.name}/year.yaml`, yearMeta);
   if (!year) continue;
   for (const field of ["year", "title", "mystery"]) if (year[field] === undefined) fail(`${yearDir.name}/year.yaml`, `missing "${field}"`);
+  for (const key of ["mood", "gold", "gold2", "bg", "bg2", "card", "card2", "line"]) {
+    if (!year.theme?.[key]) fail(`${yearDir.name}/year.yaml`, `the year's theme is missing "${key}"`);
+  }
   checkScene(`${yearDir.name}/year.yaml intro`, year.intro);
 
   for (const lessonDir of readdirSync(yearPath, { withFileTypes: true })) {
@@ -132,6 +135,35 @@ for (const { meta, dir, where, year } of lessons) {
       fail(where, `checkpoint "${spec.q.slice(0, 30)}..." has an answer index out of range`);
     }
   }
+  // Time-Turner and Dueling Club cards.
+  const reviewRaw = read(dir, "review.yaml");
+  if (kind === "lesson" && !reviewRaw) fail(where, "missing review.yaml (2-4 Time-Turner cards)");
+  if (reviewRaw) {
+    const cards = yaml(`${where}/review.yaml`, reviewRaw) ?? [];
+    if (!Array.isArray(cards)) fail(where, "review.yaml must be a list of cards");
+    else {
+      if (kind === "lesson" && (cards.length < 2 || cards.length > 4)) fail(where, `review.yaml should have 2-4 cards (it has ${cards.length})`);
+      if (kind === "lesson" && !cards.some((c) => c?.type === "choice")) fail(where, "review.yaml needs at least one choice card (the Dueling Club uses them)");
+      const ids = new Set();
+      for (const card of cards) {
+        const at = `${where}/review.yaml#${card?.id}`;
+        if (!card?.id || ids.has(card.id)) fail(at, "every card needs a unique id");
+        ids.add(card?.id);
+        if (!card?.why) fail(at, "every card needs a why");
+        if (card?.type === "choice") {
+          if (!card.q || !Array.isArray(card.options) || card.options.length < 2) fail(at, "a choice card needs q and at least 2 options");
+          else if (!Number.isInteger(card.answer) || card.answer < 0 || card.answer >= card.options.length) fail(at, "answer index out of range");
+        } else if (card?.type === "predict") {
+          const out = card.code ? run(card.code, []) : null;
+          if (!out || out.error) fail(at, `the predict card's code must run cleanly${out?.error ? ` (${out.error.type})` : ""}`);
+          else if (!out.stdout.trim()) fail(at, "the predict card's code prints nothing");
+        } else {
+          fail(at, `unknown card type "${card?.type}"`);
+        }
+      }
+    }
+  }
+
   const lectureCode = fences(lecture ?? "", "python");
   const review = rulesFor(meta.id);
 

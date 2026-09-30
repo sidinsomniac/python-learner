@@ -1,13 +1,27 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { rewardsBetween } from "../lore/levels";
 import type { HouseId } from "../lore/lore";
+import { aidById, itemById, type AidId, type ItemKind } from "../lore/shop";
 import { DEFAULT_MENTOR_SETTINGS, type MentorSettings } from "../mentor/llm";
 import { YEARS } from "./content";
-import { bestGrade, gradeFor, isLessonComplete, isYearComplete, levelFromXp, xpForCompletion } from "./progress";
-import type { Exercise, ExerciseRecord, Grade, Lesson } from "./types";
+import type { DuelOutcome } from "./duel";
+import {
+  bestGrade,
+  canSkip,
+  gradeFor,
+  isLessonComplete,
+  isYearComplete,
+  levelFromXp,
+  skipCost,
+  skipsInYear,
+  xpForCompletion,
+} from "./progress";
+import { answerCard, dayKey, nextStreak, type CardState } from "./review";
+import type { Exercise, ExerciseRecord, Grade, Lesson, SceneLine } from "./types";
 
 export const SAVE_KEY = "parseltongue-save-v1";
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export interface Reward {
   firstTime: boolean;
@@ -22,21 +36,39 @@ export interface Reward {
   clue?: string;
 }
 
+export type Result = { ok: true } | { ok: false; reason: string };
+
 export interface GameState {
   name: string;
   house: HouseId | null;
   xp: number;
+  /** The highest level ever reached. Rewards are never taken away. */
+  bestLevel: number;
   galleons: number;
   housePoints: number;
   exercises: Record<string, ExerciseRecord>;
   attempts: Record<string, number>;
   hintsUnlocked: Record<string, number>;
+  /** Hints taken under Felix Felicis: they cost no XP and don't lower grades. */
+  freeHints: Record<string, number>;
   drafts: Record<string, string>;
   badges: Record<string, string>;
   eggsFound: Record<string, string>;
   clues: Record<string, string>;
   scenesSeen: Record<string, boolean>;
+  /** Lessons skipped with Peeves' Bargain (kept even after they're finished later). */
+  skipped: Record<string, string>;
+  owned: Record<string, string>;
+  equipped: Partial<Record<ItemKind, string>>;
+  aids: Record<AidId, number>;
+  /** Aids bought per `${aid}:${year}` - each year's stock is limited. */
+  aidBought: Record<string, number>;
+  cards: Record<string, CardState>;
+  reviewLastDay: string | null;
+  reviewStreak: number;
+  duels: Record<string, { wins: number; losses: number; draws: number }>;
   theme: "dark" | "light";
+  ambience: boolean;
   marauderMap: boolean;
   mentor: MentorSettings;
 
@@ -46,10 +78,21 @@ export interface GameState {
   recordAttempt: (exerciseId: string) => number;
   unlockHint: (exerciseId: string) => void;
   completeExercise: (exercise: Exercise, lesson: Lesson, reviewClean: boolean) => Reward;
+  gainXp: (amount: number) => number | null;
+  skipLesson: (lesson: Lesson) => Result;
+  buyItem: (id: string) => Result;
+  equip: (kind: ItemKind, id: string | null) => void;
+  buyAid: (aid: AidId, year: number) => Result;
+  drinkFelix: (exerciseId: string) => Result;
+  pourSand: (exerciseId: string) => Result;
+  answerReviewCard: (cardId: string, correct: boolean) => void;
+  finishReviewSession: (correctCount: number) => { xp: number; galleons: number; streak: number };
+  recordDuel: (opponentId: string, outcome: DuelOutcome, galleons: number) => string[];
   awardBadge: (id: string) => boolean;
   foundEgg: (id: string) => void;
   markSceneSeen: (id: string) => void;
   setTheme: (theme: "dark" | "light") => void;
+  setAmbience: (on: boolean) => void;
   setMarauderMap: (open: boolean) => void;
   setMentor: (patch: Partial<MentorSettings>) => void;
   resetProgress: () => void;
@@ -62,19 +105,37 @@ const initialData = {
   name: "",
   house: null,
   xp: 0,
+  bestLevel: 1,
   galleons: 0,
   housePoints: 0,
   exercises: {},
   attempts: {},
   hintsUnlocked: {},
+  freeHints: {},
   drafts: {},
   badges: {},
   eggsFound: {},
   clues: {},
   scenesSeen: {},
+  skipped: {},
+  owned: { "wand-holly": "start" },
+  equipped: { wand: "wand-holly" },
+  aids: { felix: 0, sand: 0 },
+  aidBought: {},
+  cards: {},
+  reviewLastDay: null,
+  reviewStreak: 0,
+  duels: {},
   theme: "dark" as const,
+  ambience: true,
   marauderMap: false,
   mentor: DEFAULT_MENTOR_SETTINGS,
+};
+
+/** Badges for finishing each year, and for uncovering every clue of its mystery. */
+const YEAR_BADGES: Record<number, { complete: string; detective: string }> = {
+  1: { complete: "year-1", detective: "detective" },
+  2: { complete: "year-2", detective: "cabinet-detective" },
 };
 
 // Declared before the store: persisted saves are migrated while it is created.
@@ -89,30 +150,45 @@ export const V1_QUEST_TO_EXERCISE: Record<string, string> = {
 
 /** Upgrade an older save to the current shape, keeping everything earned. */
 export function migrateSave(old: Record<string, unknown>, version: number): Record<string, unknown> {
-  if (version >= 2) return old;
-  const rename = <T,>(rec: unknown): Record<string, T> =>
-    Object.fromEntries(
-      Object.entries((rec ?? {}) as Record<string, T>)
-        .filter(([k]) => V1_QUEST_TO_EXERCISE[k])
-        .map(([k, v]) => [V1_QUEST_TO_EXERCISE[k], v]),
-    );
-  const completed = (old.completed ?? {}) as Record<string, { completedAt: string; attempts: number; hintsUsed: number; xpEarned: number }>;
-  const exercises: Record<string, ExerciseRecord> = {};
-  for (const [questId, rec] of Object.entries(completed)) {
-    const id = V1_QUEST_TO_EXERCISE[questId];
-    if (id) exercises[id] = { ...rec, grade: gradeFor(rec.hintsUsed, false) };
+  let save = old;
+  if (version < 2) {
+    const rename = <T,>(rec: unknown): Record<string, T> =>
+      Object.fromEntries(
+        Object.entries((rec ?? {}) as Record<string, T>)
+          .filter(([k]) => V1_QUEST_TO_EXERCISE[k])
+          .map(([k, v]) => [V1_QUEST_TO_EXERCISE[k], v]),
+      );
+    const completed = (old.completed ?? {}) as Record<string, { completedAt: string; attempts: number; hintsUsed: number; xpEarned: number }>;
+    const exercises: Record<string, ExerciseRecord> = {};
+    for (const [questId, rec] of Object.entries(completed)) {
+      const id = V1_QUEST_TO_EXERCISE[questId];
+      if (id) exercises[id] = { ...rec, grade: gradeFor(rec.hintsUsed, false) };
+    }
+    const { completed: _completed, ...rest } = old;
+    void _completed;
+    save = {
+      ...rest,
+      exercises,
+      attempts: rename<number>(old.attempts),
+      hintsUnlocked: rename<number>(old.hintsUnlocked),
+      drafts: rename<string>(old.drafts),
+      clues: {},
+      scenesSeen: {},
+    };
   }
-  const { completed: _completed, ...rest } = old;
-  void _completed;
-  return {
-    ...rest,
-    exercises,
-    attempts: rename<number>(old.attempts),
-    hintsUnlocked: rename<number>(old.hintsUnlocked),
-    drafts: rename<string>(old.drafts),
-    clues: {},
-    scenesSeen: {},
-  };
+  if (version < 3) {
+    // Version 3 adds the economy. New fields get their defaults, and the
+    // rewards for levels already reached are handed out straight away.
+    const level = levelFromXp(Number(save.xp ?? 0));
+    const owned: Record<string, string> = { ...initialData.owned };
+    let galleons = Number(save.galleons ?? 0);
+    for (const r of rewardsBetween(1, level)) {
+      if (r.item) owned[r.item] = "level reward";
+      galleons += r.galleons ?? 0;
+    }
+    save = { ...save, bestLevel: level, owned, galleons };
+  }
+  return save;
 }
 
 export const useGame = create<GameState>()(
@@ -133,10 +209,30 @@ export const useGame = create<GameState>()(
       unlockHint: (id) =>
         set((s) => ({ hintsUnlocked: { ...s.hintsUnlocked, [id]: Math.min(5, (s.hintsUnlocked[id] ?? 0) + 1) } })),
 
+      gainXp: (amount) => {
+        const s = get();
+        const xp = Math.max(0, s.xp + amount);
+        const level = levelFromXp(xp);
+        if (level <= s.bestLevel) {
+          set({ xp });
+          return null;
+        }
+        const rewards = rewardsBetween(s.bestLevel, level);
+        const owned = { ...s.owned };
+        let galleons = s.galleons;
+        for (const r of rewards) {
+          if (r.item) owned[r.item] = owned[r.item] ?? now();
+          galleons += r.galleons ?? 0;
+        }
+        set({ xp, bestLevel: level, owned, galleons });
+        useFx.getState().levelUp(level);
+        return level;
+      },
+
       completeExercise: (exercise, lesson, reviewClean) => {
         const s = get();
         const previous = s.exercises[exercise.id];
-        const hintsUsed = s.hintsUnlocked[exercise.id] ?? 0;
+        const hintsUsed = Math.max(0, (s.hintsUnlocked[exercise.id] ?? 0) - (s.freeHints[exercise.id] ?? 0));
         const attempts = s.attempts[exercise.id] ?? 1;
         const grade = bestGrade(previous?.grade, gradeFor(hintsUsed, reviewClean));
         const reward: Reward = {
@@ -172,16 +268,13 @@ export const useGame = create<GameState>()(
             clues[lesson.id] = now();
             reward.clue = lesson.clue;
           }
-          const oldLevel = levelFromXp(s.xp);
-          const newLevel = levelFromXp(s.xp + reward.xp);
-          if (newLevel > oldLevel) reward.levelUp = newLevel;
           set({
             exercises,
             clues,
-            xp: s.xp + reward.xp,
             galleons: s.galleons + reward.galleons,
             housePoints: s.housePoints + reward.housePoints,
           });
+          reward.levelUp = get().gainXp(reward.xp);
         }
 
         const exercises = get().exercises;
@@ -193,11 +286,130 @@ export const useGame = create<GameState>()(
         if (exercise.tier === "outstanding") earn("star-student");
         if (exercise.type === "repair") earn("bug-tamer");
         if (exercise.type === "divination") earn("seer");
-        const year1 = YEARS.find((y) => y.year === 1);
-        if (isYearComplete(year1, exercises)) earn("year-1");
-        const cluesInYear1 = year1?.lessons.filter((l) => l.clue) ?? [];
-        if (cluesInYear1.length > 0 && cluesInYear1.every((l) => get().clues[l.id])) earn("detective");
+        const year = YEARS.find((y) => y.year === lesson.year);
+        const badges = YEAR_BADGES[lesson.year];
+        if (year && badges) {
+          if (isYearComplete(year, exercises, get().skipped)) earn(badges.complete);
+          const clueLessons = year.lessons.filter((l) => l.clue);
+          if (clueLessons.length > 0 && clueLessons.every((l) => get().clues[l.id])) earn(badges.detective);
+        }
         return reward;
+      },
+
+      skipLesson: (lesson) => {
+        const s = get();
+        if (!canSkip(lesson, YEARS, s.exercises, s.skipped)) {
+          return { ok: false, reason: lesson.kind === "trial" ? "Trials can never be skipped." : "Only your next lesson can be skipped." };
+        }
+        const cost = skipCost(skipsInYear(lesson.year, s.skipped, YEARS));
+        if (s.galleons < cost.galleons) {
+          return { ok: false, reason: `Peeves wants ${cost.galleons} Galleons, and you only have ${s.galleons}.` };
+        }
+        set({ galleons: s.galleons - cost.galleons, skipped: { ...s.skipped, [lesson.id]: now() } });
+        get().gainXp(-cost.xp);
+        get().awardBadge("peeves-bargain");
+        return { ok: true };
+      },
+
+      buyItem: (id) => {
+        const s = get();
+        const item = itemById(id);
+        if (!item || item.giftOnly) return { ok: false, reason: "That isn't for sale." };
+        if (s.owned[id]) return { ok: false, reason: "You already own it." };
+        if (item.minLevel && s.bestLevel < item.minLevel) return { ok: false, reason: `Reach level ${item.minLevel} first.` };
+        if (s.galleons < item.price) return { ok: false, reason: "Not enough Galleons." };
+        set({ galleons: s.galleons - item.price, owned: { ...s.owned, [id]: now() }, equipped: { ...s.equipped, [item.kind]: id } });
+        get().awardBadge("diagon-alley");
+        return { ok: true };
+      },
+
+      equip: (kind, id) =>
+        set((s) => {
+          const equipped = { ...s.equipped };
+          if (id && s.owned[id]) equipped[kind] = id;
+          else delete equipped[kind];
+          return { equipped };
+        }),
+
+      buyAid: (aid, year) => {
+        const s = get();
+        const info = aidById(aid);
+        const key = `${aid}:${year}`;
+        if ((s.aidBought[key] ?? 0) >= info.perYear) return { ok: false, reason: `Sold out for this year - only ${info.perYear} per year.` };
+        if (s.galleons < info.price) return { ok: false, reason: "Not enough Galleons." };
+        set({
+          galleons: s.galleons - info.price,
+          aids: { ...s.aids, [aid]: (s.aids[aid] ?? 0) + 1 },
+          aidBought: { ...s.aidBought, [key]: (s.aidBought[key] ?? 0) + 1 },
+        });
+        return { ok: true };
+      },
+
+      drinkFelix: (exerciseId) => {
+        const s = get();
+        if ((s.aids.felix ?? 0) < 1) return { ok: false, reason: "You have no Felix Felicis." };
+        if ((s.hintsUnlocked[exerciseId] ?? 0) >= 5) return { ok: false, reason: "Every hint is already unlocked." };
+        set({
+          aids: { ...s.aids, felix: s.aids.felix - 1 },
+          hintsUnlocked: { ...s.hintsUnlocked, [exerciseId]: (s.hintsUnlocked[exerciseId] ?? 0) + 1 },
+          freeHints: { ...s.freeHints, [exerciseId]: (s.freeHints[exerciseId] ?? 0) + 1 },
+        });
+        return { ok: true };
+      },
+
+      pourSand: (exerciseId) => {
+        const s = get();
+        if ((s.aids.sand ?? 0) < 1) return { ok: false, reason: "You have no Time-Turner sand." };
+        if (!s.exercises[exerciseId]) return { ok: false, reason: "Only finished exercises can be turned back." };
+        set({
+          aids: { ...s.aids, sand: s.aids.sand - 1 },
+          hintsUnlocked: { ...s.hintsUnlocked, [exerciseId]: 0 },
+          freeHints: { ...s.freeHints, [exerciseId]: 0 },
+          attempts: { ...s.attempts, [exerciseId]: 0 },
+        });
+        return { ok: true };
+      },
+
+      answerReviewCard: (cardId, correct) => {
+        const today = dayKey(new Date());
+        set((s) => ({ cards: { ...s.cards, [cardId]: answerCard(s.cards[cardId], correct, today) } }));
+        if (correct) {
+          set((s) => ({ galleons: s.galleons + 1 }));
+          get().gainXp(5);
+        }
+      },
+
+      finishReviewSession: (correctCount) => {
+        const s = get();
+        const today = dayKey(new Date());
+        const firstToday = s.reviewLastDay !== today;
+        const streak = nextStreak(s.reviewLastDay, s.reviewStreak, today);
+        const bonus = firstToday ? { xp: 10, galleons: 3 } : { xp: 0, galleons: 0 };
+        set({ reviewLastDay: today, reviewStreak: streak, galleons: s.galleons + bonus.galleons });
+        if (bonus.xp) get().gainXp(bonus.xp);
+        get().awardBadge("time-turner");
+        if (streak >= 3) get().awardBadge("streak-3");
+        if (streak >= 7) get().awardBadge("streak-7");
+        void correctCount;
+        return { ...bonus, streak };
+      },
+
+      recordDuel: (opponentId, outcome, galleons) => {
+        const s = get();
+        const rec = s.duels[opponentId] ?? { wins: 0, losses: 0, draws: 0 };
+        const next = {
+          wins: rec.wins + (outcome === "win" ? 1 : 0),
+          losses: rec.losses + (outcome === "loss" ? 1 : 0),
+          draws: rec.draws + (outcome === "draw" ? 1 : 0),
+        };
+        set({ duels: { ...s.duels, [opponentId]: next } });
+        const earned: string[] = [];
+        if (outcome === "win") {
+          set((st) => ({ galleons: st.galleons + galleons, housePoints: st.housePoints + 10 }));
+          if (get().awardBadge(`duel-${opponentId}`)) earned.push(`duel-${opponentId}`);
+          if (opponentId === "draco" && next.wins >= 3 && get().awardBadge("rivalry")) earned.push("rivalry");
+        }
+        return earned;
       },
 
       awardBadge: (id) => {
@@ -212,6 +424,7 @@ export const useGame = create<GameState>()(
 
       markSceneSeen: (id) => set((s) => ({ scenesSeen: { ...s.scenesSeen, [id]: true } })),
       setTheme: (theme) => set({ theme }),
+      setAmbience: (ambience) => set({ ambience }),
       setMarauderMap: (marauderMap) => set({ marauderMap }),
       setMentor: (patch) => set((s) => ({ mentor: { ...s.mentor, ...patch } })),
       resetProgress: () => set({ ...initialData, mentor: get().mentor }),
@@ -221,8 +434,8 @@ export const useGame = create<GameState>()(
         if (typeof parsed !== "object" || parsed === null || !("xp" in parsed)) {
           throw new Error("That doesn't look like a Parseltongue save file.");
         }
-        const data = "exercises" in parsed ? parsed : migrateSave(parsed, 1);
-        set({ ...initialData, ...data, mentor: get().mentor });
+        const version = "exercises" in parsed ? Number(parsed.saveVersion ?? 2) : 1;
+        set({ ...initialData, ...migrateSave(parsed, version), mentor: get().mentor });
       },
     }),
     {
@@ -232,7 +445,13 @@ export const useGame = create<GameState>()(
       migrate: (persisted, version) => migrateSave(persisted as Record<string, unknown>, version) as unknown as GameState,
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<GameState>;
-        return { ...current, ...p, mentor: { ...DEFAULT_MENTOR_SETTINGS, ...(p.mentor ?? {}) } };
+        return {
+          ...current,
+          ...p,
+          owned: { ...current.owned, ...(p.owned ?? {}) },
+          aids: { ...current.aids, ...(p.aids ?? {}) },
+          mentor: { ...DEFAULT_MENTOR_SETTINGS, ...(p.mentor ?? {}) },
+        };
       },
     },
   ),
@@ -247,7 +466,7 @@ export function exportSave(): string {
 }
 
 // ---------------------------------------------------------------------------
-// Short-lived visual effects and toasts (not saved).
+// Short-lived visual effects, toasts and pop-ups (not saved).
 // ---------------------------------------------------------------------------
 
 export interface Toast {
@@ -256,14 +475,31 @@ export interface Toast {
   kind: "egg" | "reward" | "badge" | "info";
 }
 
-export type Fx = "patronus" | "levitate" | "fireworks" | "duck" | null;
+export type Fx = "patronus" | "levitate" | "fireworks" | "duck" | "sparkle" | "golden" | "dawn" | null;
 
 interface FxState {
   toasts: Toast[];
   fx: Fx;
+  /** Levels reached that haven't been celebrated yet. */
+  levelUps: number[];
+  /** Short line said by the equipped familiar. */
+  familiarLine: string | null;
+  /** Story scenes waiting to be shown as pop-ups, oldest first. */
+  scenes: QueuedScene[];
   toast: (text: string, kind?: Toast["kind"]) => void;
   dismiss: (id: number) => void;
   play: (fx: Exclude<Fx, null>) => void;
+  levelUp: (level: number) => void;
+  dismissLevelUp: () => void;
+  cheer: (line: string) => void;
+  queueScene: (scene: QueuedScene) => void;
+  finishScene: () => void;
+}
+
+export interface QueuedScene {
+  id: string;
+  title?: string;
+  lines: SceneLine[];
 }
 
 let toastId = 1;
@@ -271,6 +507,9 @@ let toastId = 1;
 export const useFx = create<FxState>()((set, get) => ({
   toasts: [],
   fx: null,
+  levelUps: [],
+  familiarLine: null,
+  scenes: [],
   toast: (text, kind = "info") => {
     const id = toastId++;
     set({ toasts: [...get().toasts, { id, text, kind }] });
@@ -280,5 +519,24 @@ export const useFx = create<FxState>()((set, get) => ({
   play: (fx) => {
     set({ fx });
     setTimeout(() => get().fx === fx && set({ fx: null }), 3500);
+  },
+  levelUp: (level) => {
+    set({ levelUps: [...get().levelUps, level] });
+    get().play("fireworks");
+  },
+  dismissLevelUp: () => set({ levelUps: get().levelUps.slice(1) }),
+  cheer: (line) => {
+    set({ familiarLine: line });
+    setTimeout(() => get().familiarLine === line && set({ familiarLine: null }), 3000);
+  },
+  queueScene: (scene) => {
+    if (scene.lines.length === 0 || useGame.getState().scenesSeen[scene.id]) return;
+    if (get().scenes.some((q) => q.id === scene.id)) return;
+    set({ scenes: [...get().scenes, scene] });
+  },
+  finishScene: () => {
+    const [done, ...rest] = get().scenes;
+    if (done) useGame.getState().markSceneSeen(done.id);
+    set({ scenes: rest });
   },
 }));

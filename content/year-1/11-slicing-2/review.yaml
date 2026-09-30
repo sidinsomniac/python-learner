@@ -1,0 +1,16 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: reverse
+  type: predict
+  code: |-
+    print("stressed"[::-1])
+    print("abcdef"[::2])
+  why: '[::-1] reverses; [::2] takes every other character.'
+- id: palindrome
+  type: choice
+  q: Which checks if `w` is a palindrome, ignoring capitals?
+  options:
+  - '`w == w[::-1]`'
+  - '`w.lower() == w.lower()[::-1]`'
+  - '`w[::-1] == True`'
+  answer: 1
+  why: Lowercase both sides first so capitals can't spoil it.

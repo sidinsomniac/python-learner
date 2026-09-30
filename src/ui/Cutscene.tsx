@@ -1,71 +1,106 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CAST } from "../engine/content";
-import { useGame } from "../engine/store";
+import { useFx, useGame } from "../engine/store";
 import type { SceneLine } from "../engine/types";
 import { renderInline } from "./md";
 
 const who = (id: string) => CAST[id] ?? { name: id, portrait: "❔" };
 
 /** Personalise lines: {name} is the student, {house} their house. */
-function personalise(text: string, name: string, house: string) {
-  return text.replaceAll("{name}", name).replaceAll("{house}", house);
-}
-
-/** A story beat, told one line at a time, then kept as a transcript. */
-export function Cutscene({ id, lines, title }: { id: string; lines: SceneLine[]; title?: string }) {
-  const seen = useGame((s) => Boolean(s.scenesSeen[id]));
-  const markSeen = useGame((s) => s.markSceneSeen);
+function usePersonalise() {
   const name = useGame((s) => s.name);
   const house = useGame((s) => s.house ?? "");
   const houseName = house ? house[0].toUpperCase() + house.slice(1) : "";
-  const [shown, setShown] = useState(seen ? lines.length : 1);
+  return (text: string) => text.replaceAll("{name}", name).replaceAll("{house}", houseName);
+}
+
+function Line({ line, fresh }: { line: SceneLine; fresh?: boolean }) {
+  const personalise = usePersonalise();
+  const speaker = who(line.who);
+  return (
+    <div className={`line ${line.who === "narrator" ? "narration" : ""} ${fresh ? "fresh" : ""}`}>
+      <span className="portrait" aria-hidden>
+        {speaker.portrait}
+      </span>
+      <div>
+        {speaker.name && <strong className="speaker">{speaker.name}</strong>}
+        <p dangerouslySetInnerHTML={{ __html: renderInline(personalise(line.line)) }} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A story beat. The first time it's met it pops up (see SceneHost) so it
+ * can't be missed; afterwards it stays on the page as a story card that can
+ * be replayed.
+ */
+export function Cutscene({ id, lines, title }: { id: string; lines: SceneLine[]; title?: string }) {
+  const seen = useGame((s) => Boolean(s.scenesSeen[id]));
+  const queueScene = useFx((s) => s.queueScene);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!seen) queueScene({ id, lines, title });
+  }, [id, seen, lines, title, queueScene]);
 
   if (lines.length === 0) return null;
-  const finished = shown >= lines.length;
-  const finish = () => {
-    setShown(lines.length);
-    markSeen(id);
-  };
-
   return (
-    <section className="cutscene card" aria-label={title ?? "Story"} data-testid="cutscene">
-      {title && <h3 className="cutscene-title">{title}</h3>}
-      <div className="dialogue">
-        {lines.slice(0, shown).map((l, i) => {
-          const speaker = who(l.who);
-          return (
-            <div key={i} className={`line ${l.who === "narrator" ? "narration" : ""} ${i === shown - 1 && !finished ? "fresh" : ""}`}>
-              <span className="portrait" aria-hidden>
-                {speaker.portrait}
-              </span>
-              <div>
-                {speaker.name && <strong className="speaker">{speaker.name}</strong>}
-                <p dangerouslySetInnerHTML={{ __html: renderInline(personalise(l.line, name, houseName)) }} />
-              </div>
-            </div>
-          );
-        })}
+    <section className="cutscene card" aria-label={title ?? "Story"} data-testid="story-card">
+      <div className="row between">
+        <h3 className="cutscene-title">📜 {title ?? "Story"}</h3>
+        <button className="btn small" onClick={() => setOpen(!open)} aria-expanded={open}>
+          {open ? "Hide" : seen ? "↺ Read again" : "Read"}
+        </button>
       </div>
-      {!finished ? (
-        <div className="row">
-          <button
-            className="btn primary"
-            onClick={() => (shown + 1 >= lines.length ? finish() : setShown(shown + 1))}
-            data-testid="scene-next"
-          >
-            Next ▸
-          </button>
-          <button className="btn ghost small" onClick={finish}>
-            Skip
-          </button>
+      {open ? (
+        <div className="dialogue">
+          {lines.map((l, i) => (
+            <Line key={i} line={l} />
+          ))}
         </div>
       ) : (
-        seen && (
-          <button className="btn ghost small" onClick={() => setShown(1)}>
-            ↺ Replay scene
-          </button>
-        )
+        <p className="muted small story-teaser">
+          {who(lines[0].who).portrait} {lines.length} line{lines.length === 1 ? "" : "s"} of story
+          {!seen && " - waiting to be told"}
+        </p>
       )}
     </section>
+  );
+}
+
+/** Shows queued story scenes as a pop-up, one line at a time. */
+export function SceneHost() {
+  const scene = useFx((s) => s.scenes[0]);
+  const finishScene = useFx((s) => s.finishScene);
+  const [shown, setShown] = useState(1);
+
+  useEffect(() => setShown(1), [scene?.id]);
+  if (!scene) return null;
+  const finished = shown >= scene.lines.length;
+  const next = () => (finished ? finishScene() : setShown(shown + 1));
+
+  return (
+    <div className="modal-backdrop scene-backdrop" role="dialog" aria-modal="true" aria-label={scene.title ?? "Story"}>
+      <div className="card modal scene-modal" data-testid="cutscene">
+        {scene.title && <h2 className="cutscene-title">{scene.title}</h2>}
+        <div className="dialogue big">
+          {scene.lines.slice(0, shown).map((l, i) => (
+            <Line key={i} line={l} fresh={i === shown - 1} />
+          ))}
+        </div>
+        <div className="row scene-controls">
+          <span className="muted small">
+            {shown} / {scene.lines.length}
+          </span>
+          <button className="btn ghost small" onClick={finishScene} data-testid="scene-skip">
+            Skip
+          </button>
+          <button className="btn primary" onClick={next} autoFocus data-testid="scene-next">
+            {finished ? "Continue ▸" : "Next ▸"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

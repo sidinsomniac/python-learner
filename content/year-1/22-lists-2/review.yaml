@@ -1,0 +1,28 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: alias
+  type: choice
+  q: '`a = [1]`, `b = a`, `b.append(2)`. What is `a`?'
+  options:
+  - '[1]'
+  - '[1, 2]'
+  - An error
+  answer: 1
+  why: b is another name for the SAME list.
+- id: copy
+  type: predict
+  code: |-
+    a = [1, 2]
+    b = a[:]
+    b.append(3)
+    print(a)
+    print(b)
+  why: '`a[:]` makes a real copy, so only b grows.'
+- id: copy-how
+  type: choice
+  q: Which of these makes a real copy of list `a`?
+  options:
+  - '`b = a`'
+  - '`b = a.copy()`'
+  - '`b == a`'
+  answer: 1
+  why: '`.copy()`, `a[:]` and `list(a)` all copy.'

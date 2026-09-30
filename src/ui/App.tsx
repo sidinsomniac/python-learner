@@ -1,19 +1,26 @@
 import { useEffect } from "react";
-import { useGame } from "../engine/store";
+import { lessonById, YEARS } from "../engine/content";
+import { currentYear } from "../engine/progress";
+import { useFx, useGame } from "../engine/store";
 import { grantBadge } from "../lore/applyEggs";
 import { KONAMI } from "../lore/easterEggs";
-import { useFx } from "../engine/store";
 import { python } from "../runtime/pythonRunner";
+import { Ambience } from "./Ambience";
+import { CaseFile } from "./CaseFile";
+import { SceneHost } from "./Cutscene";
+import { DuelingClub } from "./DuelingClub";
 import { Effects } from "./Effects";
 import { Header } from "./Header";
-import { MapView } from "./MapView";
 import { LessonView } from "./LessonView";
-import { CaseFile } from "./CaseFile";
-import { useRoute } from "./router";
+import { LevelUpHost } from "./LevelUp";
+import { MapView } from "./MapView";
+import { useRoute, type Route } from "./router";
 import { MaraudersMap, Page394, Platform934 } from "./SecretPages";
 import { Settings } from "./Settings";
+import { Shop } from "./Shop";
 import { Sorting } from "./Sorting";
 import { Spellbook } from "./Spellbook";
+import { TimeTurner } from "./TimeTurner";
 import { Trophies } from "./Trophies";
 import { Welcome } from "./Welcome";
 
@@ -22,11 +29,25 @@ export default function App() {
   const house = useGame((s) => s.house);
   const theme = useGame((s) => s.theme);
   const route = useRoute();
+  const year = useYearOnScreen(route);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.dataset.house = house ?? "";
-  }, [theme, house]);
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.dataset.house = house ?? "";
+    root.dataset.year = String(year);
+    // Each year has its own palette. In the light (Lumos) theme only the
+    // accents change, so text stays readable on parchment.
+    const t = YEARS.find((y) => y.year === year)?.theme;
+    const vars: Record<string, string | undefined> =
+      theme === "dark" && t
+        ? { "--gold": t.gold, "--gold-2": t.gold2, "--bg": t.bg, "--bg-2": t.bg2, "--card": t.card, "--card-2": t.card2, "--line": t.line }
+        : { "--gold": undefined, "--gold-2": undefined, "--bg": undefined, "--bg-2": undefined, "--card": undefined, "--card-2": undefined, "--line": undefined };
+    for (const [k, v] of Object.entries(vars)) {
+      if (v) root.style.setProperty(k, v);
+      else root.style.removeProperty(k);
+    }
+  }, [theme, house, year]);
 
   // Start waking Python up as soon as the student has a name.
   useEffect(() => {
@@ -55,6 +76,15 @@ export default function App() {
       case "settings":
         body = <Settings />;
         break;
+      case "shop":
+        body = <Shop />;
+        break;
+      case "time-turner":
+        body = <TimeTurner />;
+        break;
+      case "dueling-club":
+        body = <DuelingClub />;
+        break;
       case "platform":
         body = <Platform934 />;
         break;
@@ -69,13 +99,29 @@ export default function App() {
     }
   }
 
+  const sceneKey = route.page === "lesson" ? `lesson:${route.id}` : route.page;
+
   return (
     <>
+      <Ambience sceneKey={sceneKey} />
       {name && house && <Header />}
       <main className="main">{body}</main>
       <Effects />
+      <SceneHost />
+      <LevelUpHost />
     </>
   );
+}
+
+/** The year whose theme is shown: the lesson's year, or the latest year reached. */
+function useYearOnScreen(route: Route): number {
+  const exercises = useGame((s) => s.exercises);
+  const skipped = useGame((s) => s.skipped);
+  if (route.page === "lesson") {
+    const lesson = lessonById(route.id);
+    if (lesson) return lesson.year;
+  }
+  return currentYear(YEARS, exercises, skipped);
 }
 
 function useKonamiCode() {

@@ -1,0 +1,27 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: var-vs-string
+  type: choice
+  q: After `pet = "owl"`, what does `print("pet")` show?
+  options:
+  - owl
+  - pet
+  - An error
+  answer: 1
+  why: The quotes make it the word *pet*, not the variable.
+- id: concat
+  type: predict
+  code: |-
+    a = "Hog"
+    b = "warts"
+    print(a + b)
+    print(a, b)
+  why: '`+` glues exactly; commas in print add a space.'
+- id: input-type
+  type: choice
+  q: What type does `input()` always give back?
+  options:
+  - int
+  - str
+  - It depends on what's typed
+  answer: 1
+  why: input() always returns a string - even when digits are typed.

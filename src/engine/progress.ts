@@ -8,14 +8,17 @@ type Records = Record<string, ExerciseRecord>;
 /** XP needed to *reach* a level: 1 -> 0, 2 -> 100, 3 -> 300, 4 -> 600 ... */
 export const xpForLevel = (level: number) => 50 * (level - 1) * level;
 
+export const MAX_LEVEL = 20;
+
 export function levelFromXp(xp: number): number {
   let level = 1;
-  while (xp >= xpForLevel(level + 1)) level++;
+  while (level < MAX_LEVEL && xp >= xpForLevel(level + 1)) level++;
   return level;
 }
 
 export function levelProgress(xp: number) {
   const level = levelFromXp(xp);
+  if (level >= MAX_LEVEL) return { level, into: 0, needed: 0, fraction: 1 };
   const floor = xpForLevel(level);
   const ceil = xpForLevel(level + 1);
   return { level, into: xp - floor, needed: ceil - floor, fraction: (xp - floor) / (ceil - floor) };
@@ -69,21 +72,58 @@ export function lessonGrade(lesson: Lesson, records: Records): Grade | null {
 // Unlocking.
 // ---------------------------------------------------------------------------
 
+type Skipped = Record<string, string>;
+
+/** Every required exercise done. (A skipped lesson isn't "complete" - see isLessonPassed.) */
 export const isLessonComplete = (lesson: Lesson, records: Records) =>
   lesson.exercises.filter(isRequired).every((e) => Boolean(records[e.id]));
 
-export function isYearComplete(year: Year | undefined, records: Records): boolean {
-  return Boolean(year && year.lessons.length > 0 && year.lessons.every((l) => isLessonComplete(l, records)));
+/** Complete, or skipped with Peeves' Bargain - either way the next lesson opens. */
+export const isLessonPassed = (lesson: Lesson, records: Records, skipped: Skipped = {}) =>
+  isLessonComplete(lesson, records) || Boolean(skipped[lesson.id]);
+
+export function isYearComplete(year: Year | undefined, records: Records, skipped: Skipped = {}): boolean {
+  return Boolean(year && year.lessons.length > 0 && year.lessons.every((l) => isLessonPassed(l, records, skipped)));
 }
 
 /** A lesson opens when the previous lesson (or, for a year's first lesson, the previous year) is complete. */
-export function isLessonUnlocked(lesson: Lesson, years: Year[], records: Records): boolean {
+export function isLessonUnlocked(lesson: Lesson, years: Year[], records: Records, skipped: Skipped = {}): boolean {
   const year = years.find((y) => y.year === lesson.year);
   if (!year) return false;
   const index = year.lessons.findIndex((l) => l.id === lesson.id);
-  if (index > 0) return isLessonComplete(year.lessons[index - 1], records);
+  if (index > 0) return isLessonPassed(year.lessons[index - 1], records, skipped);
   const previousYear = years.find((y) => y.year === lesson.year - 1);
-  return !previousYear || isYearComplete(previousYear, records);
+  return !previousYear || isYearComplete(previousYear, records, skipped);
+}
+
+/** The latest year the student has reached (for themes and the shop's stock). */
+export function currentYear(years: Year[], records: Records, skipped: Skipped = {}): number {
+  let latest = years[0]?.year ?? 1;
+  for (const y of years) if (y.lessons[0] && isLessonUnlocked(y.lessons[0], years, records, skipped)) latest = y.year;
+  return latest;
+}
+
+// ---------------------------------------------------------------------------
+// Peeves' Bargain: skipping a lesson costs Galleons AND XP, more each time.
+// ---------------------------------------------------------------------------
+
+export const SKIP_BASE = { galleons: 75, xp: 60 };
+
+export function skipCost(skipsSoFarThisYear: number) {
+  const factor = 1 + 0.5 * skipsSoFarThisYear;
+  return { galleons: Math.round(SKIP_BASE.galleons * factor), xp: Math.round(SKIP_BASE.xp * factor) };
+}
+
+export const skipsInYear = (year: number, skipped: Skipped, years: Year[]) =>
+  Object.keys(skipped).filter((id) => years.find((y) => y.year === year)?.lessons.some((l) => l.id === id)).length;
+
+/** Only the next unfinished lesson can be skipped - and never a Trial. */
+export function canSkip(lesson: Lesson, years: Year[], records: Records, skipped: Skipped): boolean {
+  return (
+    lesson.kind !== "trial" &&
+    !isLessonPassed(lesson, records, skipped) &&
+    isLessonUnlocked(lesson, years, records, skipped)
+  );
 }
 
 /** Within a lesson, each exercise opens once every required exercise before it is done. */

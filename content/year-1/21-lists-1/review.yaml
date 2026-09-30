@@ -1,0 +1,17 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: list-basics
+  type: predict
+  code: |-
+    pets = ["owl", "cat"]
+    pets.append("toad")
+    print(len(pets), pets[-1])
+  why: append adds to the end; -1 is the last item.
+- id: empty-max
+  type: choice
+  q: Which of these raises an error?
+  options:
+  - '`sum([])`'
+  - '`len([])`'
+  - '`max([])`'
+  answer: 2
+  why: max of nothing is an error - check for an empty list first.

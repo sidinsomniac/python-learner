@@ -1,0 +1,23 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: immutable
+  type: choice
+  q: s = "lumos"; s.upper(); print(s) - what prints?
+  options:
+  - LUMOS
+  - lumos
+  - Lumos
+  answer: 1
+  why: Strings never change. `.upper()` returned a new string that was thrown away.
+- id: chain
+  type: predict
+  code: print("  hEdWiG  ".strip().title())
+  why: strip removes the spaces, then title capitalises the word.
+- id: find
+  type: choice
+  q: What is `"owl".find("z")`?
+  options:
+  - '0'
+  - '-1'
+  - An error
+  answer: 1
+  why: '`.find` returns -1 when it can''t find anything.'

@@ -1,0 +1,27 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: reassign
+  type: predict
+  code: |-
+    x = 2
+    x = x * 3
+    x = x + 1
+    print(x)
+  why: 'Each line uses the value from the line before: 2, then 6, then 7.'
+- id: copy-value
+  type: choice
+  q: '`a = 5`, `b = a`, `a = 9`. What is `b`?'
+  options:
+  - '5'
+  - '9'
+  - An error
+  answer: 0
+  why: '`b = a` copied the value 5 at that moment; changing `a` later doesn''t touch `b`.'
+- id: swap
+  type: choice
+  q: What's the danger in `a = b` then `b = a` when swapping?
+  options:
+  - Nothing, it works
+  - a's old value is lost
+  - It's a SyntaxError
+  answer: 1
+  why: After `a = b`, a's old value is gone. Save it in a spare variable first.

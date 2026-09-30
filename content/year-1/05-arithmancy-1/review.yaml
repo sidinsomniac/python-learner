@@ -1,0 +1,26 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: div-kinds
+  type: predict
+  code: |-
+    print(7 / 2)
+    print(7 // 2)
+    print(7 % 2)
+  why: '`/` gives a float, `//` the whole part, `%` the remainder.'
+- id: precedence
+  type: choice
+  q: What is `2 + 3 * 4`?
+  options:
+  - '20'
+  - '14'
+  - '24'
+  answer: 1
+  why: 'Multiplication first: 3 * 4 = 12, then + 2.'
+- id: mod
+  type: choice
+  q: What is `20 % 6`?
+  options:
+  - '2'
+  - '3'
+  - '3.33'
+  answer: 0
+  why: 6 fits into 20 three times (18), leaving 2.

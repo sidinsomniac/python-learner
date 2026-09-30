@@ -4,6 +4,9 @@ export type Route =
   | { page: "map" }
   | { page: "lesson"; id: string }
   | { page: "casefile" }
+  | { page: "shop" }
+  | { page: "time-turner" }
+  | { page: "dueling-club" }
   | { page: "spellbook" }
   | { page: "trophies" }
   | { page: "settings" }
@@ -18,6 +21,12 @@ export function parseHash(hash: string): Route {
       return parts[1] ? { page: "lesson", id: decodeURIComponent(parts[1]) } : { page: "map" };
     case "casefile":
       return { page: "casefile" };
+    case "shop":
+      return { page: "shop" };
+    case "time-turner":
+      return { page: "time-turner" };
+    case "dueling-club":
+      return { page: "dueling-club" };
     case "spellbook":
       return parts[1] === "394" ? { page: "page394" } : { page: "spellbook" };
     case "trophies":

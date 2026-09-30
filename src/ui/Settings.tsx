@@ -69,6 +69,15 @@ export function Settings() {
           />
           Lumos (light theme)
         </label>
+        <label className="row">
+          <input
+            type="checkbox"
+            checked={game.ambience}
+            onChange={(e) => game.setAmbience(e.target.checked)}
+            data-testid="ambience-toggle"
+          />
+          Castle ambience (moving weather in the background)
+        </label>
       </section>
 
       <section className="card">

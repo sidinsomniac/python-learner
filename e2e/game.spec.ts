@@ -4,7 +4,15 @@ const SAVE_KEY = "parseltongue-save-v1";
 
 type Save = Record<string, unknown>;
 
-async function seed(page: Page, state: Save = {}, version = 2) {
+/** Story and level-up pop-ups appear at unpredictable moments; close them whenever they get in the way. */
+async function autoDismissPopups(page: Page) {
+  // noWaitAfter: several scenes can be queued, each with its own Skip button.
+  await page.addLocatorHandler(page.getByTestId("scene-skip"), (skip) => skip.click(), { noWaitAfter: true });
+  await page.addLocatorHandler(page.getByRole("button", { name: "Wonderful!" }), (ok) => ok.click(), { noWaitAfter: true });
+}
+
+async function seed(page: Page, state: Save = {}, version = 3) {
+  await autoDismissPopups(page);
   await page.addInitScript(
     ([key, s, v]) => {
       if (!localStorage.getItem(key)) {
@@ -45,16 +53,27 @@ test("a new student hears the story, answers a checkpoint, and gets questions (n
   for (let i = 0; i < 4; i++) await page.locator(".btn.answer").first().click();
   await page.getByRole("button", { name: /Take my seat/ }).click();
 
-  // The year's prologue plays on the Great Hall.
+  // The year's prologue pops up on the Great Hall, one line at a time.
+  const prologue = page.getByTestId("cutscene");
+  await expect(prologue).toContainText("The Welcome Feast");
+  await prologue.getByTestId("scene-next").click();
+  await expect(prologue).toContainText("Parseltongue");
+  await prologue.getByTestId("scene-skip").click();
+  await expect(prologue).toHaveCount(0);
   await expect(page.getByText("This year's mystery: The Jinxed Ledger")).toBeVisible();
   await expect(page.getByTestId("lesson-y1-l02")).toBeDisabled();
   await page.getByTestId("lesson-y1-l01").click();
 
-  // Story beat, told line by line.
-  const scene = page.getByTestId("cutscene").first();
+  // The lesson's story beat pops up too, and can't be missed.
+  const scene = page.getByTestId("cutscene");
   await expect(scene).toContainText("Every witch and wizard begins");
   await scene.getByTestId("scene-next").click();
   await expect(scene).toContainText("olleH");
+  await scene.getByTestId("scene-next").click();
+  await scene.getByTestId("scene-next").click();
+  await expect(scene).toHaveCount(0);
+  // Afterwards it stays on the page as a story card that can be read again.
+  await expect(page.getByTestId("story-card").first()).toContainText("Story");
 
   // An inline checkpoint in the lecture.
   const checkpoint = page.getByTestId("checkpoint").first();
@@ -201,4 +220,86 @@ test("a save from the first slice is carried over to the new lessons", async ({ 
   await page.goto("/#/lesson/y1-l01");
   await expect(page.getByTestId("tab-warmup")).toContainText("E");
   await expect(page.getByText("✨ 180 XP")).toBeVisible();
+});
+
+test("Peeves' Bargain skips a lesson for Galleons and XP", async ({ page }) => {
+  await seed(page, { galleons: 200, xp: 150, bestLevel: 2 });
+  await page.goto("/");
+  await page.getByTestId("skip-y1-l01").click();
+  const dialog = page.getByTestId("skip-dialog");
+  await expect(dialog).toContainText("75 Galleons");
+  await expect(dialog).toContainText("60 XP");
+  await dialog.getByTestId("skip-confirm").click();
+  await expect(page).toHaveURL(/lesson\/y1-l02/);
+  await expect(page.getByTestId("galleons")).toContainText("125");
+  await page.goto("/");
+  await expect(page.getByTestId("lesson-y1-l01")).toContainText("skipped");
+  await expect(page.getByTestId("lesson-y1-l02")).toBeEnabled();
+});
+
+test("the Trial can never be skipped", async ({ page }) => {
+  const year1 = ["y1-l01", "y1-l02", "y1-l03", "y1-r1", "y1-l04a", "y1-l04b", "y1-l05", "y1-l06", "y1-l07", "y1-l08a", "y1-l08b", "y1-r2", "y1-l09", "y1-l10a", "y1-l10b", "y1-l11", "y1-l12", "y1-l13a", "y1-l13b", "y1-r3", "y1-l14a", "y1-l14b", "y1-l15"];
+  await seed(page, { galleons: 999, exercises: completed(year1) });
+  await page.goto("/#/lesson/y1-trial");
+  await expect(page.getByRole("heading", { name: "Trial Sorting Hat Reforged", exact: true })).toBeVisible();
+  await expect(page.getByTestId("skip-lesson")).toHaveCount(0);
+});
+
+test("Diagon Alley sells a familiar that appears in the header", async ({ page }) => {
+  await seed(page, { galleons: 100 });
+  await page.goto("/#/shop");
+  await expect(page.getByTestId("purse")).toContainText("100");
+  await page.getByTestId("buy-fam-toad").click();
+  await expect(page.getByTestId("purse")).toContainText("80");
+  await expect(page.locator(".header")).toContainText("🐸");
+});
+
+test("the Time-Turner reviews cards from finished lessons", async ({ page }) => {
+  await seed(page, { bestLevel: 2, exercises: completed(["y1-l01"]) });
+  await page.goto("/#/time-turner");
+  await waitForPython(page);
+  await page.getByTestId("review-start").click();
+  for (let i = 0; i < 3; i++) {
+    const card = page.getByTestId("review-card");
+    const answers = card.locator(".btn.answer");
+    if (await answers.count()) await answers.first().click();
+    else {
+      await card.getByLabel("Your prediction").fill("x");
+      await card.getByRole("button", { name: "Check" }).click();
+    }
+    await page.getByTestId("review-next").click();
+  }
+  await expect(page.getByTestId("review-summary")).toContainText("Session complete");
+});
+
+test("a duel in the Dueling Club runs to a result", async ({ page }) => {
+  await seed(page, { bestLevel: 3, exercises: completed(["y1-l01", "y1-l02", "y1-l03"]) });
+  await page.goto("/#/dueling-club");
+  await page.getByTestId("duel-neville").click();
+  for (let i = 0; i < 5; i++) {
+    await page.getByTestId("duel-round").locator(".btn.answer").first().click();
+    await page.getByTestId("duel-next").click();
+  }
+  await expect(page.getByTestId("duel-result")).toContainText(/Victory|Defeated|draw/);
+});
+
+test("the living background changes weather between screens, and can be turned off", async ({ page }) => {
+  await seed(page, { exercises: completed(["y1-l01"]) });
+  await page.goto("/#/lesson/y1-l01");
+  const first = await page.getByTestId("ambience").getAttribute("data-preset");
+  await page.goto("/#/lesson/y1-l02");
+  await expect(page.getByTestId("ambience")).not.toHaveAttribute("data-preset", first!);
+  await page.goto("/#/settings");
+  await page.getByTestId("ambience-toggle").uncheck();
+  await expect(page.getByTestId("ambience")).toHaveCount(0);
+});
+
+test("reduced motion turns the living background off", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await seed(page);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "The Great Hall" })).toBeVisible();
+  await expect(page.getByTestId("ambience")).toHaveCount(0);
+  await context.close();
 });

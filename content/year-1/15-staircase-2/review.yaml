@@ -1,0 +1,28 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: or-trap
+  type: choice
+  q: If house = "Hufflepuff", is `house == "Gryffindor" or "Slytherin"` truthy?
+  options:
+  - 'Yes'
+  - 'No'
+  answer: 0
+  why: The bare string "Slytherin" is truthy. Write `house == "Gryffindor" or house == "Slytherin"`.
+- id: eq
+  type: choice
+  q: Which compares two values?
+  options:
+  - '`=`'
+  - '`==`'
+  - '`===`'
+  answer: 1
+  why: '`=` stores; `==` compares.'
+- id: nested
+  type: predict
+  code: |-
+    a = 3
+    if a > 1:
+        if a > 5:
+            print('big')
+        else:
+            print('medium')
+  why: The outer if runs; the inner if is False, so its else prints medium.

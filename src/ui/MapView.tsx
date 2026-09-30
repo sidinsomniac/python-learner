@@ -1,10 +1,23 @@
+import { useState } from "react";
 import { displayNumber, YEARS } from "../engine/content";
-import { GRADE_NAME, isExerciseUnlocked, isLessonComplete, isLessonUnlocked, lessonGrade } from "../engine/progress";
+import {
+  canSkip,
+  currentYear,
+  GRADE_NAME,
+  isExerciseUnlocked,
+  isLessonComplete,
+  isLessonUnlocked,
+  isYearComplete,
+  lessonGrade,
+} from "../engine/progress";
 import { useGame } from "../engine/store";
-import { TIER_LABEL, type Lesson } from "../engine/types";
+import { TIER_LABEL, type Lesson, type Year } from "../engine/types";
 import { HOUSES, YEAR_NAMES } from "../lore/lore";
+import { itemById } from "../lore/shop";
 import { Cutscene } from "./Cutscene";
 import { go } from "./router";
+import { SkipDialog } from "./SkipDialog";
+import { useDueCount } from "./TimeTurner";
 
 export const YEAR_TOPICS = [
   "print, variables, numbers, strings, if/else, loops, lists",
@@ -17,13 +30,17 @@ export const YEAR_TOPICS = [
 ];
 
 export function MapView() {
-  const { name, house, exercises } = useGame();
+  const { name, house, exercises, skipped, equipped } = useGame();
   const h = HOUSES[house!];
   const lessonsDone = YEARS.flatMap((y) => y.lessons).filter((l) => isLessonComplete(l, exercises)).length;
+  const now = currentYear(YEARS, exercises, skipped);
+  const due = useDueCount();
+  const banner = equipped.banner ? itemById(equipped.banner)?.value : undefined;
 
   return (
     <div className="stack">
-      <section className="card hero">
+      <section className={`card hero ${banner ? `banner-${banner}` : ""}`}>
+        {banner && <div className={`banner-strip banner-${banner}`} aria-hidden />}
         <h1>The Great Hall</h1>
         <p>
           Candles float above the {h.name} table.{" "}
@@ -35,6 +52,12 @@ export function MapView() {
             </>
           )}
         </p>
+        {due > 0 && (
+          <p>
+            ⏳ <a href="#/time-turner">{due} Time-Turner card{due === 1 ? " is" : "s are"} due today</a> - keep your old
+            spells fresh!
+          </p>
+        )}
         <p className="muted small">
           Each lesson has a <strong>📖 story and lecture</strong>, then exercises: <strong>🌱 Warm-up</strong> and{" "}
           <strong>🔥 Core challenge</strong> (required), and an optional <strong>⭐ Outstanding challenge</strong> for the
@@ -44,24 +67,9 @@ export function MapView() {
 
       {YEAR_NAMES.map((yearName, i) => {
         const year = YEARS.find((y) => y.year === i + 1);
+        const reached = Boolean(year?.lessons[0] && isLessonUnlocked(year.lessons[0], YEARS, exercises, skipped));
         return (
-          <section key={yearName} className={`card year ${year ? "" : "locked-year"}`}>
-            <h2>{yearName}</h2>
-            {year && <p className="mystery">🔍 This year's mystery: {year.mystery}</p>}
-            <p className="muted small">{YEAR_TOPICS[i]}</p>
-            {!year ? (
-              <p className="muted">🔒 The staircase to this floor hasn't moved into place yet. (Coming soon!)</p>
-            ) : (
-              <>
-                <Cutscene id={`year-${year.year}`} lines={year.intro} title={`${year.mystery}: prologue`} />
-                <ol className="quest-list">
-                  {year.lessons.map((lesson) => (
-                    <LessonCard key={lesson.id} lesson={lesson} />
-                  ))}
-                </ol>
-              </>
-            )}
-          </section>
+          <YearSection key={yearName} yearName={yearName} topics={YEAR_TOPICS[i]} year={year} reached={reached} current={year?.year === now} />
         );
       })}
 
@@ -76,18 +84,81 @@ export function MapView() {
   );
 }
 
-function LessonCard({ lesson }: { lesson: Lesson }) {
-  const records = useGame((s) => s.exercises);
-  const done = isLessonComplete(lesson, records);
-  const started = lesson.exercises.some((e) => records[e.id]);
-  const open = started || isLessonUnlocked(lesson, YEARS, records);
-  const grade = lessonGrade(lesson, records);
-  const icon = done ? "✅" : !open ? "🔒" : lesson.kind === "trial" ? "🏁" : lesson.kind === "revision" ? "📚" : "🪄";
+function YearSection({
+  yearName,
+  topics,
+  year,
+  reached,
+  current,
+}: {
+  yearName: string;
+  topics: string;
+  year?: Year;
+  reached: boolean;
+  current: boolean;
+}) {
+  const exercises = useGame((s) => s.exercises);
+  const skipped = useGame((s) => s.skipped);
+  const [open, setOpen] = useState(current);
+  const done = year ? isYearComplete(year, exercises, skipped) : false;
+
+  if (!year || !reached) {
+    return (
+      <section className="card year locked-year">
+        <h2>{yearName}</h2>
+        {year && <p className="mystery">🔍 {year.mystery}</p>}
+        <p className="muted small">{topics}</p>
+        <p className="muted">
+          {year ? "🔒 Pass last year's Trial to board the Hogwarts Express." : "🔒 The staircase to this floor hasn't moved into place yet. (Coming soon!)"}
+        </p>
+      </section>
+    );
+  }
 
   return (
-    <li>
+    <section className={`card year year-${year.year}`} data-testid={`year-${year.year}`}>
+      <div className="row between">
+        <h2>
+          {done && "✅ "}
+          {yearName}
+        </h2>
+        <button className="btn small ghost" onClick={() => setOpen(!open)} aria-expanded={open}>
+          {open ? "Fold away" : "Open"}
+        </button>
+      </div>
+      <p className="mystery">
+        🔍 This year's mystery: {year.mystery} · <span className="muted">{year.theme.mood}</span>
+      </p>
+      <p className="muted small">{topics}</p>
+      {open && (
+        <>
+          <Cutscene id={`year-${year.year}`} lines={year.intro} title={`${year.mystery}: prologue`} />
+          <ol className="quest-list">
+            {year.lessons.map((lesson) => (
+              <LessonCard key={lesson.id} lesson={lesson} />
+            ))}
+          </ol>
+        </>
+      )}
+    </section>
+  );
+}
+
+function LessonCard({ lesson }: { lesson: Lesson }) {
+  const records = useGame((s) => s.exercises);
+  const skipped = useGame((s) => s.skipped);
+  const [skipping, setSkipping] = useState(false);
+  const done = isLessonComplete(lesson, records);
+  const wasSkipped = Boolean(skipped[lesson.id]) && !done;
+  const started = lesson.exercises.some((e) => records[e.id]);
+  const open = started || isLessonUnlocked(lesson, YEARS, records, skipped);
+  const grade = lessonGrade(lesson, records);
+  const icon = done ? "✅" : wasSkipped ? "👻" : !open ? "🔒" : lesson.kind === "trial" ? "🏁" : lesson.kind === "revision" ? "📚" : "🪄";
+
+  return (
+    <li className="lesson-row">
       <button
-        className={`quest-card ${done ? "done" : open ? "open" : "locked"} kind-${lesson.kind}`}
+        className={`quest-card ${done ? "done" : wasSkipped ? "skipped" : open ? "open" : "locked"} kind-${lesson.kind}`}
         disabled={!open}
         onClick={() => go(`/lesson/${lesson.id}`)}
         data-testid={`lesson-${lesson.id}`}
@@ -98,6 +169,7 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
         <span className="quest-text">
           <strong>
             <span className="lesson-no">{displayNumber(lesson)}</span> {lesson.title}
+            {wasSkipped && <span className="skipped-tag">skipped</span>}
           </strong>
           <span className="muted small">
             📍 {lesson.location} · {lesson.concepts.join(", ")}
@@ -120,6 +192,12 @@ function LessonCard({ lesson }: { lesson: Lesson }) {
           </span>
         )}
       </button>
+      {canSkip(lesson, YEARS, records, skipped) && (
+        <button className="btn ghost small skip-btn" onClick={() => setSkipping(true)} title="Peeves' Bargain: skip this lesson" data-testid={`skip-${lesson.id}`}>
+          👻 Skip
+        </button>
+      )}
+      {skipping && <SkipDialog lesson={lesson} onClose={() => setSkipping(false)} />}
     </li>
   );
 }

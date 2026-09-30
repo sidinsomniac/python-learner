@@ -1,0 +1,25 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: dp
+  type: predict
+  code: |-
+    x = 3.14159
+    print(f"{x:.2f}")
+  why: '`.2f` shows exactly 2 decimal places.'
+- id: align
+  type: choice
+  q: What does `f"[{'ox':>4}]"` show?
+  options:
+  - '[ox  ]'
+  - '[  ox]'
+  - '[ ox ]'
+  answer: 1
+  why: '`>` leans right in a 4-wide field.'
+- id: fstring-f
+  type: choice
+  q: What does `print("{name}")` show when name = "Ron"?
+  options:
+  - Ron
+  - '{name}'
+  - An error
+  answer: 1
+  why: Without the `f` before the quote, braces are just printed.

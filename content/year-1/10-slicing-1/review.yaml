@@ -1,0 +1,26 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: slice
+  type: predict
+  code: |-
+    w = "Hogwarts"
+    print(w[0], w[-1])
+    print(w[1:4])
+  why: Index 0 is first, -1 is last; [1:4] is positions 1, 2, 3.
+- id: len
+  type: choice
+  q: What is `len("Nox")`?
+  options:
+  - '2'
+  - '3'
+  - '4'
+  answer: 1
+  why: Three characters.
+- id: index-error
+  type: choice
+  q: Which is an error for `w = "Ron"`?
+  options:
+  - '`w[1:10]`'
+  - '`w[5]`'
+  - '`w[-1]`'
+  answer: 1
+  why: Indexing past the end is an IndexError; slices just stop at the end.

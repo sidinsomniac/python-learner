@@ -1,0 +1,26 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: quotes-inside
+  type: choice
+  q: 'Which line prints: `She said "Hi"` (with the double quotes)?'
+  options:
+  - '`print("She said "Hi"")`'
+  - '`print(''She said "Hi"'')`'
+  - '`print(She said "Hi")`'
+  answer: 1
+  why: Wrap the string in the *other* kind of quote so the inner ones don't end it early.
+- id: newline
+  type: predict
+  code: |-
+    print("Up\nDown")
+    print()
+    print("End")
+  why: '`\n` starts a new line; an empty `print()` shows a blank line.'
+- id: case
+  type: choice
+  q: What happens with `Print("Lumos")`?
+  options:
+  - It prints Lumos
+  - A NameError
+  - It prints nothing
+  answer: 1
+  why: 'Python is case-sensitive: `Print` is a different, unknown name.'

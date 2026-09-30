@@ -1,0 +1,25 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: bools
+  type: predict
+  code: |-
+    x = 5
+    print(x > 3 and x < 4)
+    print(not x == 5)
+    print(3 < x <= 5)
+  why: 'Work out each comparison, then combine: False, False, True.'
+- id: order
+  type: choice
+  q: What is `True or False and False`?
+  options:
+  - 'True'
+  - 'False'
+  answer: 0
+  why: '`and` goes first: False and False is False; True or False is True.'
+- id: in
+  type: choice
+  q: What is `"ron" in "Ron Weasley"`?
+  options:
+  - 'True'
+  - 'False'
+  answer: 1
+  why: Capitals matter - 'ron' isn't in 'Ron Weasley'.

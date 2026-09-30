@@ -1,0 +1,21 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: elif
+  type: predict
+  code: |-
+    n = 75
+    if n > 50:
+        print('A')
+    elif n > 70:
+        print('B')
+    else:
+        print('C')
+  why: Only the first True branch runs - A.
+- id: colon
+  type: choice
+  q: What must end an `if` line?
+  options:
+  - A semicolon
+  - A colon
+  - Nothing
+  answer: 1
+  why: if, elif and else lines all end with a colon.

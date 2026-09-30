@@ -67,12 +67,32 @@ export interface Lesson {
   lecture: string;
   spellbook: string;
   exercises: Exercise[];
+  review: ReviewCard[];
+}
+
+/** A Time-Turner / Dueling Club card. */
+export type ReviewCard =
+  | { id: string; lessonId: string; type: "choice"; q: string; options: string[]; answer: number; why: string }
+  | { id: string; lessonId: string; type: "predict"; q?: string; code: string; why: string };
+
+export interface YearTheme {
+  mood: string;
+  /** Accent colours (headings, highlights). */
+  gold: string;
+  gold2: string;
+  /** Background, card and border colours for the dark (default) look. */
+  bg: string;
+  bg2: string;
+  card: string;
+  card2: string;
+  line: string;
 }
 
 export interface Year {
   year: number;
   title: string;
   mystery: string;
+  theme: YearTheme;
   intro: SceneLine[];
   lessons: Lesson[];
 }

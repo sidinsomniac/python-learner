@@ -1,0 +1,16 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: nested-count
+  type: choice
+  q: How many times does the inner body run in `for i in range(3):` / `for j in range(4):`?
+  options:
+  - '7'
+  - '12'
+  - '4'
+  answer: 1
+  why: '4 inner passes for each of 3 outer passes: 12.'
+- id: rows
+  type: predict
+  code: |-
+    for r in range(1, 4):
+        print('*' * r)
+  why: Each row repeats * r times.

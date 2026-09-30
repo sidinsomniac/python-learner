@@ -1,0 +1,26 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: bool-string
+  type: choice
+  q: What is `bool("False")`?
+  options:
+  - 'False'
+  - 'True'
+  - An error
+  answer: 1
+  why: Any non-empty string is truthy - even "False".
+- id: types
+  type: predict
+  code: |-
+    print(int(3.99))
+    print("ab" * 2)
+    print(float("2") + 1)
+  why: '`int` chops decimals; strings repeat with `*`; float + int is a float.'
+- id: typeerror
+  type: choice
+  q: What does `11 - "9"` do?
+  options:
+  - Gives 2
+  - Gives "2"
+  - Raises a TypeError
+  answer: 2
+  why: You can't subtract text from a number - convert with int() first.

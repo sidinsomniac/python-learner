@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { displayNumber, LESSONS, lessonById, YEARS } from "../engine/content";
 import {
+  canSkip,
   compareProphecy,
   GRADE_NAME,
   isExerciseUnlocked,
@@ -22,11 +23,15 @@ import { renderMarkdown } from "./md";
 import { MentorPanel } from "./MentorPanel";
 import { CodeEditor, Console, InputsBox, Lesson as Lecture, splitInputs, useRunner } from "./parts";
 import { Pensieve } from "./Pensieve";
+import { SkipDialog } from "./SkipDialog";
 import { go } from "./router";
+
+const FAMILIAR_CHEERS = ["Hoo-hoo! Well cast!", "*happy squeak*", "Purrfect spell!", "Nicely done!", "*excited flapping*", "Brilliant!"];
 
 export function LessonView({ lessonId }: { lessonId: string }) {
   const lesson = lessonById(lessonId);
   const records = useGame((s) => s.exercises);
+  const skipped = useGame((s) => s.skipped);
   if (!lesson) {
     return (
       <div className="card">
@@ -36,7 +41,7 @@ export function LessonView({ lessonId }: { lessonId: string }) {
     );
   }
   const started = lesson.exercises.some((e) => records[e.id]);
-  if (!started && !isLessonUnlocked(lesson, YEARS, records)) {
+  if (!started && !isLessonUnlocked(lesson, YEARS, records, skipped)) {
     return (
       <div className="card">
         <h2>🔒 This door is locked.</h2>
@@ -56,6 +61,8 @@ function firstOpenExercise(lesson: Lesson, records: Record<string, unknown>): Ex
 
 function LessonScreen({ lesson }: { lesson: Lesson }) {
   const records = useGame((s) => s.exercises);
+  const skipped = useGame((s) => s.skipped);
+  const [skipping, setSkipping] = useState(false);
   const [tab, setTab] = useState<Tab>(() => {
     const started = lesson.exercises.some((e) => records[e.id]);
     return started ? (firstOpenExercise(lesson, records)?.id ?? "lesson") : "lesson";
@@ -86,6 +93,15 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
             </>
           )}
         </p>
+        {skipped[lesson.id] && !complete && (
+          <p className="fb info small">👻 You skipped this lesson with Peeves' Bargain. Finish it any time to earn its clue, grade and Spellbook page.</p>
+        )}
+        {canSkip(lesson, YEARS, records, skipped) && (
+          <button className="btn ghost small" onClick={() => setSkipping(true)} data-testid="skip-lesson">
+            👻 Skip this lesson (Peeves' Bargain)
+          </button>
+        )}
+        {skipping && <SkipDialog lesson={lesson} onClose={() => setSkipping(false)} />}
       </div>
 
       <div className="tabs" role="tablist">
@@ -193,14 +209,25 @@ function ExerciseScreen({
 
   const solved = ({ reviewClean, remarks }: Solved) => {
     const r = useGame.getState().completeExercise(exercise, lesson, reviewClean);
+    const fx = useFx.getState();
     for (const id of r.newBadges) {
       const b = badgeById(id);
-      if (b) useFx.getState().toast(`${b.icon} Badge earned: ${b.name}!`, "badge");
+      if (b) fx.toast(`${b.icon} Badge earned: ${b.name}!`, "badge");
     }
+    if (r.lessonCompleted && lesson.kind === "trial") fx.play("dawn");
+    else if (r.grade === "O" && (r.firstTime || r.gradeImproved)) fx.play("golden");
+    else if (!r.levelUp) fx.play("sparkle");
+    fx.cheer(FAMILIAR_CHEERS[Math.floor(Math.random() * FAMILIAR_CHEERS.length)]);
     setReward({ ...r, remarks });
   };
 
   const board = { lesson, exercise, onFeedback: setFeedback, onSolved: solved };
+  const record = useGame((s) => s.exercises[exercise.id]);
+  const sand = useGame((s) => s.aids.sand ?? 0);
+  const pourSand = () => {
+    const r = useGame.getState().pourSand(exercise.id);
+    useFx.getState().toast(r.ok ? "⏳ The sand runs backwards... this exercise's hints and attempts are reset. Earn that O!" : r.reason);
+  };
 
   return (
     <div className="quest-grid">
@@ -216,6 +243,11 @@ function ExerciseScreen({
             </span>
           </div>
           {exercise.twist && <p className="twist small">🔀 Twist: {exercise.twist}</p>}
+          {record && record.grade !== "O" && sand > 0 && (
+            <button className="btn ghost small" onClick={pourSand} data-testid="pour-sand">
+              ⏳ Use Time-Turner sand ({sand}) to replay for a better grade
+            </button>
+          )}
           <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(exercise.task) }} />
         </div>
         {exercise.type === "divination" ? (
@@ -448,6 +480,14 @@ function RewardModal({
 }) {
   const house = useGame((s) => HOUSES[s.house!]);
   const records = useGame((s) => s.exercises);
+  // Once the reward is dismissed (however that happens), tell the rest of the story.
+  useEffect(() => {
+    return () => {
+      if (reward.lessonCompleted) {
+        useFx.getState().queueScene({ id: `${lesson.id}:outro`, lines: lesson.outro, title: `${lesson.title}: what happened next` });
+      }
+    };
+  }, [reward.lessonCompleted, lesson]);
   const nextExercise = lesson.exercises.find((e) => e.id !== exercise.id && !records[e.id] && isExerciseUnlocked(e, lesson, records));
   const lessonDone = isLessonComplete(lesson, records);
 

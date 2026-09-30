@@ -1,8 +1,10 @@
 import { useEffect } from "react";
-import { useFx } from "../engine/store";
+import { useFx, useGame } from "../engine/store";
+import { itemById } from "../lore/shop";
 
 export function Effects() {
-  const { toasts, fx, dismiss } = useFx();
+  const { toasts, fx, dismiss, familiarLine } = useFx();
+  const familiar = useGame((s) => (s.equipped.familiar ? itemById(s.equipped.familiar) : undefined));
 
   useEffect(() => {
     document.body.classList.toggle("levitating", fx === "levitate");
@@ -34,6 +36,25 @@ export function Effects() {
               {["🎆", "🎇", "✨", "💥"][i % 4]}
             </span>
           ))}
+        </div>
+      )}
+      {fx === "sparkle" && (
+        <div className="fx sparkle" aria-hidden>
+          {Array.from({ length: 16 }, (_, i) => (
+            <span key={i} style={{ transform: `rotate(${i * 22.5}deg)` }}>
+              <i>✨</i>
+            </span>
+          ))}
+        </div>
+      )}
+      {fx === "golden" && <div className="fx golden" aria-hidden />}
+      {fx === "dawn" && <div className="fx dawn" aria-hidden />}
+      {familiar && familiarLine && (
+        <div className="familiar-bubble" role="status">
+          <span className="familiar-icon" aria-hidden>
+            {familiar.icon}
+          </span>
+          <span>{familiarLine}</span>
         </div>
       )}
     </>
