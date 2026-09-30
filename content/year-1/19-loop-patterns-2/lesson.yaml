@@ -1,0 +1,14 @@
+id: y1-l13b
+year: 1
+order: 19
+number: 13
+part: { n: 2, of: 2 }
+title: "Loop Patterns: Break and Continue"
+location: Hagrid's hut
+concepts: [break, continue, for-else, prime numbers]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: hagrid
+    line: One o' these eggs is special - it's the one whose number can't be split evenly by anything but itself an' one. A *prime* egg!
+  - who: ashwood
+    line: Checking every possible divisor would take all night... unless you **stop** as soon as you know the answer.

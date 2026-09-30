@@ -1,0 +1,33 @@
+id: y1-trial
+year: 1
+order: 24
+number: Trial
+kind: trial
+title: Sorting Hat Reforged
+location: The Library, at midnight
+concepts: [everything from First Year]
+exercises: [stage1, stage2, stage3, stage4]
+scene:
+  - who: narrator
+    line: Midnight. The Library is dark except for one candle - burning upside down - in front of the thin old wizard's portrait.
+  - who: ashwood
+    line: G.K. The forgotten keeper. It was you all along, wasn't it?
+  - who: grimwald
+    line: "Two hundred years I kept that Ledger. Two hundred years, and not ONE of you remembered my name. So I made the castle notice me."
+  - who: grimwald
+    line: "The first spell I ever broke was the Sorting Hat's ceremony - your precious Sorting has been guesswork for weeks. Rebuild it, first-year. *Properly*. Then perhaps I'll believe your generation is worth the Ledger."
+  - who: hat
+    line: (muffled, from a shelf) Er - yes, please. It's been awfully confusing.
+outro:
+  - who: narrator
+    line: The Sorting Hat's brim twitches. Its voice rings out, strong and clear, for the first time in weeks. Every candle in the castle flips the right way up.
+  - who: grimwald
+    line: "...You did it. And you did it *properly*. Nobody has worked so hard on my Ledger since... well. Since me."
+  - who: dumbledore
+    line: "Grimwald Knott. I'm sorry you were forgotten. But a castle that forgets its keepers has much to learn - so perhaps you would teach it?"
+  - who: dumbledore
+    line: The Pensieve room needs a keeper - someone to look after our memories, and our mistakes, so that nobody learns alone. Would you?
+  - who: grimwald
+    line: (very quietly) I would like that very much.
+  - who: ashwood
+    line: "Case closed, {name}. Welcome to the end of your First Year. I'm proud of you - and there's much, *much* more Parseltongue ahead."

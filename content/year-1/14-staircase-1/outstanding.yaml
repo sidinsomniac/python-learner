@@ -1,0 +1,46 @@
+tier: outstanding
+type: practice
+title: The Middle Judge
+twist: constraint - no max, min or sorted
+inputs: ["7", "9", "8"]
+task: |
+  In the Triwizard Tournament, the highest and lowest marks are ignored to stop
+  cheating - only the **middle** mark counts. Ask for three judges' marks (whole
+  numbers) and print the middle one. Marks may be equal: `7, 9, 7` gives `7`.
+
+  **Constraint:** no `max`, `min` or `sorted`. Just comparisons and `if`.
+starter: |
+  # The middle of three marks
+tests: |
+  def _mid(a, b, c):
+      r = run_student([str(a), str(b), str(c)])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_shortcuts():
+      check(not (calls("max") or calls("min") or calls("sorted")), "No max, min or sorted in this one - comparisons only!")
+
+  def test_every_order():
+      for a, b, c in [(7, 8, 9), (7, 9, 8), (8, 7, 9), (8, 9, 7), (9, 7, 8), (9, 8, 7)]:
+          got = _mid(a, b, c)
+          check(got == "8", f"For marks {a}, {b}, {c} the middle is 8, but you printed '{got}'. Does your spell work whichever judge gives the middle mark?")
+
+  def test_ties():
+      check(_mid(7, 9, 7) == "7", f"For 7, 9, 7 the middle is 7. You printed '{_mid(7, 9, 7)}'.")
+      check(_mid(5, 5, 5) == "5", "If all three judges agree, that's the middle mark.")
+      check(_mid(9, 9, 1) == "9", f"For 9, 9, 1 the middle is 9. You printed '{_mid(9, 9, 1)}'.")
+hints:
+  nudge: The middle mark is the one that is neither the biggest nor the smallest. Can you describe that with comparisons?
+  question: When is `a` the middle? It must be between the other two - but they could be either way round. How do you say "between b and c, in either order"?
+  pseudocode: |
+    if a is between b and c (b <= a <= c, or c <= a <= b): a is the middle
+    elif b is between a and c (either way round): b is the middle
+    else: c is the middle
+  flaw: >
+    Test all six orders of 7, 8 and 9. If one order fails, a "between" check
+    only covers one direction. Ties (7, 9, 7) need <= rather than <.
+  analogous: |
+    Is x between y and z, whichever of y and z is bigger?
+
+    ```text
+    y <= x <= z or z <= x <= y
+    ```

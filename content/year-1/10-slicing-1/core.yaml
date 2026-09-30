@@ -1,0 +1,53 @@
+tier: core
+type: practice
+title: Spell Shorthand
+twist: combination - len, indexing and f-strings
+inputs: ["Hogwarts"]
+task: |
+  Busy wizards write long words in shorthand: the **first letter**, then **how
+  many letters come in between**, then the **last letter**:
+
+  | Word | Shorthand |
+  |---|---|
+  | `Hogwarts` | `H6s` |
+  | `Lumos` | `L3s` |
+  | `Ox` | `O0x` |
+
+  Ask for a word (it will have at least 2 letters) and print its shorthand.
+starter: |
+  # First letter, number in between, last letter
+tests: |
+  def _short(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_hogwarts():
+      got = _short("Hogwarts")
+      check(got == "H6s", f"For Hogwarts you printed '{got}'. How many letters are there between the H and the s?")
+
+  def test_expelliarmus():
+      got = _short("Expelliarmus")
+      check(got == "E10s", f"For Expelliarmus you printed '{got}'. Is your middle number calculated from the word's length?")
+
+  def test_two_letters():
+      got = _short("Ox")
+      check(got == "O0x", f"For Ox you printed '{got}'. With only two letters, how many are in between?")
+
+  def test_three_letters():
+      got = _short("Nox")
+      check(got == "N1x", f"For Nox you printed '{got}'.")
+hints:
+  nudge: You need the first character, the last character, and a number worked out from the word's length.
+  question: If a word has 8 letters, and you don't count the first or the last, how many are left in between?
+  pseudocode: |
+    word = ask
+    between = length of word minus 2
+    show first character + between + last character
+  flaw: >
+    If the number is off by 2, check that you subtracted both ends. If you get a
+    TypeError, you're gluing a number to text with + - an f-string avoids that.
+  analogous: |
+    ```python
+    name = "Dumbledore"
+    print(f"{name[0]} has {len(name)} letters")
+    ```

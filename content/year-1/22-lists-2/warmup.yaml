@@ -1,0 +1,30 @@
+tier: warmup
+type: divination
+title: Two Names, One Trunk
+task: Predict every line - watch which names share a list.
+snippet: |
+  a = ["Harry", "Ron"]
+  b = a
+  b.append("Hermione")
+  print(len(a))
+  c = a[:]
+  c.append("Neville")
+  print(len(a), len(c))
+  print(a[-1])
+  a[0] = "Luna"
+  print(b[0])
+hints:
+  nudge: Draw boxes for the lists and arrows for the names. How many boxes are there after line 2? After line 5?
+  question: Does `b = a` make a new box? Does `a[:]`?
+  pseudocode: |
+    line 2: b points at a's list (still ONE list)
+    line 3: that one list grows
+    line 5: c gets a brand-new copy
+    line 6: only c's list grows
+    line 9: changes the list that a AND b share
+  flaw: Most people think b is a copy. It isn't - only c is.
+  analogous: |
+    ```text
+    x = [1]; y = x; y.append(2) -> x is [1, 2]
+    x = [1]; y = x[:]; y.append(2) -> x is still [1]
+    ```

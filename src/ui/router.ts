@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 export type Route =
   | { page: "map" }
-  | { page: "quest"; id: string }
+  | { page: "lesson"; id: string }
+  | { page: "casefile" }
   | { page: "spellbook" }
   | { page: "trophies" }
   | { page: "settings" }
@@ -13,8 +14,10 @@ export type Route =
 export function parseHash(hash: string): Route {
   const parts = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
   switch (parts[0]) {
-    case "quest":
-      return parts[1] ? { page: "quest", id: decodeURIComponent(parts[1]) } : { page: "map" };
+    case "lesson":
+      return parts[1] ? { page: "lesson", id: decodeURIComponent(parts[1]) } : { page: "map" };
+    case "casefile":
+      return { page: "casefile" };
     case "spellbook":
       return parts[1] === "394" ? { page: "page394" } : { page: "spellbook" };
     case "trophies":

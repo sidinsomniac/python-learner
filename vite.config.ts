@@ -14,7 +14,8 @@ const llmProxy = {
 export default defineConfig({
   plugins: [react()],
   worker: { format: "es" },
-  build: { chunkSizeWarningLimit: 1000 },
+  // The whole curriculum is bundled so the game works offline.
+  build: { chunkSizeWarningLimit: 1600 },
   server: { proxy: llmProxy },
   preview: { proxy: llmProxy },
   test: {

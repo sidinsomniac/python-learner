@@ -29,10 +29,10 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
   }
   try {
     const inputs = JSON.stringify(req.inputs);
-    const json =
-      req.kind === "run"
-        ? (pyodide.globals.get("run_json")(req.code, inputs) as string)
-        : (pyodide.globals.get("grade_json")(req.code, req.tests, inputs) as string);
+    let json: string;
+    if (req.kind === "run") json = pyodide.globals.get("run_json")(req.code, inputs);
+    else if (req.kind === "trace") json = pyodide.globals.get("trace_json")(req.code, inputs);
+    else json = pyodide.globals.get("grade_json")(req.code, req.tests, inputs, JSON.stringify(req.review));
     post({ id: req.id, kind: "result", json });
   } catch (err) {
     post({ id: req.id, kind: "error", message: String(err) });

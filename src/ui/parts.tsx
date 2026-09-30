@@ -1,12 +1,14 @@
 import { python as pythonLang } from "@codemirror/lang-python";
 import CodeMirror from "@uiw/react-codemirror";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "../engine/store";
 import { applyEggs } from "../lore/applyEggs";
 import { translateError } from "../mentor/errorTranslator";
 import { python } from "../runtime/pythonRunner";
 import type { RunOutcome } from "../runtime/types";
-import { renderMarkdown } from "./md";
+import { splitLecture, type CheckpointSpec } from "../engine/lecture";
+import { renderInline, renderMarkdown } from "./md";
+import { Pensieve } from "./Pensieve";
 
 const extensions = [pythonLang()];
 
@@ -108,18 +110,49 @@ export function useRunner() {
   return { outcome, setOutcome, busy, run };
 }
 
-/** A lesson with "Try it" buttons that load examples into a sandbox. */
+function Checkpoint({ spec }: { spec: CheckpointSpec }) {
+  const [picked, setPicked] = useState<number | null>(null);
+  const right = picked === spec.answer;
+  return (
+    <div className="checkpoint" data-testid="checkpoint">
+      <div className="checkpoint-q">
+        <span aria-hidden>❓</span> <span dangerouslySetInnerHTML={{ __html: renderInline(spec.q) }} />
+      </div>
+      <div className="row">
+        {spec.options.map((option, i) => (
+          <button
+            key={i}
+            className={`btn small ${picked === i ? (right ? "picked-right" : "picked-wrong") : ""}`}
+            onClick={() => setPicked(i)}
+            disabled={right}
+            dangerouslySetInnerHTML={{ __html: renderInline(option) }}
+          />
+        ))}
+      </div>
+      {picked !== null && (
+        <p className={`small ${right ? "ok-text" : "bad-text"}`}>
+          {right ? "✔ Correct! " : "✘ Not quite. Have another think. "}
+          {right && <span dangerouslySetInnerHTML={{ __html: renderInline(spec.why) }} />}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** A lesson: Markdown with "Try it" buttons and checkpoints, plus a sandbox. */
 export function Lesson({ markdown }: { markdown: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState("# Try things out here! Press Run.\nprint(\"Lumos\")\n");
   const [inputs, setInputs] = useState("");
   const runner = useRunner();
+  const [pensieve, setPensieve] = useState<{ code: string; inputs: string[] } | null>(null);
   const sandboxRef = useRef<HTMLDivElement>(null);
+  const segments = useMemo(() => splitLecture(markdown), [markdown]);
 
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    root.querySelectorAll("pre > code").forEach((block) => {
+    root.querySelectorAll(".lecture-md pre > code").forEach((block) => {
       const pre = block.parentElement!;
       if (pre.querySelector(".try-btn")) return;
       const btn = document.createElement("button");
@@ -132,21 +165,33 @@ export function Lesson({ markdown }: { markdown: string }) {
       };
       pre.appendChild(btn);
     });
-  }, [markdown]);
+  }, [segments]);
 
   return (
-    <div className="lesson">
-      <div ref={ref} className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(markdown) }} />
+    <div className="lesson" ref={ref}>
+      {segments.map((seg, i) =>
+        seg.kind === "md" ? (
+          <div key={i} className="prose lecture-md" dangerouslySetInnerHTML={{ __html: renderMarkdown(seg.text) }} />
+        ) : (
+          <Checkpoint key={i} spec={seg.spec} />
+        ),
+      )}
       <div ref={sandboxRef} className="sandbox">
         <h3>🧪 Practice sandbox</h3>
-        <p className="muted small">Experiment freely here. It won't affect your quest.</p>
+        <p className="muted small">Experiment freely here. It won't affect your exercises.</p>
         <CodeEditor value={code} onChange={setCode} minHeight="120px" label="Sandbox editor" />
         <InputsBox value={inputs} onChange={setInputs} />
-        <button className="btn" onClick={() => runner.run(code, splitInputs(inputs))} disabled={runner.busy}>
-          ▶ Run
-        </button>
+        <div className="row">
+          <button className="btn" onClick={() => runner.run(code, splitInputs(inputs))} disabled={runner.busy}>
+            ▶ Run
+          </button>
+          <button className="btn" onClick={() => setPensieve({ code, inputs: splitInputs(inputs) })} disabled={runner.busy}>
+            🌀 Pensieve
+          </button>
+        </div>
         <Console outcome={runner.outcome} busy={runner.busy} />
       </div>
+      {pensieve && <Pensieve code={pensieve.code} inputs={pensieve.inputs} onClose={() => setPensieve(null)} />}
     </div>
   );
 }

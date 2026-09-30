@@ -1,0 +1,5 @@
+name = input("Name? ")
+house = input("House? ")
+print("~~~~~~~~~~~~~~~~~~~~")
+print(name + " of " + house)
+print("~~~~~~~~~~~~~~~~~~~~")

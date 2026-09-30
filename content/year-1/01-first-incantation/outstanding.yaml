@@ -1,0 +1,43 @@
+tier: outstanding
+type: practice
+title: One-Spell Owl
+twist: constraint - a single print
+task: |
+  Draw Hedwig using **exactly one** `print`:
+
+  ```
+   {o,o}
+   /)_)
+    " "
+  ```
+
+  (Each line starts with a space, and the third line starts with two.)
+  Using `print` more than once doesn't count - a real wizard does it in one
+  flick of the wand.
+starter: |
+  # Only ONE print allowed!
+tests: |
+  def test_one_print():
+      check(calls("print"), "Where is your print spell?")
+      check(count_nodes(ast.Call) == 1,
+            "You used more than one spell call. Could a *single* string hold all three lines?")
+
+  def test_draws_owl():
+      r = run_student()
+      check(r.stdout == ' {o,o}\n /)_)\n  " "\n',
+            "The owl looks a little off. Check each line's leading spaces, and the quote marks in her feet. How do you start a new line in the middle of a string?")
+hints:
+  nudge: One print can show several lines. Which two characters inside a string mean "new line here"?
+  question: The owl's feet contain double quotes. Which kind of quotes should wrap your whole string so they don't end it early?
+  pseudocode: |
+    show ONE string that contains:
+      line 1, then a newline charm, line 2, then a newline charm, line 3
+  flaw: >
+    Check the leading spaces - the first two lines start with one space, the
+    last with two. And a `"` inside a double-quoted string will end it early.
+  analogous: |
+    A *different* two-line drawing in one print:
+
+    ```python
+    print("/\\_/\\\n( o.o )")
+    ```

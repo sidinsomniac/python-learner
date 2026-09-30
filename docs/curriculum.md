@@ -37,36 +37,37 @@ Algorithmic thinking starts on day one, as small puzzles. Formal DSA begins in Y
 
 ---
 
-## Year 1: The Philosopher's Syntax
+## Year 1: The Philosopher's Syntax ✅ built
 
 *Requires nothing. Ends able to write small interactive programs with loops and lists.*
+The story is [The Jinxed Ledger](story.md#year-1-the-jinxed-ledger); each lesson's clue is revealed when its required exercises are done.
 
 | # | Lesson | Concepts | Exercises: 🌱 Warm-up · 🔥 Core (twist) · ⭐ Outstanding |
 |---|---|---|---|
-| 1 | The First Incantation | `print`, strings, comments | 🌱 print Hogwarts' two-line greeting · 🔥 print `Hagrid said "Yer a wizard!"` with the quotes, followed by a blank line *(spec reading)* · ⭐ a 3-line ASCII owl from **one** print *(constraint: `\n`)* |
-| 2 | The Owl Knows Your Name | variables, `input`, `+` | 🌱 welcome any student by name · 🔥 ask for a pet's type and name and print the sentence; it must work for names with spaces *(edge case)* · ⭐ given a finished spell, find the inputs that make it print a target line *(inversion)* |
-| 3 | Peeves' Ledger | execution order, reassignment | 🌱 reorder the Gringotts ledger (scramble) · 🔥 swap the contents of two goblets; the obvious code loses one *(debug)* · ⭐ swap them with **no** third variable *(constraint)* |
-| R1 | Library Revision I | lessons 1–3 mixed | predict, fix and write, 3 short items |
-| 4 | Arithmancy **Pt1** | `+ - * / // % **`, precedence | 🌱 Galleons to Sickles to Knuts · 🔥 split a pile of Knuts into Galleons, Sickles and Knuts *(inversion, `//` and `%`)* · ⭐ turn seconds on the house clock into `1h 5m 30s` *(combination)*; the zero-padded h:mm:ss version returns as a Lesson 6 review card |
-| 4 | Arithmancy **Pt2**: gotchas | float error (0.1+0.2), `round` to even, `int()` truncating | 🌱 divination on float results · 🔥 a potion-ratio check that fails because it compares floats with `==` *(debug)* · ⭐ round Galleon prices the way a goblin would *(spec reading)* |
-| 5 | Transfiguration of Types | int/float/str/bool conversion, `type()` | 🌱 repair the letter countdown (existing quest) · 🔥 divination: `bool("False")`, `"3" * 3`, `int(3.99)` *(inversion of expectations)* · ⭐ an age calculator that accepts `"11.5"` *(edge case)* |
-| 6 | Formatting Charms | f-strings, `:.2f`, width, alignment, `,` separators | 🌱 a Gringotts receipt to 2 decimal places · 🔥 a 3-row potion price table, right-aligned *(spec reading)* · ⭐ a progress bar `[#####-----] 50%` *(combination: string × int)* |
-| 7 | String Charms | methods: `upper/lower/title/strip/replace/count/find/startswith`, strings can't change in place | 🌱 clean `"  hARRY  "` into `"Harry"` · 🔥 a spell that calls `replace` but never saves the result *(debug)* · ⭐ count all five vowels without a loop *(constraint)* |
-| 8 | Slicing the Scroll **Pt1** | `len`, indexing, negative indexes, slices | 🌱 initials from a first and last name · 🔥 the last 3 letters, even for 2-letter words *(edge case)* · ⭐ the middle letter, or letters, of any word *(combination: `//`, `%`)* |
-| 8 | Slicing the Scroll **Pt2** | steps, `[::-1]` | 🌱 reverse a spell name · 🔥 ★ palindrome check, ignoring case *(spec reading)* · ⭐ decode a message hidden in every other letter *(inversion)* |
-| R2 | Library Revision II | lessons 4–8 mixed | |
-| 9 | True or False | booleans, comparisons, `and/or/not`, chained comparisons, truthiness | 🌱 divination on boolean expressions · 🔥 one expression for Quidditch eligibility with tricky rules *(spec reading)* · ⭐ a leap-year rule as a single expression |
-| 10 | The Forked Staircase **Pt1** | `if/elif/else` | 🌱 turn a score into an O.W.L. grade · 🔥 exact boundary scores like 90 and 0, and out-of-range scores *(edge case)* · ⭐ a mini Sorting Hat with 3 questions |
-| 10 | The Forked Staircase **Pt2**: gotchas | `x == "a" or "b"`, elif order, `=` vs `==`, nesting | 🌱 predict which branch runs · 🔥 repair a spell with 3 staircase bugs *(debug)* · ⭐ flatten nested ifs into one clean elif chain *(refactor)* |
-| 11 | While the Candles Burn | `while`, sentinel values, avoiding infinite loops | 🌱 countdown then "Lumos!" · 🔥 ask for the Fat Lady's password until it's correct and count the attempts; correct on the first try is 1 *(edge case)* · ⭐ ★ the Hiccuping Hex: Collatz step count |
-| 12 | For Every Student | `for`, `range(start, stop, step)`, looping over strings | 🌱 an Arithmancy times table · 🔥 count vowels **without** `.count` *(constraint)* · ⭐ ★ FizzBuzz, house edition |
-| 13 | Loop Patterns **Pt1** | counters, accumulators, running maximum | 🌱 ★ digit sum · 🔥 the tallest giant typed before 0, **without** `max()`, including when all are negative *(constraint and edge case)* · ⭐ ★ the second tallest |
+| 1 | The First Incantation | `print`, strings, comments, `\n` | 🌱 two-line greeting · 🔥 Hagrid's words with the quotes and an empty line *(spec reading)* · ⭐ Hedwig in ASCII from **one** print *(constraint)* |
+| 2 | The Owl Knows Your Name | variables, `input`, `+` | 🌱 welcome anyone by name · 🔥 pet type and name, including answers with spaces *(edge case)* · ⭐ find the inputs that make an enchanted spell print `abracadabra` *(inversion)* |
+| 3 | Peeves' Ledger | running order, reassignment | 🌱 reorder the Gringotts ledger (scramble) · 🔥 the goblet swap that loses the pumpkin juice *(debug)* · ⭐ rotate three goblets using at most 4 assignments *(constraint)* |
+| R1 | Library Revision I | lessons 1–3 | predict · repair the Fat Lady's greeting · a name badge |
+| 4 | Arithmancy **Pt1** | `+ - * / // % **`, precedence | 🌱 divination on operators · 🔥 split Knuts into Galleons, Sickles and Knuts *(inversion)* · ⭐ seconds on the house clock into hours, minutes and seconds *(combination)* |
+| 4 | Arithmancy **Pt2**: gotchas | float error, `abs`, `round` to even | 🌱 divination on float results · 🔥 Neville's potion balance compared with `==` *(debug)* · ⭐ goblin rounding to the nearest 5, halves up *(spec reading)* |
+| 5 | Transfiguration of Types | `int/float/str/bool`, truthiness, f-strings | 🌱 repair the letter countdown · 🔥 divination: `bool("False")`, `"7" * 3`, `int(3.99)` *(inversion of expectations)* · ⭐ an Apparition countdown that accepts `11.5` *(edge case)* |
+| 6 | Formatting Charms | `:.2f`, width, alignment | 🌱 a Gringotts receipt · 🔥 Slughorn's aligned price list *(spec reading)* · ⭐ a progress bar `[#####-----] 50%` *(combination)* |
+| 7 | String Charms | string methods, strings never change | 🌱 clean up a shouted name · 🔥 a message whose method results are thrown away *(debug)* · ⭐ count vowels with no loops *(constraint)* |
+| 8 | Slicing the Scroll **Pt1** | `len`, indexing, slices | 🌱 initials · 🔥 spell shorthand `Hogwarts` → `H6s` *(combination)* · ⭐ the middle letter(s) with one slice and no `if` *(constraint)* |
+| 8 | Slicing the Scroll **Pt2** | steps, `[::-1]` | 🌱 reverse a spell · 🔥 ★ palindromes, ignoring capitals *(spec reading)* · ⭐ decode two messages woven into one scroll *(inversion)* |
+| R2 | Library Revision II | lessons 4–8 | predict · repair the Galleon converter · a wand registry label |
+| 9 | True or False | booleans, `and/or/not`, chains, `in` | 🌱 divination on booleans · 🔥 who may fly? several rules at once *(spec reading)* · ⭐ ★ leap years in one expression |
+| 10 | The Forked Staircase **Pt1** | `if/elif/else` | 🌱 the Fat Lady's password · 🔥 O.W.L. grades with exact boundaries and impossible scores *(edge case)* · ⭐ the middle judge's mark, no `max/min/sorted` *(constraint)* |
+| 10 | The Forked Staircase **Pt2**: trick steps | the `or` trap, elif order, `=` vs `==` | 🌱 predict which branches run · 🔥 a router with all three trick steps *(debug)* · ⭐ untangle nested ifs into one chain *(refactor)* |
+| 11 | While the Candles Burn | `while`, ask-until-right | 🌱 countdown to Lumos · 🔥 password attempts, "1 try" vs "3 tries" *(edge case)* · ⭐ ★ Collatz steps (the Hiccuping Hex) |
+| 12 | For Every Student | `for`, `range` | 🌱 a times table · 🔥 count vowels **without** `.count` *(constraint)* · ⭐ ★ FizzBuzz, house edition |
+| 13 | Loop Patterns **Pt1** | counters, accumulators, `+=`, running best | 🌱 ★ digit sum · 🔥 the highest temperature: negatives, no readings, no `max` *(constraint, edge case)* · ⭐ ★ the second-highest different value |
 | 13 | Loop Patterns **Pt2** | `break`, `continue`, `for-else` | 🌱 position of the first vowel · 🔥 ★ is it prime? (0, 1 and 2 are traps) *(edge case)* · ⭐ ★ every prime below n |
-| R3 | Library Revision III | lessons 9–13 mixed | |
-| 14 | Trunks of Many Things **Pt1** | lists: create, index, `append`, `in`, `len`, `sum`, `min`, `max`, looping over | 🌱 an ingredient list, collected until "done" · 🔥 average score, and what should happen with *no* scores? *(edge case)* · ⭐ ★ remove duplicates, keeping the order, without `set` *(constraint)* |
-| 14 | Trunks of Many Things **Pt2**: gotchas | two names for one list (`b = a`), changing a list while looping over it, `[[]] * 3` | 🌱 predict the output after `b = a` · 🔥 repair the shared-list bug *(debug)* · ⭐ ★ reverse a list in place with two indices |
-| 15 | Wizard's Chess | nested loops, grids of output | 🌱 a cauldron pyramid of `*` · 🔥 an n×n chessboard of ♜/♖, alternating, including n = 1 *(spec reading, edge case)* · ⭐ an aligned multiplication grid *(combination)* |
-| 🏁 | **Trial: Sorting Hat Reforged** | everything above | Four stages. **(1)** Ask 5 questions and re-ask on invalid answers. **(2)** Tally the answers with lists. **(3)** Tie-breaking rules from the Hat's scroll (spec). **(4)** Formatted ceremony output. Hidden tests cover many answer combinations. |
+| R3 | Library Revision III | lessons 9–13 | predict three loops · repair the endless staircase · count the dragons |
+| 14 | Trunks of Many Things **Pt1** | lists, `append`, `in`, `sum/min/max` | 🌱 a shopping list · 🔥 average marks, and what if there are none? *(edge case)* · ⭐ ★ remove duplicates keeping order, no `set` *(constraint)* |
+| 14 | Trunks of Many Things **Pt2**: two names, one trunk | aliasing, copying | 🌱 predict with `b = a` · 🔥 Dumbledore's Army's shared-list bug *(debug)* · ⭐ ★ reverse in place with two pointers |
+| 15 | Wizard's Chess | nested loops, grids | 🌱 a cauldron pyramid · 🔥 an n×n chessboard *(spec reading, edge case)* · ⭐ an aligned multiplication grid *(combination)* |
+| 🏁 | **Trial: Sorting Hat Reforged** | everything | **Stage 1:** ask until the answer is valid. **Stage 2:** tally the houses. **Stage 3:** the tie-breaking rule. **Stage 4:** the full ceremony, which unmasks the culprit. |
 
 ## Year 2: The Chamber of Collections
 

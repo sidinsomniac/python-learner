@@ -1,0 +1,16 @@
+id: y1-l11
+year: 1
+order: 16
+number: 11
+title: While the Candles Burn
+location: The Great Hall
+concepts: [while loops, counting, stopping a loop]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: The Great Hall's candles are relighting themselves. Over... and over... and over. Nobody can put them out.
+  - who: ashwood
+    line: A loop that never ends. Somewhere in the Ledger, a spell is repeating *while* some condition stays true - and it never stops being true.
+  - who: hermione
+    line: Look, there's a note in the margin of the candle spell - "until someone speaks my name". Whose name?
+clue: The endless candle spell stops only when someone says **a forgotten name**. We still don't know whose.

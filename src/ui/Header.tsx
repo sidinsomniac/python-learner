@@ -40,6 +40,7 @@ export function Header() {
       </div>
       <nav className="nav">
         <a href="#/">Great Hall</a>
+        <a href="#/casefile">Case File</a>
         <a href="#/spellbook">Spellbook</a>
         <a href="#/trophies">Trophies</a>
         {marauderMap && <a href="#/marauders-map">🗺️ Map</a>}

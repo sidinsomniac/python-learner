@@ -1,0 +1,60 @@
+tier: outstanding
+type: practice
+title: The Mirror Trunk
+twist: algorithm seed - reverse in place with two pointers
+inputs: ["a", "b", "c", "d", "done"]
+task: |
+  Read items until `done` into a list, then **reverse the list in place** and
+  print it. For `a, b, c, d`:
+
+  ```
+  ['d', 'c', 'b', 'a']
+  ```
+
+  **Constraints:** no `reverse()`, no `reversed()`, and no `[::-1]`. Swap
+  items from the two ends, working inwards.
+starter: |
+  items = []
+  item = input("Item (or done)? ")
+  while item != "done":
+      items.append(item)
+      item = input("Item (or done)? ")
+
+  # Reverse items IN PLACE, by swapping from the two ends
+
+  print(items)
+tests: |
+  def _run(*items):
+      r = run_student(list(items) + ["done"])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_shortcuts():
+      check(not calls("reverse") and not calls("reversed"), "No reverse() or reversed() - swap by hand!")
+      slices = [n for n in ast.walk(tree()) if isinstance(n, ast.Slice)]
+      check(not slices, "No slicing in this one - swap items from the two ends instead.")
+
+  def test_even():
+      check(_run("a", "b", "c", "d") == "['d', 'c', 'b', 'a']", f"You printed {_run('a', 'b', 'c', 'd')}.")
+
+  def test_odd():
+      check(_run("x", "y", "z") == "['z', 'y', 'x']", f"With an odd number of items the middle one stays put. You printed {_run('x', 'y', 'z')}.")
+
+  def test_tiny():
+      check(_run() == "[]", "An empty trunk stays empty.")
+      check(_run("solo") == "['solo']", "A single item stays where it is.")
+hints:
+  nudge: Two positions, one at each end. Swap what's there, then move both positions one step towards the middle.
+  question: When should the swapping stop? What goes wrong if you keep going past the middle?
+  pseudocode: |
+    left position = the first index
+    right position = the last index
+    while left is before right:
+        swap the items at left and right (using a spare)
+        move left one step right, and right one step left
+  flaw: If the list comes out unchanged, you swapped every pair twice - stop when the two positions meet.
+  analogous: |
+    Swapping the two ends of a 3-item list by hand:
+
+    ```text
+    spare = items[0]; items[0] = items[2]; items[2] = spare
+    ```

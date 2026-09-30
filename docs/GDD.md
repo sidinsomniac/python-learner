@@ -210,14 +210,14 @@ scripts/validate-content.ts
 ## 7. Build roadmap
 0. ✅ **Design docs v1** and the **First Year vertical slice**: Pyodide runtime, hint ladder, the Claude/DeepSeek mentor, easter eggs.
 1. ✅ **Design docs v2**: this revision, plus `curriculum.md`, `exercise-design.md` and `story.md`.
-2. **Engine upgrades**:
+2. ✅ **Engine upgrades** (Draco's times and the Chocolate Frog cards are still to come):
    - lessons with parts and tiers, and inline checkpoints
    - story cutscenes
    - function-spell and scale tests
    - grades, and Snape's code review (AST)
    - the **Pensieve step-through**
    - the validator's "lecture code must not solve the core challenge" rule
-3. **Rebuild Year 1 to the new spec.** The 5 existing quests become lessons 1–5, with tiers, and Year 1 is finished through the Trial. **You playtest it.**
+3. ✅ **Rebuild Year 1 to the new spec**: 24 lessons and 73 exercises, including the Trial. Saves from the first slice are carried over automatically. **Next: you playtest it.**
 4. **Retention and immersion**: Time-Turner review, the mastery map, the castle hub, the House Cup, Chocolate Frog cards, the shop.
 5. **Years 2–7, one year at a time.** Each year's script is written first, then its content, then a playtest.
 6. **Leaving Hogwarts** (Years 6–7): guided local setup, verified by pasting terminal output.

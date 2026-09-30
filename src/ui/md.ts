@@ -18,3 +18,6 @@ const untrusted = new Marked({
 
 export const renderMarkdown = (src: string) => trusted.parse(src, { async: false }) as string;
 export const renderUntrusted = (src: string) => untrusted.parse(src, { async: false }) as string;
+
+/** One line of trusted Markdown (no surrounding paragraph). */
+export const renderInline = (src: string) => trusted.parseInline(String(src), { async: false }) as string;

@@ -1,0 +1,47 @@
+tier: review
+type: repair
+title: The Galleon Converter
+inputs: ["3"]
+task: |
+  This converter has two bugs - and one of them doesn't cause an error, it
+  just gives a *very* strange answer. Repair it so that `3` prints:
+
+  ```
+  3 Galleons = 51 Sickles = 1479 Knuts
+  ```
+starter: |
+  galleons = input("How many Galleons? ")
+  sickles = galleons * 17
+  knuts = sickles * 29
+  print(f"{galleons} Galleons = {sickles} Sickles = knuts Knuts")
+tests: |
+  def _conv(g):
+      r = run_student([g])
+      return r.lines[-1] if r.lines else ""
+
+  def test_sickles():
+      got = _conv("3")
+      check("51 Sickles" in got,
+            "Instead of 51 Sickles you get a long string of 3s. What TYPE is `galleons` - and what does multiplying that type do?")
+
+  def test_knuts():
+      got = _conv("3")
+      check("1479 Knuts" in got, "The Knuts part doesn't show the number. How does an f-string show a variable's value?")
+
+  def test_full():
+      check(_conv("3") == "3 Galleons = 51 Sickles = 1479 Knuts", f"You printed '{_conv('3')}'.")
+      check(_conv("1") == "1 Galleons = 17 Sickles = 493 Knuts", f"For 1 Galleon you printed '{_conv('1')}'.")
+hints:
+  nudge: Run it with 3 and look at the Sickles. Where have you seen text repeated like that before?
+  question: What type does input() return? What does `"3" * 17` give?
+  pseudocode: |
+    galleons = ask, transfigured into a whole number
+    sickles = galleons times 17
+    knuts = sickles times 29
+    show all three - every value in its own f-string hole
+  flaw: Line 1 keeps the text "3", so line 2 repeats it. And on the last line, knuts has no braces.
+  analogous: |
+    ```python
+    n = int(input("Number? "))
+    print(f"{n} doubled is {n * 2}")
+    ```

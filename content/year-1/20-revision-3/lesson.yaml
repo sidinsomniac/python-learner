@@ -1,0 +1,18 @@
+id: y1-r3
+year: 1
+order: 20
+number: R3
+kind: revision
+title: Library Revision III
+location: The Library
+concepts: [booleans, if / elif, while, for, loop patterns]
+exercises: [r1, r2, r3]
+scene:
+  - who: ron
+    line: Can I ask the stupid question? If it's not Peeves and it's not Draco... then who IS it?
+  - who: hermione
+    line: It's not stupid. A forgotten keeper, initials G.K., from two hundred years ago. And a portrait nobody remembers...
+  - who: draco
+    line: (from the next table) For the record, I was in the Library after hours because I was trying to solve it too. Not that I need your help.
+  - who: ashwood
+    line: Nobody works best alone, Mr Malfoy. Now - revise. The answer is close.

@@ -1,0 +1,16 @@
+id: y1-l06
+year: 1
+order: 8
+number: 6
+title: Formatting Charms
+location: The Charms classroom
+concepts: [f-strings, decimal places, alignment]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: flitwick
+    line: Oh dear, oh dear! My end-of-term certificates have come out of the Ledger all *higgledy-piggledy* - columns wobbling everywhere!
+  - who: ashwood
+    line: Formatting Charms, Filius. They tell a value exactly how to present itself - how many decimals, how wide, which side to lean.
+  - who: flitwick
+    line: Splendid! And look - someone has signed the certificate template in the corner. Two tiny, curly initials...
+clue: The garbled certificate template is signed with an old-fashioned monogram - **"G.K."**

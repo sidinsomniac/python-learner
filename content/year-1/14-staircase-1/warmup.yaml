@@ -1,0 +1,40 @@
+tier: warmup
+type: practice
+title: The Fat Lady's Password
+inputs: ["Caput Draconis"]
+task: |
+  Ask `Password? `. If the answer is exactly `Caput Draconis`, print
+  `The portrait swings open.` - otherwise print `The Fat Lady refuses to budge.`
+starter: |
+  # if / else
+tests: |
+  def _say(pw):
+      r = run_student([pw])
+      return r.lines[-1] if r.lines else ""
+
+  def test_right():
+      check(_say("Caput Draconis") == "The portrait swings open.", "The right password should open the portrait.")
+
+  def test_wrong():
+      check(_say("Pig snout") == "The Fat Lady refuses to budge.", "A wrong password should be refused.")
+
+  def test_exact():
+      check(_say("caput draconis") == "The Fat Lady refuses to budge.", "Passwords are exact - small letters don't count!")
+hints:
+  nudge: Two possible outcomes - which two keywords give a spell two roads?
+  question: Which operator asks "are these equal?" - and which one stores a value instead?
+  pseudocode: |
+    answer = ask "Password? "
+    if answer equals "Caput Draconis":
+        show the opening message
+    otherwise:
+        show the refusal
+  flaw: A SyntaxError on the if line usually means `=` where `==` was meant, or a missing colon.
+  analogous: |
+    ```python
+    pet = input("Pet? ")
+    if pet == "toad":
+        print("Hold on to it tightly!")
+    else:
+        print("Lovely.")
+    ```

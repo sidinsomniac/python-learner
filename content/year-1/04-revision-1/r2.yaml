@@ -1,0 +1,47 @@
+tier: review
+type: repair
+title: The Portrait's Password
+inputs: ["Ron"]
+task: |
+  The Fat Lady's greeting spell has two bugs. Repair it so that, if someone
+  types `Ron`, it prints:
+
+  ```
+  Halt, Ron!
+  The Fat Lady says "Password?"
+  ```
+starter: |
+  name = input("Who goes there? ")
+  print("Halt, " + Name + "!")
+  print('The Fat Lady says "Password?")
+tests: |
+  def test_no_crash():
+      r = run_student(["Ron"], allow_error=True)
+      check(r.error is None,
+            f"The spell still breaks with a {r.error['type'] if r.error else ''}. Read the error message - which line, and what is Python confused about?")
+
+  def test_halt():
+      r = run_student(["Ron"])
+      check("Halt, Ron!" in r.stdout, "The first line should be 'Halt, Ron!'. Is it?")
+
+  def test_password_line():
+      r = run_student(["Ron"])
+      check('The Fat Lady says "Password?"' in r.stdout,
+            "The second line should show the double quotes around Password?. Does it?")
+
+  def test_anyone():
+      r = run_student(["Ginny"])
+      check("Halt, Ginny!" in r.stdout, "It works for Ron but not for Ginny. Where does the name come from?")
+hints:
+  nudge: Run the spell and read the error. Python finds grammar errors (SyntaxError) before it runs anything at all.
+  question: "On line 3, the string starts with a single quote. Where is the matching single quote that ends it?"
+  pseudocode: |
+    remember the visitor's name
+    show "Halt, " + the name (spelled exactly as stored) + "!"
+    show the sentence with double quotes inside a single-quoted string
+  flaw: Line 3 never closes its string. Line 2 uses a name with different capitals from the one on line 1.
+  analogous: |
+    ```python
+    colour = input("Colour? ")
+    print('You said "' + colour + '"')
+    ```

@@ -1,0 +1,18 @@
+id: y1-l03
+year: 1
+order: 3
+number: 3
+title: Peeves' Ledger
+location: The Library
+concepts: [running order, reassignment, swapping]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: peeves
+    line: Wheeeee! Look what Peevesy found! A Gringotts page from the big fat Ledger - all shuffled up like a Hufflepuff's sock drawer!
+  - who: pince
+    line: PEEVES! That page belongs in the Spell Ledger. Put. It. Back.
+  - who: peeves
+    line: "Can't! Don't know the order! Hee hee! And it wasn't Peevesy who scribbled on the rest of it, either - not *this* time!"
+  - who: ashwood
+    line: For once, he might be telling the truth. Let's get the lines back in order, and see what the page says.
+clue: The repaired page was last edited **at midnight** - but Peeves was busy dropping water balloons on the Welcome Feast all night. **Peeves is not our culprit.**

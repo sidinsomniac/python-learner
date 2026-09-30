@@ -1,0 +1,57 @@
+tier: core
+type: practice
+title: Hagrid's Famous Words
+twist: spec reading - quotes inside strings, and an empty line
+task: |
+  Professor Ashwood wants Hagrid's famous words on the blackboard, written
+  **exactly** like this - including the double quotes, and the **empty line**
+  in the middle:
+
+  ```
+  Hagrid said "Yer a wizard!"
+
+  Then he sat on the cake.
+  ```
+starter: |
+  # Three lines of output - and one of them is empty!
+tests: |
+  def test_says_something():
+      r = run_student()
+      check(r.stdout.strip() != "", "Nothing appeared on the blackboard. Which spell writes text?")
+
+  def test_first_line_has_quotes():
+      r = run_student()
+      first = r.stdout.split("\n")[0]
+      check("Yer a wizard!" in first, "Does your first line contain Hagrid's actual words, 'Yer a wizard!'?")
+      check(first == 'Hagrid said "Yer a wizard!"',
+            "Your first line isn't quite right. Are the double quotes around Hagrid's words *shown*? How can a string contain double quotes without ending early?")
+
+  def test_empty_line_in_middle():
+      r = run_student()
+      rows = r.stdout.split("\n")
+      check(len(rows) >= 2 and rows[1] == "",
+            "The second line should be completely empty. How do you make print show a blank line?")
+
+  def test_last_line():
+      r = run_student()
+      check(r.stdout == 'Hagrid said "Yer a wizard!"\n\nThen he sat on the cake.\n',
+            "Compare your blackboard with the task character by character. Are there exactly three lines, with the last one matching perfectly?")
+hints:
+  nudge: Two ideas from the lesson meet here - showing quote marks *inside* a string, and making an empty line.
+  question: If your string starts with a double quote, where does Python think it ends? What if it started with a single quote instead?
+  pseudocode: |
+    show the first sentence, wrapped in the kind of quote that ISN'T inside it
+    show an empty line
+    show the last sentence
+  flaw: >
+    If you see a SyntaxError on the first line, Python thinks your string ended
+    at the quote before Yer. If the lines are right but the gap is missing,
+    count your prints - you need one that shows nothing at all.
+  analogous: |
+    A *different* sign with the same tricks:
+
+    ```python
+    print('The door said "Password?"')
+    print()
+    print("Neville had forgotten it.")
+    ```

@@ -1,0 +1,49 @@
+tier: stage
+type: practice
+title: "Stage 1: The Hat Listens"
+twist: edge case - messy and invalid answers
+inputs: ["x", "  B "]
+task: |
+  Students mumble. Ask `Your answer (a/b/c/d)? ` and **keep asking** until the
+  answer is valid. An answer is valid if, after removing spaces from both ends
+  and making it lowercase, it's `a`, `b`, `c` or `d`.
+
+  Then print what the Hat heard, in lowercase:
+
+  ```
+  The Hat hears: b
+  ```
+
+  (For the answers `x`, then `  B `.)
+starter: |
+  # Ask until the answer is valid
+tests: |
+  def _hear(*answers):
+      r = run_student(list(answers))
+      return r.lines[-1] if r.lines else ""
+
+  def test_valid_first_time():
+      check(_hear("c") == "The Hat hears: c", f"A valid answer straight away: 'The Hat hears: c'. You printed '{_hear('c')}'.")
+
+  def test_messy():
+      got = _hear("  B ")
+      check(got == "The Hat hears: b", f"'  B ' is a valid b once it's cleaned up. You printed '{got}'.")
+
+  def test_invalid_then_valid():
+      got = _hear("x", "e", "", "ab", "d")
+      check(got == "The Hat hears: d", f"After four invalid answers, a valid d. You printed '{got}'. Does your loop keep asking?")
+hints:
+  nudge: The ask-until-right pattern from Lesson 11 - but "right" means one of four letters, after tidying up.
+  question: How can you check whether a cleaned-up answer is one of a, b, c or d in one go? (What does `in` do with a list?)
+  pseudocode: |
+    answer = ask, then strip and lowercase it
+    while the answer is not one of a, b, c, d:
+        answer = ask again, stripped and lowercased
+    show "The Hat hears: " and the answer
+  flaw: If 'ab' is accepted, you're checking whether the answer is IN the string "abcd". Check against a list of the four letters instead.
+  analogous: |
+    ```python
+    size = input("S/M/L? ").strip().upper()
+    while size not in ["S", "M", "L"]:
+        size = input("S/M/L? ").strip().upper()
+    ```

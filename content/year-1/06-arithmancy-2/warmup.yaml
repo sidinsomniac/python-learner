@@ -1,0 +1,29 @@
+tier: warmup
+type: divination
+title: The Wobbly Scales
+task: |
+  Predict exactly what this spell prints. Every digit counts!
+snippet: |
+  print(0.1 + 0.2)
+  print(0.1 + 0.2 == 0.3)
+  print(round(2.5))
+  print(round(3.5))
+  print(abs(3 - 10))
+  print(7 / 7)
+hints:
+  nudge: Every line here is one of the gotchas from the lesson. Re-read the section on floats and on rounding halves.
+  question: What is 0.1 + 0.2 *really*, inside the computer? And which way does Python round an exact half?
+  pseudocode: |
+    line 1: the almost-0.3 number, with all its digits
+    line 2: is that exactly 0.3?
+    lines 3-4: halves go to the nearest EVEN whole number
+    line 5: the size of -7, without its sign
+    line 6: division always gives a float
+  flaw: The traps are the long 0.3000...4, banker's rounding (2.5 goes DOWN), and the `.0` on the last line.
+  analogous: |
+    ```text
+    print(round(0.5))   -> 0
+    print(round(1.5))   -> 2
+    print(abs(-2.5))    -> 2.5
+    print(10 / 5)       -> 2.0
+    ```

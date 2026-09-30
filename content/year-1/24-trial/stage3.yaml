@@ -1,0 +1,64 @@
+tier: stage
+type: practice
+title: "Stage 3: The Tie-Breaker"
+twist: spec reading - the Hat's tie rule
+inputs: ["b", "a", "a", "b", "c"]
+task: |
+  Ask for **5** answers (valid letters), then print the winning house:
+
+  ```
+  Hufflepuff
+  ```
+
+  **The Hat's rules:** the house with the most answers wins. If houses are
+  **tied** for the most, the winner is whichever of the tied houses the student
+  chose **earliest** in their answers.
+
+  For `b, a, a, b, c`: Gryffindor and Hufflepuff both have 2. The student's
+  very first answer was `b` - so **Hufflepuff** wins.
+starter: |
+  # Most answers wins; ties go to the earliest choice
+tests: |
+  def _winner(*answers):
+      r = run_student(list(answers))
+      return r.lines[-1] if r.lines else ""
+
+  def test_clear_winner():
+      check(_winner("c", "c", "a", "c", "d") == "Ravenclaw", f"Three c answers: Ravenclaw. You printed '{_winner('c', 'c', 'a', 'c', 'd')}'.")
+
+  def test_tie_first_choice():
+      got = _winner("b", "a", "a", "b", "c")
+      check(got == "Hufflepuff", f"Gryffindor and Hufflepuff tie on 2, and b came first. You printed '{got}'.")
+
+  def test_tie_not_first_answer():
+      got = _winner("d", "a", "c", "a", "c")
+      check(got == "Gryffindor",
+            f"Gryffindor and Ravenclaw tie on 2. The first answer (d) isn't one of them - the earliest TIED house chosen is a, at answer 2. You printed '{got}'.")
+
+  def test_all_different():
+      got = _winner("c", "a", "b", "d", "a")
+      check(got == "Gryffindor", f"Gryffindor has 2, the rest 1 each. You printed '{got}'.")
+
+  def test_four_way():
+      check(_winner("d", "c", "b", "a", "d") == "Slytherin", "Slytherin has 2 here - it wins outright.")
+hints:
+  nudge: Keep the answers in a list. You'll need them twice - once to count, and once to break ties.
+  question: Once you know the highest count, how could you walk through the answers IN ORDER and stop at the first one whose house has that count?
+  pseudocode: |
+    answers = ask 5 times, into a list
+    count each letter (list.count is fine here)
+    top = the biggest of the four counts
+    for each answer in order:
+        if that answer's count equals top: that's the winner - stop
+    show the winner's house name
+  flaw: If ties go to the wrong house, you may be checking houses in a fixed order (a, b, c, d) instead of in the order the student answered.
+  analogous: |
+    The first word in a list whose length equals the longest length (4):
+
+    ```python
+    words = ["owl", "toad", "newt"]
+    for w in words:
+        if len(w) == 4:
+            print(w)   # toad - it comes before newt
+            break
+    ```

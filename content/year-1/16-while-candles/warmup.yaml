@@ -1,0 +1,54 @@
+tier: warmup
+type: practice
+title: Countdown to Lumos
+inputs: ["3"]
+task: |
+  Ask `Count down from? ` (a whole number). Print each number from there down
+  to 1, one per line, then `Lumos!`:
+
+  ```
+  3
+  2
+  1
+  Lumos!
+  ```
+
+  If the number is `0`, just print `Lumos!`.
+starter: |
+  # A while loop counting down
+tests: |
+  def _count(n):
+      r = run_student([str(n)])
+      return [l for l in r.lines if not l.startswith("Count down")]
+
+  def test_three():
+      got = _count(3)
+      check(got == ["3", "2", "1", "Lumos!"], f"For 3 you printed {got}.")
+
+  def test_uses_while():
+      check(uses(ast.While), "This lesson is about while loops - can you use one?")
+
+  def test_zero():
+      got = _count(0)
+      check(got == ["Lumos!"], f"For 0 there's nothing to count - just 'Lumos!'. You printed {got}.")
+
+  def test_ten():
+      got = _count(10)
+      check(got[0] == "10" and got[-2] == "1" and len(got) == 11, "For 10 it should count 10, 9, ... 1, then Lumos!.")
+hints:
+  nudge: A while loop that shows the number, then makes it one smaller - until it's no longer above zero.
+  question: What condition keeps the loop going? And what line inside it makes sure it eventually stops?
+  pseudocode: |
+    n = ask, as a whole number
+    while n is above zero:
+        show n
+        n becomes one less
+    show "Lumos!"
+  flaw: If it runs forever, nothing inside the loop changes n. If 1 is missing or 0 appears, check your condition (> 0 or >= 1).
+  analogous: |
+    ```python
+    stairs = 4
+    while stairs > 0:
+        print("Step")
+        stairs = stairs - 2
+    ```

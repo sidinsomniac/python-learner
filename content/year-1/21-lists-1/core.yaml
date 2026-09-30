@@ -1,0 +1,52 @@
+tier: core
+type: practice
+title: Average Marks
+twist: edge case - no marks at all
+inputs: ["7", "8", "10", "done"]
+task: |
+  Read exam marks (whole numbers) until `done`. Print the average to **one**
+  decimal place, and the best mark:
+
+  ```
+  Average: 8.3
+  Best: 10
+  ```
+
+  If no marks were entered, print just `No marks yet`.
+starter: |
+  # Marks into a list, then the average and the best
+tests: |
+  def _run(*marks):
+      r = run_student([str(m) for m in marks] + ["done"])
+      return [l for l in r.lines if l.startswith(("Average", "Best", "No marks"))]
+
+  def test_example():
+      got = _run(7, 8, 10)
+      check(got == ["Average: 8.3", "Best: 10"], f"For 7, 8, 10 you printed {got}. Is the average shown to one decimal place?")
+
+  def test_whole_average():
+      check(_run(4, 6) == ["Average: 5.0", "Best: 6"], f"For 4, 6 you printed {_run(4, 6)}.")
+
+  def test_single():
+      check(_run(9) == ["Average: 9.0", "Best: 9"], "A single mark of 9: average 9.0, best 9.")
+
+  def test_none():
+      got = _run()
+      check(got == ["No marks yet"], f"With no marks, print just 'No marks yet' - dividing by zero would crash! You printed {got}.")
+hints:
+  nudge: Collect the marks in a list first. Then len, sum and max do most of the work - once you've checked the list isn't empty.
+  question: What is sum([]) / len([])? What's max([])? When must you check for an empty list?
+  pseudocode: |
+    marks = an empty list
+    read until done, adding each mark (as a whole number)
+    if the list is empty: No marks yet
+    otherwise:
+        show the average (sum divided by count), to 1 decimal place
+        show the best
+  flaw: A ZeroDivisionError means the empty case isn't handled BEFORE dividing. And make sure marks are numbers, not strings, before adding them.
+  analogous: |
+    ```python
+    times = [12, 15]
+    if len(times) > 0:
+        print(f"Mean: {sum(times) / len(times):.2f}")
+    ```

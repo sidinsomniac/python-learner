@@ -1,0 +1,73 @@
+tier: warmup
+type: repair
+title: The Broken Letter Countdown
+inputs: ["Hermione", "9"]
+task: |
+  This spell is **broken**. Repair it so that, if someone types
+  `Hermione` and then `9`, it prints:
+
+  ```
+  Welcome Hermione! Your letter arrives in 2 years.
+  ```
+
+  It must work for **any** name and age under 11. Hogwarts letters arrive at
+  age 11, so the years left are `11 - age`.
+
+  Press **Run** first and read the error message carefully. Errors are
+  clues, not failures!
+starter: |
+  name = input("What is your name? ")
+  age = input("How old are you? ")
+  years_left = 11 - age
+  print(f"Welcome {name}! Your letter arrives in years_left years.")
+tests: |
+  def test_no_crash():
+      r = run_student(["Hermione", "9"], allow_error=True)
+      if r.error and r.error["type"] == "TypeError":
+          check(False,
+                f"Python raised a TypeError on line {r.error['line']}. What *type* of value does input() always give back, and can you subtract that type from a number?")
+      check(r.error is None,
+            f"The spell still crashes with a {r.error['type'] if r.error else ''}. Read the message: what is Python complaining about?")
+
+
+  def test_number_appears():
+      r = run_student(["Hermione", "9"])
+      check("years_left" not in r.stdout,
+            "Your letter literally says 'years_left'. How do you tell an f-string to show a variable's *value* instead of its name?")
+      check("2 years" in r.stdout,
+            "For a 9-year-old the letter should say 2 years. What does your spell print instead, and why?")
+
+
+  def test_exact_message():
+      r = run_student(["Hermione", "9"])
+      check("Welcome Hermione! Your letter arrives in 2 years." in r.stdout,
+            "Nearly! Compare your output with the task's example one character at a time.")
+
+
+  def test_other_student():
+      r = run_student(["Ginny", "5"])
+      check("Welcome Ginny! Your letter arrives in 6 years." in r.stdout,
+            "Hermione works, but Ginny (age 5) doesn't get the right letter. Is anything in your spell fixed when it should come from the trunks (variables)?")
+hints:
+  nudge: >
+    There are two separate bugs: one crashes the spell, and one makes the
+    message wrong. The crash comes first, so run the spell and read the error.
+  question: >
+    When someone types 9, what type of value does `age` hold: a number or
+    text? And what does Python think about `11 - "9"`?
+  pseudocode: |
+    get the name
+    get the age, and transfigure it from text into a whole number
+    years left = 11 minus the age
+    show the message, with the years-left value dropped into the f-string hole
+  flaw: >
+    Line 2 stores text, so line 3's subtraction fails. And on line 4, look at
+    `years_left` inside the f-string: does it have the magic brackets that turn
+    a name into its value?
+  analogous: |
+    A *different* spell with the same two fixes:
+
+    ```python
+    galleons = int(input("How many galleons? "))
+    print(f"Doubled, that is {galleons * 2} galleons!")
+    ```

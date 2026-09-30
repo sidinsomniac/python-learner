@@ -1,0 +1,52 @@
+tier: outstanding
+type: practice
+title: The Heart of the Word
+twist: combination - // and % inside a slice, and no if allowed
+inputs: ["Lumos"]
+task: |
+  Print the **middle** of a word. If it has an odd number of letters, that's
+  one letter; if it's even, it's the middle **two**:
+
+  | Word | Middle |
+  |---|---|
+  | `Lumos` | `m` |
+  | `Hogwarts` | `wa` |
+  | `Ox` | `Ox` |
+  | `a` | `a` |
+
+  **Constraint:** no `if` statements - one clever slice does it.
+starter: |
+  # One slice to find the middle
+tests: |
+  def _middle(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_if():
+      check(not uses(ast.If, ast.IfExp), "No `if` allowed! Can a single slice's start and stop work for odd AND even lengths?")
+
+  def test_odd():
+      check(_middle("Lumos") == "m", f"For Lumos you printed '{_middle('Lumos')}'.")
+      check(_middle("Nox") == "o", f"For Nox you printed '{_middle('Nox')}'.")
+
+  def test_even():
+      check(_middle("Hogwarts") == "wa", f"For Hogwarts you printed '{_middle('Hogwarts')}'.")
+
+  def test_tiny():
+      check(_middle("Ox") == "Ox", f"For Ox you printed '{_middle('Ox')}'.")
+      check(_middle("a") == "a", f"For a you printed '{_middle('a')}'.")
+hints:
+  nudge: Work out where the slice should START and STOP for a few words on paper - an odd one and an even one.
+  question: For a 5-letter word the slice is [2:3]; for an 8-letter word it's [3:5]. What calculations with len, // and 1 give those numbers?
+  pseudocode: |
+    n = length of word
+    start = (n - 1) floor-divided by 2
+    stop = n floor-divided by 2, plus 1
+    show the slice from start to stop
+  flaw: If odd words work but even ones give one letter, your start is right but your stop isn't (or the other way round). Test with lengths 1, 2, 5 and 8.
+  analogous: |
+    Positions for the middle of lengths 1..4 with start = (n-1)//2, stop = n//2+1:
+
+    ```text
+    n=1: [0:1]   n=2: [0:2]   n=3: [1:2]   n=4: [1:3]
+    ```

@@ -1,0 +1,53 @@
+tier: outstanding
+type: practice
+title: Gryffinpuff!
+twist: algorithm seed - FizzBuzz, house edition
+inputs: ["15"]
+task: |
+  A counting game from the Gryffindor common room. Ask for a number `n`, then
+  for every number from 1 to `n`, print:
+
+  - `Gryffinpuff` if it divides by **both** 3 and 5,
+  - `Gryffindor` if it divides by 3,
+  - `Hufflepuff` if it divides by 5,
+  - otherwise the number itself.
+
+  For `n = 5`: `1`, `2`, `Gryffindor`, `4`, `Hufflepuff`.
+starter: |
+  # 1 to n, house edition
+tests: |
+  def _game(n):
+      r = run_student([str(n)])
+      return [l for l in r.lines if not l.startswith("How")][-n:] if n else []
+
+  def test_first_five():
+      got = _game(5)
+      check(got == ["1", "2", "Gryffindor", "4", "Hufflepuff"], f"For n = 5 you printed {got}.")
+
+  def test_fifteen():
+      got = _game(15)
+      check(got[-1] == "Gryffinpuff", f"15 divides by both 3 and 5 - 'Gryffinpuff'. You printed '{got[-1]}'. Which check must come first?")
+      check(got[8] == "Gryffindor" and got[9] == "Hufflepuff", "9 is Gryffindor and 10 is Hufflepuff.")
+
+  def test_thirty():
+      got = _game(30)
+      check(len(got) == 30 and got[29] == "Gryffinpuff" and got[20] == "Gryffindor", "Does it go all the way to n?")
+hints:
+  nudge: A for loop from 1 to n, with an if / elif / elif / else inside. The ORDER of the checks is the whole trick.
+  question: If you check "divides by 3" first, what happens to 15? It never reaches the "both" check. So which check goes first?
+  pseudocode: |
+    n = ask
+    for each number from 1 to n (including n):
+        if it divides by 3 and by 5: Gryffinpuff
+        elif it divides by 3: Gryffindor
+        elif it divides by 5: Hufflepuff
+        else: the number
+  flaw: If 15 shows 'Gryffindor', the "both" check comes too late. If n itself is missing, your range stops one short.
+  analogous: |
+    ```python
+    for i in range(1, 7):
+        if i % 2 == 0:
+            print("even")
+        else:
+            print(i)
+    ```

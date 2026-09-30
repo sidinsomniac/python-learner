@@ -1,0 +1,64 @@
+tier: core
+type: practice
+title: The Coldest Night's Opposite
+twist: constraint and edge cases - no max, negative numbers, no readings at all
+inputs: ["-3", "4", "-10", "done"]
+task: |
+  Hagrid records temperatures in the Forbidden Forest (whole numbers - often
+  **below zero**). Read temperatures until he types `done`, then print the
+  **highest**:
+
+  ```
+  Highest: 4
+  ```
+
+  If he types `done` straight away, print `No readings`.
+
+  **Constraint:** no `max()` - keep track of the best yourself.
+starter: |
+  # Read until "done", track the highest
+tests: |
+  def _highest(*readings):
+      r = run_student(list(readings) + ["done"])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_max():
+      check(not calls("max") and not calls("sorted"), "No max() or sorted() in this one - use the running-best pattern!")
+
+  def test_mixed():
+      got = _highest("-3", "4", "-10")
+      check(got == "Highest: 4", f"For -3, 4, -10 you printed '{got}'.")
+
+  def test_all_negative():
+      got = _highest("-5", "-2", "-9")
+      check(got == "Highest: -2",
+            f"On a freezing night (-5, -2, -9) the highest is -2, but you printed '{got}'. What did your 'best so far' start as?")
+
+  def test_single():
+      check(_highest("7") == "Highest: 7", "A single reading of 7 is the highest.")
+
+  def test_nothing():
+      got = _highest()
+      check(got == "No readings", f"With no readings at all, print 'No readings'. You printed '{got}'.")
+hints:
+  nudge: Two patterns at once - reading until a stop word, and keeping the running best.
+  question: What should "best so far" be before any reading arrives? What goes wrong if it starts at 0 and every night is below zero?
+  pseudocode: |
+    the best so far starts as "nothing yet"
+    reading = ask
+    while the reading is not "done":
+        turn the reading into a whole number
+        if there is no best yet, or this number beats it: it becomes the best
+        ask again
+    if there is still no best: No readings
+    otherwise: show "Highest: " and the best
+  flaw: >
+    If all-negative nights show 'Highest: 0', your starting value is winning.
+    If 'done' crashes, you're converting it to a number before checking.
+  analogous: |
+    Tracking the SHORTEST name typed until "stop":
+
+    ```text
+    shortest = None
+    each name: if shortest is None or len(name) < len(shortest): shortest = name
+    ```

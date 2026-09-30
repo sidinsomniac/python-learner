@@ -1,4 +1,4 @@
-import type { GradeOutcome, RunOutcome, WorkerRequest, WorkerResponse } from "./types";
+import type { GradeOutcome, RunOutcome, TraceOutcome, WorkerRequest, WorkerResponse } from "./types";
 
 export const RUN_TIMEOUT_MS = 5000;
 
@@ -100,14 +100,25 @@ class PythonRunner {
     code: string,
     tests: string,
     inputs: string[],
+    review: string[] = [],
     timeoutMs = RUN_TIMEOUT_MS * 2,
   ): Promise<GradeOutcome> {
     try {
-      return JSON.parse(await this.call({ kind: "grade", code, tests, inputs }, timeoutMs));
+      return JSON.parse(await this.call({ kind: "grade", code, tests, inputs, review }, timeoutMs));
     } catch (err) {
       if (err instanceof TimeoutError) {
-        return { stdout: "", error: null, flaws: [], passed: 0, total: 0, failure: null, timedOut: true };
+        return { stdout: "", error: null, flaws: [], passed: 0, total: 0, failure: null, review: [], timedOut: true };
       }
+      throw err;
+    }
+  }
+
+  /** Record a spell line by line for the Pensieve. */
+  async trace(code: string, inputs: string[], timeoutMs = RUN_TIMEOUT_MS * 2): Promise<TraceOutcome> {
+    try {
+      return JSON.parse(await this.call({ kind: "trace", code, inputs }, timeoutMs));
+    } catch (err) {
+      if (err instanceof TimeoutError) return { steps: [], stdout: "", error: null, truncated: true, timedOut: true };
       throw err;
     }
   }

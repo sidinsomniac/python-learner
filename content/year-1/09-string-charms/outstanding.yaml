@@ -1,0 +1,43 @@
+tier: outstanding
+type: practice
+title: Vowel Counting, No Loops Allowed
+twist: constraint - no loops
+inputs: ["Hufflepuff"]
+task: |
+  Ask for a word and print how many **vowels** (a, e, i, o, u) it contains -
+  capitals count too. `Hufflepuff` has 3.
+
+  **Constraint:** no loops (`for` or `while`). You haven't learned them yet
+  anyway - so be clever with what you *do* know.
+starter: |
+  # Count a, e, i, o and u - capitals too
+tests: |
+  def _count(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_loops():
+      check(not uses(ast.For, ast.While), "No loops allowed in this one! Which string method counts things for you?")
+
+  def test_hufflepuff():
+      check(_count("Hufflepuff") == "3", f"Hufflepuff has 3 vowels (u, e, u). You printed '{_count('Hufflepuff')}'.")
+
+  def test_capitals():
+      got = _count("AEIOU aeiou")
+      check(got == "10", f"'AEIOU aeiou' has 10 vowels, but you printed '{got}'. Do capitals count in your spell?")
+
+  def test_none():
+      check(_count("Rhythm") == "0", "Rhythm has no vowels at all.")
+hints:
+  nudge: One string method counts how many times something appears. And another makes capitals disappear.
+  question: If you made the whole word lowercase first, how many different letters would you need to count?
+  pseudocode: |
+    word = ask, then make it all lowercase
+    total = count of a + count of e + count of i + count of o + count of u
+    show total
+  flaw: If capitals are missed, lowercase the word BEFORE counting.
+  analogous: |
+    ```python
+    spell = "Abracadabra".lower()
+    print(spell.count("a") + spell.count("b"))   # 7
+    ```

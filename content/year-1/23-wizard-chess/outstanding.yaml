@@ -1,0 +1,48 @@
+tier: outstanding
+type: practice
+title: The Arithmancy Grid
+twist: combination - nested loops plus width formatting
+inputs: ["4"]
+task: |
+  Ask for `n` and print an `n x n` multiplication grid. Every number takes up
+  exactly **4** characters, right-aligned. For `4`:
+
+  ```
+     1   2   3   4
+     2   4   6   8
+     3   6   9  12
+     4   8  12  16
+  ```
+starter: |
+  # A grid of products, 4 characters each
+tests: |
+  def _grid(n):
+      r = run_student([str(n)])
+      return [l for l in r.stdout.split("\n") if l.strip() and not l.startswith("Size")]
+
+  def test_four():
+      got = _grid(4)
+      check(got == ["   1   2   3   4", "   2   4   6   8", "   3   6   9  12", "   4   8  12  16"],
+            f"For 4 your grid starts '{got[0] if got else ''}'. Is every number exactly 4 characters wide, right-aligned?")
+
+  def test_bigger():
+      got = _grid(10)
+      check(len(got) == 10 and got[9].endswith(" 100") and len(got[9]) == 40, "A 10 x 10 grid ends with 100, and each row is 40 characters long.")
+
+  def test_one():
+      check(_grid(1) == ["   1"], "A 1 x 1 grid is just '   1'.")
+hints:
+  nudge: The chessboard's two loops - but each square is now a number, formatted with a width.
+  question: Which format spec makes a number exactly 4 characters wide, leaning right?
+  pseudocode: |
+    n = ask
+    for each row from 1 to n:
+        line = empty
+        for each column from 1 to n:
+            add (row times column), formatted 4 wide
+        show line
+  flaw: If rows are misaligned, the width isn't in the format spec. If the grid starts at 0, your ranges should start at 1.
+  analogous: |
+    ```python
+    print(f"{7:4}{12:4}")   # '   7  12'
+    ```

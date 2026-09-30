@@ -1,0 +1,54 @@
+tier: outstanding
+type: practice
+title: Goblin Rounding
+twist: spec reading - halves round UP, not to even
+task: |
+  Gringotts rounds every price to the **nearest 5 Galleons** - and when a price
+  is exactly halfway (like 12.5), goblins always round **up** (to 15). They
+  never lose a Knut.
+
+  Keep the first line (`price = 12.5`) and print the rounded price. `15` or
+  `15.0` are both fine.
+
+  Careful: `round()` alone rounds halves to *even*, which isn't the goblin way.
+starter: |
+  price = 12.5
+tests: |
+  def _rounded(p):
+      r = run_with(price=p)
+      check(len(r.lines) >= 1, "Your spell doesn't print a price.")
+      try:
+          return float(r.lines[-1])
+      except ValueError:
+          check(False, f"The last line should be just a number, but it's '{r.lines[-1]}'.")
+
+  def test_halfway_goes_up():
+      check(_rounded(12.5) == 15, "12.5 is exactly halfway between 10 and 15 - the goblins say 15.")
+
+  def test_ordinary():
+      check(_rounded(12.4) == 10, "12.4 is nearer 10 than 15.")
+      check(_rounded(17) == 15, "17 is nearer 15 than 20.")
+
+  def test_small_halfway():
+      check(_rounded(2.5) == 5,
+            "2.5 is halfway between 0 and 5 - goblins round UP to 5. If your spell says 0, it's using banker's rounding.")
+
+  def test_zero():
+      check(_rounded(0) == 0, "A free potion stays free: 0 should round to 0.")
+hints:
+  nudge: Rounding to the nearest 5 is like rounding to a whole number - after dividing by 5. But you need halves to go up.
+  question: If you add half a step (2.5) before rounding DOWN, what happens to a price that was exactly halfway?
+  pseudocode: |
+    push the price up by half a step (half of 5)
+    count how many WHOLE steps of 5 fit into that
+    multiply the steps back by 5
+  flaw: >
+    If 2.5 becomes 0, you're relying on round(), which rounds halves to even.
+    Rounding DOWN after adding half a step never has that problem.
+  analogous: |
+    Rounding to the nearest 10, halves up, using the same trick:
+
+    ```text
+    35 + 5 = 40 -> 40 // 10 = 4 -> 4 * 10 = 40
+    34 + 5 = 39 -> 39 // 10 = 3 -> 3 * 10 = 30
+    ```

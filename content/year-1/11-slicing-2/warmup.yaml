@@ -1,0 +1,34 @@
+tier: warmup
+type: practice
+title: Backwards Spells
+inputs: ["Nox"]
+task: |
+  Some old spells were written backwards. Ask for a spell name and print it
+  reversed: `Nox` becomes `xoN`, and `Lumos` becomes `somuL`.
+starter: |
+  # Reverse the spell
+tests: |
+  def _rev(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_nox():
+      check(_rev("Nox") == "xoN", f"For Nox you printed '{_rev('Nox')}'.")
+
+  def test_lumos():
+      check(_rev("Lumos") == "somuL", f"For Lumos you printed '{_rev('Lumos')}'.")
+
+  def test_spaces():
+      check(_rev("Avis Avis") == "sivA sivA", "Spaces are characters too - they get reversed along with everything else.")
+hints:
+  nudge: A slice with a negative step walks backwards.
+  question: What start, stop and step would take every character, backwards?
+  pseudocode: |
+    spell = ask
+    show spell sliced with a step of minus one
+  flaw: If nothing appears, check you're printing the slice, not just making it.
+  analogous: |
+    ```python
+    code = "12345"
+    print(code[::-1][:2])   # 54
+    ```

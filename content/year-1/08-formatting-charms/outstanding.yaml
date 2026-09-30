@@ -1,0 +1,52 @@
+tier: outstanding
+type: practice
+title: The Progress Bar Charm
+twist: combination - string multiplication, // and f-strings
+task: |
+  Draw a progress bar for your spell-learning. Keep the first line
+  (`percent = 50`). The bar has **10** blocks: one `#` for every full 10%, and
+  `-` for the rest:
+
+  ```
+  [#####-----] 50%
+  ```
+
+  A few more: `0` gives `[----------] 0%`, `99` gives `[#########-] 99%`, and
+  `100` gives `[##########] 100%`.
+starter: |
+  percent = 50
+tests: |
+  def _bar(p):
+      r = run_with(percent=p)
+      return r.lines[-1] if r.lines else ""
+
+  def test_half():
+      got = _bar(50)
+      check(got == "[#####-----] 50%", f"For 50% you drew '{got}'.")
+
+  def test_empty_and_full():
+      check(_bar(0) == "[----------] 0%", f"For 0% you drew '{_bar(0)}'.")
+      check(_bar(100) == "[##########] 100%", f"For 100% you drew '{_bar(100)}'.")
+
+  def test_not_quite_full():
+      got = _bar(99)
+      check(got == "[#########-] 99%",
+            f"For 99% you drew '{got}'. Only FULL tens count as a block - how many whole tens are in 99?")
+
+  def test_always_ten_blocks():
+      got = _bar(37)
+      check(got == "[###-------] 37%", f"For 37% you drew '{got}'. Does the bar always have exactly 10 blocks inside the brackets?")
+hints:
+  nudge: '`"#" * 3` is `###`. How many #s do you need, and how many -s?'
+  question: How many WHOLE tens are in 37? And if 3 blocks are full, how many are empty?
+  pseudocode: |
+    full = how many whole tens fit into percent
+    empty = 10 minus full
+    bar = "#" repeated full times, then "-" repeated empty times
+    show "[" + bar + "] " + percent + "%"
+  flaw: If 99% shows 10 blocks, you rounded instead of counting WHOLE tens. If the bar changes length, check that empty = 10 - full.
+  analogous: |
+    ```python
+    stars = 3
+    print("*" * stars + "." * (5 - stars))   # ***..
+    ```

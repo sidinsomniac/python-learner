@@ -1,0 +1,60 @@
+tier: core
+type: practice
+title: The Frozen Chessboard
+twist: spec reading - alternation in two directions, and the tiny board
+inputs: ["4"]
+task: |
+  Ask for a size `n` and draw an `n x n` chessboard. The **top-left** square
+  is `♜`, then squares alternate `♜` and `♖` along each row **and** down each
+  column. For `4`:
+
+  ```
+  ♜♖♜♖
+  ♖♜♖♜
+  ♜♖♜♖
+  ♖♜♖♜
+  ```
+
+  (No spaces between squares.) A `1 x 1` board is just `♜`.
+starter: |
+  # Rows of alternating squares
+tests: |
+  def _board(n):
+      r = run_student([str(n)])
+      return [l for l in r.lines if l and set(l) <= {"♜", "♖"}]
+
+  def test_four():
+      got = _board(4)
+      check(got == ["♜♖♜♖", "♖♜♖♜", "♜♖♜♖", "♖♜♖♜"], f"For 4 you drew {got}. Does each row start with the OPPOSITE square to the row above?")
+
+  def test_odd_size():
+      got = _board(3)
+      check(got == ["♜♖♜", "♖♜♖", "♜♖♜"], f"For 3 you drew {got}.")
+
+  def test_tiny():
+      check(_board(1) == ["♜"], f"A 1 x 1 board is just ♜. You drew {_board(1)}.")
+
+  def test_big():
+      got = _board(8)
+      check(len(got) == 8 and all(len(row) == 8 for row in got) and got[7][7] == "♜", "An 8 x 8 board should have 8 rows of 8, with ♜ in the bottom-right corner.")
+hints:
+  nudge: Two loops - rows outside, squares inside. Each square's colour depends on BOTH its row and its column.
+  question: Look at the lesson's hint about (row + col) % 2. Which squares give 0, and which give 1?
+  pseudocode: |
+    n = ask
+    for each row:
+        line = empty
+        for each column:
+            if (row + column) is even: add ♜ else add ♖
+        show line
+  flaw: If every row starts with ♜, your colour only depends on the column. It needs the row too.
+  analogous: |
+    A striped flag - its stripe depends only on the row:
+
+    ```python
+    for r in range(3):
+        if r % 2 == 0:
+            print("-----")
+        else:
+            print("~~~~~")
+    ```

@@ -1,0 +1,16 @@
+year: 1
+title: The Philosopher's Syntax
+mystery: The Jinxed Ledger
+intro:
+  - who: narrator
+    line: The Welcome Feast. Hundreds of candles float above the four House tables, and the enchanted ceiling glitters with stars.
+  - who: dumbledore
+    line: "Welcome! This year a handful of you will study the oldest language in the castle: *Parseltongue*, which Muggles call **Python**."
+  - who: narrator
+    line: At that very moment, every candle in the Hall flickers - once, twice - and goes out. When they relight, they are burning *upside down*.
+  - who: ashwood
+    line: "{name}. You saw that? Candles don't do that. Something is wrong with the **Spell Ledger**."
+  - who: hermione
+    line: The Ledger? The great book in the Library that records every spell cast in the castle? I read about it in *Hogwarts, A History*!
+  - who: ashwood
+    line: Then we have a mystery on our hands. And you, first-year, are going to learn enough Parseltongue to help me solve it. Class begins tomorrow.

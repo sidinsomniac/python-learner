@@ -1,0 +1,66 @@
+tier: core
+type: repair
+title: The Unchanging Message
+twist: debug - methods whose results are thrown away
+inputs: ["  Beware of Voldemort  "]
+task: |
+  This spell should clean up a message for the Ledger:
+
+  1. remove spaces from both ends,
+  2. replace every `Voldemort` with `You-Know-Who`,
+  3. and make the whole thing **capitals**.
+
+  It runs without errors... but the message comes out completely unchanged.
+  Repair it. `  Beware of Voldemort  ` should become:
+
+  ```
+  BEWARE OF YOU-KNOW-WHO
+  ```
+starter: |
+  message = input("Message for the Ledger: ")
+  message.strip()
+  message.replace("Voldemort", "You-Know-Who")
+  message.upper()
+  print(message)
+tests: |
+  def _clean(raw):
+      r = run_student([raw])
+      return r.stdout.rstrip("\n").split("\n")[-1]
+
+  def test_example():
+      got = _clean("  Beware of Voldemort  ")
+      check(got != "  Beware of Voldemort  ",
+            "The message hasn't changed at all. Do string methods change the string - or give you back a new one?")
+      check(got == "BEWARE OF YOU-KNOW-WHO", f"You printed '{got}'. Check each of the three steps.")
+
+  def test_order_matters():
+      got = _clean("voldemort's wand")
+      check(got == "VOLDEMORT'S WAND",
+            f"You printed '{got}'. The ledger only replaces 'Voldemort' with a capital V. Does your spell capitalise BEFORE replacing?")
+
+  def test_twice():
+      got = _clean("Voldemort! Voldemort!")
+      check(got == "YOU-KNOW-WHO! YOU-KNOW-WHO!", f"Every Voldemort should be replaced. You printed '{got}'.")
+
+  def test_nothing_to_replace():
+      got = _clean("  quidditch practice at six ")
+      check(got == "QUIDDITCH PRACTICE AT SIX", f"You printed '{got}'.")
+hints:
+  nudge: Re-read the ⚠️ section of the lesson. What does a string method do to the original string?
+  question: After the line `message.strip()` runs, what is inside `message`? Where did the stripped version go?
+  pseudocode: |
+    message = ask
+    message becomes the stripped message
+    message becomes the replaced message
+    message becomes the capitalised message
+    show message
+  flaw: >
+    Lines 2-4 each create a new string and then throw it away. Nothing is ever
+    stored back into `message`. And keep the order: replace before capitalising.
+  analogous: |
+    ```python
+    potion = "  bubbling  "
+    potion = potion.strip()
+    potion = potion.upper()
+    print(potion)   # BUBBLING
+    ```

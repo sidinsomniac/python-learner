@@ -21,23 +21,25 @@ Python runs **inside your browser** through [Pyodide](https://pyodide.org), so n
 
 ## What's in the game so far
 
-**First Year: The Philosopher's Syntax** has 5 quests, one of each activity type:
+**All of First Year: The Philosopher's Syntax.** That's 15 lessons (several split into parts), 3 revision lessons and a 4-stage Trial - 73 exercises that take you from your first `print` to loops and lists. It's all wrapped in a mystery, **The Jinxed Ledger**: every lesson you finish reveals a clue, and the Trial unmasks the culprit.
 
-| Quest | Type | You learn |
-|---|---|---|
-| The First Incantation | 🪄 Spell Practice | `print`, strings |
-| The Owl Knows Your Name | 🪄 Spell Practice | variables, `input` |
-| Peeves and the Scrambled Ledger | 📜 Spell Scramble | order of execution |
-| Divining the Cauldron | 🔮 Divination | numbers, types, `/` `//` `%` |
-| The Broken Letter Countdown | ⚗️ Potion Repair | `int()`, f-strings, reading errors |
+Every lesson follows the same shape:
+1. **📖 Story and lecture.** A short cutscene, then the lesson itself, with runnable "Try it" examples, **checkpoint questions** inside the reading, and a practice sandbox.
+2. **🌱 Warm-up** (required). Use the idea once, in a new situation.
+3. **🔥 Core challenge** (required). Always has a **twist**: an edge case, a banned shortcut, a bug to find, working backwards from an answer, or tricky small print.
+4. **⭐ Outstanding challenge** (optional). For the brave.
 
-Each quest has a **📖 Lesson** with a practice sandbox and a **📜 Task**. When you're stuck, you have three kinds of help:
+When you're stuck:
+- **Automatic feedback.** Failing checks and Python errors are turned into *questions*.
+- **The hint ladder.** Nudge, guiding question, pseudocode, flaw pointer, then a similar-but-different example.
+- **🌀 The Pensieve.** Replay any spell line by line and watch every variable change.
+- **Ask the Professor.** An optional AI chat that uses your own API key (below).
 
-- **Automatic feedback.** Failing checks, Python errors and design flaws are all turned into *questions*.
-- **The hint ladder.** Hints unlock one at a time: nudge, then guiding question, then pseudocode, then flaw pointer, then a similar-but-different example. Each of the first four hints costs a little XP.
-- **Ask the Professor.** This is an optional AI chat that uses your own API key (see below).
+After you pass, **Professor Snape reviews your code**. Act on his remarks to earn an **O**.
 
-There are also rewards: XP and levels, Galleons, house points, badges, and a Spellbook that collects your notes.
+Every exercise gets an O.W.L. grade (**O**utstanding, **E**xceeds Expectations, **A**cceptable, **P**oor). Grades never block you, and you can replay to improve them. The **Case File** holds your clues and your report card. You also collect XP, levels, Galleons, house points, badges and Spellbook pages.
+
+**Coming next:** Years 2–7 (see the [curriculum](docs/curriculum.md)), Time-Turner spaced review, the castle hub, and the House Cup.
 
 ## The AI Professor: Claude or DeepSeek
 
@@ -74,28 +76,41 @@ The Trophy Room keeps count of what you've found.
 | `npm run e2e` | Runs the browser tests (Playwright). Set `CHROMIUM_PATH` to use a system Chromium |
 | `npm run build` | Makes a production build in `dist/` |
 
-### Adding a quest
+### Adding a lesson
 
-Each quest is a folder in `content/year-N/`:
+Lessons live in `content/year-N/<folder>/`. The rules every exercise must follow are in [docs/exercise-design.md](docs/exercise-design.md).
 
 ```
-quest.yaml    title, type (practice|scramble|divination|repair), xp, task text, flavour
-lecture.md    the lesson ("Try it" buttons are added to every code block)
-starter.py    starting code (practice / repair)
-tests.py      hidden checks, written with check(condition, "a guiding *question*")
-hints.yaml    nudge, question, pseudocode, flaw, analogous
-spellbook.md  the reference page the student unlocks
-solution.py   used only by the validator and never shipped to the browser
-snippet.py    (divination only) the code whose output is predicted
+lesson.yaml             id, order, number, title, location, concepts, the story
+                        (scene / outro, speakers from content/cast.yaml), the clue,
+                        and the exercise list, e.g. [warmup, core, outstanding]
+lecture.md              the lesson. ```python blocks get "Try it" buttons, and
+                        ```checkpoint blocks (q / options / answer / why) become
+                        inline questions
+spellbook.md            the notes page the student unlocks
+warmup.yaml             one file per exercise: tier, type, title, twist, task,
+core.yaml               inputs, starter, tests, hints (nudge / question /
+outstanding.yaml        pseudocode / flaw / analogous), snippet or lines
+warmup.solution.py      reference solutions - used only by the validator,
+core.solution.py        never shipped to the browser
 ```
 
-`tests.py` can use these helpers from `src/runtime/harness.py`:
-- `run_student(inputs)` runs the student's code. It returns `.stdout`, `.lines` and `.ns`.
-- `source()` returns the student's code as text.
-- `tree()` returns the student's code as an AST.
+`tests` can use these helpers from `src/runtime/harness.py`:
+- `run_student(inputs)` and `run_with(name=value)` run the student's code, the second with some starting values swapped for others. They return `.stdout`, `.lines` and `.ns`.
+- `student_function(name)` gets a function the student defined.
+- `source()` and `tree()` give the student's code as text or as an AST.
+- `calls(name)`, `uses(ast.For)` and `count_nodes(...)` check the code's structure.
+- `timed(fn, ...)` fails a slow solution.
 - `check(condition, question)` fails the test with your question if the condition is false.
 
-Tests run in order and stop at the first failure, so the student focuses on one thing at a time.
+Tests run in order and stop at the first failure.
+
+`npm run validate-content` checks:
+- every reference solution passes and gets a clean code review;
+- no starter code passes already;
+- **no lecture example solves a core challenge**;
+- no hint contains a solution line;
+- scenes and checkpoints are well formed.
 
 ## Docs
 

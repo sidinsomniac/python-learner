@@ -1,0 +1,57 @@
+tier: warmup
+type: practice
+title: Hello, Hogwarts
+task: |
+  Write a spell that prints **exactly** these two lines:
+
+  ```
+  Hello, Hogwarts!
+  I am ready to learn magic.
+  ```
+
+  Capital letters, commas and full stops all count - spells are fussy!
+starter: |
+  # Your first spell! Write your code below this line.
+tests: |
+  def test_prints_something():
+      r = run_student()
+      check(len(r.lines) > 0,
+            "Your spell ran, but it said nothing at all. Which spell makes Python *show* words on the screen?")
+
+  def test_first_line():
+      r = run_student()
+      first = r.lines[0]
+      check(first.lower().replace(" ", "") == "hello,hogwarts!",
+            "Read your first line of output aloud. Does it say the same words as the first line in the task?")
+      check(first == "Hello, Hogwarts!",
+            "Your first line is close! Compare it with the task one character at a time: capitals, the comma, the space, the '!'.")
+
+  def test_second_line():
+      r = run_student()
+      check(len(r.lines) >= 2,
+            "The task asks for two lines, but your spell only shows one. How many times do you need to call print?")
+      check(r.lines[1] == "I am ready to learn magic.",
+            "Your second line doesn't quite match. Is every word, capital letter and the final full stop the same as in the task?")
+
+  def test_nothing_extra():
+      r = run_student()
+      check(len(r.lines) == 2,
+            f"Your spell printed {len(r.lines)} lines, but the task wants exactly 2. Which lines are extra?")
+hints:
+  nudge: This exercise is all about one spell - the one that makes Python show text. What was it called?
+  question: How many lines of text should appear? And how many times does your spell use print right now?
+  pseudocode: |
+    show the first sentence
+    show the second sentence
+    (Each "show" is one use of the display spell, with the text inside quotes.)
+  flaw: >
+    Look at how each line of your spell is built: spell name, round brackets,
+    text inside matching quotes. Is any part missing - like a quote that opens
+    but never closes?
+  analogous: |
+    A *different* spell with the same shape:
+
+    ```python
+    print("Mischief")
+    print("Managed")
+    ```

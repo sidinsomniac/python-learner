@@ -1,0 +1,63 @@
+tier: core
+type: practice
+title: Slughorn's Price List
+twist: spec reading - exact widths and alignment
+task: |
+  Print this price list **exactly** - it's pinned up in the Potions dungeon and
+  the columns must line up:
+
+  ```
+  Potion          Price
+  Pepperup         3.50
+  Felix Felicis  150.00
+  Wolfsbane       42.75
+  ```
+
+  The rules from Slughorn's scroll:
+
+  - Potion names are **left**-aligned in a column **14** characters wide.
+  - Prices are **right**-aligned in a column **7** characters wide, with **2**
+    decimal places.
+  - The header row follows the same widths.
+
+  Keep the three price variables - the examiners change the prices.
+starter: |
+  pepperup = 3.5
+  felix = 150
+  wolfsbane = 42.75
+tests: |
+  def _table(p, f, w):
+      r = run_with(pepperup=p, felix=f, wolfsbane=w)
+      return r.stdout.rstrip("\n").split("\n")
+
+  def test_header():
+      rows = _table(3.5, 150, 42.75)
+      check(rows[0] == "Potion          Price",
+            f"The header should be 'Potion' in a 14-wide left column, then 'Price' in a 7-wide right column. Yours: '{rows[0]}'")
+
+  def test_example_rows():
+      rows = _table(3.5, 150, 42.75)
+      check(len(rows) == 4, f"The list should have 4 lines (header + 3 potions); yours has {len(rows)}.")
+      check(rows[1] == "Pepperup         3.50", f"The Pepperup row isn't aligned. Yours: '{rows[1]}'. Count the characters!")
+      check(rows[2] == "Felix Felicis  150.00", f"The Felix Felicis row isn't right. Yours: '{rows[2]}'.")
+      check(rows[3] == "Wolfsbane       42.75", f"The Wolfsbane row isn't right. Yours: '{rows[3]}'.")
+
+  def test_other_prices():
+      rows = _table(0.5, 1999.99, 7)
+      check(rows[1:] == ["Pepperup         0.50", "Felix Felicis 1999.99", "Wolfsbane        7.00"],
+            "With other prices the columns go wrong. Are you using format specs, or typing spaces by hand?")
+hints:
+  nudge: Each row is one f-string with TWO format specs - one for the name, one for the price.
+  question: Which spec makes text lean left in a 14-wide column? Which makes a number lean right, 7 wide, with 2 decimals?
+  pseudocode: |
+    show header: "Potion" left in 14, "Price" right in 7
+    for each potion: name left in 14, price right in 7 with 2 decimals
+  flaw: >
+    If rows line up for one set of prices but not another, you've typed the
+    spaces by hand. Let the width in the format spec do the padding.
+  analogous: |
+    A scoreboard with a 10-wide left column and a 4-wide right one:
+
+    ```python
+    print(f"{'Harry':<10}{150:>4}")
+    ```

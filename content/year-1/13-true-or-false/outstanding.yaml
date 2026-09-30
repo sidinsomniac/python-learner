@@ -1,0 +1,46 @@
+tier: outstanding
+type: practice
+title: The Leap-Year Charm
+twist: constraint - one expression, no if
+inputs: ["2024"]
+task: |
+  The Hogwarts calendar needs to know leap years. A year is a leap year if:
+
+  - it divides exactly by **4**,
+  - **except** years that divide exactly by **100**,
+  - **except** years that divide exactly by **400** (which *are* leap years).
+
+  So 2024 is, 1900 isn't, and 2000 is. Ask for a year and print `True` or
+  `False`.
+
+  **Constraint:** no `if` - a single boolean expression.
+starter: |
+  # One expression - no if!
+tests: |
+  def _leap(y):
+      r = run_student([y])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_if():
+      check(not uses(ast.If, ast.IfExp), "No if allowed! Can and / or / not express the rules on their own?")
+
+  def test_ordinary():
+      check(_leap("2024") == "True", "2024 divides by 4 - a leap year.")
+      check(_leap("2023") == "False", "2023 doesn't divide by 4.")
+
+  def test_centuries():
+      check(_leap("1900") == "False", f"1900 divides by 100 but not 400 - NOT a leap year. You printed '{_leap('1900')}'.")
+      check(_leap("2000") == "True", f"2000 divides by 400 - a leap year. You printed '{_leap('2000')}'.")
+hints:
+  nudge: '"Divides exactly by 4" means "the remainder is 0". Which operator gives remainders?'
+  question: Can you say the rule as "divisible by 4 AND (something about 100 and 400)"? What goes in the brackets?
+  pseudocode: |
+    year = ask, as a whole number
+    show: (year divides by 4) and ((year does NOT divide by 100) or (year divides by 400))
+  flaw: If 1900 comes out True, your "except 100" rule is missing. If 2000 comes out False, the "except 400" part is missing.
+  analogous: |
+    "Even, but not a multiple of 10, unless it's a multiple of 50":
+
+    ```text
+    n % 2 == 0 and (n % 10 != 0 or n % 50 == 0)
+    ```

@@ -1,0 +1,16 @@
+id: y1-r1
+year: 1
+order: 4
+number: R1
+kind: revision
+title: Library Revision I
+location: The Library
+concepts: [print, strings, variables, input, running order]
+exercises: [r1, r2, r3]
+scene:
+  - who: pince
+    line: Quiet! This is a library, not a Quidditch pitch. If you're here to revise, revise.
+  - who: hermione
+    line: "(whispering) Mixing up old lessons is the best way to remember them. I read that it's called *interleaving*."
+  - who: narrator
+    line: As you open your books, you get the prickly feeling of being watched. A portrait you've never noticed - a thin old wizard in a dusty frame - is staring straight at you. When you look up, he pretends to be asleep.

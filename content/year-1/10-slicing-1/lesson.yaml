@@ -1,0 +1,16 @@
+id: y1-l08a
+year: 1
+order: 10
+number: 8
+part: { n: 1, of: 2 }
+title: Slicing the Scroll
+location: The Restricted Section
+concepts: [len, indexing, negative indexes, slices]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: Behind a rope in the Restricted Section, you find a half-burnt scroll - the charred remains of an old page of the Ledger.
+  - who: hermione
+    line: Only bits of it are readable. If we could pick out exactly the letters we need, and skip the burnt ones...
+  - who: ashwood
+    line: Then you need **slicing** - Parseltongue's way of cutting precisely the pieces you want out of a string.

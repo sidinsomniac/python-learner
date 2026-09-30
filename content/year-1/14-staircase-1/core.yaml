@@ -1,0 +1,70 @@
+tier: core
+type: practice
+title: Marking the O.W.L.s
+twist: edge case - exact boundaries and impossible scores
+inputs: ["90"]
+task: |
+  Turn an exam score into an O.W.L. grade. Ask for the score (a whole number)
+  and print the grade:
+
+  | Score | Grade |
+  |---|---|
+  | 90 to 100 | `Outstanding` |
+  | 75 to 89 | `Exceeds Expectations` |
+  | 60 to 74 | `Acceptable` |
+  | 45 to 59 | `Poor` |
+  | 30 to 44 | `Dreadful` |
+  | 0 to 29 | `Troll` |
+
+  Scores below 0 or above 100 are impossible - print `Invalid score`.
+starter: |
+  # score -> grade
+tests: |
+  def _grade(score):
+      r = run_student([str(score)])
+      return r.lines[-1] if r.lines else ""
+
+  def test_middle_of_bands():
+      check(_grade(95) == "Outstanding", "95 should be Outstanding.")
+      check(_grade(80) == "Exceeds Expectations", "80 should be Exceeds Expectations.")
+      check(_grade(50) == "Poor", "50 should be Poor.")
+      check(_grade(10) == "Troll", "10 should be Troll.")
+
+  def test_exact_boundaries():
+      for score, grade in [(90, "Outstanding"), (89, "Exceeds Expectations"), (75, "Exceeds Expectations"),
+                           (74, "Acceptable"), (60, "Acceptable"), (45, "Poor"), (30, "Dreadful"), (29, "Troll")]:
+          got = _grade(score)
+          check(got == grade, f"A score of exactly {score} should be {grade}, but you printed '{got}'. Check < versus <= on that boundary.")
+
+  def test_ends_of_the_scale():
+      check(_grade(100) == "Outstanding", f"100 is a perfect score - Outstanding. You printed '{_grade(100)}'.")
+      check(_grade(0) == "Troll", f"0 is a real (if sad) score - Troll. You printed '{_grade(0)}'.")
+
+  def test_impossible_scores():
+      check(_grade(101) == "Invalid score", f"101 is impossible. You printed '{_grade(101)}'.")
+      check(_grade(-5) == "Invalid score", f"-5 is impossible. You printed '{_grade(-5)}'.")
+hints:
+  nudge: One if, several elifs, one else. And the ORDER you check things in matters.
+  question: Where should the check for impossible scores go - first, or last? What happens to 101 if you check `score >= 90` first?
+  pseudocode: |
+    score = ask, as a whole number
+    if score is below 0 or above 100: invalid
+    elif score is at least 90: Outstanding
+    elif score is at least 75: Exceeds Expectations
+    ... and so on down the table
+    else: Troll
+  flaw: >
+    Test the edges: 90, 89, 75, 74, 0, 100, 101. If exactly 90 fails, you used >
+    where you needed >=. If 101 says Outstanding, the invalid check comes too late.
+  analogous: |
+    ```python
+    t = int(input("Temperature? "))
+    if t < -50 or t > 60:
+        print("Broken thermometer")
+    elif t >= 25:
+        print("Hot")
+    elif t >= 10:
+        print("Mild")
+    else:
+        print("Cold")
+    ```

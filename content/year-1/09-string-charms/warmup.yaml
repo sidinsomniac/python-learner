@@ -1,0 +1,44 @@
+tier: warmup
+type: practice
+title: The Shouted Name
+inputs: ["  hARRY pOTTER  "]
+task: |
+  Students keep typing their names with stray spaces and wild capitals. Ask
+  for a name, then print it cleaned up: no spaces at either end, and each word
+  capitalised properly.
+
+  `  hARRY pOTTER  ` should print:
+
+  ```
+  Harry Potter
+  ```
+starter: |
+  # Clean up the name
+tests: |
+  def _clean(raw):
+      r = run_student([raw])
+      return r.stdout.rstrip("\n").split("\n")[-1]
+
+  def test_harry():
+      got = _clean("  hARRY pOTTER  ")
+      check(got == "Harry Potter", f"You printed '{got}'. Are the spaces at both ends gone, and each word capitalised?")
+
+  def test_already_clean():
+      got = _clean("Luna Lovegood")
+      check(got == "Luna Lovegood", f"A tidy name should stay the same, but you printed '{got}'.")
+
+  def test_shouting():
+      got = _clean("NEVILLE   ")
+      check(got == "Neville", f"You printed '{got}'.")
+hints:
+  nudge: Two string methods from the lesson do exactly these two jobs.
+  question: Which method removes spaces from the ends? Which one capitalises each word? Can you use both, one after the other?
+  pseudocode: |
+    name = ask for the name
+    show the name with the ends trimmed, then title-cased
+  flaw: If the output didn't change, you called a method but didn't use what it gave back.
+  analogous: |
+    ```python
+    word = input("Word? ")
+    print(word.lower().replace("x", "*"))
+    ```

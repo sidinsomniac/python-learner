@@ -1,0 +1,17 @@
+id: y1-l04a
+year: 1
+order: 5
+number: 4
+part: { n: 1, of: 2 }
+title: Arithmancy
+location: The Arithmancy Tower
+concepts: [arithmetic, "// and %", precedence]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: The Arithmancy classroom smells of chalk dust and old parchment. Numbers drift lazily through the air.
+  - who: hermione
+    line: Look at the Gringotts totals in the Ledger - they're *wrong*. Not wildly wrong. Just... off. Like someone added things up in a hurry.
+  - who: ashwood
+    line: Then we'll learn to add them up properly ourselves. Wizarding money is a wonderful headache - 29 Knuts to a Sickle, 17 Sickles to a Galleon.
+clue: The wrong Gringotts sums all differ from the right ones by the same amount in total - exactly **200**. Two hundred what, though? Years? Pages?

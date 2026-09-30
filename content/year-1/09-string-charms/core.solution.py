@@ -1,0 +1,5 @@
+message = input("Message for the Ledger: ")
+message = message.strip()
+message = message.replace("Voldemort", "You-Know-Who")
+message = message.upper()
+print(message)

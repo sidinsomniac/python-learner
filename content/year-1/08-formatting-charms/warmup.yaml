@@ -1,0 +1,45 @@
+tier: warmup
+type: practice
+title: The Gringotts Receipt
+inputs: ["2.5", "5"]
+task: |
+  Ask for the price of one potion, then how many were bought (any question
+  wording). Print the total with **exactly two decimal places**:
+
+  ```
+  Total: 12.50 Galleons
+  ```
+
+  (That's for a price of `2.5` and `5` potions.)
+starter: |
+  # price, quantity, total
+tests: |
+  def _total(price, qty):
+      r = run_student([price, qty])
+      return r.lines[-1] if r.lines else ""
+
+  def test_example():
+      got = _total("2.5", "5")
+      check(got == "Total: 12.50 Galleons",
+            f"You printed '{got}'. Is the total shown with exactly two decimal places? Which format spec does that?")
+
+  def test_whole_price():
+      got = _total("3", "4")
+      check(got == "Total: 12.00 Galleons", f"For 3 Galleons x 4 you printed '{got}'.")
+
+  def test_rounding():
+      got = _total("0.333", "3")
+      check(got == "Total: 1.00 Galleons", f"For 0.333 x 3 you printed '{got}'. Does the format spec round for you?")
+hints:
+  nudge: Two inputs to transfigure into numbers, one multiplication, and one format spec.
+  question: What type does input() give you? And what goes after the colon inside `{ }` for two decimal places?
+  pseudocode: |
+    price = ask, as a decimal number
+    quantity = ask, as a whole number
+    show "Total: " + (price times quantity, with 2 decimals) + " Galleons"
+  flaw: If you see '12.5' instead of '12.50', your f-string needs a format spec after a colon.
+  analogous: |
+    ```python
+    weight = float(input("Weight? "))
+    print(f"Half of it: {weight / 2:.1f} kg")
+    ```

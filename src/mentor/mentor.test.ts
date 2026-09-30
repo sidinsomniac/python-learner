@@ -94,11 +94,12 @@ describe("feedback", () => {
       total: 3,
       flaws: [{ id: "unused-variable", line: 1, question: "Was `x` meant to be used?" }],
       failure: { test: "test_x", kind: "check", question: "What should it print?" },
+      review: [],
     });
     expect(items.map((i) => i.tone)).toEqual(["question", "flaw"]);
     expect(items[0].title).toContain("1 of 3");
   });
   it("celebrates success", () => {
-    expect(buildFeedback({ stdout: "", error: null, passed: 2, total: 2, flaws: [], failure: null })[0].tone).toBe("success");
+    expect(buildFeedback({ stdout: "", error: null, passed: 2, total: 2, flaws: [], failure: null, review: [] })[0].tone).toBe("success");
   });
 });

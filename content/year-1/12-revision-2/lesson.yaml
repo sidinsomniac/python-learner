@@ -1,0 +1,16 @@
+id: y1-r2
+year: 1
+order: 12
+number: R2
+kind: revision
+title: Library Revision II
+location: The Library
+concepts: [arithmetic, types, formatting, string methods, slicing]
+exercises: [r1, r2, r3]
+scene:
+  - who: hermione
+    line: "Let's lay out what we know. Page 1 rewritten. Letters sent *from the Library* at midnight. Old-fashioned spells. A monogram: G.K."
+  - who: ron
+    line: And a scroll that says "I was keeper" and "forgotten". So we're looking for a forgotten Ledger-keeper whose initials are G.K. Easy. Only about a thousand years of Hogwarts history to check.
+  - who: narrator
+    line: Behind you, the portrait of the thin old wizard shifts uncomfortably in its frame.

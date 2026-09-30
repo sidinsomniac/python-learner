@@ -1,0 +1,70 @@
+tier: core
+type: repair
+title: The Goblet Swap
+twist: debug - code that looks right but loses a value
+inputs: ["pumpkin juice", "Polyjuice Potion"]
+task: |
+  For a Potions lesson, Snape wants the contents of two goblets **swapped**.
+  Neville wrote this spell - but afterwards, *both* goblets hold the same
+  thing. Nobody is sure where the pumpkin juice went.
+
+  Repair it. With the answers `pumpkin juice` and `Polyjuice Potion` it must
+  print:
+
+  ```
+  First goblet: Polyjuice Potion
+  Second goblet: pumpkin juice
+  ```
+
+  Press 🌀 **Pensieve** to watch what happens to each goblet line by line.
+starter: |
+  goblet_a = input("What's in the first goblet? ")
+  goblet_b = input("What's in the second goblet? ")
+
+  # Swap them!
+  goblet_a = goblet_b
+  goblet_b = goblet_a
+
+  print("First goblet:", goblet_a)
+  print("Second goblet:", goblet_b)
+tests: |
+  def _run(a, b):
+      return run_student([a, b])
+
+  def test_first_goblet():
+      r = _run("pumpkin juice", "Polyjuice Potion")
+      check("First goblet: Polyjuice Potion" in r.stdout,
+            "The first goblet should now hold what the second one had. Does it?")
+
+  def test_second_goblet_keeps_the_juice():
+      r = _run("pumpkin juice", "Polyjuice Potion")
+      check("Second goblet: pumpkin juice" in r.stdout,
+            "The pumpkin juice has vanished! After the line `goblet_a = goblet_b`, what is left inside goblet_a? Where could you keep the juice safe first?")
+
+  def test_other_drinks():
+      r = _run("water", "gillywater")
+      check("First goblet: gillywater" in r.stdout and "Second goblet: water" in r.stdout,
+            "It works for one pair of drinks but not for water and gillywater. Is anything fixed in your spell that should come from the goblets?")
+
+  def test_same_drink_twice():
+      r = _run("tea", "tea")
+      check(r.lines.count("First goblet: tea") == 1 and "Second goblet: tea" in r.stdout,
+            "If both goblets hold tea, both should still say tea afterwards. Does your spell cope?")
+hints:
+  nudge: When you pour one goblet into the other, what happens to what was in it before?
+  question: Right after the line `goblet_a = goblet_b` runs, what is inside goblet_a? Is the pumpkin juice anywhere at all?
+  pseudocode: |
+    put goblet_a's drink somewhere safe first (a spare goblet)
+    goblet_a becomes goblet_b's drink
+    goblet_b becomes the drink from the spare goblet
+  flaw: >
+    The line `goblet_a = goblet_b` overwrites the pumpkin juice before anyone
+    has saved it. The fix needs one more variable, used BEFORE that line.
+  analogous: |
+    Swapping two books between hands with a table nearby:
+
+    ```text
+    put the left-hand book on the table
+    move the right-hand book to the left hand
+    pick the table book up with the right hand
+    ```

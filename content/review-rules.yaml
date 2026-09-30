@@ -1,0 +1,12 @@
+# Snape's code-review rules (src/runtime/harness.py) and the lesson from which
+# each one is switched on - a rule only applies once its idea has been taught.
+unused-variable: y1-l02
+shadowed-builtin: y1-l02
+str-in-fstring: y1-l06
+concat-str: y1-l06
+eq-bool: y1-l09
+not-eq: y1-l09
+redundant-bool: y1-l10a
+repeated-lines: y1-l12
+range-len: y1-l12
+augmented-assign: y1-l13a

@@ -1,0 +1,60 @@
+tier: core
+type: practice
+title: The Prime Egg
+twist: edge case - 0, 1 and 2 are all traps
+inputs: ["7"]
+task: |
+  Ask for a whole number and say whether it's prime:
+
+  ```
+  7 is prime
+  8 is not prime
+  ```
+
+  Remember: primes are **above 1**, and divide evenly only by 1 and
+  themselves.
+starter: |
+  # Prime or not?
+tests: |
+  def _prime(n):
+      r = run_student([str(n)])
+      return r.lines[-1] if r.lines else ""
+
+  def test_small():
+      check(_prime(7) == "7 is prime", f"7 is prime. You printed '{_prime(7)}'.")
+      check(_prime(8) == "8 is not prime", f"8 = 2 x 4. You printed '{_prime(8)}'.")
+
+  def test_two():
+      check(_prime(2) == "2 is prime", f"2 is the only even prime. You printed '{_prime(2)}'.")
+
+  def test_zero_and_one():
+      check(_prime(1) == "1 is not prime", f"1 is NOT prime (primes are above 1). You printed '{_prime(1)}'.")
+      check(_prime(0) == "0 is not prime", f"0 is not prime. You printed '{_prime(0)}'.")
+
+  def test_sneaky():
+      check(_prime(91) == "91 is not prime", "91 looks prime, but 7 x 13 = 91.")
+      check(_prime(97) == "97 is prime", "97 is prime.")
+hints:
+  nudge: Try every possible divisor. Stop as soon as one divides evenly. And deal with the small numbers first.
+  question: Which numbers could possibly divide n evenly, apart from 1 and n? Which loop feature runs code only when no divisor was ever found?
+  pseudocode: |
+    n = ask, as a whole number
+    if n is below 2: not prime
+    otherwise:
+        for each d from 2 up to (but not including) n:
+            if d divides n evenly: not prime, and stop the loop
+        if the loop never stopped early: prime
+  flaw: >
+    If 1 says prime, you need a check before the loop. If 2 says nothing at all,
+    look at what range(2, 2) contains - and where your "prime" message lives.
+  analogous: |
+    Does "Hogwarts" contain a z? Report once either way:
+
+    ```python
+    for ch in "Hogwarts":
+        if ch == "z":
+            print("found")
+            break
+    else:
+        print("no z")
+    ```

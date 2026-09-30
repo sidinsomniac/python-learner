@@ -1,0 +1,71 @@
+tier: core
+type: practice
+title: Goblin Change
+twist: inversion - from the smallest coins back up to the biggest
+task: |
+  A bag of **Knuts** has been paid into Gringotts. The goblins want it written
+  as Galleons, Sickles and Knuts - as few coins as possible.
+
+  Remember: **1 Galleon = 17 Sickles**, and **1 Sickle = 29 Knuts**.
+
+  Keep the first line (`knuts = 1000`) - the examiners will change the number
+  to test your spell. For 1000 Knuts, print:
+
+  ```
+  2 Galleons, 0 Sickles, 14 Knuts
+  ```
+starter: |
+  knuts = 1000
+
+  # Work out the Galleons, Sickles and Knuts, then print them.
+tests: |
+  def _coins(n):
+      r = run_with(knuts=n)
+      check(len(r.lines) >= 1, "Your spell doesn't print anything yet.")
+      return r.lines[-1]
+
+  def test_thousand():
+      got = _coins(1000)
+      check(got == "2 Galleons, 0 Sickles, 14 Knuts",
+            f"For 1000 Knuts you printed '{got}'. How many Knuts are in ONE Galleon? (Multiply it out first.)")
+
+  def test_really_calculates():
+      got = _coins(1234)
+      check(got == "2 Galleons, 8 Sickles, 16 Knuts",
+            f"For 1234 Knuts you printed '{got}'. After taking out the Galleons, what's LEFT - and how many Sickles fit into that?")
+
+  def test_exactly_one_galleon():
+      got = _coins(493)
+      check(got == "1 Galleons, 0 Sickles, 0 Knuts",
+            f"493 Knuts is exactly one Galleon, but you printed '{got}'. Check your conversion numbers.")
+
+  def test_empty_bag():
+      got = _coins(0)
+      check(got == "0 Galleons, 0 Sickles, 0 Knuts", f"An empty bag should give all zeros. You printed '{got}'.")
+
+  def test_small_change():
+      got = _coins(28)
+      check(got == "0 Galleons, 0 Sickles, 28 Knuts", f"28 Knuts can't make even one Sickle. You printed '{got}'.")
+hints:
+  nudge: Two tools from the lesson split big units from small ones. And you'll need to know how many Knuts make one Galleon.
+  question: How many Knuts are in one Galleon? After you take out all the whole Galleons, how many Knuts are *left over*?
+  pseudocode: |
+    knuts in a galleon = 17 times 29
+    galleons = how many whole galleons fit into the knuts
+    left = what's left over after that
+    sickles = how many whole sickles fit into left
+    knuts left = what's left over after that
+    show them in the right format
+  flaw: >
+    A common slip is dividing by 17 first - but 17 is Sickles per Galleon, not
+    Knuts. Work in Knuts until the very end. And use the leftover (not the
+    original total) when counting Sickles.
+  analogous: |
+    Splitting 3,725 seconds into hours, minutes and seconds:
+
+    ```text
+    hours = 3725 // 3600         -> 1
+    left  = 3725 % 3600          -> 125
+    minutes = left // 60         -> 2
+    seconds = left % 60          -> 5
+    ```

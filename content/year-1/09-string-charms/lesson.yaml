@@ -1,0 +1,16 @@
+id: y1-l07
+year: 1
+order: 9
+number: 7
+title: String Charms
+location: The Slytherin common room (by invitation)
+concepts: [string methods, strip, replace, upper and lower, strings never change]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: draco
+    line: I didn't write it! Some jumbled, SHOUTING message turned up in the Ledger with *my* name on it. As if I'd write in capitals. How common.
+  - who: hermione
+    line: "(quietly) Messy spacing, random capitals... If we clean the message up properly, we can compare it with Draco's real writing."
+  - who: ashwood
+    line: String Charms, then. Strings come with dozens of built-in methods - little spells that live *inside* every piece of text.
+clue: Cleaned up, the message's spelling and phrasing are nothing like Draco's. It was written **in a different hand** - Draco was framed.

@@ -1,0 +1,55 @@
+tier: outstanding
+type: practice
+title: The House Clock
+twist: combination - three units, and a sneaky edge case
+task: |
+  The house-points clock counts time in **seconds**. Keep the first line
+  (`seconds = 3930`) and print it as hours, minutes and seconds:
+
+  ```
+  1 hours 5 minutes 30 seconds
+  ```
+
+  (Yes, "1 hours" - the clock isn't fussy about grammar. We'll fix that in a
+  later lesson.)
+starter: |
+  seconds = 3930
+tests: |
+  def _clock(n):
+      r = run_with(seconds=n)
+      check(len(r.lines) >= 1, "Your clock doesn't show anything.")
+      return r.lines[-1]
+
+  def test_example():
+      got = _clock(3930)
+      check(got == "1 hours 5 minutes 30 seconds", f"For 3930 seconds you showed '{got}'. How many seconds are in an hour?")
+
+  def test_under_a_minute():
+      got = _clock(59)
+      check(got == "0 hours 0 minutes 59 seconds", f"For 59 seconds you showed '{got}'.")
+
+  def test_big():
+      got = _clock(90061)
+      check(got == "25 hours 1 minutes 1 seconds",
+            f"For 90061 seconds you showed '{got}'. This clock doesn't wrap around at 24 - it just keeps counting hours.")
+
+  def test_exact_hour():
+      got = _clock(7200)
+      check(got == "2 hours 0 minutes 0 seconds", f"For exactly 2 hours you showed '{got}'.")
+hints:
+  nudge: It's the same trick as the goblin change - big units first, then the leftovers.
+  question: How many seconds are in one hour? After taking out the whole hours, what's left over, and how many whole minutes fit in it?
+  pseudocode: |
+    hours = whole hours that fit into the seconds
+    left = what's left over
+    minutes = whole minutes in left
+    secs = what's left over from that
+    show them
+  flaw: Did you use the leftover from the hours when counting minutes? Using the original total counts some seconds twice.
+  analogous: |
+    Splitting 50 days into weeks and days:
+
+    ```text
+    weeks = 50 // 7    -> 7
+    days  = 50 % 7     -> 1
+    ```

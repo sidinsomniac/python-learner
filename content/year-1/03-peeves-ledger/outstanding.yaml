@@ -1,0 +1,55 @@
+tier: outstanding
+type: practice
+title: The Three-Goblet Shuffle
+twist: constraint - at most 4 assignments to do the shuffle
+inputs: ["toad", "owl", "cat"]
+task: |
+  Three goblets sit in a row. Ask what's in each, in order (any question
+  wording you like). Then **rotate** them one place to the right - the last
+  goblet's drink moves to the first goblet:
+
+  ```
+  before:  toad  owl  cat
+  after:   cat   toad owl
+  ```
+
+  Print the three goblets on one line, separated by spaces: `cat toad owl`.
+
+  **Constraint:** after the three `input` lines, you may use **at most 4**
+  assignments (`=`) to do the shuffle.
+starter: |
+  first = input("First goblet? ")
+  second = input("Second goblet? ")
+  third = input("Third goblet? ")
+
+  # Rotate them to the right, using at most 4 assignments...
+
+  print(first, second, third)
+tests: |
+  def test_rotates():
+      r = run_student(["toad", "owl", "cat"])
+      check(r.lines and r.lines[-1] == "cat toad owl",
+            f"After the shuffle you printed '{r.lines[-1] if r.lines else ''}'. Which drink should end up in the first goblet - and what must you save before overwriting it?")
+
+  def test_other_drinks():
+      r = run_student(["a", "b", "c"])
+      check(r.lines and r.lines[-1] == "c a b", "It doesn't work for other drinks. Is anything fixed that should come from the goblets?")
+
+  def test_few_assignments():
+      check(count_nodes(ast.Assign) <= 7,
+            "That's more than 4 assignments for the shuffle. Which drink needs saving first - and could you then move the others along one at a time?")
+hints:
+  nudge: It's the goblet swap with one more goblet. What gets overwritten first, and must be saved?
+  question: If the first goblet should end up with the third one's drink, which drink would be lost when you fill it? Which one must you save?
+  pseudocode: |
+    save the LAST goblet's drink in a spare
+    move the second goblet's drink to the third
+    move the first goblet's drink to the second
+    put the spare into the first
+  flaw: >
+    Order matters: if you fill the first goblet before moving its drink along,
+    it's gone. Work from the end of the row back towards the start.
+  analogous: |
+    Four people in a row shuffling seats one to the right:
+    the last person stands up and waits; everyone else shuffles right,
+    starting from the end; then the waiting person sits in the first seat.

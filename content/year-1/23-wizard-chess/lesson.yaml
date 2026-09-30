@@ -1,0 +1,14 @@
+id: y1-l15
+year: 1
+order: 23
+number: 15
+title: Wizard's Chess
+location: The courtyard
+concepts: [nested loops, grids, patterns]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: ron
+    line: The giant chessboard in the courtyard's frozen. The pieces won't move until someone draws the board properly again - every square, in the right colour.
+  - who: ashwood
+    line: A board is rows of squares. A loop for the rows... and inside it, a loop for the squares. Loops within loops.
+clue: Drawn correctly, the chessboard's pattern points like an arrow to one spot in the castle - **the new portrait's frame**, in the Library.

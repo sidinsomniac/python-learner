@@ -1,0 +1,60 @@
+tier: outstanding
+type: practice
+title: The Runner-Up
+twist: two running bests at once, and duplicates
+inputs: ["3", "9", "4", "9", "done"]
+task: |
+  Read whole numbers until `done` and print the **second highest different**
+  value. For `3, 9, 4, 9` the highest is 9, so the second highest is **4**:
+
+  ```
+  Second highest: 4
+  ```
+
+  If there aren't at least two *different* values, print `Not enough readings`.
+
+  **Constraint:** no `max`, `min`, `sorted` or `set`.
+starter: |
+  # Track the best AND the runner-up
+tests: |
+  def _second(*readings):
+      r = run_student(list(readings) + ["done"])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_shortcuts():
+      check(not any(calls(f) for f in ("max", "min", "sorted", "set", "sort")), "No max, min, sorted, sort or set - two running bests, by hand!")
+
+  def test_example():
+      got = _second("3", "9", "4", "9")
+      check(got == "Second highest: 4", f"For 3, 9, 4, 9 you printed '{got}'. Should a repeated 9 count as the runner-up?")
+
+  def test_rising():
+      check(_second("1", "2", "3") == "Second highest: 2", "For 1, 2, 3 the runner-up is 2. When a new best arrives, what happens to the old best?")
+
+  def test_negatives():
+      check(_second("-8", "-3", "-5") == "Second highest: -5", f"For -8, -3, -5 you printed '{_second('-8', '-3', '-5')}'.")
+
+  def test_not_enough():
+      check(_second("7", "7") == "Not enough readings", "7 and 7 are the same value - there's no second different value.")
+      check(_second() == "Not enough readings", "No readings at all - not enough.")
+hints:
+  nudge: Keep TWO trackers - best and second - both starting as None.
+  question: When a new number beats the best, the old best doesn't disappear - where does it go? And what should happen when a number EQUALS the best?
+  pseudocode: |
+    start both trackers (best and second) as "nothing yet"
+    for each reading:
+        if it equals the best: ignore it
+        else if there's no best yet, or it beats the best:
+            the old best moves down to second; the reading becomes best
+        else if there's no second yet, or it beats the second:
+            the reading becomes second
+    if there's still no second: not enough readings
+    otherwise: show the second
+  flaw: If 1, 2, 3 gives the wrong runner-up, you're forgetting to pass the old best down to second when a new best arrives.
+  analogous: |
+    Gold and silver medals as runners finish (fastest time wins):
+
+    ```text
+    new time beats gold?  silver = old gold, gold = new time
+    else beats silver?    silver = new time
+    ```

@@ -1,0 +1,15 @@
+id: y1-l08b
+year: 1
+order: 11
+number: 8
+part: { n: 2, of: 2 }
+title: "Slicing the Scroll: Steps"
+location: The Restricted Section
+concepts: [slice steps, reversing, palindromes]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: luna
+    line: Perhaps the message isn't meant to be read forwards. Nargles do everything backwards, you know.
+  - who: hermione
+    line: That's... actually not a bad idea. Some letters are burnt, but maybe the rest are in a pattern - every *other* letter?
+clue: The burnt scroll hides two messages - **"I WAS KEEPER"** and, backwards, **"Forgotten!"**. Someone who once *kept* the Ledger... and was forgotten?

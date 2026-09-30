@@ -7,7 +7,8 @@ import { python } from "../runtime/pythonRunner";
 import { Effects } from "./Effects";
 import { Header } from "./Header";
 import { MapView } from "./MapView";
-import { QuestView } from "./QuestView";
+import { LessonView } from "./LessonView";
+import { CaseFile } from "./CaseFile";
 import { useRoute } from "./router";
 import { MaraudersMap, Page394, Platform934 } from "./SecretPages";
 import { Settings } from "./Settings";
@@ -39,8 +40,11 @@ export default function App() {
   else if (!house) body = <Sorting />;
   else {
     switch (route.page) {
-      case "quest":
-        body = <QuestView key={route.id} questId={route.id} />;
+      case "lesson":
+        body = <LessonView key={route.id} lessonId={route.id} />;
+        break;
+      case "casefile":
+        body = <CaseFile />;
         break;
       case "spellbook":
         body = <Spellbook />;

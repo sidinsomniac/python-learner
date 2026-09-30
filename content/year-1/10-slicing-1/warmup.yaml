@@ -1,0 +1,42 @@
+tier: warmup
+type: practice
+title: Initials on the Trunk
+inputs: ["Hermione", "Granger"]
+task: |
+  Ask for a first name, then a last name (any wording), and print the
+  initials with full stops. `Hermione` and `Granger` should print:
+
+  ```
+  H.G.
+  ```
+starter: |
+  # Initials, like H.G.
+tests: |
+  def _initials(first, last):
+      r = run_student([first, last])
+      return r.lines[-1] if r.lines else ""
+
+  def test_hermione():
+      got = _initials("Hermione", "Granger")
+      check(got == "H.G.", f"You printed '{got}'. Which index gives the FIRST character of a string?")
+
+  def test_other():
+      got = _initials("Cedric", "Diggory")
+      check(got == "C.D.", f"For Cedric Diggory you printed '{got}'.")
+
+  def test_short_names():
+      got = _initials("Al", "Ng")
+      check(got == "A.N.", f"For Al Ng you printed '{got}'.")
+hints:
+  nudge: You need the first character of each name. What index is the first character?
+  question: Counting starts at 0 - so what does name[0] give you?
+  pseudocode: |
+    first = ask
+    last = ask
+    show first's first character + "." + last's first character + "."
+  flaw: If you see the second letter instead of the first, remember that counting starts at 0, not 1.
+  analogous: |
+    ```python
+    pet = "Crookshanks"
+    print(pet[0] + "!")   # C!
+    ```

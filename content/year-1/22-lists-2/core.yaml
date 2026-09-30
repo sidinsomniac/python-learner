@@ -1,0 +1,55 @@
+tier: core
+type: repair
+title: Dumbledore's Army
+twist: debug - two names for one list
+inputs: ["Luna"]
+task: |
+  Dumbledore's Army starts with the Gryffindor members, then recruits one more
+  student from another house. But the recruit keeps showing up on the
+  **Gryffindor** list too! Repair it so that recruiting `Luna` prints:
+
+  ```
+  Gryffindor: ['Harry', 'Ron', 'Hermione']
+  DA: ['Harry', 'Ron', 'Hermione', 'Luna']
+  ```
+starter: |
+  gryffindor = ["Harry", "Ron", "Hermione"]
+  dumbledores_army = gryffindor
+  recruit = input("New recruit? ")
+  dumbledores_army.append(recruit)
+  print("Gryffindor:", gryffindor)
+  print("DA:", dumbledores_army)
+tests: |
+  def _run(name):
+      r = run_student([name])
+      return [l for l in r.lines if l.startswith(("Gryffindor:", "DA:"))]
+
+  def test_gryffindor_unchanged():
+      got = _run("Luna")
+      check(got and got[0] == "Gryffindor: ['Harry', 'Ron', 'Hermione']",
+            "Luna turned up on the Gryffindor list. Does line 2 make a NEW list, or give the same list a second name?")
+
+  def test_da_has_recruit():
+      got = _run("Luna")
+      check(len(got) == 2 and got[1] == "DA: ['Harry', 'Ron', 'Hermione', 'Luna']", "The DA list should have all four members.")
+
+  def test_other_recruit():
+      got = _run("Cho")
+      check(got == ["Gryffindor: ['Harry', 'Ron', 'Hermione']", "DA: ['Harry', 'Ron', 'Hermione', 'Cho']"], f"Recruiting Cho gives {got}.")
+hints:
+  nudge: Re-read "b = a doesn't copy a list". Which line creates the DA list?
+  question: After line 2, how many lists exist - one or two?
+  pseudocode: |
+    gryffindor = the three names
+    the army = a real COPY of gryffindor
+    recruit = ask
+    add the recruit to the army only
+    show both
+  flaw: Line 2 gives the Gryffindor list a second name instead of copying it. Any of the three copying spells fixes it.
+  analogous: |
+    ```python
+    menu = ["soup"]
+    my_order = menu.copy()
+    my_order.append("pudding")
+    print(menu)   # ['soup']
+    ```

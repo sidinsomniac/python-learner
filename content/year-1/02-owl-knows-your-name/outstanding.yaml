@@ -1,0 +1,64 @@
+tier: outstanding
+type: practice
+title: The Echoing Spell
+twist: inversion - find the input, not the code
+task: |
+  Madam Pince found this spell in the Library. **Don't change it** - it's
+  enchanted:
+
+  ```python
+  word = input("Say a word: ")
+  more = input("Say another: ")
+  print(more + word + more)
+  ```
+
+  What must a student type, in answer to each question, so that the spell
+  prints exactly **`abracadabra`**? Each answer must be at least 2 letters long.
+
+  Store your answers in the two variables in your wand, then print them both
+  (so Madam Pince can read them).
+starter: |
+  first_answer = ""
+  second_answer = ""
+  print(first_answer, second_answer)
+tests: |
+  import io, contextlib
+
+  SPELL = 'word = input("Say a word: ")\nmore = input("Say another: ")\nprint(more + word + more)\n'
+
+  def _cast(first, second):
+      feed = [first, second]
+      out = io.StringIO()
+      with contextlib.redirect_stdout(out):
+          exec(SPELL, {"input": lambda prompt="": feed.pop(0)})
+      return out.getvalue().strip()
+
+  def _answers():
+      r = run_student()
+      first, second = r.ns.get("first_answer"), r.ns.get("second_answer")
+      check(isinstance(first, str) and isinstance(second, str), "Keep your answers in `first_answer` and `second_answer`, as strings.")
+      return first, second
+
+  def test_long_enough():
+      first, second = _answers()
+      check(len(first) >= 2 and len(second) >= 2, "Each answer must be at least 2 letters long. Are both of yours?")
+
+  def test_spell_says_abracadabra():
+      first, second = _answers()
+      got = _cast(first, second)
+      check(got == "abracadabra",
+            f"With your answers the spell prints '{got}'. The second answer appears at the *start and the end*. Which piece of 'abracadabra' appears at both ends?")
+hints:
+  nudge: Look at the last line of the enchanted spell. In what order are the two answers glued together?
+  question: The *second* answer appears twice - once at the start, once at the end. Which letters does abracadabra start with AND end with?
+  pseudocode: |
+    output = second + first + second
+    so: find a chunk that abracadabra both starts and ends with
+    whatever is left in the middle is the first answer
+  flaw: >
+    If your answers are the right letters but in the wrong variables, the
+    output comes out inside-out. The FIRST question's answer goes in the middle.
+  analogous: |
+    A *different* target: to make the spell print `tictactic`, the second
+    answer must be `tic` (it's at both ends), and the first answer is whatever
+    is left in the middle: `tac`. Now do the same detective work on abracadabra.

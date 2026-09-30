@@ -1,0 +1,16 @@
+id: y1-l02
+year: 1
+order: 2
+number: 2
+title: The Owl Knows Your Name
+location: The Owlery
+concepts: [variables, input, joining strings]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: hagrid
+    line: "Ah, there yeh are! The owls've gone barmy - deliverin' letters to all the wrong people. Neville got a love letter meant fer Filch!"
+  - who: ron
+    line: And I got Hermione's homework. Twelve feet of it.
+  - who: hagrid
+    line: The owls read names off a spell. If the spell can't *remember* who it's talkin' to, it gets muddled. Reckon yeh can teach it?
+clue: Every misdelivered letter was sent **from the Library** - at midnight, when the Library is locked.

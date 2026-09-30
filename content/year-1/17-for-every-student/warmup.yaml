@@ -1,0 +1,44 @@
+tier: warmup
+type: practice
+title: The Arithmancy Table
+inputs: ["7"]
+task: |
+  Ask for a number, then print its times table from 1 to 10, like this for 7:
+
+  ```
+  7 x 1 = 7
+  7 x 2 = 14
+  ...
+  7 x 10 = 70
+  ```
+starter: |
+  # A times table with a for loop
+tests: |
+  def _table(n):
+      r = run_student([str(n)])
+      return [l for l in r.lines if " x " in l]
+
+  def test_seven():
+      got = _table(7)
+      check(len(got) == 10, f"The table should have 10 lines; yours has {len(got)}. What does range(1, 10) include - and exclude?")
+      check(got[0] == "7 x 1 = 7" and got[-1] == "7 x 10 = 70", f"The first and last lines should be '7 x 1 = 7' and '7 x 10 = 70'. Yours: '{got[0]}' ... '{got[-1]}'.")
+
+  def test_other():
+      got = _table(12)
+      check(got[4] == "12 x 5 = 60", "Does it work for 12 too?")
+
+  def test_uses_loop():
+      check(uses(ast.For), "Ten lines of print? A for loop can do all ten.")
+hints:
+  nudge: A for loop over range, with one print inside it.
+  question: Which range gives exactly 1, 2, ..., 10? (Remember the stop number isn't included.)
+  pseudocode: |
+    n = ask, as a whole number
+    for each number i from 1 to 10:
+        show n, " x ", i, " = ", n times i
+  flaw: If the table stops at 9, your range's stop number needs to be one higher.
+  analogous: |
+    ```python
+    for i in range(1, 4):
+        print(f"{i} squared is {i * i}")
+    ```

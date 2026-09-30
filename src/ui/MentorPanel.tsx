@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useGame } from "../engine/store";
-import type { Quest } from "../engine/types";
+import type { Exercise, HintLadder, Lesson } from "../engine/types";
 import { MENTOR } from "../lore/lore";
 import type { FeedbackItem } from "../mentor/feedback";
 import { askMentor, mentorReady, MentorError, PROVIDER_LABEL, type ChatTurn } from "../mentor/llm";
 import { contextBlock } from "../mentor/prompt";
 import { renderMarkdown, renderUntrusted } from "./md";
 
-const RUNGS: { key: keyof Quest["hints"]; label: string }[] = [
+const RUNGS: { key: keyof HintLadder; label: string }[] = [
   { key: "nudge", label: "Nudge" },
   { key: "question", label: "Guiding question" },
   { key: "pseudocode", label: "Pseudocode" },
@@ -15,10 +15,20 @@ const RUNGS: { key: keyof Quest["hints"]; label: string }[] = [
   { key: "analogous", label: "A similar (but different) spell" },
 ];
 
-export function MentorPanel({ quest, code, feedback }: { quest: Quest; code: string; feedback: FeedbackItem[] }) {
-  const unlocked = useGame((s) => s.hintsUnlocked[quest.id] ?? 0);
+export function MentorPanel({
+  lesson,
+  exercise,
+  code,
+  feedback,
+}: {
+  lesson: Lesson;
+  exercise: Exercise;
+  code: string;
+  feedback: FeedbackItem[];
+}) {
+  const unlocked = useGame((s) => s.hintsUnlocked[exercise.id] ?? 0);
   const unlockHint = useGame((s) => s.unlockHint);
-  const done = useGame((s) => Boolean(s.completed[quest.id]));
+  const done = useGame((s) => Boolean(s.exercises[exercise.id]));
 
   return (
     <aside className="card mentor" aria-label="Professor Ashwood">
@@ -47,19 +57,19 @@ export function MentorPanel({ quest, code, feedback }: { quest: Quest; code: str
       <div className="hints">
         <h3>Hint ladder</h3>
         <p className="muted small">
-          Each of the first four hints lowers this quest's XP a little ({done ? "quest already complete" : "−15% each"}). Try
-          thinking first!
+          Each of the first four hints lowers this exercise's XP and grade a little ({done ? "already mastered" : "−15% XP each"}).
+          Try thinking first!
         </p>
         {RUNGS.slice(0, unlocked).map((rung, i) => (
           <div key={rung.key} className="hint" data-testid={`hint-${i + 1}`}>
             <span className="hint-label">
               {i + 1}. {rung.label}
             </span>
-            <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(quest.hints[rung.key]) }} />
+            <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(exercise.hints[rung.key]) }} />
           </div>
         ))}
         {unlocked < RUNGS.length && (
-          <button className="btn" onClick={() => unlockHint(quest.id)} data-testid="unlock-hint">
+          <button className="btn" onClick={() => unlockHint(exercise.id)} data-testid="unlock-hint">
             {unlocked === 0
               ? "I'm stuck. Give me a nudge"
               : unlocked < 4
@@ -75,18 +85,20 @@ export function MentorPanel({ quest, code, feedback }: { quest: Quest; code: str
         )}
       </div>
 
-      <AskProfessor quest={quest} code={code} feedback={feedback} hintsUnlocked={unlocked} />
+      <AskProfessor lesson={lesson} exercise={exercise} code={code} feedback={feedback} hintsUnlocked={unlocked} />
     </aside>
   );
 }
 
 function AskProfessor({
-  quest,
+  lesson,
+  exercise,
   code,
   feedback,
   hintsUnlocked,
 }: {
-  quest: Quest;
+  lesson: Lesson;
+  exercise: Exercise;
   code: string;
   feedback: FeedbackItem[];
   hintsUnlocked: number;
@@ -101,7 +113,7 @@ function AskProfessor({
   const send = async (question: string) => {
     if (!question.trim() || busy) return;
     const lastFeedback = feedback.map((f) => `${f.title}: ${f.body}`).join("\n");
-    const sent = `${contextBlock({ quest, code, lastFeedback, hintsUnlocked })}\n\n[Student's question]\n${question.trim()}`;
+    const sent = `${contextBlock({ lesson, exercise, code, lastFeedback, hintsUnlocked })}\n\n[Student's question]\n${question.trim()}`;
     const next = [...turns, { role: "user" as const, shown: question.trim(), sent }];
     setTurns(next);
     setDraft("");

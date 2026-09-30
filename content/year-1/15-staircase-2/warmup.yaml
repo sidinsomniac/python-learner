@@ -1,0 +1,32 @@
+tier: warmup
+type: divination
+title: Which Way Will It Go?
+task: Predict the output. Watch for the trick steps!
+snippet: |
+  house = "Hufflepuff"
+  points = 75
+  if house == "Gryffindor" or "Slytherin":
+      print("Moving staircase")
+  else:
+      print("Side stairs")
+  if points > 50:
+      print("Good")
+  elif points > 70:
+      print("Great")
+  else:
+      print("Keep going")
+  if points > 70:
+      print("Bonus!")
+hints:
+  nudge: There are three separate if-statements. Each one prints at most one line.
+  question: Is `"Slytherin"` on its own truthy? And once `points > 50` is True, does Python ever look at the elif?
+  pseudocode: |
+    if 1: the or-trap -> always truthy
+    if 2: the first True branch wins; the rest are skipped
+    if 3: a brand-new if, checked on its own
+  flaw: People usually expect "Side stairs" (the or-trap) and "Great" (elif order). Neither happens.
+  analogous: |
+    ```text
+    x = 1
+    if x == 2 or "yes":  -> runs!
+    ```

@@ -1,0 +1,51 @@
+tier: outstanding
+type: practice
+title: Apparition Countdown
+twist: edge case - ages with decimals
+inputs: ["11.5"]
+task: |
+  Wizards may learn to Apparate at **17**. Ask `How old are you? ` and print how
+  many years are left - students often give their age with a half, like
+  `11.5`:
+
+  ```
+  You can learn to Apparate in 5.5 years.
+  ```
+
+  For an age of `12` the spell should say `5.0 years` (a float is fine).
+starter: |
+  # Ages may have decimals!
+tests: |
+  def _years(age):
+      r = run_student([age])
+      return r.lines[-1] if r.lines else ""
+
+  def test_half():
+      got = _years("11.5")
+      check(got == "You can learn to Apparate in 5.5 years.",
+            f"For 11.5 you printed '{got}'. What type does input() give back, and which transfiguration keeps the .5?")
+
+  def test_whole_number():
+      got = _years("12")
+      check(got == "You can learn to Apparate in 5.0 years.", f"For 12 you printed '{got}'.")
+
+  def test_quarter():
+      got = _years("16.75")
+      check(got == "You can learn to Apparate in 0.25 years.", f"For 16.75 you printed '{got}'.")
+
+  def test_seventeen():
+      got = _years("17")
+      check(got == "You can learn to Apparate in 0.0 years.", f"For 17 you printed '{got}'.")
+hints:
+  nudge: Which transfiguration spell keeps the decimal part of a number?
+  question: What happens if you use `int("11.5")`? Try it in the sandbox!
+  pseudocode: |
+    age = (ask the question) transfigured into a decimal number
+    years left = 17 minus age
+    show the sentence with years left dropped in
+  flaw: '`int()` can''t read "11.5" - it raises a ValueError. There is a spell for decimal numbers.'
+  analogous: |
+    ```python
+    height = float(input("Height in metres? "))
+    print(f"You are {2.0 - height} metres shorter than Hagrid's door.")
+    ```

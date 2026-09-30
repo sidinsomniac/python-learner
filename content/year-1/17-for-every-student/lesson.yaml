@@ -1,0 +1,14 @@
+id: y1-l12
+year: 1
+order: 17
+number: 12
+title: For Every Student
+location: The Hall of Records
+concepts: [for loops, range, looping over strings]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: twins
+    line: Ten Galleons says you can't check every keeper in the Hall of Records before breakfast.
+  - who: ashwood
+    line: With a `for` loop, you can check every record in the Hall in less time than it takes Fred to lose ten Galleons.
+clue: One Ledger-keeper in the records has **no portrait plaque** beside his name - just the initials **G.K.** and a date, exactly **200 years ago**.

@@ -1,0 +1,16 @@
+id: y1-l05
+year: 1
+order: 7
+number: 5
+title: Transfiguration of Types
+location: The Transfiguration classroom
+concepts: [int, float, str, bool, type conversion]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: mcgonagall
+    line: This morning I turned a teacup into a tortoise. The Ledger recorded it as the *text* "tortoise". Not a tortoise. Four letters and a word.
+  - who: ashwood
+    line: Values have **types**, and someone has been writing spells in an old, careless style that mixes them up.
+  - who: mcgonagall
+    line: Then teach them to transfigure types *properly*, Professor. Before my tortoise becomes a sentence.
+clue: The broken spells are written in an **old-fashioned style** - the way wizards wrote Parseltongue *two hundred years ago*.

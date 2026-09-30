@@ -1,0 +1,36 @@
+tier: warmup
+type: practice
+title: Adding Up the Digits
+inputs: ["1234"]
+task: |
+  The Ledger's page numbers have been scrambled, but their **digit sums** can
+  still be checked. Ask for a number and print the sum of its digits:
+  `1234` gives `10` (1 + 2 + 3 + 4).
+starter: |
+  # Add up the digits
+tests: |
+  def _sum(n):
+      r = run_student([n])
+      return r.lines[-1] if r.lines else ""
+
+  def test_example():
+      check(_sum("1234") == "10", f"1 + 2 + 3 + 4 is 10. You printed '{_sum('1234')}'.")
+
+  def test_zero():
+      check(_sum("0") == "0", "The digit sum of 0 is 0.")
+
+  def test_nines():
+      check(_sum("99999") == "45", f"99999 has digit sum 45. You printed '{_sum('99999')}'.")
+hints:
+  nudge: This is the accumulator pattern - but each digit arrives as a character, not a number.
+  question: If you loop over "1234", what type is each item? What must happen before you can add it?
+  pseudocode: |
+    number = ask (keep it as text so you can loop over it)
+    total = 0
+    for each character in number:
+        total grows by that character transfigured into a whole number
+    show total
+  flaw: If you get something like '01234' or a TypeError, you're adding text - transfigure each digit first.
+  analogous: |
+    Adding up the digits of 505 by hand: 5, then 0, then 5 - each character
+    turned into a number first - gives 10.

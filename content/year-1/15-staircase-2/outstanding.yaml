@@ -1,0 +1,59 @@
+tier: outstanding
+type: repair
+title: Untangling the Staircase
+twist: refactor - same behaviour, no nesting
+inputs: ["4"]
+task: |
+  This spell works perfectly - but it's a tangle of nested ifs that McGonagall
+  calls "an eyesore". **Transfigure** it: keep *exactly* the same behaviour,
+  but with **no `if` inside another `if`'s body** - one flat
+  `if / elif / else` chain.
+starter: |
+  year = int(input("Year? "))
+  if year >= 1:
+      if year >= 3:
+          if year >= 5:
+              print("O.W.L.s ahead!")
+          else:
+              print("Hogsmeade trips allowed")
+      else:
+          print("No Hogsmeade yet")
+  else:
+      print("Not a student")
+tests: |
+  EXPECTED = {0: "Not a student", -1: "Not a student", 1: "No Hogsmeade yet", 2: "No Hogsmeade yet",
+              3: "Hogsmeade trips allowed", 4: "Hogsmeade trips allowed", 5: "O.W.L.s ahead!", 7: "O.W.L.s ahead!"}
+
+  def test_same_behaviour():
+      for year, want in EXPECTED.items():
+          r = run_student([str(year)])
+          got = r.lines[-1] if r.lines else ""
+          check(got == want, f"For year {year} the original spell says '{want}', but yours says '{got}'. The behaviour must stay exactly the same.")
+
+  def test_flat():
+      for node in ast.walk(tree()):
+          if isinstance(node, ast.If):
+              for inner in node.body:
+                  for sub in ast.walk(inner):
+                      check(not isinstance(sub, ast.If),
+                            "There's still an if inside another if's body. Can the checks be put one after another, strictest first, with elif?")
+hints:
+  nudge: The deepest check in the tangle is the strictest one. In a flat chain, where should the strictest check go?
+  question: If you check `year >= 5` first and it's False, what do you already know when you reach the next elif?
+  pseudocode: |
+    if year is at least 5: O.W.L.s
+    elif year is at least 3: Hogsmeade
+    elif year is at least 1: no Hogsmeade yet
+    else: not a student
+  flaw: An elif sits in the else-part of the if above it, so it doesn't count as nesting. If the order is wrong, year 7 will say "No Hogsmeade yet".
+  analogous: |
+    Nested:
+
+    ```text
+    if age >= 11:
+        if age >= 17: adult
+        else: student
+    else: child
+    ```
+
+    Flat: if age >= 17: adult, elif age >= 11: student, else: child.

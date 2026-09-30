@@ -1,0 +1,54 @@
+tier: warmup
+type: scramble
+title: The Scrambled Ledger
+lines:
+  - galleons = galleons * 2
+  - print("Gringotts balance:", galleons)
+  - galleons = 10
+  - galleons = galleons + 5
+task: |
+  The ledger should show a final balance of exactly **30** Galleons:
+
+  ```
+  Gringotts balance: 30
+  ```
+
+  Use the ▲ and ▼ buttons to reorder the lines, then press **Cast**. Press
+  **Run** (or 🌀 **Pensieve**, to watch it step by step) any time.
+tests: |
+  def test_runs_cleanly():
+      r = run_student(allow_error=True)
+      check(r.error is None or r.error["type"] != "NameError",
+            "Python tried to use `galleons` before it had any value. Which line has to come first?")
+      check(r.error is None, "The ledger crashed. Read the error: which line fails, and why?")
+
+  def test_prints_last():
+      r = run_student()
+      check(len(r.lines) == 1, "The ledger should print exactly one line.")
+      lines = [l.strip() for l in source().strip().splitlines()]
+      check(lines[-1].startswith("print"),
+            "If you print the balance before the sums are finished, the goblins see an unfinished number. Where should the print go?")
+
+  def test_balance_is_30():
+      r = run_student()
+      check(r.lines == ["Gringotts balance: 30"],
+            f"The ledger shows '{r.lines[0]}', not 30. After each line, what is inside `galleons`? Does adding before or after doubling matter?")
+hints:
+  nudge: Python reads top to bottom. A variable must be filled before anything can use what's inside it.
+  question: Starting from 10, which gives 30 - adding 5 and *then* doubling, or doubling and *then* adding 5?
+  pseudocode: |
+    fill the trunk with the starting amount
+    do the step that makes it 15
+    do the step that makes it 30
+    show the balance
+  flaw: Does any line use `galleons` on the right-hand side before it has been given a value? And is the print line last?
+  analogous: |
+    A *different* puzzle: to end with 12, starting from 3...
+
+    ```text
+    x = 3        -> 3
+    x = x + 1    -> 4
+    x = x * 3    -> 12
+    ```
+
+    ...but swap the last two lines and you get 3 * 3 + 1 = 10.

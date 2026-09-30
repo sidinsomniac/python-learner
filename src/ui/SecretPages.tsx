@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { QUESTS } from "../engine/content";
-import { isQuestUnlocked } from "../engine/progress";
+import { YEARS } from "../engine/content";
+import { isLessonComplete, isLessonUnlocked } from "../engine/progress";
 import { useGame } from "../engine/store";
 import { grantBadge } from "../lore/applyEggs";
 import { YEAR_NAMES } from "../lore/lore";
@@ -65,7 +65,7 @@ export function Page394() {
 }
 
 export function MaraudersMap() {
-  const { completed, name, marauderMap, setMarauderMap } = useGame();
+  const { exercises, name, marauderMap, setMarauderMap } = useGame();
   if (!marauderMap) {
     return (
       <div className="card secret parchment-blank">
@@ -74,7 +74,8 @@ export function MaraudersMap() {
       </div>
     );
   }
-  const current = QUESTS.find((q) => !completed[q.id] && isQuestUnlocked(q, QUESTS, completed));
+  const all = YEARS.flatMap((y) => y.lessons);
+  const current = all.find((l) => !isLessonComplete(l, exercises) && isLessonUnlocked(l, YEARS, exercises));
   return (
     <div className="card secret marauder">
       <h1>🗺️ The Marauder's Map</h1>
@@ -82,7 +83,7 @@ export function MaraudersMap() {
         <em>Messrs Moony, Wormtail, Padfoot and Prongs are proud to present every corridor of your journey.</em>
       </p>
       {YEAR_NAMES.map((yearName, i) => {
-        const quests = QUESTS.filter((q) => q.year === i + 1);
+        const quests = all.filter((l) => l.year === i + 1);
         return (
           <div key={yearName} className="map-floor">
             <strong>{yearName}</strong>
@@ -90,7 +91,7 @@ export function MaraudersMap() {
               <ul>
                 {quests.map((q) => (
                   <li key={q.id}>
-                    {completed[q.id] ? "👣" : q === current ? `📍 ${name} is here →` : "·"} {q.title}
+                    {isLessonComplete(q, exercises) ? "👣" : q === current ? `📍 ${name} is here →` : "·"} {q.title}
                   </li>
                 ))}
               </ul>

@@ -1,0 +1,28 @@
+tier: review
+type: divination
+title: What the Candle Said
+task: |
+  Read the spell carefully - line by line - and write exactly what it prints.
+snippet: |
+  spell = "Lumos"
+  print(spell)
+  spell = "Nox"
+  print("spell")
+  print(spell + "!")
+  print(spell, "and", "Lumos")
+hints:
+  nudge: Two ideas matter here - a variable can be given a new value, and quotes make a word into plain text.
+  question: When line 4 runs, is `spell` inside quotes or not? What does that mean for what's shown?
+  pseudocode: |
+    line 2: show what's in the trunk right now
+    line 3: the trunk gets new contents
+    line 4: show the WORD spell (it's in quotes)
+    line 5: glue the trunk's contents to "!"
+    line 6: commas show several things with spaces between
+  flaw: Check line 4 (quotes!) and line 6 (commas add spaces; + doesn't).
+  analogous: |
+    ```python
+    pet = "owl"
+    print("pet")    # shows: pet
+    print(pet)      # shows: owl
+    ```

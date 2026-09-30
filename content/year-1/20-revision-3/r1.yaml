@@ -1,0 +1,35 @@
+tier: review
+type: divination
+title: Hagrid's Loop
+task: Predict every line.
+snippet: |
+  total = 0
+  for n in range(1, 6):
+      if n == 4:
+          continue
+      total += n
+  print(total)
+  count = 3
+  while count > 0:
+      count -= 2
+  print(count)
+  for ch in "owl":
+      if ch == "w":
+          break
+  else:
+      print("no break")
+  print(ch)
+hints:
+  nudge: Three separate loops. Trace each one with pencil and paper - or pretend to be the Pensieve.
+  question: Which value of n is skipped in the first loop? In the second, what values does count take? In the third, does the else run?
+  pseudocode: |
+    loop 1: add 1, 2, 3, (skip 4), 5
+    loop 2: 3 -> 1 -> -1, then stop
+    loop 3: stops at w, so the else is skipped; ch keeps its last value
+  flaw: Common slips - adding 4 anyway, stopping loop 2 at 1, and expecting "no break".
+  analogous: |
+    ```text
+    for x in "ab":
+        pass
+    print(x)   -> b  (the loop variable keeps its last value)
+    ```

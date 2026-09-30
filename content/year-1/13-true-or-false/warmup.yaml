@@ -1,0 +1,29 @@
+tier: warmup
+type: divination
+title: The Truth Serum
+task: Predict each True or False.
+snippet: |
+  age = 12
+  print(age > 11)
+  print(age == 11 or age == 12)
+  print(not age < 20)
+  print(11 <= age < 17)
+  print("owl" in "Hedwig the owl")
+  print(bool(age - 12))
+hints:
+  nudge: Each line gives True or False. Work out each comparison first, then combine them.
+  question: On line 4, what is `age < 20` - and what does `not` do to it? On the last line, what is `age - 12`, and is that value truthy?
+  pseudocode: |
+    line 2: is 12 bigger than 11?
+    line 3: is it 11? is it 12? at least one?
+    line 4: flip the answer to "is 12 below 20?"
+    line 5: is 12 between 11 and 17?
+    line 6: does "owl" appear inside the text?
+    line 7: is zero truthy?
+  flaw: The traps are `not` (it flips!) and truthiness - zero is False.
+  analogous: |
+    ```text
+    x = 5
+    print(not x > 3)     -> False
+    print(bool(x - 5))   -> False
+    ```

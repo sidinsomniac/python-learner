@@ -1,0 +1,16 @@
+id: y1-l10a
+year: 1
+order: 14
+number: 10
+part: { n: 1, of: 2 }
+title: The Forked Staircase
+location: The Grand Staircase
+concepts: [if, elif, else, indentation]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: The Grand Staircase swings, groans, and deposits you - yet again - on the fourth floor, outside the Library.
+  - who: ron
+    line: That's the fifth time today! Every staircase ends up here, no matter where you're going.
+  - who: ashwood
+    line: Staircases make **decisions** - if this, go there; otherwise, go somewhere else. Someone has been rewriting those decisions.

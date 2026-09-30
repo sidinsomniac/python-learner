@@ -1,0 +1,49 @@
+tier: warmup
+type: practice
+title: The First Vowel
+inputs: ["Hagrid"]
+task: |
+  Ask for a word and print the **position** (index) of its first vowel (a, e,
+  i, o, u - capitals count). `Hagrid` gives `1`. If there are no vowels, print
+  `-1`.
+starter: |
+  # Stop as soon as you find a vowel
+tests: |
+  def _first(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_hagrid():
+      check(_first("Hagrid") == "1", f"In Hagrid, the first vowel (a) is at index 1. You printed '{_first('Hagrid')}'.")
+
+  def test_first_letter():
+      check(_first("Owl") == "0", f"In Owl, the capital O at index 0 is a vowel. You printed '{_first('Owl')}'.")
+
+  def test_none():
+      check(_first("Crwth") == "-1", f"Crwth has no vowels - print -1. You printed '{_first('Crwth')}'.")
+
+  def test_stops_at_first():
+      check(_first("Dumbledore") == "1", f"Dumbledore's FIRST vowel is u, at index 1. You printed '{_first('Dumbledore')}'. Did your loop keep going after it found one?")
+hints:
+  nudge: Keep track of the position as you walk through the word, and stop the moment you find a vowel.
+  question: How will your spell remember "not found" if the loop never finds anything? What should that start as?
+  pseudocode: |
+    word = ask
+    the answer starts as "not found" (minus one)
+    a position counter starts at zero
+    for each letter in word:
+        if the letter is a vowel: remember the current position, then stop the loop
+        the position counter goes up by one
+    show the answer
+  flaw: If Dumbledore gives 7, your loop didn't stop - it kept updating position until the LAST vowel.
+  analogous: |
+    ```python
+    spot = -1
+    i = 0
+    for ch in "no-way":
+        if ch == "-":
+            spot = i
+            break
+        i += 1
+    print(spot)   # 2
+    ```

@@ -1,0 +1,42 @@
+tier: warmup
+type: practice
+title: The Cauldron Pyramid
+inputs: ["4"]
+task: |
+  Hagrid stacks cauldrons in a pyramid. Ask for the number of rows, and draw
+  one `*` in the first row, two in the second, and so on. For `4`:
+
+  ```
+  *
+  **
+  ***
+  ****
+  ```
+starter: |
+  # One row per level
+tests: |
+  def _rows(n):
+      r = run_student([str(n)])
+      return [l for l in r.lines if set(l) == {"*"}]
+
+  def test_four():
+      check(_rows(4) == ["*", "**", "***", "****"], f"For 4 you drew {_rows(4)}.")
+
+  def test_one():
+      check(_rows(1) == ["*"], "One row is a single star.")
+
+  def test_uses_loop():
+      check(uses(ast.For, ast.While), "Use a loop - the pyramid could be 100 rows tall!")
+hints:
+  nudge: One loop over the rows. On each row, how many stars do you need?
+  question: If the rows are numbered 1, 2, 3, 4, how is each row's number related to its stars?
+  pseudocode: |
+    n = ask
+    for each row number from 1 to n:
+        show a star repeated (row number) times
+  flaw: If there's an empty first row or the last row is missing, check your range starts at 1 and stops at n + 1.
+  analogous: |
+    ```python
+    for i in range(1, 4):
+        print("=" * (i * 2))
+    ```

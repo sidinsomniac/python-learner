@@ -1,0 +1,57 @@
+tier: outstanding
+type: practice
+title: A Clutch of Primes
+twist: combination - a loop inside a loop, with for-else
+inputs: ["20"]
+task: |
+  Ask for a number `n` and print **every prime below `n`** on one line,
+  separated by single spaces:
+
+  ```
+  2 3 5 7 11 13 17 19
+  ```
+
+  If there are none (for example `n = 2`), print `none`.
+starter: |
+  # Every prime below n
+tests: |
+  def _primes(n):
+      r = run_student([str(n)])
+      return r.lines[-1] if r.lines else ""
+
+  def test_twenty():
+      got = _primes(20)
+      check(got == "2 3 5 7 11 13 17 19", f"For 20 you printed '{got}'.")
+
+  def test_below_not_including():
+      check(_primes(7) == "2 3 5", f"'Below 7' doesn't include 7. You printed '{_primes(7)}'.")
+
+  def test_none():
+      check(_primes(2) == "none", f"There are no primes below 2. You printed '{_primes(2)}'.")
+      check(_primes(0) == "none", "No primes below 0 either.")
+
+  def test_bigger():
+      got = _primes(50).split()
+      check(len(got) == 15 and got[-1] == "47", "There are 15 primes below 50, the biggest being 47.")
+hints:
+  nudge: The prime check from the core challenge - done once for every number below n. Then collect the ones that pass into a string.
+  question: How will you build up the answer line? (An accumulator - but of text, not numbers.) And how do you avoid a stray space at the end?
+  pseudocode: |
+    n = ask
+    found = ""  (empty text)
+    for each candidate from 2 up to n (not including n):
+        check every divisor from 2 up to the candidate
+        if none divided it: add the candidate and a space to found
+    if found is empty: none
+    otherwise: show found without the trailing space
+  flaw: If the output ends in a space, strip it. If 4 or 9 appear, the inner loop's else is attached to the wrong statement - check the indentation.
+  analogous: |
+    Collecting even numbers into one line:
+
+    ```python
+    line = ""
+    for i in range(1, 7):
+        if i % 2 == 0:
+            line += f"{i} "
+    print(line.strip())   # 2 4 6
+    ```

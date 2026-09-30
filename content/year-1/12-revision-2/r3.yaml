@@ -1,0 +1,45 @@
+tier: review
+type: practice
+title: The Wand Registry
+inputs: ["holly", "11"]
+task: |
+  Ollivander's registry wants a label for each wand. Ask for the wood, then the
+  length in inches (it may have decimals), and print:
+
+  ```
+  HOLLY | 11.0 in | 5 letters
+  ```
+
+  That's the wood in capitals, the length with **one** decimal place, and how
+  many letters are in the wood's name.
+starter: |
+  # wood, length -> label
+tests: |
+  def _label(wood, length):
+      r = run_student([wood, length])
+      return r.lines[-1] if r.lines else ""
+
+  def test_holly():
+      got = _label("holly", "11")
+      check(got == "HOLLY | 11.0 in | 5 letters", f"You printed '{got}'.")
+
+  def test_decimal_length():
+      got = _label("Elder", "15.25")
+      check(got == "ELDER | 15.2 in | 5 letters", f"For Elder, 15.25 inches you printed '{got}'. One decimal place!")
+
+  def test_long_wood():
+      got = _label("hawthorn", "10.75")
+      check(got == "HAWTHORN | 10.8 in | 8 letters", f"You printed '{got}'.")
+hints:
+  nudge: Three different skills in one line - a string method, a format spec, and len.
+  question: What type should the length become so it can show one decimal place?
+  pseudocode: |
+    wood = ask
+    length = ask, as a decimal number
+    show wood in capitals | length with 1 decimal " in" | number of letters in wood " letters"
+  flaw: If the length shows as '11' instead of '11.0', transfigure it into a float and use a .1f format spec.
+  analogous: |
+    ```python
+    pet = "toad"
+    print(f"{pet.title()} has {len(pet)} letters")
+    ```

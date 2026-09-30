@@ -1,0 +1,16 @@
+id: y1-l09
+year: 1
+order: 13
+number: 9
+title: True or False
+location: The Quidditch pitch
+concepts: [booleans, comparisons, and / or / not, in]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: hooch
+    line: Brooms at the ready! Wait - who are all these people? The Ledger's flying list says a *portrait* is allowed on the team, and half of Gryffindor isn't!
+  - who: ron
+    line: A portrait? On a broom? How would that even work?
+  - who: ashwood
+    line: Someone has tampered with the rules of who may fly. Rules like that are made of **booleans** - True and False, and the little words that join them.
+clue: The jinxed flying rule only triggers for one kind of player - `is_portrait and not remembered`. Our culprit is **a portrait that nobody remembers**.

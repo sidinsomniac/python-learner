@@ -1,0 +1,56 @@
+tier: stage
+type: practice
+title: "Stage 2: The Tally"
+inputs: ["b", "a", "a", "b", "c"]
+task: |
+  Ask for **5** answers (you can assume they're valid letters this time), then
+  print how many answers each house got - always in this order:
+
+  ```
+  Gryffindor: 2
+  Hufflepuff: 2
+  Ravenclaw: 1
+  Slytherin: 0
+  ```
+starter: |
+  # Five answers -> four house counts
+tests: |
+  def _tally(*answers):
+      r = run_student(list(answers))
+      return [l for l in r.lines if l.startswith(("Gryffindor:", "Hufflepuff:", "Ravenclaw:", "Slytherin:"))]
+
+  def test_example():
+      got = _tally("b", "a", "a", "b", "c")
+      check(got == ["Gryffindor: 2", "Hufflepuff: 2", "Ravenclaw: 1", "Slytherin: 0"], f"For b, a, a, b, c you printed {got}.")
+
+  def test_all_one_house():
+      got = _tally("d", "d", "d", "d", "d")
+      check(got == ["Gryffindor: 0", "Hufflepuff: 0", "Ravenclaw: 0", "Slytherin: 5"], f"Five d answers: all Slytherin. You printed {got}.")
+
+  def test_asks_five_times():
+      r = run_student(["a", "b", "c", "d", "a", "extra"])
+      got = [l for l in r.lines if l.startswith("Gryffindor:")]
+      check(got == ["Gryffindor: 2"], "Ask exactly 5 questions - not more, not fewer.")
+hints:
+  nudge: Five questions means a loop that runs five times. Four houses means four counters (or a list of four counts).
+  question: How will each answer find its way to the right house's counter?
+  pseudocode: |
+    four counters, all zero
+    repeat 5 times:
+        answer = ask
+        if a: Gryffindor's counter up by one
+        elif b: Hufflepuff's ... and so on
+    show the four lines, in order
+  flaw: If one house is always zero, check that letter's elif. If the counts total more than 5, you're counting inside the wrong loop.
+  analogous: |
+    Counting heads and tails in 4 coin flips:
+
+    ```python
+    heads = 0
+    tails = 0
+    for flip in ["H", "T", "H", "H"]:
+        if flip == "H":
+            heads += 1
+        else:
+            tails += 1
+    ```

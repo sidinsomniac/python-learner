@@ -1,0 +1,15 @@
+id: y1-l14a
+year: 1
+order: 21
+number: 14
+part: { n: 1, of: 2 }
+title: Trunks of Many Things
+location: The Lost Property office
+concepts: [lists, append, in, len, sum / min / max]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: Filch's Lost Property office is stacked to the ceiling with trunks, and every item in them appears in the Ledger - *twice*.
+  - who: ashwood
+    line: A variable holds one thing. A **list** holds as many as you like, in order. Let's use lists to find which entries are the duplicates.
+clue: Strip out the duplicate entries, and the first letters of what's left spell a name - **G-R-I-M-W-A-L-D**.

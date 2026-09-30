@@ -1,0 +1,42 @@
+tier: core
+type: practice
+title: The Mirror Words
+twist: spec reading - capitals don't matter
+inputs: ["Racecar"]
+task: |
+  The Mirror of Erised loves **palindromes** - words that read the same
+  forwards and backwards. Ask for a word and print `True` if it's a
+  palindrome, `False` if not.
+
+  **Capital letters don't matter**: `Racecar` and `Hannah` are palindromes.
+starter: |
+  # True if it reads the same backwards
+tests: |
+  def _pal(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_simple():
+      check(_pal("level") == "True", f"'level' reads the same backwards, but you printed '{_pal('level')}'.")
+      check(_pal("Harry") == "False", f"'Harry' is not a palindrome, but you printed '{_pal('Harry')}'.")
+
+  def test_capitals():
+      got = _pal("Racecar")
+      check(got == "True", f"'Racecar' should count - capitals don't matter here. You printed '{got}'.")
+      check(_pal("Hannah") == "True", "'Hannah' should count too.")
+
+  def test_tiny():
+      check(_pal("a") == "True", "A single letter reads the same both ways.")
+      check(_pal("Ab") == "False", "'Ab' is not a palindrome.")
+hints:
+  nudge: Compare the word with its reverse. But first, make sure capitals can't spoil the comparison.
+  question: Is 'Racecar' equal to 'racecaR'? What could you do to BOTH sides so capitals stop mattering?
+  pseudocode: |
+    word = ask, made lowercase
+    show whether word equals word reversed
+  flaw: If Racecar says False, you're comparing with capitals still in. Lowercase first, then reverse.
+  analogous: |
+    ```python
+    a = "Owl".lower()
+    print(a == "owl")   # True
+    ```

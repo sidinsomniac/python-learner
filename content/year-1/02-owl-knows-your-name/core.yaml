@@ -1,0 +1,59 @@
+tier: core
+type: practice
+title: Pets Allowed
+twist: edge case - answers with spaces, and exact punctuation
+inputs: ["barn owl", "Sir Hoots-a-Lot"]
+task: |
+  Hogwarts students may bring an owl, a cat or a toad. Write a spell that asks
+  **two** questions, in this order:
+
+  1. `What kind of pet do you have? `
+  2. `What is its name? `
+
+  Then prints one line, like this (for `barn owl` and `Sir Hoots-a-Lot`):
+
+  ```
+  Your barn owl is called Sir Hoots-a-Lot.
+  ```
+
+  It must work for *any* answers - including ones with spaces in them.
+starter: |
+  # Two questions, one sentence.
+tests: |
+  def test_asks_twice():
+      r = run_student(["cat", "Crookshanks"])
+      check("What kind of pet do you have?" in r.stdout, "Does your first question ask exactly 'What kind of pet do you have? '?")
+      check("What is its name?" in r.stdout, "Does your second question ask exactly 'What is its name? '?")
+
+  def test_crookshanks():
+      r = run_student(["cat", "Crookshanks"])
+      check("Your cat is called Crookshanks." in r.stdout,
+            "Hermione's cat, Crookshanks, should get the line 'Your cat is called Crookshanks.' - does yours? Check spaces and the full stop.")
+
+  def test_order_of_answers():
+      r = run_student(["toad", "Trevor"])
+      check("Your toad is called Trevor." in r.stdout,
+            "For a toad called Trevor, the line comes out wrong. Which answer is stored in which variable - and are you using them in the right places?")
+
+  def test_spaces_in_answers():
+      r = run_student(["barn owl", "Sir Hoots-a-Lot"])
+      check("Your barn owl is called Sir Hoots-a-Lot." in r.stdout,
+            "Answers with spaces in them don't come out right. Is your spell adding or removing spaces anywhere?")
+hints:
+  nudge: Two answers means two variables. Each input() call gives back one answer.
+  question: Which variable holds the kind of pet, and which holds the name? Where does each belong in the sentence?
+  pseudocode: |
+    pet-kind becomes (ask the first question)
+    pet-name becomes (ask the second question)
+    show "Your " + kind + " is called " + name + "."
+  flaw: >
+    Look at the spaces inside your quoted pieces. `+` glues things together
+    exactly - "called" + name with no space gives "calledTrevor".
+  analogous: |
+    A *different* two-question spell:
+
+    ```python
+    subject = input("Favourite subject? ")
+    teacher = input("Who teaches it? ")
+    print(teacher + " teaches " + subject + ".")
+    ```

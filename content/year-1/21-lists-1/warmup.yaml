@@ -1,0 +1,52 @@
+tier: warmup
+type: practice
+title: The Potions Shopping List
+inputs: ["newt eyes", "bat spleen", "lacewings", "done"]
+task: |
+  Read ingredients until the student types `done`. Then print how many there
+  are, followed by each one on its own line with a dash:
+
+  ```
+  You need 3 ingredients:
+  - newt eyes
+  - bat spleen
+  - lacewings
+  ```
+starter: |
+  # Collect ingredients into a list
+tests: |
+  def _run(*items):
+      r = run_student(list(items) + ["done"])
+      return r.stdout.split("\n")
+
+  def test_example():
+      rows = _run("newt eyes", "bat spleen", "lacewings")
+      check("You need 3 ingredients:" in rows, "The first line should say 'You need 3 ingredients:'. Does your spell count the list?")
+      start = rows.index("You need 3 ingredients:")
+      check(rows[start + 1:start + 4] == ["- newt eyes", "- bat spleen", "- lacewings"], "Each ingredient should follow on its own line, starting with '- '.")
+
+  def test_uses_list():
+      check(uses(ast.List) and calls("append"), "Collect the ingredients into a list with append.")
+
+  def test_one():
+      rows = _run("mandrake root")
+      check("You need 1 ingredients:" in rows and "- mandrake root" in rows, "With a single ingredient: 'You need 1 ingredients:' and '- mandrake root'.")
+hints:
+  nudge: An empty list, a read-until-done loop that appends, and then a for loop to show them.
+  question: When should you print the count - before the list is full, or after?
+  pseudocode: |
+    ingredients = an empty list
+    item = ask
+    while item is not "done":
+        add item to the end of the list
+        item = ask
+    show the count line
+    for each item in the list: show "- " and the item
+  flaw: If the count is wrong, make sure you print it AFTER the loop, and that "done" itself isn't appended.
+  analogous: |
+    ```python
+    spells = ["Lumos", "Nox"]
+    print(f"{len(spells)} spells:")
+    for s in spells:
+        print("* " + s)
+    ```

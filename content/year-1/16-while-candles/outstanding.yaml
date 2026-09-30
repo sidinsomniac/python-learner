@@ -1,0 +1,55 @@
+tier: outstanding
+type: practice
+title: The Hiccuping Hex
+twist: algorithm seed - the Collatz sequence
+inputs: ["6"]
+task: |
+  A hiccuping hex changes a number over and over:
+
+  - if the number is **even**, halve it;
+  - if it's **odd**, multiply by 3 and add 1.
+
+  It stops when the number reaches **1**. Ask for a starting number (a whole
+  number, 1 or more) and print how many **steps** it takes to reach 1.
+
+  For `6`: 6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1, which is **8** steps. For `1`,
+  it's already there: **0** steps.
+starter: |
+  # Count the hiccups until the number reaches 1
+tests: |
+  def _steps(n):
+      r = run_student([str(n)])
+      return r.lines[-1] if r.lines else ""
+
+  def test_six():
+      check(_steps(6) == "8", f"From 6 it takes 8 steps. You printed '{_steps(6)}'.")
+
+  def test_one():
+      check(_steps(1) == "0", f"1 is already 1 - zero steps. You printed '{_steps(1)}'.")
+
+  def test_famous():
+      got = _steps(27)
+      check(got == "111", f"27 is famous for taking 111 steps (it climbs as high as 9232!). You printed '{got}'.")
+
+  def test_power_of_two():
+      check(_steps(16) == "4", "16 -> 8 -> 4 -> 2 -> 1 is 4 steps.")
+hints:
+  nudge: A while loop that runs as long as the number isn't 1, with an if inside choosing between the two rules.
+  question: How can you tell whether a number is even? (Think about remainders.) And should `/` or `//` do the halving?
+  pseudocode: |
+    n = ask, as a whole number
+    steps = 0
+    while n is not 1:
+        if n is even: n becomes n halved (whole-number division)
+        otherwise: n becomes 3 times n plus 1
+        steps goes up by one
+    show steps
+  flaw: If you see numbers like 5.0, you used / (which makes floats). If 1 gives 1, you're counting a step before checking.
+  analogous: |
+    Halving until you reach 1, counting steps:
+
+    ```text
+    x = 8, hops = 0
+    repeat while x is above 1: x becomes x // 2, and hops grows by one
+    -> 3 hops
+    ```

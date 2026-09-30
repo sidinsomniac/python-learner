@@ -1,0 +1,64 @@
+tier: core
+type: practice
+title: Who May Fly?
+twist: spec reading - several rules at once
+inputs: ["1", "yes", "yes"]
+task: |
+  Fix the flying rules. Ask three questions, in order:
+
+  1. `Which year are you in? ` (a whole number)
+  2. `Do you own a broom? ` (`yes` or `no`)
+  3. `Special permission from McGonagall? ` (`yes` or `no`)
+
+  Then print `True` if the student may join a house team, `False` if not.
+
+  **Madam Hooch's rules:**
+  - You must own a broom.
+  - You must be in **second year or above** - *unless* you have special
+    permission, which lets a first-year play.
+  - Only years **1 to 7** are Hogwarts students.
+starter: |
+  # Three questions, one True or False
+tests: |
+  def _may_fly(year, broom, permission):
+      r = run_student([year, broom, permission])
+      return r.lines[-1] if r.lines else ""
+
+  def test_harry():
+      got = _may_fly("1", "yes", "yes")
+      check(got == "True", f"A first-year with a broom AND special permission (like Harry) may play. You printed '{got}'.")
+
+  def test_ordinary_first_year():
+      got = _may_fly("1", "yes", "no")
+      check(got == "False", f"A first-year without permission may NOT play. You printed '{got}'.")
+
+  def test_second_year():
+      check(_may_fly("2", "yes", "no") == "True", "A second-year with a broom may play - no permission needed.")
+
+  def test_no_broom():
+      got = _may_fly("5", "no", "yes")
+      check(got == "False", f"Without a broom nobody plays, whatever their year or permission. You printed '{got}'.")
+
+  def test_not_a_student():
+      got = _may_fly("8", "yes", "yes")
+      check(got == "False", f"There's no eighth year at Hogwarts! You printed '{got}'.")
+hints:
+  nudge: Turn each rule into its own small True/False question first. Then join them with the right little words.
+  question: The year rule has an "unless" in it. Which is right - "year 2 or above AND permission", or "year 2 or above OR permission"?
+  pseudocode: |
+    year = ask, as a whole number
+    broom = ask
+    permission = ask
+    old enough = year is at least 2, or permission is "yes"
+    real student = year is from 1 to 7
+    show: broom is "yes" and old enough and real student
+  flaw: >
+    If Harry is refused, check the "unless" rule - it should be joined with or.
+    If mixing and with or, put brackets around the or part so it's worked out first.
+  analogous: |
+    Entry to the Hog's Head: must be 17+, OR accompanied by a teacher - and never
+    if banned:
+
+    ```text
+    allowed = (age >= 17 or with_teacher) and not banned
+    ```

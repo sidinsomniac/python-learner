@@ -1,0 +1,48 @@
+tier: review
+type: practice
+title: Here Be Dragons
+inputs: ["Norwegian Ridgeback", "hippogriff", "DRAGON egg", "Blast-Ended Skrewt", "done"]
+task: |
+  Hagrid lists creatures until he types `done`. Count how many have the word
+  `dragon` in their name - any capitals - and how many creatures there were in
+  total. Print:
+
+  ```
+  1 dragons out of 4 creatures
+  ```
+starter: |
+  # Read until done, count two things
+tests: |
+  def _run(*names):
+      r = run_student(list(names) + ["done"])
+      return r.lines[-1] if r.lines else ""
+
+  def test_example():
+      got = _run("Norwegian Ridgeback", "hippogriff", "DRAGON egg", "Blast-Ended Skrewt")
+      check(got == "1 dragons out of 4 creatures", f"You printed '{got}'. Does 'DRAGON egg' count, with capitals?")
+
+  def test_many():
+      got = _run("dragon", "Dragonfly", "baby dragon")
+      check(got == "3 dragons out of 3 creatures", f"You printed '{got}'.")
+
+  def test_none():
+      check(_run() == "0 dragons out of 0 creatures", "If Hagrid types done straight away: 0 dragons out of 0 creatures.")
+hints:
+  nudge: Two counters, one read-until-done loop, and a case-insensitive `in` check.
+  question: How can you check for "dragon" whatever the capitals? (What could you do to the name first?)
+  pseudocode: |
+    both counters start at zero
+    name = ask
+    while name is not "done":
+        creatures up by one
+        if "dragon" is in the lowercased name: dragons up by one
+        name = ask
+    show the sentence
+  flaw: If 'DRAGON egg' isn't counted, lowercase the name before checking. If totals are off by one, check you don't count "done".
+  analogous: |
+    ```python
+    owls = 0
+    for word in ["Owl", "OWLERY", "cat"]:
+        if "owl" in word.lower():
+            owls += 1
+    ```

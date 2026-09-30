@@ -1,0 +1,57 @@
+tier: outstanding
+type: practice
+title: The Duplicate Hunter
+twist: constraint - no set, and the order must be kept
+inputs: ["owl", "toad", "owl", "cat", "toad", "done"]
+task: |
+  Read words until `done`, and print each **different** word once, in the order
+  they first appeared, separated by `, `:
+
+  ```
+  owl, toad, cat
+  ```
+
+  If there were no words, print `No words`.
+
+  **Constraint:** no `set` or `dict`.
+starter: |
+  # Keep only the first of each word, in order
+tests: |
+  def _run(*words):
+      r = run_student(list(words) + ["done"])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_set():
+      check(not calls("set") and not calls("dict") and not uses(ast.Set, ast.Dict, ast.SetComp, ast.DictComp),
+            "No set or dict - a list and `in` can do it.")
+
+  def test_example():
+      got = _run("owl", "toad", "owl", "cat", "toad")
+      check(got == "owl, toad, cat", f"You printed '{got}'.")
+
+  def test_order_kept():
+      got = _run("c", "b", "a", "b", "c")
+      check(got == "c, b, a", f"The order of FIRST appearance must be kept: 'c, b, a'. You printed '{got}'.")
+
+  def test_edges():
+      check(_run("solo") == "solo", "A single word is just itself - no stray comma.")
+      check(_run() == "No words", "No words at all: 'No words'.")
+hints:
+  nudge: Keep a list of words you've already seen. Only add a word if it isn't in there yet.
+  question: How do you build 'owl, toad, cat' with commas BETWEEN words but not after the last one?
+  pseudocode: |
+    seen = an empty list
+    read until done: if the word isn't in seen yet, add it
+    if seen is empty: No words
+    otherwise:
+        build a line by adding each word followed by ", "
+        show the line without its last two characters
+  flaw: If there's a trailing ', ', slice it off. If a repeated word appears twice, check the `not in` test happens before appending.
+  analogous: |
+    ```python
+    letters = []
+    for ch in "banana":
+        if ch not in letters:
+            letters.append(ch)
+    print(letters)   # ['b', 'a', 'n']
+    ```

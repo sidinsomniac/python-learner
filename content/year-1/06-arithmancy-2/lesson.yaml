@@ -1,0 +1,14 @@
+id: y1-l04b
+year: 1
+order: 6
+number: 4
+part: { n: 2, of: 2 }
+title: "Arithmancy: The Gotchas"
+location: The Arithmancy Tower
+concepts: [floats, round, abs, comparing numbers]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: neville
+    line: I measured my Potions ingredients *exactly*. 0.1 of dragon blood plus 0.2 of unicorn hair. The recipe says 0.3. And the scale still says it's wrong!
+  - who: ashwood
+    line: Ah. You've met the oldest trick in Arithmancy, Mr Longbottom. Computers keep decimals in a slightly... *magical* way. Let's see why.

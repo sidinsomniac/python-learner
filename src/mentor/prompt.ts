@@ -1,4 +1,4 @@
-import type { Quest } from "../engine/types";
+import type { Exercise, Lesson } from "../engine/types";
 import { MENTOR } from "../lore/lore";
 
 export const SYSTEM_PROMPT = `You are ${MENTOR.name}, ${MENTOR.title} at Hogwarts, in a Harry Potter-themed game that teaches Python to complete beginners. You are warm, encouraging and a little whimsical, with occasional light references to the wizarding world. Spells are programs, the wand is the code editor, and bugs are magical creatures.
@@ -15,18 +15,20 @@ How to help:
 - Keep replies short: under 120 words. Use Markdown sparingly.`;
 
 export interface MentorContext {
-  quest: Quest;
+  lesson: Lesson;
+  exercise: Exercise;
   code: string;
   lastFeedback?: string;
   hintsUnlocked: number;
 }
 
 /** A compact snapshot of where the student is, sent with each question. */
-export function contextBlock({ quest, code, lastFeedback, hintsUnlocked }: MentorContext): string {
+export function contextBlock({ lesson, exercise, code, lastFeedback, hintsUnlocked }: MentorContext): string {
   return [
-    `[Quest: "${quest.title}" (${quest.type}, Year ${quest.year}). Concepts: ${quest.concepts.join(", ")}]`,
-    `[Task]\n${quest.task.trim()}`,
-    quest.type === "divination" ? `[Code the student must predict]\n${quest.snippet ?? ""}` : `[Student's current code]\n${code.trim() || "(empty)"}`,
+    `[Lesson: "${lesson.title}" (Year ${lesson.year}). Concepts taught so far in it: ${lesson.concepts.join(", ")}]`,
+    `[Exercise: "${exercise.title}" (${exercise.tier}, ${exercise.type}${exercise.twist ? `, twist: ${exercise.twist}` : ""})]`,
+    `[Task]\n${exercise.task.trim()}`,
+    exercise.type === "divination" ? `[Code the student must predict]\n${exercise.snippet ?? ""}` : `[Student's current code]\n${code.trim() || "(empty)"}`,
     lastFeedback ? `[Latest automatic feedback]\n${lastFeedback}` : "",
     `[Built-in hints already unlocked: ${hintsUnlocked} of 4]`,
   ]

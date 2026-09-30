@@ -1,0 +1,61 @@
+tier: core
+type: practice
+title: Password Persistence
+twist: edge case - right on the first try, and singular vs plural
+inputs: ["Pig snout", "Balderdash", "Caput Draconis"]
+task: |
+  Keep asking `Password? ` until the student types `Caput Draconis`. Then
+  print how many tries it took:
+
+  ```
+  Welcome! It took you 3 tries.
+  ```
+
+  But get the grammar right: if they got it first time, print
+  `Welcome! It took you 1 try.`
+starter: |
+  # Keep asking - and count
+tests: |
+  def _run(*answers):
+      r = run_student(list(answers))
+      return r.lines[-1] if r.lines else ""
+
+  def test_three_tries():
+      got = _run("Pig snout", "Balderdash", "Caput Draconis")
+      check(got == "Welcome! It took you 3 tries.", f"After two wrong answers and a right one you printed '{got}'. Are you counting EVERY answer, including the right one?")
+
+  def test_first_time():
+      got = _run("Caput Draconis")
+      check(got == "Welcome! It took you 1 try.", f"Right first time should say '1 try.' (not 'tries'). You printed '{got}'.")
+
+  def test_two_tries():
+      got = _run("Fortuna Major", "Caput Draconis")
+      check(got == "Welcome! It took you 2 tries.", f"You printed '{got}'.")
+
+  def test_stubborn():
+      got = _run(*(["wrong"] * 9 + ["Caput Draconis"]))
+      check(got == "Welcome! It took you 10 tries.", f"After 9 wrong answers and 1 right one you printed '{got}'.")
+hints:
+  nudge: It's the ask-until-right pattern from the lesson, plus a counter - and one if at the end for the grammar.
+  question: The first answer is asked BEFORE the loop. Does your counter include that first try?
+  pseudocode: |
+    answer = ask "Password? "
+    tries = 1
+    while answer is not "Caput Draconis":
+        answer = ask again
+        tries goes up by one
+    if tries is 1: the singular message
+    otherwise: the plural message
+  flaw: >
+    If every count is one too small, your counter misses the very first
+    answer. If it's one too big, you're counting before the first question AND
+    inside the loop.
+  analogous: |
+    ```python
+    guess = input("Guess? ")
+    count = 1
+    while guess != "7":
+        guess = input("Again? ")
+        count = count + 1
+    print("Took", count)
+    ```

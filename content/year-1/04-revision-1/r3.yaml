@@ -1,0 +1,50 @@
+tier: review
+type: practice
+title: House Name Badge
+inputs: ["Luna", "Ravenclaw"]
+task: |
+  Make a name badge. Ask for a name and a house (in that order - any question
+  wording), then print exactly three lines:
+
+  ```
+  ~~~~~~~~~~~~~~~~~~~~
+  Luna of Ravenclaw
+  ~~~~~~~~~~~~~~~~~~~~
+  ```
+
+  (The border is 20 `~` signs.)
+starter: |
+  # A three-line badge
+tests: |
+  BORDER = "~" * 20
+
+  def test_three_lines():
+      r = run_student(["Luna", "Ravenclaw"])
+      shown = [l for l in r.stdout.split("\n") if l.strip()]
+      check(len(shown) >= 3, "The badge needs three lines: border, name, border.")
+
+  def test_luna():
+      r = run_student(["Luna", "Ravenclaw"])
+      check(r.stdout.endswith(BORDER + "\nLuna of Ravenclaw\n" + BORDER + "\n"),
+            "Compare your badge with the task: 20 ~ signs, then 'Luna of Ravenclaw', then 20 ~ signs again. Count the ~ signs!")
+
+  def test_anyone():
+      r = run_student(["Cedric", "Hufflepuff"])
+      check("Cedric of Hufflepuff" in r.stdout, "Does the badge work for Cedric of Hufflepuff too?")
+hints:
+  nudge: Two inputs, three prints. What's the same on the first and last line?
+  question: Which variable holds the house? Is it glued in with the right spaces around "of"?
+  pseudocode: |
+    remember the name
+    remember the house
+    show the border
+    show name + " of " + house
+    show the border
+  flaw: Count the border's characters - exactly 20. And check the spaces around "of".
+  analogous: |
+    ```python
+    wand = input("Wand wood? ")
+    print("----------")
+    print("Wand: " + wand)
+    print("----------")
+    ```

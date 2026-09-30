@@ -1,0 +1,33 @@
+tier: warmup
+type: divination
+title: Divining the Cauldron
+task: |
+  Read the spell below **without running it**. Type what you think it will
+  print, one line per output line, then press **Reveal the prophecy**.
+snippet: |
+  potions = 7
+  ingredients = 3
+  print(potions + ingredients)
+  print(potions * ingredients)
+  print(potions / 2)
+  print(potions // 2)
+  print(potions % 2)
+  print(2 + potions * ingredients)
+hints:
+  nudge: Watch the three kinds of division - `/`, `//` and `%` - and the order of operations on the last line.
+  question: Which line did your prophecy get wrong? Say its calculation out loud. Does `/` give a whole number or a decimal?
+  pseudocode: |
+    line 3: add
+    line 4: multiply
+    line 5: true division -> always has a decimal point
+    line 6: whole number of times 2 fits into 7
+    line 7: what's left over
+    line 8: multiply FIRST, then add
+  flaw: The usual slips are forgetting the `.5` on `/`, swapping `//` with `%`, and adding before multiplying.
+  analogous: |
+    ```text
+    print(9 / 3)       -> 3.0
+    print(9 // 2)      -> 4
+    print(9 % 2)       -> 1
+    print(1 + 2 * 3)   -> 7
+    ```

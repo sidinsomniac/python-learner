@@ -1,0 +1,20 @@
+# Everyone who can speak in a story scene. `who:` in a scene must be a key here.
+ashwood: { name: Professor Ashwood, portrait: "🧙‍♀️" }
+hermione: { name: Hermione, portrait: "👩‍🎓" }
+ron: { name: Ron, portrait: "🧑‍🦰" }
+hagrid: { name: Hagrid, portrait: "🧔" }
+twins: { name: Fred & George, portrait: "👬" }
+neville: { name: Neville, portrait: "🌱" }
+luna: { name: Luna, portrait: "🌙" }
+mcgonagall: { name: Professor McGonagall, portrait: "🐈" }
+snape: { name: Professor Snape, portrait: "🦇" }
+flitwick: { name: Professor Flitwick, portrait: "✨" }
+draco: { name: Draco, portrait: "😏" }
+peeves: { name: Peeves, portrait: "👻" }
+dobby: { name: Dobby, portrait: "🧦" }
+dumbledore: { name: Professor Dumbledore, portrait: "🧙‍♂️" }
+pince: { name: Madam Pince, portrait: "📖" }
+hooch: { name: Madam Hooch, portrait: "🧹" }
+hat: { name: The Sorting Hat, portrait: "🎩" }
+grimwald: { name: The Portrait, portrait: "🖼️" }
+narrator: { name: "", portrait: "📜" }

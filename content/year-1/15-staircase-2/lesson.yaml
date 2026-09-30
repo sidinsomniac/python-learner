@@ -1,0 +1,15 @@
+id: y1-l10b
+year: 1
+order: 15
+number: 10
+part: { n: 2, of: 2 }
+title: "The Forked Staircase: Trick Steps"
+location: The Grand Staircase
+concepts: ["the or-trap", elif order, "= vs ==", nesting]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: twins
+    line: Fancy a shortcut? Mind the trick step - third from the top. Everyone falls in the first time.
+  - who: ashwood
+    line: If-statements have trick steps too. Three famous ones. Learn them now, and you'll never fall in again.
+clue: Every rewritten staircase route ends at the same spot on the fourth floor - **the wall where that new portrait hangs**.

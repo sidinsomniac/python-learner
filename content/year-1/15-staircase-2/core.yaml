@@ -1,0 +1,73 @@
+tier: core
+type: repair
+title: The Staircase Router
+twist: debug - three trick steps at once
+inputs: ["Hufflepuff", "10"]
+task: |
+  This router decides how students get to class. It has **three** bugs - one
+  of each trick step. The intended rules:
+
+  - **Gryffindors and Slytherins** take the `Moving staircase`; everyone else
+    takes the `Side stairs`.
+  - More than **100** house points: `Excellent!`. More than **50**:
+    `Good effort`. Otherwise: `Try harder`.
+
+  Repair it so it follows the rules.
+starter: |
+  house = input("House? ")
+  points = int(input("House points? "))
+
+  if house = "Gryffindor" or "Slytherin":
+      print("Moving staircase")
+  else:
+      print("Side stairs")
+
+  if points > 50:
+      print("Good effort")
+  elif points > 100:
+      print("Excellent!")
+  else:
+      print("Try harder")
+tests: |
+  def _route(house, points):
+      r = run_student([house, str(points)], allow_error=True)
+      check(r.error is None, f"The router crashes with a {r.error['type'] if r.error else ''}. Read the message - which line?")
+      return r.lines[-2:]
+
+  def test_hufflepuff():
+      got = _route("Hufflepuff", 10)
+      check(got[0] == "Side stairs", "Hufflepuffs should take the side stairs - but your router sends them to the moving staircase. Is each side of your `or` a complete question?")
+      check(got[1] == "Try harder", "10 points should be 'Try harder'.")
+
+  def test_rich_slytherin():
+      got = _route("Slytherin", 150)
+      check(got[0] == "Moving staircase", "Slytherins take the moving staircase.")
+      check(got[1] == "Excellent!", "150 points should be 'Excellent!' - but the router says something else. Which branch gets checked first?")
+
+  def test_gryffindor_middle():
+      check(_route("Gryffindor", 75) == ["Moving staircase", "Good effort"], "A Gryffindor with 75 points: moving staircase, and Good effort.")
+
+  def test_exact_boundaries():
+      check(_route("Ravenclaw", 100) == ["Side stairs", "Good effort"], "Exactly 100 is not MORE than 100 - Good effort.")
+      check(_route("Ravenclaw", 50) == ["Side stairs", "Try harder"], "Exactly 50 is not MORE than 50 - Try harder.")
+hints:
+  nudge: Fix them in the order Python finds them. A SyntaxError stops everything, so it comes first.
+  question: Line 4 has two problems. Which symbol compares, and what does Python do with a bare "Slytherin" after `or`?
+  pseudocode: |
+    if the house is Gryffindor, or the house is Slytherin: moving staircase
+    otherwise: side stairs
+    check "more than a hundred" FIRST: Excellent!
+    then "more than fifty": Good effort
+    otherwise: Try harder
+  flaw: >
+    Line 4 uses `=` instead of `==`, and its `or` compares only one side. The
+    second if checks the broad condition (> 50) before the strict one (> 100).
+  analogous: |
+    ```python
+    if pet == "owl" or pet == "cat":
+        print("Allowed")
+    if score > 90:
+        print("Top")
+    elif score > 60:
+        print("Pass")
+    ```

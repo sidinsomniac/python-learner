@@ -1,0 +1,50 @@
+tier: core
+type: practice
+title: Vowel Hunt
+twist: constraint - no .count
+inputs: ["Dumbledore"]
+task: |
+  Ask for a word and print how many vowels (a, e, i, o, u) it has - capitals
+  count too. `Dumbledore` has 4.
+
+  **Constraint:** no `.count()` this time. Walk through the word yourself,
+  letter by letter.
+starter: |
+  # Count vowels, one letter at a time
+tests: |
+  def _vowels(word):
+      r = run_student([word])
+      return r.lines[-1] if r.lines else ""
+
+  def test_no_count():
+      check(not calls("count"), "No .count() in this one - use a loop and your own counter!")
+
+  def test_dumbledore():
+      check(_vowels("Dumbledore") == "4", f"Dumbledore has 4 vowels. You printed '{_vowels('Dumbledore')}'.")
+
+  def test_capitals():
+      got = _vowels("OWL POST")
+      check(got == "2", f"'OWL POST' has 2 vowels (O and O). You printed '{got}'. Do capital vowels count in your spell?")
+
+  def test_none_and_empty():
+      check(_vowels("Crwth") == "0", "Crwth has no vowels at all.")
+      check(_vowels("") == "0", "An empty word has 0 vowels.")
+hints:
+  nudge: A counter that starts at 0, and a for loop over the word's letters, with an if inside.
+  question: How can one test check whether a letter is ANY of a, e, i, o, u - capital or not? (Think about `in`.)
+  pseudocode: |
+    word = ask
+    vowels = 0
+    for each letter in word:
+        if the letter is one of "aeiouAEIOU":
+            vowels goes up by one
+    show vowels
+  flaw: If capitals are missed, check your vowel string includes capitals - or lowercase each letter before testing.
+  analogous: |
+    ```python
+    spaces = 0
+    for ch in "Mad Eye Moody":
+        if ch == " ":
+            spaces = spaces + 1
+    print(spaces)
+    ```

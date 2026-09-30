@@ -1,0 +1,57 @@
+tier: warmup
+type: practice
+title: Welcome, Whoever You Are
+inputs: ["Harry"]
+task: |
+  Write a spell that:
+
+  1. Asks `What is your name? ` using `input`.
+  2. Prints `Welcome to Hogwarts, NAME!` - with the student's real name.
+
+  If the student types `Hermione`, it prints:
+
+  ```
+  Welcome to Hogwarts, Hermione!
+  ```
+
+  **Testing tip:** the *Answers for input()* box under your wand holds what
+  you "type" when your spell asks a question. Change it to try other names!
+starter: |
+  # Ask for the student's name, then welcome them.
+tests: |
+  def _uses_input():
+      return calls("input")
+
+  def test_asks_a_question():
+      check(_uses_input(), "How does your spell *listen* to the student? Which spell waits for them to type?")
+
+  def test_welcomes_harry():
+      r = run_student(["Harry"])
+      check("Welcome to Hogwarts, Harry!" in r.stdout,
+            "Harry typed his name, but the welcome isn't quite 'Welcome to Hogwarts, Harry!'. Look carefully at the comma, the spaces and the '!'.")
+
+  def test_works_for_anyone():
+      r = run_student(["Luna"])
+      check("Welcome to Hogwarts, Luna!" in r.stdout,
+            "It works for Harry, but when Luna arrives it doesn't greet *her*. Where does the name come from: the variable, or fixed text?")
+
+  def test_single_welcome():
+      r = run_student(["Neville"])
+      welcomes = [line for line in r.lines if "Welcome" in line]
+      check(len(welcomes) == 1, f"Neville got {len(welcomes)} welcome lines. How many should one student get?")
+hints:
+  nudge: You need a spell that *listens*, and a variable to keep what was typed.
+  question: After the student types their name, where does it go? How will the next line of your spell remember it?
+  pseudocode: |
+    name-trunk becomes (ask "What is your name? " and wait)
+    show "Welcome to Hogwarts, " joined with name-trunk joined with "!"
+  flaw: >
+    If the name is inside quotes, Python shows the *word* instead of what's in
+    the variable. And if you used +, did you remember the space after the comma?
+  analogous: |
+    A *different* spell with the same shape:
+
+    ```python
+    wand = input("What is your wand made of? ")
+    print("Ooh, " + wand + ". Very nice!")
+    ```

@@ -1,0 +1,60 @@
+tier: core
+type: repair
+title: Neville's Balance
+twist: debug - comparing floats with ==
+task: |
+  Neville's potion is **balanced** when the dragon blood plus the unicorn hair
+  is within **0.001** of the target - above *or* below. His spell uses `==`,
+  so it says `False` even when the potion is perfect.
+
+  Repair the last line so it prints `Balanced: True` when the total is within
+  0.001 of the target, and `Balanced: False` otherwise. Keep the first three
+  lines - the examiners change the amounts.
+starter: |
+  dragon_blood = 0.1
+  unicorn_hair = 0.2
+  target = 0.3
+
+  total = dragon_blood + unicorn_hair
+  print("Balanced:", total == target)
+tests: |
+  def _balanced(d, u, t):
+      r = run_with(dragon_blood=d, unicorn_hair=u, target=t)
+      return r.lines[-1] if r.lines else ""
+
+  def test_nevilles_potion():
+      got = _balanced(0.1, 0.2, 0.3)
+      check(got == "Balanced: True",
+            "0.1 + 0.2 should count as balanced for a target of 0.3, but your spell says it isn't. Why does `==` fail for floats?")
+
+  def test_really_off():
+      got = _balanced(0.1, 0.25, 0.3)
+      check(got == "Balanced: False", "0.1 + 0.25 is 0.35 - far from 0.3 - but your spell calls it balanced.")
+
+  def test_too_little():
+      got = _balanced(0.1, 0.1, 0.3)
+      check(got == "Balanced: False",
+            "0.1 + 0.1 is 0.2, which is 0.1 BELOW the target - yet your spell says balanced. What happens to your difference when the total is smaller than the target?")
+
+  def test_big_numbers():
+      got = _balanced(1.5, 1.5, 3.0)
+      check(got == "Balanced: True", "1.5 + 1.5 is exactly 3.0 - that should be balanced too.")
+hints:
+  nudge: Instead of asking "exactly equal?", ask "is the difference tiny?".
+  question: If the total is 0.2 and the target is 0.3, the difference is negative. Is a negative number "smaller than 0.001"? Is that what you want?
+  pseudocode: |
+    difference = total minus target
+    size of difference = the difference without its sign
+    show whether that size is smaller than 0.001
+  flaw: >
+    If you only check `total - target < 0.001`, a total far BELOW the target
+    gives a big negative number - which counts as "smaller". Remove the sign
+    first.
+  analogous: |
+    Checking two broomsticks are about the same speed (within 0.5):
+
+    ```text
+    fast = 90.2
+    faster = 90.6
+    show whether the size of (fast - faster) is smaller than 0.5
+    ```

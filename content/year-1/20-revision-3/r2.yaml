@@ -1,0 +1,52 @@
+tier: review
+type: repair
+title: The Endless Staircase
+inputs: ["4"]
+task: |
+  This spell should print the stair numbers from `n` down to 1, then
+  `Top of the tower!`. Instead it... never stops. (The castle will stop it for
+  you after a few seconds.) There are **two** bugs. Repair it so `4` prints:
+
+  ```
+  4
+  3
+  2
+  1
+  Top of the tower!
+  ```
+starter: |
+  stairs = int(input("How many stairs? "))
+  while stairs >= 0:
+      print(stairs)
+  print("Top of the tower!")
+tests: |
+  def _run(n):
+      r = run_student([str(n)])
+      return [l for l in r.lines if not l.startswith("How many")]
+
+  def test_four():
+      got = _run(4)
+      check(got == ["4", "3", "2", "1", "Top of the tower!"], f"For 4 you printed {got[:8]}. Does something inside the loop change `stairs`? And should 0 be printed?")
+
+  def test_one():
+      check(_run(1) == ["1", "Top of the tower!"], f"For 1 you printed {_run(1)}.")
+
+  def test_zero():
+      check(_run(0) == ["Top of the tower!"], f"With no stairs, just 'Top of the tower!'. You printed {_run(0)}.")
+hints:
+  nudge: Every while loop needs something inside it that moves it towards stopping. And check where it stops.
+  question: What changes `stairs` on each pass? And should the loop still run when stairs is 0?
+  pseudocode: |
+    stairs = ask
+    while stairs is above zero:
+        show stairs
+        stairs goes down by one
+    show the finish line
+  flaw: The loop never changes stairs (bug 1), and `>= 0` lets 0 through (bug 2).
+  analogous: |
+    ```python
+    k = 3
+    while k > 0:
+        print(k)
+        k -= 1
+    ```

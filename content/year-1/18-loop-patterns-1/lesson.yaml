@@ -1,0 +1,17 @@
+id: y1-l13a
+year: 1
+order: 18
+number: 13
+part: { n: 1, of: 2 }
+title: Loop Patterns
+location: Hagrid's hut
+concepts: [counters, accumulators, "+=", running maximum]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: hagrid
+    line: Come in, come in! Mind Fang. I've got a clutch o' eggs here needs countin' - an' weighin' - an' I've lost track three times already.
+  - who: ashwood
+    line: Most loops do one of a few jobs - counting, adding up, or keeping track of the biggest. Learn the patterns and you'll recognise them everywhere.
+  - who: hagrid
+    line: "Speakin' o' keepin' track... there was an old Ledger-keeper once. Knott, I think. Lonely sort. Forgot about 'im meself till now."
+clue: Hagrid remembers **old keeper Knott** - "a lonely fellow" who looked after the Ledger long ago. Everyone forgot him.

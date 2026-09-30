@@ -56,7 +56,7 @@
 | 5 Transfiguration of Types | Transfiguration | McGonagall's spell turned a teacup into the *string* "teacup". | The broken spells are **old-style**: written the way wizards wrote 200 years ago |
 | 6 Formatting Charms | Charms | Flitwick's prize certificates print as garbled columns. | The certificate template is signed with an old monogram: **"G.K."** |
 | 7 String Charms | Common room | Draco is framed: a shouted, jumbled message in the Ledger carries his name. | Cleaning up the message proves it was written in **a different hand** |
-| 8 Slicing the Scroll (Pt1/Pt2) | Library, Restricted Section | A half-burnt scroll. Only slices of it can be read. | ⭐ Every other letter reads: **"I WAS KEEPER"** |
+| 8 Slicing the Scroll (Pt1/Pt2) | Library, Restricted Section | A half-burnt scroll. Only slices of it can be read. | ⭐ The scroll hides two messages: **"I WAS KEEPER"** and, backwards, **"Forgotten!"** |
 | R2 | Library | Hermione lays out the clues on a table. | Summary of the clues so far |
 | 9 True or False | Quidditch pitch | The Ledger has jinxed who may fly. The eligibility rules are contradictory. | The jinxed rule only fires for portraits: `is_portrait and not remembered` |
 | 10 The Forked Staircase (Pt1/Pt2) | Grand Staircase | Staircases route everyone to the Library's 4th floor. | Every route ends at the same spot: **the new portrait's wall** |

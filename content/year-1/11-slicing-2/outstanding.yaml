@@ -1,0 +1,51 @@
+tier: outstanding
+type: practice
+title: Two Messages in One Scroll
+twist: inversion - decode the hidden messages
+inputs: ["I!WnAeStKtEoEgPrEoRF"]
+task: |
+  The burnt scroll hides **two** messages woven together:
+
+  - the letters at **even** positions (0, 2, 4, ...) spell the first message,
+  - the letters at **odd** positions (1, 3, 5, ...) spell the second - but
+    written **backwards**.
+
+  Ask for the scroll's text and print both messages, one per line. For
+  `I!WnAeStKtEoEgPrEoRF`:
+
+  ```
+  IWASKEEPER
+  Forgotten!
+  ```
+starter: |
+  # Two messages, woven together
+tests: |
+  def _decode(scroll):
+      r = run_student([scroll])
+      return [l for l in r.stdout.split("\n") if l][-2:]
+
+  def test_example():
+      got = _decode("I!WnAeStKtEoEgPrEoRF")
+      check(len(got) == 2 and got[0] == "IWASKEEPER",
+            "The first message comes from the EVEN positions: 0, 2, 4... Which slice step picks every other letter?")
+      check(got[1] == "Forgotten!",
+            f"The second message should be 'Forgotten!'. It's the ODD positions - reversed. You printed '{got[1] if len(got) > 1 else ''}'.")
+
+  def test_other():
+      got = _decode("hdellrlooW")
+      check(got == ["hello", "World"], f"For 'hdellrlooW' you printed {got}.")
+hints:
+  nudge: Two slices, each with a step of 2. One starts at 0, one starts at 1 - and the second must be reversed.
+  question: Which slice gives letters 1, 3, 5...? And once you have them, how do you reverse a string?
+  pseudocode: |
+    scroll = ask
+    first = every second letter starting at position 0
+    second = every second letter starting at position 1, then reversed
+    show first
+    show second
+  flaw: If the second message looks like nonsense, you may have reversed the WHOLE scroll before taking odd positions. Take the odd letters first, then reverse them.
+  analogous: |
+    ```python
+    s = "a1b2c3"
+    print(s[::2], s[1::2])   # abc 123
+    ```
