@@ -225,9 +225,9 @@ location.reload();
 | Document | Contents |
 |---|---|
 | `docs/GDD.md` | Vision, game systems, economy, levels, the living castle, mentor rules, architecture, roadmap |
-| `docs/curriculum.md` | All seven Years, lesson by lesson. Years 1 and 2 are marked ✅ built. |
+| `docs/curriculum.md` | All seven Years, lesson by lesson. Years 1 and 2 are marked ✅ built. Year 3 has its exact lesson table (ids and all three exercises per lesson), marked 📝 scripted. |
 | `docs/exercise-design.md` | Lesson anatomy, tiers, the catalogue of twists, grades, ★ lessons, review cards, function-style tests |
-| `docs/story.md` | The story bible. Year 1 (The Jinxed Ledger) and Year 2 (The Hoarder's Cabinet) are scripted scene by scene; Years 3–7 are outlined. |
+| `docs/story.md` | The story bible. Year 1 (The Jinxed Ledger), Year 2 (The Hoarder's Cabinet) and Year 3 (The Prisoner of the Loop) are scripted scene by scene; Years 4–7 are outlined. |
 | `README.md` | The player's overview and the developer's quick reference |
 
 ## 11. Status and what's next
@@ -242,10 +242,16 @@ location.reload();
    - Make `migrateSave` work out the version from the save's contents: `exercises` present means version 2 or later; `bestLevel` present means version 3.
    - Let `importSave` accept the `{state, version}` form, with a "Paste a save" box in Settings, and rebuild clues and scenes seen after an import.
    - Keep a rolling automatic backup in `parseltongue-save-backup` (last 3 copies), written before any upgrade runs.
-2. **Year 3, The Prisoner of Recursion** (errors, files, recursion, first algorithms). First write its full scene-by-scene script in `docs/story.md`, following the Year 3 outline there and the lesson table in `docs/curriculum.md`. Then:
-   - add `content/year-3/year.yaml` with a new theme (the planned mood is Time-Turner dusk: silver and indigo);
-   - add its badges to `YEAR_BADGES` in `store.ts` and to `badges.ts`;
-   - add new Snape rules to `review-rules.yaml` as their ideas are taught.
+2. **Year 3, The Prisoner of Recursion**: errors, files, recursion, first algorithms. **The script is written and waiting for the owner's review**: see `docs/story.md` (The Prisoner of the Loop) and the lesson table in `docs/curriculum.md`. The full plan has three phases:
+   - **Phase 1, done:** the script and the lesson table. Stop here until the owner approves them.
+   - **Phase 2, engine support (one commit):**
+     - a file sandbox: an optional `files:` field on exercises and lessons, written into a fresh working folder before every run, grade and Pensieve trace, plus a `with_files` test helper;
+     - recursion: check Pyodide's recursion limit against the step guard, and give `RecursionError` a friendly message;
+     - a call stack in the Pensieve: `depth` in `trace_json`, shown in `Pensieve.tsx`;
+     - new Snape rules: `bare-except` from y3-l01a, `open-without-with` from y3-l02, and `lambda-assign` and `needless-lambda` from y3-l03;
+     - `YEAR_BADGES[3]`, the `year-3` and `loop-detective` badges, `YEAR_NAMES`, and the new speakers in `cast.yaml` (lupin, trelawney, tobias, crookshanks).
+   - **Phase 3, content in four batches, each validated, committed and pushed:** l01a–r1, l04–r2, l08–r3, then l12, l13 and the Trial. The theme is Time-Turner dusk, silver and indigo.
+   - The save-safety fix (11.1) has been put off at the owner's request.
 3. Then Years 4–7, one at a time.
 4. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
 
@@ -261,4 +267,5 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-01 | Claude Code desktop session | Year 3 planned and scripted: the full scene-by-scene story in `story.md`, and the exact lesson table in `curriculum.md`. The build waits for the owner's review of the script (§10, §11). |
 | 2026-10-01 | Claude Code web session `session_01QRDafNtZXxe5n2GotwYapD` | Handoff guide and CLAUDE.md created. State: Years 1–2 built; the save-safety fix (§11.1) planned but not built. |

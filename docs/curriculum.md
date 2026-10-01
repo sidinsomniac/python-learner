@@ -94,29 +94,35 @@ The story is [The Jinxed Ledger](story.md#year-1-the-jinxed-ledger); each lesson
 | 14 | Debugging Craft | tracebacks, print-debugging, `assert`, removing while looping, the Pensieve | the glimmer gauge · the un-collecting counter-spell · ⭐ Lockhart's ledger (four bugs) |
 | 🏁 | **Trial: Messages of the Chamber** | | `caesar_shift` → `letter_frequencies` → `crack` (English scoring, fair ties) → `open_cabinet`: decode six notes and speak the password |
 
-## Year 3: The Prisoner of Recursion
+## Year 3: The Prisoner of Recursion 📝 scripted, not built yet
 
 *Requires Year 2. Ends able to handle errors and files, use recursion, and reason about efficiency.*
+The story is [The Prisoner of the Loop](story.md#year-3-the-prisoner-of-the-loop). Every exercise is function-style. There are 20 units: 16 lessons, 3 revisions and the Trial, for about 64 exercises.
 
-| # | Lesson | Concepts | Core twist, and ★ problems |
-|---|---|---|---|
-| 1 | Dementor Defence: Exceptions **Pt1/Pt2** | `try/except/else/finally`, specific exceptions, `raise`, validation | a validator that must reject 8 kinds of bad input *(edge case)* |
-| 2 | The Restricted Section: Files | `open`, `with`, reading and writing lines, parsing CSV-style text | a corrupted ledger file with missing fields *(edge case)* |
-| 3 | Spells as Values | functions as values, `lambda`, `sorted(key=)`, `min`/`max` with key, `map`/`filter` | sort students by house, then by year descending *(spec reading)* |
-| R1 | Library Revision I | | |
-| 4 | Flexible Spells | `*args`, `**kwargs`, the unpacking operators | a `log(*messages, **options)` helper |
-| 5 | The Time-Turner: Recursion **Pt1/Pt2** | base and recursive cases, the call stack (shown in the Pensieve), recursion on strings and lists, RecursionError, a memoization teaser | ★ 🟢 sum of digits · 🟡 flatten nested lists · 🔴 all subsets of 3 ingredients |
-| 6 | ★ Counting Steps: Big-O | O(1), O(n), O(n²), O(log n), measured by counting steps | predict which of 4 spells survives 10⁶ owls *(scale)* |
-| 7 | ★ Binary Search **Pt1/Pt2** | the halving idea; off-by-one errors; first occurrence; insert position | 🟢 find a spell · 🟡 first occurrence · 🔴 first page where the ink fades *(scale)* |
-| R2 | Library Revision II | | |
-| 8 | ★ Sorting by Hand | selection sort and insertion sort, counting swaps | implement both; which does fewer swaps on nearly-sorted data? |
-| 9 | ★ Sorting Smart | stability, sorting by several keys, custom orderings | order the Hogwarts Express carriages by 3 rules |
-| 10 | ★ The Marauder's Grid | 2-D lists, neighbours, bounds, recursive flood fill | 🟢 count the neighbours · 🟡 fill a flooded room · 🔴 count separate islands |
-| 11 | How Wizards Solve Problems | a problem-solving method (understand, plan, pseudocode, test), writing your own edge-case tests | write the tests *first* for a spec, then the code |
-| R3 | Library Revision III | | |
-| 12 | ★ String Spells | two-pointer palindrome, run-length encoding, longest common prefix | 🟢 RLE encode · 🟡 decode · 🔴 longest palindromic substring |
-| 13 | ★ The Enchanted Board | simulation: Game of Life on a grid | copy the board correctly, the gotcha from Year 1 returning *(debug)* |
-| 🏁 | **Trial: The Time-Turner Escape** | | Load a maze from a file with exception handling, check whether the exit is reachable by flood fill, count the steps, and report corrupt maps politely. |
+| # | id | Lesson | Concepts | Exercises: 🌱 Warm-up · 🔥 Core (twist) · ⭐ Outstanding |
+|---|---|---|---|---|
+| 1 | y3-l01a | Dementor Defence **Pt1** | `try/except/else/finally`, catching specific exceptions | 🌱 `safe_int(text)` returns None for text that isn't a number · 🔥 the Boggart log: average the readings while skipping bad ones, and what if they are all bad? *(edge case)* · ⭐ run a list of spells and report the first error's type, with no bare `except` *(constraint)* |
+| 1 | y3-l01b | Dementor Defence **Pt2** | `raise`, error messages, validation | 🌱 `check_year(n)` raises `ValueError` outside 1–7 · 🔥 Hogsmeade permission slips: reject 8 kinds of bad input, each with the right exception and message *(edge case)* · ⭐ check a whole sack of slips and report which line failed and why *(combination)* |
+| 2 | y3-l02 | The Restricted Section: Files | `open`, `with`, reading lines, `strip`, writing files, CSV-style `split(",")` | 🌱 count the names in `register.txt` · 🔥 the corrupted 1926 enrolment ledger: missing fields, blank lines, stray spaces *(edge case)* · ⭐ write a cleaned copy to `clean.txt` and return how many lines were dropped *(combination)* |
+| 3 | y3-l03 | Spells as Values | functions as values, `lambda`, `sorted(key=)`, `min`/`max` with `key`, `map`/`filter` | 🌱 sort prophecies by length · 🔥 Trelawney's prophecies by date, then by certainty, highest first *(spec reading)* · ⭐ `pipeline(spells, value)` applies a list of spells in order *(inversion)* |
+| R1 | y3-r1 | Library Revision I | lessons 1–3 | predict `try/except/else/finally` order · repair a file reader that crashes on a blank line · `top_n(records, n, key)` |
+| 4 | y3-l04 | Flexible Spells | `*args`, `**kwargs`, unpacking in calls | 🌱 `total(*amounts)` · 🔥 the Map's `log(*sightings, sep=..., level=...)`, including zero sightings *(edge case)* · ⭐ `counted(spell)` returns a wrapped spell that counts its calls *(combination)* |
+| 5 | y3-l05a | The Time-Turner: Recursion **Pt1** | base case and recursive case, recursion on numbers and strings | 🌱 ★ a recursive countdown · 🔥 ★ sum of digits with no loops *(constraint)* · ⭐ ★ reverse a string recursively, then check palindromes with it |
+| 5 | y3-l05b | The Time-Turner: Recursion **Pt2** | recursion on lists, the call stack (in the Pensieve), `RecursionError`, a memoization teaser | 🌱 repair the Turner that has no base case *(debug)* · 🔥 ★ flatten nested lists of any depth, empty lists included *(edge case)* · ⭐ ★ every subset of 3 ingredients, in a stated order |
+| 6 | y3-l06 | ★ Counting Steps: Big-O | O(1), O(n), O(n²), O(log n), measured by counting steps | 🌱 divination: count each of 4 spells' steps · 🔥 predict which of 4 spells survives 10⁶ owls, then speed up a slow one *(scale)* · ⭐ ★ find a pair of owls that sum to a target in 20,000, in O(n) |
+| 7 | y3-l07a | ★ Binary Search **Pt1** | halving, `lo`/`hi`, off-by-one errors | 🌱 ★ find a spell in a sorted list · 🔥 ★ the first sighting of a day in a log with repeats *(edge case)* · ⭐ ★ the insert position, without `bisect` *(constraint)* |
+| 7 | y3-l07b | ★ Binary Search **Pt2** | searching on a condition | 🌱 guess the number in at most 7 tries · 🔥 ★ the first page where the ink fades: 1,000,000 pages, and every look is counted *(scale)* · ⭐ ★ integer square root by halving |
+| R2 | y3-r2 | Library Revision II | lessons 4–7 | predict a recursion's output · repair a binary search that loops forever · count the calls a recursive spell makes |
+| 8 | y3-l08 | ★ Sorting by Hand | selection sort, insertion sort, counting swaps | 🌱 one pass of selection sort · 🔥 ★ insertion sort that counts its moves: which sort does fewer on nearly sorted pages? *(comparison)* · ⭐ ★ sort the diary pages with at most n−1 swaps *(constraint)* |
+| 9 | y3-l09 | ★ Sorting Smart | stability, tuple keys, custom orderings | 🌱 sort by a custom house order · 🔥 order the Thestral carriages by 3 rules *(spec reading)* · ⭐ show that two stable passes give the same order as one tuple key |
+| 10 | y3-l10 | ★ The Marauder's Grid | 2-D lists, neighbours, bounds, recursive flood fill | 🌱 count a square's neighbours, edges included · 🔥 ★ fill a flooded room, and what if you start on a wall? *(edge case)* · ⭐ ★ count the separate islands |
+| 11 | y3-l11 | How Wizards Solve Problems | understand, plan, pseudocode, test; writing your own edge-case tests | 🌱 write tests for a spec; they must catch 3 broken spells · 🔥 tests *first*, then the Turner's `turns_needed(start, target)` *(spec reading)* · ⭐ one test that catches all 3 hidden bugs |
+| R3 | y3-r3 | Library Revision III | lessons 8–11 | predict a stable sort · repair a flood fill that never stops (no visited set) · an islands variant |
+| 12 | y3-l12 | ★ String Spells | two-pointer palindromes, run-length encoding, longest common prefix | 🌱 ★ RLE encode · 🔥 ★ RLE decode, with counts of more than one digit *(edge case)* · ⭐ ★ the longest palindromic substring |
+| 13 | y3-l13 | ★ The Enchanted Board | simulation: Game of Life on a grid | 🌱 the next state of one square · 🔥 one generation, with the board-copying trap from Year 1 *(debug)* · ⭐ ★ how many generations until the board repeats? |
+| 🏁 | y3-trial | **Trial: The Time-Turner Escape** | everything | **Stage 1:** `load_maze(path)`: read the maze from a file and raise clear errors for corrupt maps. **Stage 2:** find the start and the exit. **Stage 3:** flood fill: can the exit be reached? **Stage 4:** `escape_report(path)`: a polite report for every case (corrupt, trapped, or free after visiting N hours). |
+
+Shortest paths are left for Year 4's breadth-first search, so the Trial asks only whether the exit can be reached and how much of the maze can be reached.
 
 ## Year 4: The Goblet of Objects
 

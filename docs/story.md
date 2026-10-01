@@ -138,11 +138,74 @@ Everything taken is *shiny*. Everything is taken in order, counted and catalogue
 
 ---
 
-## Years 3–7: arcs in outline
-*Each year's full scene-by-scene script is written when that year is built.*
+## Year 3: The Prisoner of the Loop
 
-### Year 3: The Prisoner of the Loop
-A figure keeps appearing in the same corridor at the same time every day, like a prisoner caught in time. It's a wizard trapped inside a broken Time-Turner's **recursion**, who never reached his base case. Errors (the Dementors) swarm wherever the loop touches. You learn recursion, exceptions and searching to find where his loop began. **Trial:** the Time-Turner Escape maze that frees him.
+**The premise.** Third year begins with the Ministry posting **Dementors** around Hogwarts. The Ministry says "a prisoner" is loose, but won't say who. Then, on the first afternoon of term, a pale boy in old-fashioned robes walks down the third-floor corridor at **3:03 pm**. He mutters "one more turn, and I'll get it right" and fades away. He comes back at 3:03 the next day, and the day after, a little fainter each time. Wherever he walks, the castle's spells start **raising errors**, and the Dementors gather.
+
+**Suspects (red herrings):**
+- **The escaped prisoner** the Ministry won't name. Everyone assumes the boy is a disguise.
+- **Professor Trelawney**, who insists she *predicted* the boy, and who seems to know too much.
+- **A name on the Marauder's Map** that shouldn't be there: *Tobias Wren*, who walks the same twelve squares every day.
+
+**The truth.**
+- **Tobias Wren** was a Hufflepuff third-year in **1926**. He failed his Arithmancy exam and borrowed a *prototype* Time-Turner from a Ministry exhibit to sit it again.
+- The prototype's charm is recursive: **turn back an hour, then turn again**, with **no base case**. It never stopped.
+- He has been falling back through the same hour for a century. Every turn is another frame on the stack, and every frame makes him fainter.
+- The Dementors aren't hunting a prisoner from Azkaban. They are drawn to the **overflow**: errors piling up wherever his loop touches the castle. The "prisoner" is Tobias, a prisoner of his own spell.
+
+**How it ends.**
+1. Tobias steps out of the loop, a thirteen-year-old a hundred years late. Lupin hands him chocolate.
+2. With the errors gone, the Dementors drift away.
+3. Tobias becomes **keeper of the Time-Turner** (the spaced-repetition room). He is the one person at Hogwarts who knows exactly how often a lesson has to come round again.
+
+**New cast:**
+| Character | Role |
+|---|---|
+| **Professor Lupin** | Defence teacher. Warm, patient, and good with fear. His Boggart lesson is the exceptions lesson: an error that changes shape |
+| **Professor Trelawney** | A suspect. Misty, dramatic, and very occasionally right |
+| **The Fading Boy** (Tobias Wren) | The prisoner of the loop. Speaks one line, the same line, until he is freed |
+| **Dementors** | Atmosphere, never dialogue. They gather wherever errors go unhandled |
+| **Crookshanks** | An easter egg. He keeps sitting exactly where the next clue is |
+
+### Scene-by-scene
+
+| Lesson | Where | Story beat | The clue your code reveals |
+|---|---|---|---|
+| Prologue | Hogwarts Express, then the third-floor corridor | The train stops in the rain and the lamps go out. A Dementor drifts past your compartment, and Professor Lupin shares chocolate. At the feast, Dumbledore announces the Ministry's guards. Next afternoon, at 3:03, a pale boy walks through you: "One more turn, and I'll get it right." | The mystery begins |
+| 1 Exceptions (Pt1) | Defence classroom | Lupin's Boggart lesson. The Boggart turns into a different error for each student: `ValueError`, `KeyError`, `ZeroDivisionError`. The Patronus of Parseltongue is `try/except`. | The castle's error log, cleaned up: **every** error this week was raised at **3:03 pm** |
+| 1 Exceptions (Pt2) | McGonagall's office | Hogsmeade permission slips, and a sack of forged and broken ones. Validate them all. | One slip is perfectly valid, but dated **1926** and signed **T. Wren**. Nobody has used it for a hundred years |
+| 2 Files | Hall of Records | Madam Pince unlocks the 1926 enrolment ledger, a file full of smudged and missing fields. | Tobias Wren, Hufflepuff, third year, 1926. His record has a start date and **no leaving date** |
+| 3 Spells as Values | Divination tower | Trelawney claims she foresaw the boy. Sort her prophecies by date, then by how certain she was. | Her "prophecy" was written the **day after** the first sighting. **Trelawney is cleared** (and a little embarrassed) |
+| R1 | Library | Hermione has been in two classes at once again. She admits she has a Time-Turner, and quotes its one rule: *never turn twice without stopping*. | Recap: a boy from 1926, appearing at 3:03, with **no leaving date** |
+| 4 Flexible Spells | Gryffindor common room | Fred & George hand over the Marauder's Map. Build a logging spell that takes any number of sightings. | The Map's log: **Tobias Wren** walks the same twelve squares, at the same minute, every day |
+| 5 Recursion (Pt1) | McGonagall's cabinet of old Time-Turners | McGonagall shows a prototype like the one on Ministry display. Its charm is written out: *turn back an hour, then turn*. | The charm **calls itself** and has no rule for when to stop. **It never stops** |
+| 5 Recursion (Pt2) | Same, after hours | Watch a spell call itself in the Pensieve, frame upon frame, until it overflows. | A century of hourly turns is about **876,000** frames deep. He is fading because **the stack is overflowing**, and the Dementors come to the overflow |
+| 6 ★ Big-O | Owlery | Draco challenges you: whose search spell gets through a million owl records before supper? | Searching a century of records one by one would take until Christmas. **Halving** would take about **20 steps** |
+| 7 ★ Binary Search (Pt1) | Hall of Records | The sorted log of every 3:03 sighting since 1926. | The first sighting ever: **3 June 1926**, exam week |
+| 7 ★ Binary Search (Pt2) | Hufflepuff basement | Tobias's diary, found in an old trunk. Its ink fades from one page onward. Find the first faded page, fast. | The last clear entry: "Failed Arithmancy. Borrowed the prototype from the Ministry exhibit. **One more turn and I'll get it right.**" |
+| R2 | Library | Ron asks what everyone is thinking: "So why doesn't he just *stop*?" Lupin brings news: the Ministry will **seal the corridor** on the last day of term. | A deadline: free him before term ends |
+| 8 ★ Sorting by Hand | Hufflepuff basement | The diary's loose pages are out of order. Sort them by hand, counting every swap. | In order, the pages draw a **maze**: the hours he keeps falling through |
+| 9 ★ Sorting Smart | The Thestral carriages | Sort a century of sightings by several rules at once. | Every sighting begins at the same place, **behind Sir Cadogan's portrait** on the third floor |
+| 10 ★ The Marauder's Grid | Third-floor corridor, on the Map | Flood-fill the Map's corridors from Sir Cadogan's portrait. | One pocket of the floor is reached by no corridor at all: **a sealed room**. The Turner is in there |
+| 11 How Wizards Solve Problems | Lupin's office | Lupin and Ashwood plan the rescue properly: understand, plan, write the tests *first*, then the spell. | The missing base case: **stop when you're back at the hour you started from** |
+| R3 | Library | Draco has overheard his father: the Ministry plans to "contain" the anomaly, not rescue it. He offers to keep the Dementors busy on the night. | Draco is now an ally |
+| 12 ★ String Spells | Third-floor corridor | Tobias's sentence echoes, compressed and repeated. Decode it, and find the part that reads the same in both directions, like time. | Hidden in the echo: **"WREN WAS HERE"**, and the sealed room's password |
+| 13 ★ The Enchanted Board | The sealed room's door | The door is an enchanted board that changes every hour by the rules of the Game of Life. Simulate it correctly, without the copying trap from Year 1. | At generation 3:03, a path opens through the board |
+| 🏁 Trial | The sealed room, at 3:03 | Draco draws off the Dementors while Lupin's Patronus holds the door. Load the maze of hours from Tobias's pages, reject corrupt maps politely, find out whether the way out can be reached, and report it. | The loop gets its base case. **Tobias steps out** |
+
+**Outro.**
+1. Tobias blinks at the castle, asks what year it is, and sits down very suddenly. Lupin hands him chocolate.
+2. The Dementors leave the grounds the same evening. The Ministry calls it "a successful containment".
+3. Trelawney announces that she foresaw all of it.
+4. Dumbledore: "Every spell that calls itself must know when to stop. So, I find, must most wizards."
+5. Tobias takes up a post as keeper of the Time-Turner, where lessons come round again "exactly as often as they need to, and not one turn more".
+
+**Draco's thread:** an open ally now. He races you through the Big-O lesson and keeps the Dementors busy during the Trial.
+
+---
+
+## Years 4–7: arcs in outline
+*Each year's full scene-by-scene script is written when that year is built.*
 
 ### Year 4: The Goblet of Objects
 The Triwizard Tournament returns. Beauxbatons and Durmstrang bring their own enchanted objects, and someone is sabotaging the champions' equipment by subclassing it with hidden flaws. You design, inspect and build objects and data structures. **Trial:** the three Triwizard tasks.
