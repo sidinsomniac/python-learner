@@ -1,0 +1,98 @@
+tier: core
+type: practice
+title: Paint the Corridor
+twist: edge case - starting on a wall, starting off the map, and rooms that touch only at corners
+task: |
+  Write `fill_room(grid, row, col)`: the number of floor squares you can
+  walk to from `(row, col)`, moving up, down, left and right through
+  floor (`"."`), counting the starting square.
+
+  - If the start is a wall, or off the map, the answer is `0`.
+  - Diagonal steps aren't allowed: squares touching only at a corner are
+    not connected.
+
+  ```python
+  third_floor = [
+      "#########",
+      "#...#...#",
+      "#.#.#.#.#",
+      "#...#...#",
+      "#########",
+  ]
+  fill_room(third_floor, 1, 1)   # -> 8
+  fill_room(third_floor, 0, 0)   # -> 0   (a wall)
+  ```
+starter: |
+  def fill_room(grid, row, col):
+      count = 0
+      for line in grid:
+          count += line.count(".")
+      return count
+tests: |
+  FLOOR = [
+      "#########",
+      "#...#...#",
+      "#.#.#.#.#",
+      "#...#...#",
+      "#########",
+  ]
+
+  def test_example():
+      fn = student_function("fill_room")
+      check(call(fn, FLOOR, 1, 1) == 8, f"fill_room(third_floor, 1, 1) returned {call(fn, FLOOR, 1, 1)!r}. Is the wall in the middle keeping the two rooms apart?")
+      check(call(fn, FLOOR, 3, 7) == 8, "The right-hand room has 8 squares too.")
+
+  def test_bad_starts():
+      fn = student_function("fill_room")
+      check(call(fn, FLOOR, 0, 0) == 0, f"Starting on a wall: you returned {call(fn, FLOOR, 0, 0)!r}.")
+      check(call(fn, FLOOR, 2, 2) == 0, "(2, 2) is a wall too.")
+      check(call(fn, FLOOR, -1, 3) == 0 and call(fn, FLOOR, 9, 9) == 0, "Starting off the map, you can't walk anywhere.")
+
+  def test_corners():
+      fn = student_function("fill_room")
+      diagonal = [".#", "#."]
+      check(call(fn, diagonal, 0, 0) == 1, f"Squares that only touch at a corner aren't connected. You returned {call(fn, diagonal, 0, 0)!r}.")
+      ring = ["....", ".##.", "...."]
+      check(call(fn, ring, 0, 0) == 10, f"A ring of corridor goes round a block: you returned {call(fn, ring, 0, 0)!r}.")
+
+  def test_sealed_room():
+      fn = student_function("fill_room")
+      castle = [
+          "###########",
+          "#.........#",
+          "#.#######.#",
+          "#.#..#..#.#",
+          "#.#..#..#.#",
+          "#.####.##.#",
+          "#.........#",
+          "###########",
+      ]
+      check(call(fn, castle, 1, 1) == 31, f"From the corridor you returned {call(fn, castle, 1, 1)!r}. The room on the right has a door at the bottom.")
+      check(call(fn, castle, 3, 3) == 4, f"The room on the left is sealed: only 4 squares. You returned {call(fn, castle, 3, 3)!r}.")
+      big = ["." * 20 for _ in range(20)]
+      check(call(fn, big, 10, 10) == 400, "A 20 by 20 hall has 400 floor squares.")
+hints:
+  nudge: Spread from the start. A square stops the spreading if it's off the map, a wall, or already counted; otherwise count it and spread to its four neighbours.
+  question: What stops two neighbouring floor squares spreading to each other forever? Where should the "off the map" check go - before or after you look at grid[r][c]?
+  pseudocode: |
+    start with nothing seen
+    a helper spreads from (r, c):
+        if (r, c) is off the map: stop
+        if it's a wall, or already seen: stop
+        remember it as seen
+        spread from each of its four neighbours
+    spread from the start square
+    give back how many squares were seen
+  flaw: A RecursionError means squares are being visited again and again - check the seen set. A wrong count from (-1, 3) means the bounds check came too late.
+  analogous: |
+    ```python
+    def reachable_rooms(doors, start, visited=None):
+        if visited is None:
+            visited = set()
+        if start in visited:
+            return visited
+        visited.add(start)
+        for room in doors.get(start, []):
+            reachable_rooms(doors, room, visited)
+        return visited
+    ```

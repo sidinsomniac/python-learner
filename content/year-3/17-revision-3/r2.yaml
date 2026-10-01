@@ -1,0 +1,56 @@
+tier: review
+type: repair
+title: The Flood That Never Stops
+task: |
+  Fred and George's flood spell should count the floor squares of the room
+  containing `(r, c)`, but even on a tiny room it crashes.
+
+  ```python
+  area(["...", ".#.", "..."], 0, 0)   # -> 8
+  area(["#"], 0, 0)                   # -> 0
+  ```
+
+  Fix it. It must still work when it's cast twice in a row (careful with
+  default arguments!).
+starter: |
+  def area(grid, r, c):
+      if not (0 <= r < len(grid) and 0 <= c < len(grid[0])):
+          return 0
+      if grid[r][c] == "#":
+          return 0
+      total = 1
+      for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+          total += area(grid, r + dr, c + dc)
+      return total
+tests: |
+  def test_rooms():
+      fn = student_function("area")
+      check(call(fn, ["...", ".#.", "..."], 0, 0) == 8, f"area(['...', '.#.', '...'], 0, 0) returned {call(fn, ['...', '.#.', '...'], 0, 0)!r}.")
+      check(call(fn, ["#"], 0, 0) == 0, "Starting on a wall gives 0.")
+      check(call(fn, [".#.", "###", "..."], 2, 1) == 3, "Only the bottom row is reachable from (2, 1).")
+
+  def test_twice():
+      fn = student_function("area")
+      first = call(fn, ["..", ".."], 0, 0)
+      second = call(fn, ["..", ".."], 0, 0)
+      check(first == 4 and second == 4, f"Cast twice, area gave {first} then {second}. Does something from the first cast survive into the second?")
+hints:
+  nudge: The spell has no memory of where it has already been. Give it one, and make sure every cast starts with a fresh one.
+  question: From (0, 0), area spreads to (0, 1). What does (0, 1) spread back to? What happens to a default `seen=set()` the second time the spell is cast?
+  pseudocode: |
+    give area an extra parameter for the seen squares, defaulting to None
+    if it's None: start a new empty set
+    stop if off the map, a wall, or already seen
+    remember this square
+    add up 1 plus the area from each neighbour, passing the same seen set along
+  flaw: RecursionError - squares are revisited forever. If the second cast returns 0, the seen set was created once, as a default, and shared between casts (Year 2's mutable default bug!).
+  analogous: |
+    ```python
+    def visit(rooms, start, been=None):
+        if been is None:
+            been = set()
+        if start in been:
+            return 0
+        been.add(start)
+        return 1 + sum(visit(rooms, nxt, been) for nxt in rooms[start])
+    ```

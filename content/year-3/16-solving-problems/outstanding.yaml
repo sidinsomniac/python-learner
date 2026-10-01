@@ -1,0 +1,91 @@
+tier: outstanding
+type: practice
+title: One Example to Catch Them All
+twist: inversion - instead of writing the spell, find the input that breaks three
+task: |
+  `second_largest(numbers)` should return the second-biggest **different**
+  value in the list (so `[5, 5, 4]` gives `4`), or `None` if there aren't
+  two different values. Lockhart has written three versions. Each is wrong
+  somewhere.
+
+  ```python
+  def lockhart_one(numbers):
+      if len(numbers) < 2:
+          return None
+      return sorted(numbers)[-2]
+
+  def lockhart_two(numbers):
+      best = second = 0
+      for n in numbers:
+          if n > best:
+              second, best = best, n
+          elif n > second and n != best:
+              second = n
+      return second if second != best else None
+
+  def lockhart_three(numbers):
+      best = second = None
+      for n in numbers:
+          if best is None or n > best:
+              second, best = best, n
+      return second
+  ```
+
+  Write `killer_example()`. It returns **one** list of numbers on which
+  **all three** of Lockhart's versions give the wrong answer, and which
+  does have a second-biggest different value. At most 10 numbers.
+starter: |
+  def killer_example():
+      return [3, 1, 2]
+tests: |
+  def correct(numbers):
+      values = sorted(set(numbers))
+      return values[-2] if len(values) >= 2 else None
+
+  def lockhart_one(numbers):
+      if len(numbers) < 2:
+          return None
+      return sorted(numbers)[-2]
+
+  def lockhart_two(numbers):
+      best = second = 0
+      for n in numbers:
+          if n > best:
+              second, best = best, n
+          elif n > second and n != best:
+              second = n
+      return second if second != best else None
+
+  def lockhart_three(numbers):
+      best = second = None
+      for n in numbers:
+          if best is None or n > best:
+              second, best = best, n
+      return second
+
+  def test_shape():
+      got = call(student_function("killer_example"))
+      check(isinstance(got, list) and all(isinstance(n, (int, float)) and not isinstance(n, bool) for n in got), f"killer_example() should give back a list of numbers. It gave {got!r}.")
+      check(len(got) <= 10, "At most 10 numbers, please.")
+      check(correct(got) is not None, f"{got} doesn't have two different values, so the right answer is None - pick an example with a real second-biggest value.")
+
+  def test_breaks_all_three():
+      got = call(student_function("killer_example"))
+      want = correct(got)
+      for name, version in [("lockhart_one", lockhart_one), ("lockhart_two", lockhart_two), ("lockhart_three", lockhart_three)]:
+          answer = version(list(got))
+          check(answer != want, f"On {got}, {name} gives {answer!r} - which is right (the answer is {want!r}). What does {name} get wrong?")
+hints:
+  nudge: Study each version separately and write down the one kind of list that fools it. Then find one list that has all three problems at once.
+  question: What does lockhart_one do when the biggest value appears twice? What do lockhart_two's starting zeros assume about the numbers? When does lockhart_three never update `second`?
+  pseudocode: |
+    one: needs the biggest value repeated
+    two: needs every number to be negative
+    three: needs the second-biggest to turn up AFTER the biggest
+    combine all three needs in one short list
+  flaw: If one version still gives the right answer, trace it on your list by hand (or in the Pensieve) and see which of its assumptions your list doesn't break.
+  analogous: |
+    ```text
+    A spell that "finds the smallest" starting from smallest = 100
+    is fooled by any list where every number is above 100.
+    ```

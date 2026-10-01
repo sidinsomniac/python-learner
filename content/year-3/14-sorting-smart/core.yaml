@@ -1,0 +1,73 @@
+tier: core
+type: practice
+title: The Ministry's Filing Rules
+twist: spec reading - three rules, and the third runs backwards on text
+task: |
+  Each sighting is a dictionary like
+  `{"year": 1951, "place": "Library", "witness": "Pince"}`. Write
+  `file_sightings(sightings)`. Return a new list ordered by the Ministry's
+  rules:
+
+  1. **year**: newest first;
+  2. then **place**: A to Z;
+  3. then **witness**: **Z to A** (the Ministry files names backwards).
+
+  Sightings that match on all three keep their original order.
+
+  ```python
+  file_sightings([
+      {"year": 1951, "place": "Library", "witness": "Pince"},
+      {"year": 2026, "place": "Corridor", "witness": "Filch"},
+      {"year": 2026, "place": "Corridor", "witness": "Peeves"},
+      {"year": 2026, "place": "Attic", "witness": "Nick"},
+  ])
+  # -> Attic/Nick 2026, Corridor/Peeves 2026, Corridor/Filch 2026, Library/Pince 1951
+  ```
+starter: |
+  def file_sightings(sightings):
+      return sorted(sightings, key=lambda s: (s["year"], s["place"], s["witness"]))
+tests: |
+  def s(year, place, witness):
+      return {"year": year, "place": place, "witness": witness}
+
+  def show(rows):
+      return [f"{r['year']} {r['place']} {r['witness']}" for r in rows]
+
+  def test_example():
+      given = [s(1951, "Library", "Pince"), s(2026, "Corridor", "Filch"), s(2026, "Corridor", "Peeves"), s(2026, "Attic", "Nick")]
+      got = call(student_function("file_sightings"), given)
+      want = [given[3], given[2], given[1], given[0]]
+      check(got == want, f"You filed them as {show(got)}. The Ministry wants {show(want)}.")
+
+  def test_each_rule():
+      fn = student_function("file_sightings")
+      got = call(fn, [s(1926, "Hall", "A"), s(1999, "Hall", "A")])
+      check(show(got) == ["1999 Hall A", "1926 Hall A"], f"Newest first: {show(got)}.")
+      got = call(fn, [s(1926, "Owlery", "A"), s(1926, "Attic", "A")])
+      check(show(got) == ["1926 Attic A", "1926 Owlery A"], f"Places A to Z: {show(got)}.")
+      got = call(fn, [s(1926, "Hall", "Abbott"), s(1926, "Hall", "Zabini"), s(1926, "Hall", "Moon")])
+      check(show(got) == ["1926 Hall Zabini", "1926 Hall Moon", "1926 Hall Abbott"], f"Witnesses Z to A: {show(got)}.")
+
+  def test_stable_and_untouched():
+      fn = student_function("file_sightings")
+      first, second = s(1926, "Hall", "Wren"), s(1926, "Hall", "Wren")
+      first["note"], second["note"] = "first", "second"
+      got = call(fn, [first, second])
+      check([r["note"] for r in got] == ["first", "second"], "Sightings that match on all three rules keep their original order.")
+      given = [s(1, "B", "x"), s(2, "A", "y")]
+      call(fn, given)
+      check(show(given) == ["1 B x", "2 A y"], "The list you were given must not change.")
+hints:
+  nudge: Two of the rules fit in one tuple key. The witness rule can't be flipped with a minus sign - but a separate, earlier pass can run backwards.
+  question: Which pass must come LAST - the one for the most important rule or the least? Why can't you write -s["witness"]?
+  pseudocode: |
+    first pass: sort by witness, backwards
+    second pass: sort that by (year made negative, place) - stability keeps the witnesses in order within ties
+    give back the result
+  flaw: If the witnesses come out A to Z, the witness pass came last, or wasn't reversed. A TypeError means a minus sign met a string.
+  analogous: |
+    ```python
+    books = [("Potions", 3), ("Charms", 3), ("Astronomy", 1)]
+    by_title_z_to_a = sorted(books, key=lambda b: b[0], reverse=True)
+    print(sorted(by_title_z_to_a, key=lambda b: b[1]))
+    ```

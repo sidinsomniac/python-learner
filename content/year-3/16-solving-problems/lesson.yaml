@@ -1,0 +1,18 @@
+id: y3-l11
+year: 3
+order: 16
+number: 11
+title: How Wizards Solve Problems
+location: Professor Lupin's office
+concepts: [understanding a problem, examples and edge cases, planning with pseudocode, writing tests first, checking a spell with your own tests, catching bugs on purpose]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: lupin
+    line: (pouring tea, with a Grindylow pulling faces in a tank behind him) Sit down, all of you. Before anyone goes near that sealed room, we're going to plan this properly.
+  - who: ron
+    line: Can't we just... try things until it works?
+  - who: lupin
+    line: With a Time-Turner? Mr Weasley, "trying things until it works" is precisely how Tobias Wren got stuck.
+  - who: ashwood
+    line: Good wizards have a method. Understand the problem. Collect examples - especially the awkward ones. Write down how you'll *check* a spell before you write it. Only then, write it. Let's practise.
+clue: The rescue plan has its missing piece. The charm needs a base case - **stop when you're back at the hour you started from**.

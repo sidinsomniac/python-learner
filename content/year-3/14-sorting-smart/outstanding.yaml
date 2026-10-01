@@ -1,0 +1,75 @@
+tier: outstanding
+type: practice
+title: Any Number of Rules
+twist: combination - stable passes, *args, and rules applied in the right order
+task: |
+  Write `sort_by(records, *rules)`. Each rule is a pair
+  `(key, backwards)`: a key spell, and `True` if that rule runs from
+  biggest to smallest. The **first** rule is the most important; later
+  rules only break ties. Return a new list. With no rules at all, return a
+  copy in the original order.
+
+  ```python
+  owls = [("Errol", 3), ("Pig", 9), ("Hedwig", 9)]
+
+  def strength(owl):
+      return owl[1]
+
+  def name(owl):
+      return owl[0]
+
+  sort_by(owls, (strength, True), (name, False))
+  # -> [('Hedwig', 9), ('Pig', 9), ('Errol', 3)]
+  ```
+
+  The keys might return text or numbers, so you can't use the minus trick.
+  Use stable passes.
+starter: |
+  def sort_by(records, *rules):
+      result = list(records)
+      for key, backwards in rules:
+          result = sorted(result, key=key, reverse=backwards)
+      return result
+tests: |
+  def strength(owl):
+      return owl[1]
+
+  def name(owl):
+      return owl[0]
+
+  OWLS = [("Errol", 3), ("Pig", 9), ("Hedwig", 9)]
+
+  def test_example():
+      got = call(student_function("sort_by"), OWLS, (strength, True), (name, False))
+      check(got == [("Hedwig", 9), ("Pig", 9), ("Errol", 3)], f"sort_by(owls, (strength, True), (name, False)) returned {got!r}. Which rule should have the final say?")
+
+  def test_text_backwards():
+      got = call(student_function("sort_by"), OWLS, (strength, False), (name, True))
+      check(got == [("Errol", 3), ("Pig", 9), ("Hedwig", 9)], f"Strength up, then names Z to A: you returned {got!r}.")
+
+  def test_no_rules_and_copy():
+      fn = student_function("sort_by")
+      got = call(fn, OWLS)
+      check(got == OWLS and got is not OWLS, "With no rules, give back a copy in the original order.")
+      check(OWLS == [("Errol", 3), ("Pig", 9), ("Hedwig", 9)], "The original list must not change.")
+
+  def test_three_rules():
+      fn = student_function("sort_by")
+      rows = [("b", 1, "x"), ("a", 2, "x"), ("a", 1, "y"), ("a", 1, "x"), ("b", 2, "y")]
+      got = call(fn, rows, (lambda r: r[2], False), (lambda r: r[0], True), (lambda r: r[1], False))
+      want = sorted(sorted(sorted(rows, key=lambda r: r[1]), key=lambda r: r[0], reverse=True), key=lambda r: r[2])
+      check(got == want, f"With three rules you returned {got!r}, not {want!r}.")
+hints:
+  nudge: The starter's passes are right, but they run in the wrong order. Which rule must be applied last?
+  question: If the last pass decides the final order, should it be the first rule or the last? How do you go through a tuple from the end?
+  pseudocode: |
+    result starts as a copy of the records
+    for each (key, backwards) rule, starting from the LAST rule and ending with the first:
+        result = result sorted by that key, reversed if backwards
+    give back result
+  flaw: If the least important rule wins, you applied the rules front to back. The last pass has the final say.
+  analogous: |
+    ```python
+    for word in reversed(("first", "second", "third")):
+        print(word)
+    ```

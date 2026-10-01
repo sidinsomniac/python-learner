@@ -1,0 +1,47 @@
+tier: warmup
+type: practice
+title: The Feast Seating
+task: |
+  At the Welcome Feast the house tables are filled in a set order:
+  **Hufflepuff, Ravenclaw, Gryffindor, Slytherin**. Write
+  `seat(students)`. `students` is a list of `(name, house)` tuples. Return
+  a new list in house order. Students of the same house keep their
+  original order.
+
+  ```python
+  seat([("Draco", "Slytherin"), ("Cedric", "Hufflepuff"), ("Luna", "Ravenclaw"), ("Hannah", "Hufflepuff")])
+  # -> [('Cedric', 'Hufflepuff'), ('Hannah', 'Hufflepuff'), ('Luna', 'Ravenclaw'), ('Draco', 'Slytherin')]
+  ```
+starter: |
+  def seat(students):
+      return sorted(students, key=lambda s: s[1])
+tests: |
+  def test_example():
+      fn = student_function("seat")
+      given = [("Draco", "Slytherin"), ("Cedric", "Hufflepuff"), ("Luna", "Ravenclaw"), ("Hannah", "Hufflepuff")]
+      got = call(fn, given)
+      check(got == [("Cedric", "Hufflepuff"), ("Hannah", "Hufflepuff"), ("Luna", "Ravenclaw"), ("Draco", "Slytherin")], f"seat(...) returned {got!r}.")
+
+  def test_order_not_alphabet():
+      fn = student_function("seat")
+      got = [h for _, h in call(fn, [("Ron", "Gryffindor"), ("Cho", "Ravenclaw"), ("Ernie", "Hufflepuff")])]
+      check(got == ["Hufflepuff", "Ravenclaw", "Gryffindor"], f"The houses came out as {got}. Is that the feast order, or the alphabet?")
+
+  def test_ties_and_copy():
+      fn = student_function("seat")
+      given = [("Ron", "Gryffindor"), ("Harry", "Gryffindor"), ("Ginny", "Gryffindor")]
+      check(call(fn, given) == given, "Students of the same house keep their original order.")
+      check(call(fn, []) == [], "An empty hall seats nobody.")
+hints:
+  nudge: Give each house a number for its place in the seating order, and sort by that number.
+  question: What could map "Hufflepuff" to 0 and "Slytherin" to 3? Can the key be that mapping's own lookup spell?
+  pseudocode: |
+    a dictionary gives each house its rank in the feast order
+    give back the students sorted by the rank of their house
+  flaw: If Gryffindor comes first, you're sorting by the house name itself - alphabetically.
+  analogous: |
+    ```python
+    SIZES = {"small": 0, "medium": 1, "large": 2}
+    cauldrons = [("pewter", "large"), ("brass", "small")]
+    print(sorted(cauldrons, key=lambda c: SIZES[c[1]]))
+    ```

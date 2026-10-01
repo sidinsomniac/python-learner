@@ -1,0 +1,19 @@
+id: y3-r3
+year: 3
+order: 17
+number: R3
+kind: revision
+title: Revision III - An Unlikely Distraction
+location: The Library
+concepts: [sorting by hand, stable sorting, grids, flood fill, testing your own spells]
+exercises: [r1, r2, r3]
+scene:
+  - who: draco
+    line: (sliding into the seat opposite, and keeping his voice low) My father dines with the Minister on Thursdays. I heard them. They're not planning to *rescue* anyone. They're planning to "contain the anomaly".
+  - who: ron
+    line: Why are you telling us this, Malfoy?
+  - who: draco
+    line: (looking at the table) Because a hundred years is a long time to be stuck. And because the Dementors are drawn to errors - so on the night, I'll give them some. A great many. On the far side of the castle.
+  - who: ashwood
+    line: That is either very brave or very Slytherin, Mr Malfoy. Possibly both. Revision, everyone - sorting, grids and testing - and then we go in.
+clue: Draco is now an ally. On the night he'll **draw the Dementors away** with the noisiest stream of errors the castle has ever seen.

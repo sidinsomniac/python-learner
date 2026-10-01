@@ -1,0 +1,54 @@
+tier: warmup
+type: practice
+title: Checking the Leap-Year Charm
+task: |
+  A year is a **leap year** if it divides by 4, **except** years that
+  divide by 100, which aren't, **except** years that divide by 400, which
+  are. (1996 and 2000 are leap years; 1900 and 2023 aren't.)
+
+  Don't write the leap-year spell. Write the **checks**:
+  `check_is_leap(candidate)` gets someone's leap-year spell and returns
+  `True` if it gets your examples right, `False` if it gets any wrong.
+
+  The examiners will hand your checker a correct spell, which it must pass,
+  and three broken ones, which it must catch. Choose your examples well.
+starter: |
+  def check_is_leap(candidate):
+      return candidate(2024) == True
+tests: |
+  def good(year):
+      return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+
+  def only_fours(year):
+      return year % 4 == 0
+
+  def forgets_400(year):
+      return year % 4 == 0 and year % 100 != 0
+
+  def modern_only(year):
+      return year > 1900 and good(year)
+
+  def test_passes_good():
+      checker = student_function("check_is_leap")
+      check(call(checker, good) is True, "Your checker rejected a correct leap-year spell! Is one of your expected answers wrong?")
+
+  def test_catches_bugs():
+      checker = student_function("check_is_leap")
+      check(call(checker, only_fours) is False, "Your checker passed a spell that only checks 'divides by 4'. Which kind of year would trip it up?")
+      check(call(checker, forgets_400) is False, "Your checker passed a spell that forgets the 400 rule. Which kind of year would trip it up?")
+      check(call(checker, modern_only) is False, "Your checker passed a spell that says False for every year before 1901. Do you check any old leap years?")
+hints:
+  nudge: List years that test each rule - an ordinary leap year, an ordinary non-leap year, a century, and a century that divides by 400. Then check the candidate gets every one right.
+  question: Which single year would catch a spell that forgets the 400 rule? Which would catch one that only checks "divides by 4"? Have you any examples from long ago?
+  pseudocode: |
+    examples: pairs of (year, is it a leap year?) covering every rule, old and new
+    for each example:
+        if the candidate's answer for the year isn't the expected one: give back False
+    give back True
+  flaw: If a broken spell gets through, add an example that makes it give the wrong answer. If the good spell is rejected, one of your expected answers is wrong.
+  analogous: |
+    ```python
+    def check_is_even(candidate):
+        examples = [(0, True), (7, False), (-4, True), (10, True)]
+        return all(candidate(number) == expected for number, expected in examples)
+    ```

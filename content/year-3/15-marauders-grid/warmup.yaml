@@ -1,0 +1,64 @@
+tier: warmup
+type: practice
+title: Who's Next Door?
+task: |
+  Write `floor_neighbours(grid, row, col)`: how many of the square's four
+  neighbours (up, down, left, right) are floor (`"."`). Squares off the
+  edge of the map don't count.
+
+  ```python
+  grid = [
+      "...",
+      ".#.",
+      "..#",
+  ]
+  floor_neighbours(grid, 1, 1)   # -> 4
+  floor_neighbours(grid, 0, 0)   # -> 2
+  floor_neighbours(grid, 2, 2)   # -> 2
+  ```
+starter: |
+  def floor_neighbours(grid, row, col):
+      count = 0
+      for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+          if grid[row + dr][col + dc] == ".":
+              count += 1
+      return count
+tests: |
+  GRID = ["...", ".#.", "..#"]
+
+  def test_middle():
+      fn = student_function("floor_neighbours")
+      check(call(fn, GRID, 1, 1) == 4, f"floor_neighbours(grid, 1, 1) returned {call(fn, GRID, 1, 1)!r}.")
+
+  def test_edges():
+      fn = student_function("floor_neighbours")
+      check(call(fn, GRID, 0, 0) == 2, f"The top-left corner has only two neighbours on the map. You returned {call(fn, GRID, 0, 0)!r}.")
+      check(call(fn, GRID, 2, 2) == 2, f"floor_neighbours(grid, 2, 2) returned {call(fn, GRID, 2, 2)!r}. Did row -1 or column 3 sneak in?")
+      check(call(fn, GRID, 0, 2) == 2, f"floor_neighbours(grid, 0, 2) returned {call(fn, GRID, 0, 2)!r}.")
+
+  def test_other_shapes():
+      fn = student_function("floor_neighbours")
+      check(call(fn, ["....."], 0, 4) == 1, "A single row: the last square has one neighbour.")
+      check(call(fn, [".", ".", "."], 1, 0) == 2, "A single column: the middle square has two neighbours.")
+hints:
+  nudge: Look at each of the four directions, but only count a neighbour that's actually on the map.
+  question: What does grid[-1] give in Python? What should happen with column 3 in a grid three columns wide?
+  pseudocode: |
+    count starts at 0
+    for each of the four directions:
+        work out the neighbour's row and column
+        if it's on the map, and it's floor: count it
+    give back count
+  flaw: An IndexError means a neighbour past the bottom or right edge was read. A wrong count at the top or left means row -1 or column -1 wrapped round to the other side.
+  analogous: |
+    ```python
+    def walls_around(grid, r, c):
+        walls = 0
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr, nc = r + dr, c + dc
+            if not (0 <= nr < len(grid) and 0 <= nc < len(grid[0])):
+                walls += 1
+            elif grid[nr][nc] == "#":
+                walls += 1
+        return walls
+    ```

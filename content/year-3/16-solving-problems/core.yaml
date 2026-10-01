@@ -1,0 +1,101 @@
+tier: core
+type: practice
+title: Tests First, Then the Turner
+twist: spec reading - write the checks before the spell, and make the checks catch real bugs
+task: |
+  Here is the spec for the rescue charm. The hours run from `0` to `23`.
+  Each **turn** of the Time-Turner sends you back **one hour**, and going
+  back from hour `0` brings you to hour `23`.
+
+  `turns_needed(start, target)` returns how many turns it takes to go
+  **back** from hour `start` to hour `target`. If they're the same hour, it's
+  `0` turns. If either hour isn't a whole number from `0` to `23`, it
+  raises `ValueError`.
+
+  ```python
+  turns_needed(15, 12)   # -> 3
+  turns_needed(2, 22)    # -> 4    (2, 1, 0, 23, 22)
+  turns_needed(9, 9)     # -> 0
+  turns_needed(24, 3)    # ValueError
+  ```
+
+  Write **two** spells, in this order:
+  1. `check_turns(candidate)`: your checks. It returns `True` if
+     `candidate` follows the spec on your examples, otherwise `False`. The
+     examiners will test it against four broken charms.
+  2. `turns_needed(start, target)`: the charm itself, which must pass your
+     own checks.
+starter: |
+  def check_turns(candidate):
+      return candidate(15, 12) == 3
+
+  def turns_needed(start, target):
+      return start - target
+tests: |
+  def good(start, target):
+      for hour in (start, target):
+          if not isinstance(hour, int) or not 0 <= hour <= 23:
+              raise ValueError("hours run from 0 to 23")
+      return (start - target) % 24
+
+  def no_wrap(start, target):
+      good(start, target)
+      return start - target
+
+  def wrong_way(start, target):
+      good(start, target)
+      return (target - start) % 24
+
+  def no_checks(start, target):
+      return (start - target) % 24
+
+  def full_circle(start, target):
+      good(start, target)
+      return (start - target - 1) % 24 + 1
+
+  def test_turns_needed():
+      fn = student_function("turns_needed")
+      for (start, target), want in [((15, 12), 3), ((2, 22), 4), ((9, 9), 0), ((0, 23), 1), ((23, 0), 23)]:
+          got = call(fn, start, target)
+          check(got == want, f"turns_needed({start}, {target}) returned {got!r}, not {want}.")
+      for bad in [(24, 3), (3, -1), (2.5, 1)]:
+          got = raised(fn, *bad)
+          check(got is not None and got[0] == "ValueError", f"turns_needed{bad} should raise ValueError. It gave {got!r}.")
+
+  def test_checker_passes_good():
+      checker = student_function("check_turns")
+      check(call(checker, good) is True, "Your checks rejected a correct charm. Is one of your expected answers wrong? Did your checks crash on purpose-bad input without catching the ValueError?")
+      check(call(checker, student_function("turns_needed")) is True, "Your own turns_needed fails your own checks!")
+
+  def test_checker_catches_bugs():
+      checker = student_function("check_turns")
+      for broken, what in [(no_wrap, "never wraps round midnight"), (wrong_way, "turns forwards instead of back"), (no_checks, "never raises ValueError for impossible hours"), (full_circle, "takes 24 turns instead of 0 when start equals target")]:
+          check(call(checker, broken) is False, f"Your checks passed a broken charm that {what}. Which example would expose it?")
+hints:
+  nudge: Write the checks from the spec's examples first - including the awkward ones (midnight, the same hour, impossible hours). Then write the charm to pass them.
+  question: Which example only works if the charm wraps round midnight? How does your checker know a ValueError was raised - and what should it decide if none was?
+  pseudocode: |
+    check_turns(candidate):
+        for each (start, target, expected) example - ordinary, across midnight, the same hour:
+            if the candidate's answer differs: give back False
+        for each impossible pair of hours:
+            try the candidate on them
+            if it raises the bad-value error: that's right, carry on
+            if it doesn't raise: give back False
+        give back True
+    turns_needed(start, target):
+        refuse any hour that isn't an int from 0 to 23
+        give back (start minus target), wrapped round 24
+  flaw: If no_checks gets through, your checker never tries an impossible hour. If the good charm is rejected with a crash, your checker let a ValueError escape instead of catching it.
+  analogous: |
+    ```python
+    def check_floor_of(candidate):
+        examples = [((7, 2), 3), ((-7, 2), -4)]
+        answers_ok = all(candidate(*args) == expected for args, expected in examples)
+        try:
+            candidate(1, 0)
+            refused = False
+        except ZeroDivisionError:
+            refused = True
+        return answers_ok and refused
+    ```

@@ -1,0 +1,27 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: examples-first
+  type: choice
+  q: Which examples are most likely to find bugs?
+  options: ["Several ordinary, middle-of-the-road cases", "Empty input, single items, edges, ties and bad input", "Very long random inputs"]
+  answer: 1
+  why: Bugs cluster at the awkward edges. Ordinary cases mostly work first time.
+- id: checker
+  type: predict
+  code: |
+    def check_double(candidate):
+        for n, expected in [(2, 4), (0, 0)]:
+            if candidate(n) != expected:
+                return False
+        return True
+
+    def square(n):
+        return n * n
+
+    print(check_double(lambda n: n * 2), check_double(square))
+  why: square(2) is 4 and square(0) is 0 - so these checks can't tell squaring from doubling! They need another example, like 3.
+- id: raise-check
+  type: choice
+  q: 'In a checker, `try: candidate(-1)` / `except ValueError: return True`. What should come after the try block?'
+  options: ["Nothing", "return False - no error means the spell failed to refuse", "return True"]
+  answer: 1
+  why: If the candidate didn't raise, it accepted bad input - that's a failure.

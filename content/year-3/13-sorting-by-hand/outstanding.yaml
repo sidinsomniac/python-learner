@@ -1,0 +1,84 @@
+tier: outstanding
+type: practice
+title: Fewest Swaps for Fragile Pages
+twist: constraint - at most n - 1 swaps, and none wasted
+task: |
+  The oldest pages can only survive being **swapped**. Write
+  `sort_with_swaps(pages)`. It sorts `pages` in place, using only swaps of
+  two positions, and returns the list of swaps it made, as `(i, j)` pairs
+  with `i < j`, in order.
+
+  - It may make at most `len(pages) - 1` swaps.
+  - It must never make a pointless swap: if a page is already where it
+    belongs, leave it.
+  - No `sort` or `sorted`.
+
+  ```python
+  pages = [3, 1, 2]
+  sort_with_swaps(pages)   # -> [(0, 1), (1, 2)]
+  pages                    # [1, 2, 3]
+  sort_with_swaps([1, 2, 3])   # -> []
+  ```
+
+  Use selection sort: find the smallest of the rest, and swap it in, but
+  only if it isn't there already. If several are equally small, take the
+  first.
+starter: |
+  def sort_with_swaps(pages):
+      swaps = []
+      pages.sort()
+      return swaps
+tests: |
+  def replay(original, swaps):
+      pages = list(original)
+      for i, j in swaps:
+          pages[i], pages[j] = pages[j], pages[i]
+      return pages
+
+  def test_example():
+      fn = student_function("sort_with_swaps")
+      pages = [3, 1, 2]
+      got = call(fn, pages)
+      check(pages == [1, 2, 3], f"pages ended up as {pages}.")
+      check(got == [(0, 1), (1, 2)], f"sort_with_swaps([3, 1, 2]) returned {got!r}.")
+
+  def test_no_waste():
+      fn = student_function("sort_with_swaps")
+      check(call(fn, [1, 2, 3]) == [], "A sorted list needs no swaps at all.")
+      check(call(fn, []) == [] and call(fn, [4]) == [], "Empty and single-page lists need no swaps.")
+      got = call(fn, [2, 1, 3, 4])
+      check(got == [(0, 1)], f"[2, 1, 3, 4] needs exactly one swap. You made {got!r}.")
+
+  def test_replay():
+      fn = student_function("sort_with_swaps")
+      for original in [[5, 4, 3, 2, 1], [2, 2, 1, 1], [9, 1, 8, 2, 7, 3], list(range(30, 0, -3))]:
+          pages = list(original)
+          swaps = call(fn, pages)
+          check(pages == sorted(original), f"{original} sorted to {pages}.")
+          check(len(swaps) <= max(len(original) - 1, 0), f"{original} took {len(swaps)} swaps - more than n - 1.")
+          check(all(i < j for i, j in swaps), "Write every swap as (i, j) with i < j.")
+          check(replay(original, swaps) == sorted(original), f"Replaying your swaps {swaps} on {original} doesn't sort it. Are they recorded exactly as made?")
+      check(not calls("sort") and not calls("sorted"), "Sort by hand - no sort() or sorted().")
+hints:
+  nudge: Selection sort makes at most one swap per position. Record each swap as you make it, and skip the ones that would swap a page with itself.
+  question: When the smallest of the rest is already at the start position, what would a swap do? How do you write down a swap so i < j?
+  pseudocode: |
+    swaps starts empty
+    for each start position except the last:
+        find the position of the first smallest page from start onward
+        if that position isn't start:
+            swap the two pages and record (start, that position)
+    give back swaps
+  flaw: If you make n swaps for n pages, you also swapped the last page with itself. If [1, 2, 3] records swaps, you didn't skip pages already in place.
+  analogous: |
+    ```python
+    def move_biggest_last(scores, moves):
+        best = 0
+        for pos in range(1, len(scores)):
+            if scores[pos] > scores[best]:
+                best = pos
+        last = len(scores) - 1
+        if best != last:
+            scores[best], scores[last] = scores[last], scores[best]
+            moves.append((best, last))
+    ```

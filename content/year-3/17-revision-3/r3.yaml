@@ -1,0 +1,59 @@
+tier: review
+type: practice
+title: The Biggest Room
+task: |
+  Write `largest_room(grid)`: the number of squares in the **biggest** room
+  (a region of `"."` floor connected up, down, left and right). With no
+  floor at all, it's `0`.
+
+  ```python
+  largest_room([
+      "#######",
+      "#..#..#",
+      "#..#.##",
+      "#######",
+  ])
+  # -> 4   (the left room has 4 squares; the right has 3)
+  ```
+starter: |
+  def largest_room(grid):
+      return sum(row.count(".") for row in grid)
+tests: |
+  def test_example():
+      fn = student_function("largest_room")
+      grid = ["#######", "#..#..#", "#..#.##", "#######"]
+      check(call(fn, grid) == 4, f"largest_room(...) returned {call(fn, grid)!r}. Which room is biggest, and how big is it?")
+
+  def test_edges():
+      fn = student_function("largest_room")
+      check(call(fn, ["###"]) == 0, "No floor at all: 0.")
+      check(call(fn, ["."]) == 1, "One square is a room of 1.")
+      check(call(fn, [".#.", "#.#", ".#."]) == 1, "Squares touching only at corners are rooms of 1.")
+
+  def test_bigger():
+      fn = student_function("largest_room")
+      grid = [
+          "..#......",
+          "..#.####.",
+          "###.#..#.",
+          "....#..#.",
+      ]
+      check(call(fn, grid) == 15, f"The winding room is the biggest here, with 15 squares. You returned {call(fn, grid)!r}.")
+hints:
+  nudge: Count rooms as in the Marauder's Grid, but have each fill tell you how many squares it painted. Keep the biggest.
+  question: Can your fill RETURN the number of squares it painted? Should every fill share one seen set?
+  pseudocode: |
+    one seen set for everything; best starts at 0
+    a fill from (r, c) returns how many new squares it painted (0 if off the map, a wall, or seen)
+    for every square on the map:
+        if it's floor and not yet seen: fill from it, and keep the size if it's the biggest so far
+    give back best
+  flaw: If the answer is the total of all floor squares, every room was counted together. If it's too small, check that the fill adds up what each neighbour returns.
+  analogous: |
+    ```python
+    def biggest_group(groups):
+        best = 0
+        for group in groups:
+            best = max(best, len(group))
+        return best
+    ```

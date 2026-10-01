@@ -1,0 +1,82 @@
+tier: outstanding
+type: practice
+title: How Many Rooms?
+twist: combination - flood fill, again and again, without counting any room twice
+task: |
+  Write `count_rooms(grid)`: the number of **separate** floor regions in
+  the grid. Two floor squares are in the same room if you can walk between
+  them (up, down, left, right) without crossing a wall.
+
+  ```python
+  count_rooms([
+      "#########",
+      "#...#...#",
+      "#.#.#.#.#",
+      "#...#...#",
+      "#########",
+  ])
+  # -> 2
+
+  count_rooms([".#.", "#.#", ".#."])   # -> 5
+  count_rooms(["###"])                 # -> 0
+  ```
+starter: |
+  def count_rooms(grid):
+      rooms = 0
+      for line in grid:
+          if "." in line:
+              rooms += 1
+      return rooms
+tests: |
+  def test_examples():
+      fn = student_function("count_rooms")
+      floor = ["#########", "#...#...#", "#.#.#.#.#", "#...#...#", "#########"]
+      check(call(fn, floor) == 2, f"The third floor has two rooms. You counted {call(fn, floor)!r}.")
+      check(call(fn, [".#.", "#.#", ".#."]) == 5, f"Five squares that touch only at corners are five rooms. You counted {call(fn, ['.#.', '#.#', '.#.'])!r}.")
+      check(call(fn, ["###"]) == 0, "No floor, no rooms.")
+
+  def test_winding():
+      fn = student_function("count_rooms")
+      snake = [
+          ".....",
+          "####.",
+          ".....",
+          ".####",
+          ".....",
+      ]
+      check(call(fn, snake) == 1, f"One winding corridor is still one room. You counted {call(fn, snake)!r}.")
+      check(call(fn, ["." * 20 for _ in range(20)]) == 1, "A 20 by 20 hall is one room.")
+
+  def test_many():
+      fn = student_function("count_rooms")
+      cells = ["".join("." if (r + c) % 2 == 0 else "#" for c in range(12)) for r in range(12)]
+      check(call(fn, cells) == 72, f"A 12 by 12 chequerboard has 72 floor squares, none of them joined. You counted {call(fn, cells)!r}.")
+hints:
+  nudge: Walk over every square. Each time you meet a floor square that no fill has reached yet, that's a new room - count it, then fill it so it can't be counted again.
+  question: Can one seen set be shared by every fill? Why does that stop a room being counted twice?
+  pseudocode: |
+    one seen set, shared by every fill
+    a helper spreads from a square, marking floor as seen (as in the Core challenge)
+    rooms starts at 0
+    for every row and column:
+        if the square is floor and not seen yet:
+            count a new room
+            spread from it
+    give back rooms
+  flaw: If a winding corridor counts as several rooms, the fill isn't reaching every square, or each fill is using its own fresh seen set.
+  analogous: |
+    ```python
+    def count_groups(friends, people):
+        met = set()
+        groups = 0
+        for person in people:
+            if person not in met:
+                groups += 1
+                waiting = [person]
+                while waiting:
+                    p = waiting.pop()
+                    if p not in met:
+                        met.add(p)
+                        waiting.extend(friends.get(p, []))
+        return groups
+    ```

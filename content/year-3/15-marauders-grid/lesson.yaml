@@ -1,0 +1,18 @@
+id: y3-l10
+year: 3
+order: 15
+number: 10
+title: "★ The Marauder's Grid"
+location: The third-floor corridor, on the Marauder's Map
+concepts: [grids, rows and columns, neighbours, staying in bounds, flood fill, recursion on a grid, a seen set]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: twins
+    line: (spreading the Map across a desk) Third floor. Sir Cadogan's portrait is here. Every sighting starts right behind him. And yet...
+  - who: ron
+    line: There's nothing behind him. It's just a wall. Look - the corridors go round it on every side.
+  - who: hermione
+    line: Unless there's a room the corridors never reach. If we could colour in every square you can walk to from the corridor, whatever's left over...
+  - who: ashwood
+    line: That's called a **flood fill** - pour paint on one square and let it spread to every neighbour it can reach. It's recursion again, this time across a grid.
+clue: One pocket of the third floor is reached by **no corridor at all** - a sealed room, right behind Sir Cadogan. **The Time-Turner is in there.**

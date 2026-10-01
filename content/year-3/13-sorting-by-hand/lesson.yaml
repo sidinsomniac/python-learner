@@ -1,0 +1,18 @@
+id: y3-l08
+year: 3
+order: 13
+number: 8
+title: "★ Sorting by Hand"
+location: The Hufflepuff basement
+concepts: [selection sort, insertion sort, sorting in place, counting swaps and moves, "O(n²) sorts", nearly sorted data]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: Under the diary's back cover is a fat bundle of loose pages - hundreds of them, numbered, and hopelessly out of order.
+  - who: ron
+    line: Easy. `sorted()`. Done. Next lesson.
+  - who: hermione
+    line: They're a hundred years old, Ron. Every time you pick one up, it crumbles a bit. We need to know how many times each method *moves* a page before we touch them.
+  - who: ashwood
+    line: "`sorted()` is a marvel - but today we sort by hand, so we know what such a marvel has to do. Two classic methods, and one question - which disturbs the pages least?"
+clue: Back in order, the loose pages draw a **maze** - the corridors of the same hour, over and over, that Tobias keeps falling through.

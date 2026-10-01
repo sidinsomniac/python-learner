@@ -1,0 +1,20 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: two-passes
+  type: predict
+  code: |
+    kids = [("Ron", 3), ("Cho", 4), ("Harry", 3), ("Cedric", 4)]
+    first = sorted(kids, key=lambda k: k[0])
+    print(sorted(first, key=lambda k: k[1]))
+  why: The last pass (by year) decides; stability keeps the names in A to Z order within each year.
+- id: rank-dict
+  type: predict
+  code: |
+    RANK = {"low": 0, "mid": 1, "high": 2}
+    print(sorted(["high", "low", "mid", "low"], key=RANK.get))
+  why: Each item is replaced by its rank for the comparison, but the items themselves come back.
+- id: no-minus-strings
+  type: choice
+  q: How can you sort by year (biggest first) and then by name Z to A?
+  options: ["key=lambda s: (-s.year, -s.name)", "Sort by name with reverse=True, then by year with reverse=True", "Sort by year first, then by name"]
+  answer: 1
+  why: Strings can't be negated, so use two stable passes - the least important rule first.

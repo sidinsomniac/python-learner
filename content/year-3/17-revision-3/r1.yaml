@@ -1,0 +1,27 @@
+tier: review
+type: divination
+title: The Stable Register
+task: Predict every line.
+snippet: |
+  sightings = [("Hall", 3), ("Attic", 1), ("Hall", 1), ("Attic", 3)]
+  by_time = sorted(sightings, key=lambda s: s[1])
+  print(by_time)
+  print(sorted(by_time, key=lambda s: s[0]))
+
+  grid = ["#.#", "...", "#.#"]
+  print(grid[1], grid[0][1], grid[-1][0])
+  print(sum(row.count(".") for row in grid))
+hints:
+  nudge: Two sorts - the second keeps the first one's order among ties. Then some grid indexing, and a count of floor squares.
+  question: After sorting by time, which Hall sighting comes first? Does the second sort change the order of the two Halls?
+  pseudocode: |
+    sort by the number, keeping ties in their original order
+    sort that by the place - places tie, so the number order survives within each
+    grid[1] is the middle row; grid[0][1] the top middle; grid[-1][0] the bottom left
+    count the dots in every row
+  flaw: The usual slip is to think the second sort shuffles the ties. Python's sort is stable.
+  analogous: |
+    ```text
+    [("b", 1), ("a", 2), ("b", 0)] sorted by letter (stable)
+    -> [("a", 2), ("b", 1), ("b", 0)]
+    ```

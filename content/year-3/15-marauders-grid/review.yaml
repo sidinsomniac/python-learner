@@ -1,0 +1,20 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: grid-index
+  type: predict
+  code: |
+    grid = ["#..", "..#", "#.."]
+    print(grid[1][2], grid[2][1], len(grid), len(grid[0]))
+    print(grid[-1])
+  why: Row first, then column. A negative row counts from the end - which is why bounds must be checked first.
+- id: seen-set
+  type: choice
+  q: In a flood fill, what is the "seen" set for?
+  options: ["To count the walls", "To stop squares being visited over and over, forever", "To make it faster to read the grid"]
+  answer: 1
+  why: Without it, neighbouring floor squares keep spreading back to each other until RecursionError.
+- id: diagonal
+  type: choice
+  q: '`count_rooms([".#", "#."])` - moving only up, down, left and right - gives?'
+  options: ["1", "2", "0"]
+  answer: 1
+  why: The two floor squares touch only at a corner, so they're separate rooms.
