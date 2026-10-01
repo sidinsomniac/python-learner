@@ -2,6 +2,18 @@
 
 A Harry Potter–themed Python learning game: Vite, React, TypeScript, zustand, with Python running in the browser through Pyodide. **The full handoff is in `docs/HANDOFF.md`. Read it first.** The design documents are `docs/GDD.md`, `docs/curriculum.md`, `docs/exercise-design.md` and `docs/story.md`.
 
+## Keep the handoff current (required)
+Whoever works on this project, in any tool or session, must update `docs/HANDOFF.md` in the **same commit** as any change that affects it, and add a line to its change log (§13). That covers:
+- **status (§11):** what's built, what's next;
+- **counts (§3):** lessons, exercises, tests;
+- **formats (§6, §9):** content, saves, or the save version;
+- **rules (§7, §8):** grader helpers, review rules, validator traps;
+- **commands and setup (§2–§4)**, including branch names.
+
+Update this file too when a standing rule changes.
+
+Before starting work, `git pull` the branch and read the change log (§13) to see what happened since you last looked.
+
 ## Rules that always apply
 - **The mentor never gives answers.** Feedback, hints and AI replies are guiding questions, pseudocode, flaw pointers or similar-but-different examples.
 - **Difficulty is medium.** The owner playtested it and called it "perfect". Beginner-friendly at the start, climbing steadily.

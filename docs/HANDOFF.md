@@ -2,6 +2,12 @@
 
 This is everything you need to carry on building the game somewhere else: on your own machine, in a new Claude session, or with another tool. Read it alongside the design documents listed in section 10.
 
+> **Keep this guide current.** Whoever works on the project, wherever they work, must update this file **in the same commit** as any change that affects it, and add a line to the change log in §13:
+> - what's built, what's next, and counts;
+> - formats, rules, commands, and branch names.
+>
+> That way anyone coming back, including the original Claude session, can `git pull` and read §13 to catch up. If work moves to a new branch, say so in §2 **and** push that note to the old branch too, so the trail isn't lost.
+
 ---
 
 ## 1. What this is
@@ -248,3 +254,11 @@ location.reload();
 - Clear, descriptive commit messages, describing what changed for the player.
 - Run all four checks from section 3 before pushing.
 - Keep reference solutions out of the browser bundle: they live in `*.solution.py`, which `content.ts` never imports.
+
+## 13. Change log
+
+Newest first. Add one line per session or meaningful change: the date, where the work was done, and what changed (point to the sections you updated).
+
+| Date | Where | What changed |
+|---|---|---|
+| 2026-10-01 | Claude Code web session `session_01QRDafNtZXxe5n2GotwYapD` | Handoff guide and CLAUDE.md created. State: Years 1–2 built; the save-safety fix (§11.1) planned but not built. |
