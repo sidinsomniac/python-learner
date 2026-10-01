@@ -131,3 +131,4 @@ Tests run in order and stop at the first failure.
 - [Curriculum: the Seven Years](docs/curriculum.md)
 - [Exercise Design Guide](docs/exercise-design.md)
 - [Story Bible](docs/story.md)
+- [Handoff Guide](docs/HANDOFF.md) - everything needed to continue development elsewhere
