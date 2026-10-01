@@ -1,0 +1,63 @@
+tier: outstanding
+type: practice
+title: When Does the Door Repeat?
+twist: combination - simulate, remember every board you've seen, and spot the first repeat
+task: |
+  Write `generations_until_repeat(board)`. Step the board forward one
+  generation at a time, and return how many steps it takes to reach a board
+  you've **already seen** (the starting board counts as seen).
+
+  ```python
+  blinker = [list("....."), list("..#.."), list("..#.."), list("..#.."), list(".....")]
+  generations_until_repeat(blinker)   # -> 2   (flat, then upright again)
+
+  block = [list("...."), list(".##."), list(".##."), list("....")]
+  generations_until_repeat(block)     # -> 1   (it never changes)
+  ```
+
+  Include your own `next_generation`. Lists can't go in a set, but a tuple
+  of strings can. Don't change the board you're given.
+starter: |
+  def generations_until_repeat(board):
+      return 1
+tests: |
+  def B(*rows):
+      return [list(row) for row in rows]
+
+  def test_examples():
+      fn = student_function("generations_until_repeat")
+      blinker = B(".....", "..#..", "..#..", "..#..", ".....")
+      check(call(fn, blinker) == 2, f"The blinker repeats after 2 steps. You returned {call(fn, B('.....', '..#..', '..#..', '..#..', '.....'))!r}.")
+      check(call(fn, B("....", ".##.", ".##.", "....")) == 1, "A block is back to a seen board after 1 step.")
+      check(call(fn, B("...", "...", "...")) == 1, "An empty board stays empty: 1 step.")
+
+  def test_glider():
+      fn = student_function("generations_until_repeat")
+      glider = B(".#....", "..#...", "###...", "......", "......", "......")
+      got = call(fn, glider)
+      check(got == 16, f"The glider walks into the corner and freezes into a block: the first repeat comes after 16 steps. You returned {got!r}.")
+      check(glider[0] == list(".#...."), "The board you were given must not change.")
+      bigger = B(".#......", "..#.....", "###.....", "........", "........", "........", "........", "........")
+      check(call(fn, bigger) == 24, "On an 8 by 8 board, the glider takes 24 steps.")
+hints:
+  nudge: Keep a set of every board seen so far, each turned into a tuple of strings. Step forward until the new board is already in the set.
+  question: Why can't a list of lists go into a set? What should be in the set before the first step?
+  pseudocode: |
+    a key for a board: a tuple of each row joined into a string
+    seen holds the starting board's key; steps = 0
+    repeat:
+        board = the next generation; count a step
+        if its key is in seen: give back steps
+        add its key to seen
+  flaw: If the blinker gives 1, you're comparing each board only with the one just before it. If the answer is 1 too big, the starting board wasn't in the set from the start.
+  analogous: |
+    ```python
+    def first_repeated_turn(turns):
+        been = set()
+        for count, turn in enumerate(turns, start=1):
+            key = tuple(turn)
+            if key in been:
+                return count
+            been.add(key)
+        return None
+    ```

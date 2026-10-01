@@ -1,0 +1,86 @@
+tier: core
+type: repair
+title: The Board That Cheats
+twist: debug - the copying trap from First Year, in a new disguise
+task: |
+  Neville's `next_generation(board)` should return the **next** generation
+  as a **new** board, leaving the old one unchanged. Its counting is fine,
+  but the blinker below should flip from upright to flat, and instead it
+  turns into a mess.
+
+  ```python
+  blinker = [list("....."), list("..#.."), list("..#.."), list("..#.."), list(".....")]
+  next_generation(blinker)
+  # -> the flat blinker:  .....
+  #                        .....
+  #                        .###.
+  #                        .....
+  #                        .....
+  ```
+
+  Find out why, and fix it. Watch out: there's more than one way to copy a
+  board badly.
+starter: |
+  EIGHT = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+  def live_neighbours(board, r, c):
+      alive = 0
+      for dr, dc in EIGHT:
+          nr, nc = r + dr, c + dc
+          if 0 <= nr < len(board) and 0 <= nc < len(board[0]) and board[nr][nc] == "#":
+              alive += 1
+      return alive
+
+  def next_generation(board):
+      new = board
+      for r, row in enumerate(board):
+          for c, square in enumerate(row):
+              alive = live_neighbours(board, r, c)
+              if alive == 3 or (square == "#" and alive == 2):
+                  new[r][c] = "#"
+              else:
+                  new[r][c] = "."
+      return new
+tests: |
+  def B(*rows):
+      return [list(row) for row in rows]
+
+  def show(board):
+      return "/".join("".join(row) for row in board)
+
+  def test_blinker():
+      fn = student_function("next_generation")
+      board = B(".....", "..#..", "..#..", "..#..", ".....")
+      got = call(fn, board)
+      check(show(got) == "...../...../.###./...../.....", f"The upright blinker became {show(got)}. Is every square reading the OLD board?")
+
+  def test_old_board_untouched():
+      fn = student_function("next_generation")
+      board = B(".....", "..#..", "..#..", "..#..", ".....")
+      call(fn, board)
+      check(show(board) == "...../..#../..#../..#../.....", f"The old board was changed to {show(board)}. Does `new` share anything with `board` - even just the rows?")
+
+  def test_still_life_and_flip():
+      fn = student_function("next_generation")
+      block = B("....", ".##.", ".##.", "....")
+      check(show(call(fn, block)) == "..../.##./.##./....", "A 2 by 2 block never changes.")
+      flat = B(".....", ".....", ".###.", ".....", ".....")
+      once = call(fn, flat)
+      twice = call(fn, once)
+      check(show(twice) == show(flat), "A blinker flipped twice should be back where it started.")
+hints:
+  nudge: Ask what `new = board` really does. Then ask whether `board[:]` would be any better for a board made of row lists.
+  question: When you change new[0][2], does board[0][2] change too? When square (2, 2) counts its neighbours, is it seeing their old values or new ones?
+  pseudocode: |
+    make new a genuinely separate board: a new list holding a copy of every row
+    (or build each new row from scratch)
+    for every square: count its live neighbours on the OLD board, and set it on the NEW board
+    give back new
+  flaw: '`new = board` is two names for one board. `board[:]` copies only the outer list - the rows themselves are still shared.'
+  analogous: |
+    ```python
+    seating = [["Harry", "Ron"], ["Hermione", "Neville"]]
+    plan = [list(table) for table in seating]
+    plan[0][0] = "Ginny"
+    print(seating[0][0])   # still Harry
+    ```

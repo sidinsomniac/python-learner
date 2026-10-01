@@ -1,0 +1,27 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: rle
+  type: predict
+  code: |
+    def squash(text):
+        out = []
+        for ch in text:
+            if out and out[-1][1] == ch:
+                out[-1][0] += 1
+            else:
+                out.append([1, ch])
+        return "".join(f"{n}{ch}" for n, ch in out)
+
+    print(squash("WWWRR"), squash("abba"))
+  why: Each run of the same character becomes count + character; "abba" has three runs.
+- id: centres
+  type: choice
+  q: Why spread outwards from the GAPS between letters as well as from the letters?
+  options: ["It's faster", "Even-length palindromes like 'abba' have no middle letter", "To avoid an IndexError"]
+  answer: 1
+  why: '"abba" is centred on the gap between the two b''s.'
+- id: join
+  type: choice
+  q: Why build a long string from a list of pieces and join it once, rather than with `+=` in a loop?
+  options: ["`+=` doesn't work on strings", "Each `+=` makes a whole new string, copying everything so far", "join sorts the pieces"]
+  answer: 1
+  why: Strings never change, so every += copies the whole string built so far.

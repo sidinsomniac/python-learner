@@ -354,6 +354,14 @@ test("a lesson's story pops up even when the lesson reopens on an exercise", asy
   await expect(page.getByTestId("cutscene")).toContainText("Every witch and wizard begins");
 });
 
+test("Year 3 opens after the Second Year Trial", async ({ page }) => {
+  await seed(page, { exercises: completed([...YEAR1, "y1-trial", ...YEAR2, "y2-trial"]) });
+  await page.goto("/");
+  await expect(page.getByTestId("lesson-y3-l01a")).toBeEnabled();
+  await expect(page.getByTestId("lesson-y3-l01b")).toBeDisabled();
+  await expect(page.getByTestId("lesson-y3-trial")).toBeDisabled();
+});
+
 test("Year 3 lays files on the desk, and the Pensieve shows a spell calling itself", async ({ page }) => {
   await seed(page, { exercises: completed([...YEAR1, "y1-trial", ...YEAR2, "y2-trial", "y3-l01a", "y3-l01b"]) });
   await page.goto("/#/lesson/y3-l02");

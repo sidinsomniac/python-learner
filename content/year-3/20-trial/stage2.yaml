@@ -1,0 +1,49 @@
+tier: stage
+type: practice
+title: "Stage 2: Where Is He?"
+task: |
+  Write `find(maze, symbol)`. `maze` is a list of row strings (as
+  `load_maze` gives). Return the `(row, column)` of the first square
+  holding `symbol`, reading row by row from the top, left to right. If it
+  isn't anywhere, return `None`.
+
+  ```python
+  maze = ["#########", "#S..#...#", "#.#.#.#.#", "#.#...#E#", "#########"]
+  find(maze, "S")   # -> (1, 1)
+  find(maze, "E")   # -> (3, 7)
+  find(maze, "?")   # -> None
+  ```
+starter: |
+  def find(maze, symbol):
+      for row in maze:
+          if symbol in row:
+              return row.index(symbol)
+tests: |
+  MAZE = ["#########", "#S..#...#", "#.#.#.#.#", "#.#...#E#", "#########"]
+
+  def test_example():
+      fn = student_function("find")
+      check(call(fn, MAZE, "S") == (1, 1), f"find(maze, 'S') returned {call(fn, MAZE, 'S')!r}. Did you give back both the row and the column?")
+      check(call(fn, MAZE, "E") == (3, 7), f"find(maze, 'E') returned {call(fn, MAZE, 'E')!r}.")
+      check(call(fn, MAZE, "?") is None, "A symbol that isn't there gives None.")
+
+  def test_first_one():
+      fn = student_function("find")
+      check(call(fn, ["..#", "#.#"], "#") == (0, 2), "The FIRST wall, reading row by row, is at (0, 2).")
+      check(call(fn, ["E"], "E") == (0, 0), "A one-square maze: (0, 0).")
+hints:
+  nudge: Number the rows as you go through them. Inside each row, ask whether the symbol is there - and if so, where.
+  question: Which spell numbers the rows for you? What does row.find(symbol) give when it isn't there, and what does row.index do instead?
+  pseudocode: |
+    for each row number and row:
+        if the symbol is in the row: give back (row number, the symbol's position in the row)
+    give back None
+  flaw: If you get just a number, you returned the column only. If the row is wrong by one, check where your numbering starts.
+  analogous: |
+    ```python
+    def where_is(shelves, book):
+        for shelf_no, shelf in enumerate(shelves):
+            if book in shelf:
+                return shelf_no, shelf.index(book)
+        return None
+    ```

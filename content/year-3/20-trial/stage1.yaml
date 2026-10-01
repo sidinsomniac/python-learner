@@ -1,0 +1,94 @@
+tier: stage
+type: practice
+title: "Stage 1: Reading the Diary Pages"
+twist: edge case - five ways a page can be corrupt, each refused with a clear message
+files:
+  maze.txt: |
+    #########
+    #S..#...#
+    #.#.#.#.#
+    #.#...#E#
+    #########
+task: |
+  Write `load_maze(path)`. It reads the file, removes the spaces and
+  newline from the **end** of each line, ignores blank lines, and returns
+  the rows as a list of strings.
+
+  ```python
+  load_maze("maze.txt")
+  # -> ['#########', '#S..#...#', '#.#.#.#.#', '#.#...#E#', '#########']
+  ```
+
+  If the map is corrupt, raise `ValueError` with **exactly** the first of
+  these messages that applies, checked in this order:
+
+  1. `the map is empty`: no rows at all
+  2. `the rows are not all the same length`
+  3. `unknown square 'x' at row R, column C`: the first square, reading
+     row by row, that isn't `#`, `.`, `S` or `E` (rows and columns
+     counted from 0, after blank lines are removed)
+  4. `the map needs exactly one S`
+  5. `the map needs exactly one E`
+
+  A missing file isn't your problem yet: let the `FileNotFoundError`
+  through.
+starter: |
+  def load_maze(path):
+      with open(path) as page:
+          return page.read().split("\n")
+tests: |
+  ROWS = ["#########", "#S..#...#", "#.#.#.#.#", "#.#...#E#", "#########"]
+
+  def test_good_map():
+      got = call(student_function("load_maze"), "maze.txt")
+      check(got == ROWS, f"load_maze('maze.txt') returned {got!r}. Is there an empty row at the end?")
+
+  def test_untidy_map():
+      write_files({"untidy.txt": "S.E   \n\n...\n\n\n"})
+      got = call(student_function("load_maze"), "untidy.txt")
+      check(got == ["S.E", "..."], f"Trailing spaces and blank lines should go. You returned {got!r}.")
+
+  def test_corrupt_maps():
+      fn = student_function("load_maze")
+      cases = [
+          ("", "the map is empty"),
+          ("\n  \n", "the map is empty"),
+          ("S.E\n..\n", "the rows are not all the same length"),
+          ("S.E\n.x.\n", "unknown square 'x' at row 1, column 1"),
+          ("\nS?E\n", "unknown square '?' at row 0, column 1"),
+          ("..E\n...\n", "the map needs exactly one S"),
+          ("SSE\n...\n", "the map needs exactly one S"),
+          ("S..\n...\n", "the map needs exactly one E"),
+          ("SEE\n...\n", "the map needs exactly one E"),
+      ]
+      for text, message in cases:
+          write_files({"page.txt": text})
+          got = raised(fn, "page.txt")
+          check(got == ("ValueError", message), f"For a page holding {text!r}, load_maze should raise ValueError({message!r}). It gave {got!r}.")
+
+  def test_missing_file():
+      got = raised(student_function("load_maze"), "no-such-page.txt")
+      check(got is not None and got[0] == "FileNotFoundError", f"A missing file should raise FileNotFoundError. It gave {got!r}.")
+hints:
+  nudge: Read the rows, tidy them, then run five guard clauses in the order given - each one raising its own message.
+  question: Does `.rstrip()` or `.strip()` keep the spaces at the START of a row? Where do the row and column numbers for an unknown square come from?
+  pseudocode: |
+    read the file's lines; strip the end of each; keep only the non-blank ones
+    if there are no rows: raise the first message
+    if any row's length differs from the first row's: raise the second
+    for each row number and row, for each column number and square:
+        if the square isn't one of the four allowed: raise the third, with the square, row and column
+    count the S squares in all rows; if it isn't exactly 1: raise the fourth
+    the same for E, with the fifth
+    give back the rows
+  flaw: If a blank first line shifts your row numbers, you numbered the rows before removing blank lines.
+  analogous: |
+    ```python
+    def load_grid(path):
+        with open(path) as sheet:
+            lines = [line.rstrip() for line in sheet]
+        lines = [line for line in lines if line]
+        if any(len(line) != len(lines[0]) for line in lines):
+            raise ValueError("ragged")
+        return lines
+    ```

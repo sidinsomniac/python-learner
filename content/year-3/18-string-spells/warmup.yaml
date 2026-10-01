@@ -1,0 +1,58 @@
+tier: warmup
+type: practice
+title: Squash the Echo
+task: |
+  Write `rle_encode(text)`. Each run of the same character becomes its
+  count followed by the character.
+
+  ```python
+  rle_encode("WWWREEN")   # -> '3W1R2E1N'
+  rle_encode("a")         # -> '1a'
+  rle_encode("")          # -> ''
+  ```
+starter: |
+  def rle_encode(text):
+      pieces = []
+      count = 1
+      for i in range(1, len(text)):
+          if text[i] == text[i - 1]:
+              count += 1
+          else:
+              pieces.append(f"{count}{text[i - 1]}")
+              count = 1
+      return "".join(pieces)
+tests: |
+  def test_examples():
+      fn = student_function("rle_encode")
+      check(call(fn, "WWWREEN") == "3W1R2E1N", f"rle_encode('WWWREEN') returned {call(fn, 'WWWREEN')!r}. Is the last run there?")
+      check(call(fn, "a") == "1a", f"rle_encode('a') returned {call(fn, 'a')!r}.")
+      check(call(fn, "") == "", f"rle_encode('') returned {call(fn, '')!r}.")
+
+  def test_long_runs():
+      fn = student_function("rle_encode")
+      check(call(fn, "W" * 12 + "R") == "12W1R", "Twelve W's encode as 12W.")
+      check(call(fn, "  ..!") == "2 2.1!", "Spaces and punctuation are characters too.")
+      check(call(fn, "abab") == "1a1b1a1b", "Runs only join up when the SAME character repeats next to itself.")
+hints:
+  nudge: The starter forgets something at the very end, and stumbles on the very shortest texts.
+  question: When the loop finishes, has the last run been added? What should happen for an empty text?
+  pseudocode: |
+    if the text is empty: give back ""
+    pieces = []; the current run is the first character, with a count of 1
+    for each later character:
+        same as the current run? count it
+        otherwise: add count + character to pieces, and start a new run
+    add the final run
+    give back the pieces joined
+  flaw: If 'WWWREEN' ends with '2E' and no '1N', the final run was never added after the loop.
+  analogous: |
+    ```python
+    def runs(text):
+        lengths = []
+        for ch in text:
+            if lengths and lengths[-1][0] == ch:
+                lengths[-1][1] += 1
+            else:
+                lengths.append([ch, 1])
+        return lengths
+    ```

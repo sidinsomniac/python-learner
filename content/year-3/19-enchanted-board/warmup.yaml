@@ -1,0 +1,63 @@
+tier: warmup
+type: practice
+title: Rise or Sink?
+task: |
+  The board is a list of rows, each a list of `"#"` (alive) and `"."`
+  (dead). Write `next_state(board, r, c)`: what square `(r, c)` will be in
+  the **next** generation, `"#"` or `"."`.
+
+  - Count its live neighbours, among the **eight** around it. Off the board
+    counts as dead.
+  - Alive with 2 or 3 live neighbours: stays `"#"`.
+  - Dead with exactly 3: becomes `"#"`.
+  - Otherwise: `"."`.
+
+  ```python
+  board = [list(".#."), list(".#."), list(".#.")]
+  next_state(board, 1, 0)   # -> '#'   (3 live neighbours)
+  next_state(board, 0, 1)   # -> '.'   (only 1)
+  next_state(board, 1, 1)   # -> '#'   (2, and alive)
+  ```
+starter: |
+  def next_state(board, r, c):
+      return board[r][c]
+tests: |
+  def B(*rows):
+      return [list(row) for row in rows]
+
+  def test_line():
+      fn = student_function("next_state")
+      board = B(".#.", ".#.", ".#.")
+      check(call(fn, board, 1, 0) == "#", f"(1, 0) is dead with 3 live neighbours. You returned {call(fn, board, 1, 0)!r}.")
+      check(call(fn, board, 0, 1) == ".", f"(0, 1) is alive with only 1 live neighbour. You returned {call(fn, board, 0, 1)!r}.")
+      check(call(fn, board, 1, 1) == "#", "(1, 1) is alive with 2 live neighbours.")
+
+  def test_diagonals_and_edges():
+      fn = student_function("next_state")
+      board = B("#.#", "...", "#..")
+      check(call(fn, board, 1, 1) == "#", "(1, 1) has 3 live neighbours, all on the diagonals. Are you counting all eight?")
+      check(call(fn, board, 0, 0) == ".", "A corner square has only three neighbours on the board, and here none is alive.")
+      crowded = B("###", "###", "###")
+      check(call(fn, crowded, 1, 1) == ".", "With 8 live neighbours, the middle square is overcrowded.")
+      check(call(fn, crowded, 0, 0) == "#", "The corner has 3 live neighbours, so it stays alive.")
+hints:
+  nudge: Count the live squares among the eight around (r, c), skipping any off the board. Then apply the two rules.
+  question: Which of the eight directions did you forget if diagonals don't count? What should happen at row -1?
+  pseudocode: |
+    count = 0
+    for each of the eight directions:
+        if the neighbour is on the board and alive: count it
+    if the square is alive and count is 2 or 3: give back "#"
+    if the square is dead and count is exactly 3: give back "#"
+    give back "."
+  flaw: If a corner square sees neighbours on the opposite edge, a negative index wrapped round. Check the bounds first.
+  analogous: |
+    ```python
+    def wall_count(grid, r, c):
+        walls = 0
+        for dr in (-1, 0, 1):
+            for dc in (-1, 0, 1):
+                if (dr, dc) != (0, 0) and 0 <= r + dr < len(grid) and 0 <= c + dc < len(grid[0]):
+                    walls += grid[r + dr][c + dc] == "#"
+        return walls
+    ```

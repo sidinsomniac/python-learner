@@ -1,0 +1,59 @@
+tier: core
+type: practice
+title: Unsquash the Echo
+twist: edge case - counts with more than one digit
+task: |
+  Write `rle_decode(code)`, the reverse of `rle_encode`. The code is a count
+  then a character, again and again. A count can have **several digits**,
+  and the character can be anything that isn't a digit (spaces included).
+
+  ```python
+  rle_decode("3W1R2E1N")   # -> 'WWWREEN'
+  rle_decode("12W1R")      # -> 'WWWWWWWWWWWWR'
+  rle_decode("")           # -> ''
+  ```
+starter: |
+  def rle_decode(code):
+      text = ""
+      for i in range(0, len(code), 2):
+          text += code[i + 1] * int(code[i])
+      return text
+tests: |
+  def test_examples():
+      fn = student_function("rle_decode")
+      check(call(fn, "3W1R2E1N") == "WWWREEN", f"rle_decode('3W1R2E1N') returned {call(fn, '3W1R2E1N')!r}.")
+      check(call(fn, "") == "", "An empty code decodes to an empty text.")
+
+  def test_long_counts():
+      fn = student_function("rle_decode")
+      got = call(fn, "12W1R")
+      check(got == "W" * 12 + "R", f"rle_decode('12W1R') returned {got!r}. How many digits can a count have?")
+      check(call(fn, "100a") == "a" * 100, "rle_decode('100a') is a hundred a's.")
+      check(call(fn, "2 3.1!") == "  ...!", "Spaces and punctuation can be the repeated character.")
+
+  def test_the_echo():
+      fn = student_function("rle_decode")
+      echo = "1W1R1E1N1 1W1A1S1 1H1E1R1E"
+      check(call(fn, echo) == "WREN WAS HERE", f"The echo decodes to {call(fn, echo)!r}.")
+hints:
+  nudge: Read the code one character at a time. Digits build up a count; any other character ends the count and gets repeated.
+  question: When you've read "1" and then "2", how do you turn them into the number 12? When do you reset the count?
+  pseudocode: |
+    pieces = []; digits so far = ""
+    for each character in the code:
+        if it's a digit: add it to the digits so far
+        otherwise: repeat the character (digits so far) times, keep it, and reset the digits
+    give back the pieces joined
+  flaw: If '12W' gives a ValueError or the wrong letters, you assumed every count is one digit long.
+  analogous: |
+    ```python
+    def numbers_in(text):
+        found, digits = [], ""
+        for c in text + " ":
+            if c.isdigit():
+                digits = digits + c
+            elif digits:
+                found.append(int(digits))
+                digits = ""
+        return found
+    ```

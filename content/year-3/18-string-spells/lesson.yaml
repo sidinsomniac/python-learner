@@ -1,0 +1,18 @@
+id: y3-l12
+year: 3
+order: 18
+number: 12
+title: "★ String Spells"
+location: The third-floor corridor
+concepts: [two pointers on strings, building strings with join, run-length encoding, longest common prefix, palindromic substrings]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: 3:03 pm. The fading boy walks past Sir Cadogan's portrait, and this time his words don't fade with him. They echo, and go on echoing, folding over each other until the corridor hums.
+  - who: tobias
+    line: One more turn... one more turn... one more turn...
+  - who: luna
+    line: (holding up an Echo-Catcher made from a teapot) I caught some! It squashes long echoes to save space. "12W1R3E1N"... that sort of thing.
+  - who: ashwood
+    line: It's run-length encoding - one of the oldest ways to squash text. Let's learn to squash and unsquash, and to find the part of an echo that reads the same in both directions.
+clue: "Unsquashed, the echo hides a message: **\"WREN WAS HERE\"** - and, reading the same forwards and backwards in the middle of it, the sealed room's password."

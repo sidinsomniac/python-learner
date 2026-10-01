@@ -1,0 +1,62 @@
+tier: stage
+type: practice
+title: "Stage 3: Every Hour He Can Reach"
+twist: edge case - mazes with no walls around the edge, and sealed-off hours
+task: |
+  Write `reachable(maze)`: the **set** of every `(row, column)` that Tobias
+  can walk to from `S`, moving up, down, left and right through any square
+  that isn't a wall. The `S` square counts, and so does `E` if he can reach
+  it. The maze might not have walls around its edge, so never step off the
+  map.
+
+  ```python
+  maze = ["#########", "#S..#...#", "#.#.#.#.#", "#.#...#E#", "#########"]
+  len(reachable(maze))          # -> 15
+  (3, 7) in reachable(maze)     # -> True
+  ```
+
+  Paste in your `find` from Stage 2.
+starter: |
+  def reachable(maze):
+      return set()
+tests: |
+  MAZE = ["#########", "#S..#...#", "#.#.#.#.#", "#.#...#E#", "#########"]
+  SEALED = ["#########", "#S..#...#", "#.#.#.#.#", "#.#.#.#E#", "#########"]
+
+  def test_example():
+      got = call(student_function("reachable"), MAZE)
+      check(isinstance(got, set), f"reachable should give back a set. It gave {type(got).__name__}.")
+      check(len(got) == 15, f"From S, Tobias can reach 15 squares. You found {len(got)}.")
+      check((3, 7) in got and (1, 1) in got, "Both S and E should be among the reachable squares.")
+
+  def test_sealed():
+      got = call(student_function("reachable"), SEALED)
+      check(len(got) == 7 and (3, 7) not in got, f"In the sealed maze, only 7 squares are reachable and E isn't one of them. You found {len(got)}.")
+
+  def test_no_border():
+      fn = student_function("reachable")
+      check(len(call(fn, ["S...", "....", "...E"])) == 12, "With no walls at all, all 12 squares are reachable - without stepping off the map.")
+      check(len(call(fn, ["S.#E", "..#.", "...."])) == 10, "Here Tobias walks round the bottom of the wall: 10 squares.")
+      check(call(fn, ["S#E"]) == {(0, 0)}, "Walled in on one side and the edge of the map on the other: only S itself.")
+hints:
+  nudge: It's the Marauder's Grid flood fill, starting from wherever S is, and treating S, E and . all as walkable.
+  question: Where do you start the fill? Which squares stop the spreading - only walls, or also the edge of the map and squares already seen?
+  pseudocode: |
+    start = where S is (use find)
+    seen = an empty set
+    spread from (r, c):
+        stop if off the map, a wall, or already seen
+        add it to seen, then spread to all four neighbours
+    spread from start; give back seen
+  flaw: If E is never included, your fill only walks on "." squares. An IndexError or a strange count with no border means you indexed before checking the bounds.
+  analogous: |
+    ```python
+    def island(grid, r, c, land=None):
+        if land is None:
+            land = set()
+        if 0 <= r < len(grid) and 0 <= c < len(grid[0]) and grid[r][c] == "~" and (r, c) not in land:
+            land.add((r, c))
+            for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                island(grid, r + dr, c + dc, land)
+        return land
+    ```

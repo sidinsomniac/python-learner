@@ -1,0 +1,65 @@
+tier: outstanding
+type: practice
+title: The Password in the Middle
+twist: combination - two pointers spreading outwards from every centre
+task: |
+  Write `longest_palindrome(text)`: the longest part of `text` (letters next
+  to each other) that reads the same forwards and backwards. Capitals
+  count as different letters. If several are equally long, return the one
+  that starts **first**. For an empty text, return `""`.
+
+  ```python
+  longest_palindrome("banana")          # -> 'anana'
+  longest_palindrome("abba wren")       # -> 'abba'
+  longest_palindrome("abc")             # -> 'a'
+  ```
+
+  The examiners use a 300-letter echo, so think about centres rather than
+  trying every possible piece.
+starter: |
+  def longest_palindrome(text):
+      if text == text[::-1]:
+          return text
+      return text[0]
+tests: |
+  def test_examples():
+      fn = student_function("longest_palindrome")
+      for text, want in [("banana", "anana"), ("abba wren", "abba"), ("abc", "a"), ("", ""), ("x", "x"), ("noon", "noon")]:
+          got = call(fn, text)
+          check(got == want, f"longest_palindrome({text!r}) returned {got!r}, not {want!r}.")
+
+  def test_first_of_equals():
+      fn = student_function("longest_palindrome")
+      check(call(fn, "abaxcdc") == "aba", f"'aba' and 'cdc' are equally long - the first one wins. You returned {call(fn, 'abaxcdc')!r}.")
+      check(call(fn, "Aa") == "A", "Capitals are different letters, so 'Aa' isn't a palindrome.")
+
+  def test_echo():
+      fn = student_function("longest_palindrome")
+      echo = ("oneturn" * 20) + "TOBIASSAIBOT" + ("nruteno" * 20)
+      got = call(fn, echo)
+      check(got == echo, f"This whole 292-letter echo is a palindrome - you returned {len(got)} letters of it.")
+      echo = "abc" * 45 + "WRENNERW" + "def" * 45
+      check(call(fn, echo) == "WRENNERW", f"In a long echo you returned {call(fn, echo)!r}.")
+hints:
+  nudge: Stand at each possible centre - every letter, and every gap between two letters - and spread outwards while the letters on both sides match.
+  question: Why do "aba" and "abba" need different kinds of centre? How do you keep the first of two equally long answers?
+  pseudocode: |
+    best = ""
+    for each position i:
+        for a centre on the letter i, and on the gap after letter i:
+            left and right start at the centre
+            while both are inside the text and their letters match: move them outwards
+            the palindrome is the part strictly between left and right
+            if it's LONGER than best (not just as long): it becomes best
+    give back best
+  flaw: If 'cdc' wins over 'aba', you replaced best when a new palindrome was merely as long. Use strictly longer.
+  analogous: |
+    ```python
+    def spread(word, lo, hi):
+        while lo >= 0 and hi < len(word) and word[lo] == word[hi]:
+            lo -= 1
+            hi += 1
+        return word[lo + 1:hi]
+
+    print(spread("racecar", 3, 3), spread("abba", 1, 2))
+    ```

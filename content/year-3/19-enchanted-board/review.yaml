@@ -1,0 +1,23 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: rules
+  type: choice
+  q: A dead square has exactly 3 live neighbours. In the next generation it is...
+  options: ["still dead", "alive", "alive only if it was alive before"]
+  answer: 1
+  why: Exactly three live neighbours bring a dead square to life.
+- id: copies
+  type: predict
+  code: |
+    board = [["."], ["."]]
+    same = board
+    outer = board[:]
+    real = [row[:] for row in board]
+    board[0][0] = "#"
+    print(same[0][0], outer[0][0], real[0][0])
+  why: Only the row-by-row copy is independent. The slice copies the outer list, but still shares the rows.
+- id: hashable
+  type: choice
+  q: Why turn a board (a list of lists) into a tuple of strings before putting it in a set?
+  options: ["Tuples are faster to print", "Lists can change, so they can't be set members; tuples of strings can", "Sets only hold strings"]
+  answer: 1
+  why: Set members must be unchangeable (hashable). A list can change, so it isn't allowed.

@@ -59,6 +59,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 | **Potion Repair** | Fix code that almost works |
 | **Divination** | Predict the output |
 | **Spell Scramble** | Put shuffled lines in order (Years 1–2) |
+| **Write the checks** (Year 3 onward) | Write `check_x(candidate)`; it must pass a correct spell and catch deliberately broken ones |
 | **Transfiguration** | Refactor working code to be cleaner, keeping behaviour. Checked by tests plus AST rules |
 | **Pensieve trace** | "What is `x` after line 4 on the third pass?" |
 | **Explain it back** (optional, needs AI) | Explain your solution in plain words |
@@ -117,7 +118,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 A level-up pop-up shows the reward; the Trophy Room shows the whole track.
 
 ### Living castle ✅ built
-- **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2.
+- **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2, Time-Turner dusk (silver and indigo) for Year 3.
 - **Story pop-ups.** Prologues, lesson scenes and outros open as a modal the first time - click through line by line, or Skip. Afterwards they stay on the page as a "📜 Story" card that can be read again.
 - **Living backgrounds** (`src/ui/Ambience.tsx`). Ten weather presets, picked at random for each screen and never the same twice in a row: Enchanted Ceiling (floating candles), First Snow, Storm over the Lake, Goblet Embers, Dementor Mist, Forbidden Forest fireflies, Autumn Grounds, Aurora, Astronomy Tower shooting stars and Owl Post. They draw in the current year's colours, pause when the tab is hidden, and switch off in Settings or with the system's reduced-motion setting.
 - **Celebrations.** Sparkles when you pass, a golden flare for an O, fireworks on level-up, a dawn glow when a year's mystery is solved.
@@ -256,6 +257,7 @@ scripts/validate-content.ts
 3. ✅ **Rebuild Year 1 to the new spec**: 24 lessons and 73 exercises, including the Trial. Saves from the first slice are carried over automatically. **Next: you playtest it.**
 4. ✅ **Economy and immersion**: story pop-ups, year themes, living backgrounds, Diagon Alley, Peeves' Bargain, level rewards, the Time-Turner and the Dueling Club. *Still to come:* the mastery map, the House Cup, Chocolate Frog cards.
    ✅ **Year 2: The Chamber of Collections**: 22 lesson units and 67 exercises. From Lesson 7, tests call the student's functions.
+   ✅ **Year 3: The Prisoner of Recursion**: 20 lesson units and 61 exercises. Adds files on the desk, the Pensieve's call stack, and four more Snape rules.
 5. **Years 2–7, one year at a time.** Each year's script is written first, then its content, then a playtest.
 6. **Leaving Hogwarts** (Years 6–7): guided local setup, verified by pasting terminal output.
 7. **Auror Academy**: daily challenges and interview sets after the game.

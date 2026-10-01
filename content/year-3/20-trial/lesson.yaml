@@ -1,0 +1,46 @@
+id: y3-trial
+year: 3
+order: 20
+number: Trial
+kind: trial
+title: The Time-Turner Escape
+location: The sealed room, at 3:03
+concepts: [everything from Third Year]
+exercises: [stage1, stage2, stage3, stage4]
+files:
+  maze.txt: |
+    #########
+    #S..#...#
+    #.#.#.#.#
+    #.#...#E#
+    #########
+scene:
+  - who: narrator
+    line: The last day of term. Far across the castle, something is raising errors - hundreds of them, loud and gleeful - and every Dementor in the grounds is drifting towards the noise.
+  - who: draco
+    line: (on the Marauder's Map, a dot labelled Draco Malfoy is running in circles around the Astronomy Tower) Go! I can't keep this up all afternoon!
+  - who: lupin
+    line: (raising his wand at the sealed door) Expecto Patronum. (A silver shape stands guard.) It will hold the door. It won't hold forever.
+  - who: narrator
+    line: The enchanted board shifts, and at 3:03 a path opens. Inside, the prototype Time-Turner hangs in mid-air, spinning, and around it the room folds into a maze of hours. Somewhere inside, the fading boy is walking.
+  - who: ashwood
+    line: Tobias's diary pages describe the maze, but some of them are damaged. Four spells, {name}. Read the map, refusing any page that's corrupt. Find the start and the exit. Find every hour he can reach. And then tell us, plainly, whether he can get out.
+outro:
+  - who: narrator
+    line: Your report glows on the parchment. Hermione reads it aloud, and as she says the word "Free", the spinning Time-Turner slows... and stops.
+  - who: tobias
+    line: (solid, blinking, and very confused) ...I got it right? I got it right. What - what year is it?
+  - who: narrator
+    line: A hundred years late, Tobias Wren sits down very suddenly on the floor. Lupin crouches beside him and hands him a large piece of chocolate.
+  - who: lupin
+    line: Twenty twenty-six. You've had a long day. Eat that. All of it.
+  - who: narrator
+    line: That evening, with no more errors to feed on, the Dementors leave the grounds. The Ministry announces "a successful containment".
+  - who: trelawney
+    line: (sweeping past) Of course, I foresaw all of this.
+  - who: dumbledore
+    line: Every spell that calls itself must know when to stop, {name}. So, I find, must most wizards. You gave a boy his base case. Well done.
+  - who: narrator
+    line: Tobias stays at Hogwarts, as keeper of the Time-Turner room, where lessons come round again "exactly as often as they need to, and not one turn more".
+  - who: ashwood
+    line: Case closed. Third Year complete - errors, files, recursion and your first real algorithms. Next year, {name}, three schools come to Hogwarts... and every one of them brings its own **objects**.

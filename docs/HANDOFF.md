@@ -47,7 +47,7 @@ This is everything you need to carry on building the game somewhere else: on you
 |---|---|
 | Repository | https://github.com/sidinsomniac/python-learner |
 | Working branch | `claude/python-learning-game-design-ofpdni`. All work so far is here, and no pull request has been opened. |
-| Main commits | `e5339d5` First Year slice → `af6c995` Year 1 rebuilt → `b93b465` economy and living castle → `efb9c39` Year 2 |
+| Main commits | `e5339d5` First Year slice → `af6c995` Year 1 rebuilt → `b93b465` economy and living castle → `efb9c39` Year 2 → `fab1383` Year 3 script → `cd7b3c1` Year 3 engine → Year 3 content in batches A to D |
 
 To get it on a new machine:
 ```bash
@@ -66,8 +66,8 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
 | `npm test` | Unit tests (Vitest). **79** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
-| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **63 lessons and 191 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **19** pass at the moment. |
+| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **20** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -246,7 +246,7 @@ location.reload();
 | Document | Contents |
 |---|---|
 | `docs/GDD.md` | Vision, game systems, economy, levels, the living castle, mentor rules, architecture, roadmap |
-| `docs/curriculum.md` | All seven Years, lesson by lesson. Years 1 and 2 are marked ✅ built. Year 3 has its exact lesson table (ids and all three exercises per lesson), marked 📝 scripted. |
+| `docs/curriculum.md` | All seven Years, lesson by lesson. Years 1, 2 and 3 are marked ✅ built. |
 | `docs/exercise-design.md` | Lesson anatomy, tiers, the catalogue of twists, grades, ★ lessons, review cards, function-style tests |
 | `docs/story.md` | The story bible. Year 1 (The Jinxed Ledger), Year 2 (The Hoarder's Cabinet) and Year 3 (The Prisoner of the Loop) are scripted scene by scene; Years 4–7 are outlined. |
 | `README.md` | The player's overview and the developer's quick reference |
@@ -256,27 +256,18 @@ location.reload();
 **Built:**
 - Year 1, The Philosopher's Syntax: 24 units and 73 exercises.
 - Year 2, The Chamber of Collections: 22 units and 67 exercises.
-- Year 3, The Prisoner of Recursion (in progress): 17 of its 20 units (51 exercises) are built. That's `year.yaml` (the Time-Turner dusk theme and the prologue), batch A (y3-l01a to y3-r1), batch B (y3-l04 to y3-r2) and batch C (y3-l08, y3-l09, y3-l10, y3-l11, y3-r3).
+- Year 3, The Prisoner of Recursion: 20 units and 61 exercises, with the Time-Turner dusk theme (silver and indigo). It has its own engine support: the desk of files, the Pensieve's call stack, `raised()` and `recursive()`, and 4 new Snape rules.
 - Systems: story pop-ups, year colour themes, 10 random weather presets, Diagon Alley (cosmetics plus Felix Felicis and Time-Turner Sand), Peeves' Bargain (skipping costs Galleons and XP, and rises with each skip; Trials can't be skipped), level rewards up to level 20, the Time-Turner, the Dueling Club, the Pensieve, the Case File, badges.
 
 **Next, in order:**
-1. **Save safety** (planned, not built yet):
+1. **Save safety** (planned, not built yet; the owner put it off while Year 3 was built). This is still the most important fix:
    - Make `migrateSave` work out the version from the save's contents: `exercises` present means version 2 or later; `bestLevel` present means version 3.
    - Let `importSave` accept the `{state, version}` form, with a "Paste a save" box in Settings, and rebuild clues and scenes seen after an import.
    - Keep a rolling automatic backup in `parseltongue-save-backup` (last 3 copies), written before any upgrade runs.
-2. **Year 3, The Prisoner of Recursion**: errors, files, recursion, first algorithms. **Under construction.** The script is in `docs/story.md` (The Prisoner of the Loop) and the lesson table in `docs/curriculum.md`. The full plan has three phases:
-   - **Phase 1, done:** the script and the lesson table. The owner approved them.
-   - **Phase 2, done (engine support):**
-     - the desk of files, with `write_files` and `read_file` (§7);
-     - the Pensieve's call stack (§7);
-     - friendly `RecursionError` and `FileNotFoundError` questions;
-     - four new Snape rules, written but not switched on (§7);
-     - `YEAR_BADGES[3]`, the `year-3` and `loop-detective` badges, and the new speakers in `cast.yaml` (lupin, trelawney, tobias, crookshanks). `YEAR_NAMES` already had Year 3.
-   - **Phase 3, in progress: content in four batches, each validated, committed and pushed.** Batch A is done, along with the e2e test for files on the desk and the Pensieve's call stack. The batches are A (l01a–r1), B (l04–r2) and C (l08–r3), all done. **D (l12, l13 and the Trial) is next.**
-   - The save-safety fix (11.1) has been put off at the owner's request.
-3. Then Years 4–7, one at a time.
+2. **Playtest Year 3.** The owner should play it and judge the difficulty against the Year 1 and 2 "perfect" bar. Then adjust the content in place: the validator keeps every change honest.
+3. **Then Year 4, The Goblet of Objects.** Script it in `docs/story.md` first (the outline is there), then build it. Split the content bundle first (see item 5 below).
 4. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
-5. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.64 MB, 519 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
+5. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
 
 ## 12. Commit conventions
 
@@ -290,6 +281,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-01 | Claude Code desktop session | **Year 3 complete.** Batch D: y3-l12 (string spells: RLE, longest palindrome), y3-l13 (Game of Life and the copying trap) and the Trial (a maze of hours: `load_maze`, `find`, `reachable`, `escape_report`). e2e test that Year 3 opens after the Year 2 Trial. Counts: 66 lessons, 201 exercises, 79 unit, 20 e2e. Docs: README, GDD, curriculum (§2, §3, §10, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 batch C: y3-l08 (sorting by hand), y3-l09 (sorting smart), y3-l10 (grids and flood fill), y3-l11 (testing: students write checkers that must catch broken spells) and y3-r3. Counts: 63 lessons, 191 exercises, 79 unit, 19 e2e (§3, §8, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 batch B: y3-l04 (`*args`/`**kwargs`), y3-l05a and y3-l05b (recursion), y3-l06 (Big-O), y3-l07a and y3-l07b (binary search) and y3-r2. `recursive()` test helper. The binary-search tests count looks with a `Shelf(list)` subclass. Counts: 58 lessons, 176 exercises, 79 unit, 19 e2e (§3, §7, §8, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 batch A: `year.yaml` plus y3-l01a, y3-l01b, y3-l02, y3-l03 and y3-r1 (15 exercises). `raised()` test helper. Snape's 4 Year 3 rules switched on. e2e test for Year 3 files and the call stack. Counts: 51 lessons, 155 exercises, 78 unit, 19 e2e (§3, §7, §8, §11). |

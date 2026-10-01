@@ -1,0 +1,92 @@
+tier: stage
+type: practice
+title: "Stage 4: The Escape Report"
+twist: combination - every stage together, and every kind of trouble reported politely
+files:
+  maze.txt: |
+    #########
+    #S..#...#
+    #.#.#.#.#
+    #.#...#E#
+    #########
+  sealed.txt: |
+    #########
+    #S..#...#
+    #.#.#.#.#
+    #.#.#.#E#
+    #########
+  torn.txt: |
+    #####
+    #S.E
+    #####
+task: |
+  Write `escape_report(path)`. It **returns** one line of plain words,
+  and never crashes:
+
+  | What happened | The report |
+  |---|---|
+  | no such file | `No map called <path> on the desk.` |
+  | `load_maze` raised `ValueError` | `The map is corrupt: <its message>.` |
+  | E can't be reached | `Trapped: Tobias can reach <N> hours, but not the exit.` |
+  | E can be reached | `Free! Tobias reaches the exit, passing through <N> hours.` |
+
+  `<N>` is the number of squares he can reach. Paste in your spells from
+  Stages 1-3.
+
+  ```python
+  escape_report("maze.txt")
+  # -> 'Free! Tobias reaches the exit, passing through 15 hours.'
+  escape_report("sealed.txt")
+  # -> 'Trapped: Tobias can reach 7 hours, but not the exit.'
+  escape_report("torn.txt")
+  # -> 'The map is corrupt: the rows are not all the same length.'
+  escape_report("lost.txt")
+  # -> 'No map called lost.txt on the desk.'
+  ```
+starter: |
+  def escape_report(path):
+      return "Free!"
+tests: |
+  def test_free():
+      got = call(student_function("escape_report"), "maze.txt")
+      check(got == "Free! Tobias reaches the exit, passing through 15 hours.", f"For maze.txt you reported {got!r}.")
+
+  def test_trapped():
+      got = call(student_function("escape_report"), "sealed.txt")
+      check(got == "Trapped: Tobias can reach 7 hours, but not the exit.", f"For sealed.txt you reported {got!r}.")
+
+  def test_corrupt_and_missing():
+      fn = student_function("escape_report")
+      got = call(fn, "torn.txt")
+      check(got == "The map is corrupt: the rows are not all the same length.", f"For torn.txt you reported {got!r}. Did you catch the ValueError and use its message?")
+      got = call(fn, "lost.txt")
+      check(got == "No map called lost.txt on the desk.", f"For a missing file you reported {got!r}.")
+
+  def test_other_pages():
+      fn = student_function("escape_report")
+      write_files({"a.txt": "S.#E\n..#.\n....\n", "b.txt": "S.E\n.x.\n", "c.txt": "\n\n"})
+      check(call(fn, "a.txt") == "Free! Tobias reaches the exit, passing through 10 hours.", f"For another maze you reported {call(fn, 'a.txt')!r}.")
+      check(call(fn, "b.txt") == "The map is corrupt: unknown square 'x' at row 1, column 1.", f"You reported {call(fn, 'b.txt')!r}.")
+      check(call(fn, "c.txt") == "The map is corrupt: the map is empty.", f"You reported {call(fn, 'c.txt')!r}.")
+hints:
+  nudge: Try to load the maze, catching the two kinds of trouble separately. If it loads, flood fill and look for E among the reachable squares.
+  question: Which two exception types can load_maze end with? How do you put an exception's message into your report?
+  pseudocode: |
+    try to load the maze from path
+    if the file isn't found: give back the "No map called" report
+    if it's a bad-value error, caught as err: give back the "corrupt" report with err's message
+    find every reachable square
+    if E's position is among the squares: give back the "Free!" report with the count
+    otherwise: give back the "Trapped" report with the count
+  flaw: If the corrupt report has no message, you didn't catch the error `as` a name. If the program crashes on lost.txt, FileNotFoundError isn't being caught.
+  analogous: |
+    ```python
+    def house_report(houses, name):
+        try:
+            house = houses[name]
+        except KeyError:
+            return f"{name} has not been sorted."
+        except TypeError as problem:
+            return f"Strange register: {problem}."
+        return f"{name} belongs to {house}."
+    ```

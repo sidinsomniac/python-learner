@@ -1,0 +1,18 @@
+id: y3-l13
+year: 3
+order: 19
+number: 13
+title: "★ The Enchanted Board"
+location: The sealed room's door, behind Sir Cadogan
+concepts: [simulation, Conway's Game of Life, eight neighbours, building a new board, the copying trap, detecting repeats]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: Behind Sir Cadogan's portrait - he protests loudly - is not a wall but a door. Its surface is a board of tiny stone tiles, some raised, some sunken, and every hour they shift, as if breathing.
+  - who: hermione
+    line: It's a rule-board! Each tile looks at its eight neighbours and decides whether to rise or sink. Live with two or three, rise from exactly three...
+  - who: neville
+    line: (going pale) Like the plant-growth rules in Herbology. Too crowded, they die. Too lonely, they die.
+  - who: ashwood
+    line: It's called the Game of Life. Simulate it correctly and we'll know when the door will open. But beware - the oldest trap from First Year is waiting for anyone who changes the board while they're still reading it.
+clue: Simulated correctly, the board settles into a pattern that opens a path through the door at **exactly 3:03**.
