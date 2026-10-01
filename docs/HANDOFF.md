@@ -47,7 +47,7 @@ This is everything you need to carry on building the game somewhere else: on you
 |---|---|
 | Repository | https://github.com/sidinsomniac/python-learner |
 | Working branch | `claude/python-learning-game-design-ofpdni`. All work so far is here, and no pull request has been opened. |
-| Main commits | `e5339d5` First Year slice → `af6c995` Year 1 rebuilt → `b93b465` economy and living castle → `efb9c39` Year 2 → `fab1383` Year 3 script → `cd7b3c1` Year 3 engine → Year 3 content in batches A to D |
+| Main commits | `e5339d5` First Year slice → `af6c995` Year 1 rebuilt → `b93b465` economy and living castle → `efb9c39` Year 2 → `fab1383` Year 3 script → `fd2b732` Year 3 engine → `36a1146`, `5ccdabf`, `5b9a602`, `384408e` Year 3 content (batches A–D) |
 
 To get it on a new machine:
 ```bash
