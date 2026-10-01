@@ -47,6 +47,8 @@ export interface Exercise {
   lines?: string[];
   /** Divination: the code whose output is predicted. */
   snippet?: string;
+  /** Files on the desk (the working folder) when the spell runs: name -> text. */
+  files: Record<string, string>;
 }
 
 export interface Lesson {
@@ -65,6 +67,8 @@ export interface Lesson {
   outro: SceneLine[];
   clue?: string;
   lecture: string;
+  /** Files on the desk for the lecture's "Try it" examples and the sandbox. */
+  files: Record<string, string>;
   spellbook: string;
   exercises: Exercise[];
   review: ReviewCard[];

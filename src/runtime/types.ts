@@ -40,10 +40,18 @@ export interface GradeOutcome {
   timedOut?: boolean;
 }
 
+/** Files laid out on the desk (the working folder) before a spell runs: name -> text. */
+export type DeskFiles = Record<string, string>;
+
 export interface TraceStep {
   /** null for the final "after the spell ends" snapshot. */
   line: number | null;
   scope: string;
+  /** The learner's call stack, outermost first: ["main", "countdown", "countdown"]. */
+  stack: string[];
+  /** "return": a function is handing back `value` (a repr) on this line. */
+  event?: "return";
+  value?: string;
   vars: Record<string, string>;
   /** Length of the output printed so far. */
   out: number;
@@ -58,9 +66,9 @@ export interface TraceOutcome {
 }
 
 export type WorkerRequest =
-  | { id: number; kind: "run"; code: string; inputs: string[] }
-  | { id: number; kind: "grade"; code: string; tests: string; inputs: string[]; review: string[] }
-  | { id: number; kind: "trace"; code: string; inputs: string[] };
+  | { id: number; kind: "run"; code: string; inputs: string[]; files: DeskFiles }
+  | { id: number; kind: "grade"; code: string; tests: string; inputs: string[]; review: string[]; files: DeskFiles }
+  | { id: number; kind: "trace"; code: string; inputs: string[]; files: DeskFiles };
 
 export type WorkerResponse =
   | { id: 0; kind: "ready" }

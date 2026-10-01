@@ -24,3 +24,7 @@ ginny: { name: Ginny, portrait: "👧" }
 lockhart: { name: Professor Lockhart, portrait: "💁‍♂️" }
 filch: { name: Argus Filch, portrait: "🔦" }
 cabinet: { name: The Cabinet, portrait: "🗄️" }
+lupin: { name: Professor Lupin, portrait: "🍫" }
+trelawney: { name: Professor Trelawney, portrait: "🔮" }
+tobias: { name: The Fading Boy, portrait: "🌫️" }
+crookshanks: { name: Crookshanks, portrait: "🐈‍⬛" }

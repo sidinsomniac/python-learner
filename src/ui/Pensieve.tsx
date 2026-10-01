@@ -1,18 +1,38 @@
 import { useEffect, useState } from "react";
 import { grantBadge } from "../lore/applyEggs";
 import { python } from "../runtime/pythonRunner";
-import type { TraceOutcome } from "../runtime/types";
+import { stackFrames } from "../engine/pensieve";
+import type { DeskFiles, TraceOutcome, TraceStep } from "../runtime/types";
 
-/** Replay a spell line by line, watching the variables change. */
-export function Pensieve({ code, inputs, onClose }: { code: string; inputs: string[]; onClose: () => void }) {
+const NO_FILES: DeskFiles = {};
+
+function describe(step: TraceStep, index: number, total: number) {
+  if (step.line === null) return "The spell has finished. Here is everything it remembered.";
+  if (step.event === "return") return `Step ${index + 1} of ${total}: ${step.scope}() hands back ${step.value} from line ${step.line}.`;
+  return `Step ${index + 1} of ${total}: about to run line ${step.line}${step.scope !== "main" ? ` inside ${step.scope}()` : ""}.`;
+}
+
+/** Replay a spell line by line, watching the variables and the call stack change. */
+export function Pensieve({
+  code,
+  inputs,
+  files = NO_FILES,
+  onClose,
+}: {
+  code: string;
+  inputs: string[];
+  files?: DeskFiles;
+  onClose: () => void;
+}) {
   const [trace, setTrace] = useState<TraceOutcome | null>(null);
   const [failed, setFailed] = useState("");
   const [step, setStep] = useState(0);
 
+  const filesKey = JSON.stringify(files);
   useEffect(() => {
     let alive = true;
     python
-      .trace(code, inputs)
+      .trace(code, inputs, JSON.parse(filesKey) as DeskFiles)
       .then((t) => {
         if (!alive) return;
         setTrace(t);
@@ -23,7 +43,7 @@ export function Pensieve({ code, inputs, onClose }: { code: string; inputs: stri
     return () => {
       alive = false;
     };
-  }, [code, inputs]);
+  }, [code, inputs, filesKey]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -56,15 +76,13 @@ export function Pensieve({ code, inputs, onClose }: { code: string; inputs: stri
         {trace && current && (
           <>
             <p className="muted small">
-              {current.line === null
-                ? "The spell has finished. Here is everything it remembered."
-                : `Step ${step + 1} of ${trace.steps.length}: about to run line ${current.line}${current.scope !== "main" ? ` inside ${current.scope}()` : ""}.`}
+              {describe(current, step, trace.steps.length)}
               {trace.truncated && " (Only the first 1,500 steps were recorded.)"}
             </p>
             <div className="pensieve-grid">
               <ol className="pensieve-code">
                 {lines.map((text, i) => (
-                  <li key={i} className={current.line === i + 1 ? "here" : ""}>
+                  <li key={i} className={current.line === i + 1 ? (current.event === "return" ? "here returning" : "here") : ""}>
                     <code>{text || " "}</code>
                   </li>
                 ))}
@@ -86,6 +104,27 @@ export function Pensieve({ code, inputs, onClose }: { code: string; inputs: stri
                       ))}
                     </tbody>
                   </table>
+                )}
+                {current.stack.length > 1 && (
+                  <>
+                    <h3>
+                      Call stack <span className="muted small">({current.stack.length - 1} spell{current.stack.length > 2 ? "s" : ""} deep)</span>
+                    </h3>
+                    <ol className="call-stack" data-testid="call-stack">
+                      {stackFrames(current.stack).map((frame, i) =>
+                        frame.folded ? (
+                          <li key={i} className="folded muted small">
+                            ... {frame.folded} more frames ...
+                          </li>
+                        ) : (
+                          <li key={i} className={i === 0 ? "top" : ""}>
+                            <code>{frame.label}</code>
+                            {i === 0 && current.event === "return" && <span className="small"> → {current.value}</span>}
+                          </li>
+                        ),
+                      )}
+                    </ol>
+                  </>
                 )}
                 <h3>Output so far</h3>
                 <pre className="console">{trace.stdout.slice(0, current.out) || " "}</pre>

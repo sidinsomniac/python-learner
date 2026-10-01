@@ -65,7 +65,7 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **63** pass at the moment. |
+| `npm test` | Unit tests (Vitest). **77** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **46 lessons and 140 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
 | `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have. **18** pass at the moment. |
 
@@ -95,10 +95,12 @@ src/engine/
   review.ts     Time-Turner spaced repetition (intervals 1/3/7/16/35 days)
   duel.ts       Dueling Club opponents and scoring (seeded random number generator)
   ambience.ts   the 10 weather presets; pickPreset never repeats one back to back
+  pensieve.ts   stackFrames: how the Pensieve folds a deep call stack
 src/lore/       shop.ts (items, learning aids), levels.ts (LEVEL_REWARDS, feature unlocks),
                 badges.ts, lore.ts (titles, YEAR_NAMES), easterEggs.ts
 src/runtime/
-  harness.py    the Python grader (section 7)
+  harness.py    the Python grader (section 7), the desk of files, the Pensieve tracer
+  harness.test.ts  runs harness.py in Pyodide: desk files, call stack, Snape's rules
 src/ui/         App (routes, year theme variables), MapView (Great Hall), LessonView,
                 Cutscene (story pop-ups), Ambience (weather canvas), Shop, TimeTurner,
                 DuelingClub, Pensieve (line-by-line replay), Settings, ...
@@ -132,13 +134,14 @@ content/
     lesson.yaml           id, year, order (unique within the year), number (or R1 / Trial),
                           kind (lesson | revision | trial), part {n, of}, title, location,
                           concepts, exercises [warmup, core, outstanding] (or r1-r3 / stage1-4),
-                          scene, outro, clue
+                          scene, outro, clue, optional files (for the lecture's "Try it" blocks)
     lecture.md            Markdown. ```python blocks get "Try it" buttons;
                           ```checkpoint blocks (q / options / answer / why) become quiz questions
     spellbook.md          the notes page the student unlocks (ordinary lessons only)
     <slot>.yaml           tier, type (practice | repair | divination | scramble), title, twist,
                           task, starter, tests, hints {nudge, question, pseudocode, flaw,
-                          analogous}; divination exercises use `snippet`, scrambles use `lines`
+                          analogous}; divination exercises use `snippet`, scrambles use `lines`;
+                          optional `files: {name: text}` are laid on the desk (Year 3 on)
     <slot>.solution.py    reference solution: used by the validator, never sent to the browser
     review.yaml           2-4 cards, at least one of type choice (the Dueling Club uses them)
 ```
@@ -162,9 +165,15 @@ content/
 | `source()`, `tree()` | The student's code, as text or as a parsed tree. |
 | `calls(name)`, `uses(ast.X)`, `count_nodes(...)` | Checks on the code's structure. |
 | `timed(...)`, or `time.perf_counter()` in a test | Speed tests. |
+| `write_files({name: text})` | Replaces every file on the desk, so the spell meets a file it has never seen (the file version of `run_with`). |
+| `read_file(name)` | The text of a file on the desk, e.g. one the spell wrote, or `None`. |
 | `check(condition, "guiding question")` | Fails the test with your question. **Always phrase failures as questions, never as fixes.** |
 
 Tests run in order and stop at the first failure.
+
+**The desk (Year 3 on).** The spell's working folder is `/tmp/desk` in Pyodide's in-memory filesystem. Every run, every test function and every Pensieve replay starts from a **fresh desk** holding exactly the exercise's `files`. The browser passes `files` through `python.run/grade/trace` to the worker, and then to `run_json`, `grade_json` and `trace_json`. The player sees the files in a "📂 On the desk" panel.
+
+**The Pensieve's call stack (Year 3 on).** Each step of `trace_json` carries `stack` (the learner's frames, outermost first), and every `return` from a learner's function is a step of its own with `event: "return"` and `value`. A function that crashes gets no return step. The default recursion limit of 1000 is kept: it works under the step guard, and the error translator asks about the base case when a `RecursionError` happens.
 
 **From Year 2, Lesson 7 onwards, exercises are function-style:** tests call the student's functions.
 
@@ -173,6 +182,7 @@ Tests run in order and stop at the first failure.
 - `dict-keys`: from y2-l03a
 - `append-comprehension`: from y2-l06a
 - `mutable-default`: from y2-l09
+- **Written, but not switched on yet** (each goes into `review-rules.yaml` in the same commit as its lesson, because the validator rejects a rule that starts at an unknown lesson): `bare-except` (y3-l01a), `open-without-with` (y3-l02), `lambda-assign` and `needless-lambda` (y3-l03)
 - plus the Year 1 rules (unused variable, shadowed built-in, `str()` inside an f-string, comparing with `== True`, `range(len(...))`, `x = x + ...`, and others).
 
 ## 8. Content rules the validator enforces, and their traps
@@ -186,6 +196,7 @@ Tests run in order and stop at the first failure.
 - Every scene speaker exists in `content/cast.yaml`.
 - Checkpoints and review cards are well formed.
 - Every ordinary lesson has 2–4 review cards.
+- `files` is a map of names to text, with no absolute paths and no `..`. A lecture example may not open a file its lesson doesn't put on the desk.
 
 **Traps learned the hard way:**
 1. **Colons in YAML.** A plain value containing `: ` breaks the YAML (for example ``q: What does `{"a": 1}` do?``). Quote it, or use `>-`.
@@ -195,6 +206,7 @@ Tests run in order and stop at the first failure.
 5. **Unpredictable output.** Predict cards and divination snippets must print the same thing every time. **Sort sets before printing them**, because string hashing is randomised.
 6. **Wide code blocks.** Code in task text is cut off past about 60 characters. Put expected results on their own line, as `# -> result`.
 7. **Starters that crash on load.** For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
+8. **Files are text.** In a `files:` map, give every file a `|` block or quoted text. A bare number, or a value with `: `, isn't text. To end a file without a final newline, use `|-`.
 
 ## 9. Saves (localStorage)
 
@@ -242,15 +254,15 @@ location.reload();
    - Make `migrateSave` work out the version from the save's contents: `exercises` present means version 2 or later; `bestLevel` present means version 3.
    - Let `importSave` accept the `{state, version}` form, with a "Paste a save" box in Settings, and rebuild clues and scenes seen after an import.
    - Keep a rolling automatic backup in `parseltongue-save-backup` (last 3 copies), written before any upgrade runs.
-2. **Year 3, The Prisoner of Recursion**: errors, files, recursion, first algorithms. **The script is written and waiting for the owner's review**: see `docs/story.md` (The Prisoner of the Loop) and the lesson table in `docs/curriculum.md`. The full plan has three phases:
-   - **Phase 1, done:** the script and the lesson table. Stop here until the owner approves them.
-   - **Phase 2, engine support (one commit):**
-     - a file sandbox: an optional `files:` field on exercises and lessons, written into a fresh working folder before every run, grade and Pensieve trace, plus a `with_files` test helper;
-     - recursion: check Pyodide's recursion limit against the step guard, and give `RecursionError` a friendly message;
-     - a call stack in the Pensieve: `depth` in `trace_json`, shown in `Pensieve.tsx`;
-     - new Snape rules: `bare-except` from y3-l01a, `open-without-with` from y3-l02, and `lambda-assign` and `needless-lambda` from y3-l03;
-     - `YEAR_BADGES[3]`, the `year-3` and `loop-detective` badges, `YEAR_NAMES`, and the new speakers in `cast.yaml` (lupin, trelawney, tobias, crookshanks).
-   - **Phase 3, content in four batches, each validated, committed and pushed:** l01a–r1, l04–r2, l08–r3, then l12, l13 and the Trial. The theme is Time-Turner dusk, silver and indigo.
+2. **Year 3, The Prisoner of Recursion**: errors, files, recursion, first algorithms. **Under construction.** The script is in `docs/story.md` (The Prisoner of the Loop) and the lesson table in `docs/curriculum.md`. The full plan has three phases:
+   - **Phase 1, done:** the script and the lesson table. The owner approved them.
+   - **Phase 2, done (engine support):**
+     - the desk of files, with `write_files` and `read_file` (§7);
+     - the Pensieve's call stack (§7);
+     - friendly `RecursionError` and `FileNotFoundError` questions;
+     - four new Snape rules, written but not switched on (§7);
+     - `YEAR_BADGES[3]`, the `year-3` and `loop-detective` badges, and the new speakers in `cast.yaml` (lupin, trelawney, tobias, crookshanks). `YEAR_NAMES` already had Year 3.
+   - **Phase 3, next: content in four batches, each validated, committed and pushed.** Add an e2e test for a file exercise and the Pensieve's call stack with the first batch: l01a–r1, l04–r2, l08–r3, then l12, l13 and the Trial. The theme is Time-Turner dusk, silver and indigo.
    - The save-safety fix (11.1) has been put off at the owner's request.
 3. Then Years 4–7, one at a time.
 4. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
@@ -267,5 +279,6 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-01 | Claude Code desktop session | Year 3 engine support: the desk of files (`files:` in content, `write_files` and `read_file`), the Pensieve's call stack, `RecursionError` and file-error questions, 4 Snape rules (not switched on yet), Year 3 badges and cast, and harness tests in Pyodide. Tests: 77 unit, 18 e2e (§3, §5–§8, §11). Docs: README, GDD, exercise-design §7c. |
 | 2026-10-01 | Claude Code desktop session | Year 3 planned and scripted: the full scene-by-scene story in `story.md`, and the exact lesson table in `curriculum.md`. The build waits for the owner's review of the script (§10, §11). |
 | 2026-10-01 | Claude Code web session `session_01QRDafNtZXxe5n2GotwYapD` | Handoff guide and CLAUDE.md created. State: Years 1–2 built; the save-safety fix (§11.1) planned but not built. |

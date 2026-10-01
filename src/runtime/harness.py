@@ -13,6 +13,8 @@ import contextlib
 import copy
 import io
 import json
+import os
+import shutil
 import sys
 import time
 import traceback
@@ -22,6 +24,46 @@ STUDENT_FILE = "<your spell>"
 MAX_OUTPUT = 20_000
 
 _student_code = ""
+
+# --------------------------------------------------------------------------
+# The desk - a fresh working folder holding the exercise's files (Year 3 on).
+# Every run, every test and every Pensieve replay starts from a clean desk, so
+# a spell that writes a file can't leak it into the next run.
+# --------------------------------------------------------------------------
+
+DESK = "/tmp/desk"
+_desk_files = {}
+
+
+def _reset_desk(files=None):
+    """Empty the desk, lay out `files` ({name: text}) on it and work there."""
+    os.chdir("/")
+    shutil.rmtree(DESK, ignore_errors=True)
+    os.makedirs(DESK)
+    for name, text in (files if files is not None else _desk_files).items():
+        path = os.path.join(DESK, name)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as handle:
+            handle.write(text)
+    os.chdir(DESK)
+
+
+def write_files(files):
+    """Used by quest tests: replace everything on the desk with these files.
+
+    Like run_with(), it lets the examiners hand the spell a scroll the learner
+    has never seen, so the answer can't be memorised.
+    """
+    _reset_desk(files)
+
+
+def read_file(name):
+    """Used by quest tests: the text of a file on the desk, or None if it doesn't exist."""
+    path = os.path.join(DESK, name)
+    if not os.path.isfile(path):
+        return None
+    with open(path, encoding="utf-8") as handle:
+        return handle.read()
 
 
 class CheckFailed(Exception):
@@ -340,6 +382,8 @@ TEST_HELPERS = {
     "uses": uses,
     "count_nodes": count_nodes,
     "timed": timed,
+    "write_files": write_files,
+    "read_file": read_file,
     "ast": ast,
 }
 
@@ -508,6 +552,52 @@ def _rv_mutable_default(module):
                     return node.lineno, "A list or dict as a default argument, line {line}. It is created ONCE and shared by every call. A classic, catastrophic mistake."
 
 
+def _rv_bare_except(module):
+    for node in ast.walk(module):
+        if isinstance(node, ast.ExceptHandler):
+            if node.type is None:
+                return node.lineno, "A bare `except:` on line {line}. It catches *everything* - even the errors you never imagined. Name the exception you expect."
+            broad = isinstance(node.type, ast.Name) and node.type.id in ("Exception", "BaseException")
+            if broad and len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                return node.lineno, "`except Exception: pass` on line {line}. Swallowing every error in silence. The Dementors thank you."
+
+
+def _is_open_call(node):
+    return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "open"
+
+
+def _rv_open_without_with(module):
+    in_with = set()
+    for node in ast.walk(module):
+        if isinstance(node, ast.With):
+            in_with.update(id(item.context_expr) for item in node.items)
+    for node in ast.walk(module):
+        if _is_open_call(node) and id(node) not in in_with:
+            return node.lineno, "`open()` without `with`, line {line}. And who, precisely, is going to close that file? Not you, evidently."
+
+
+def _rv_lambda_assign(module):
+    for node in ast.walk(module):
+        if isinstance(node, ast.Assign) and isinstance(node.value, ast.Lambda) and all(isinstance(t, ast.Name) for t in node.targets):
+            return node.lineno, "A lambda given a name, line {line}. If it deserves a name, it deserves a `def`."
+
+
+def _rv_needless_lambda(module):
+    for node in ast.walk(module):
+        if not isinstance(node, ast.Lambda):
+            continue
+        args, body = node.args, node.body
+        if args.vararg or args.kwarg or args.kwonlyargs or args.defaults or len(args.args) != 1:
+            continue
+        name = args.args[0].arg
+        if (
+            isinstance(body, ast.Call) and len(body.args) == 1 and not body.keywords
+            and isinstance(body.args[0], ast.Name) and body.args[0].id == name
+            and isinstance(body.func, ast.Name) and body.func.id != name
+        ):
+            return node.lineno, "`lambda x: " + body.func.id + "(x)` on line {line}. A wrapper that adds nothing. `" + body.func.id + "` is already a spell - pass it as it is."
+
+
 def _rv_unused(module):
     flaw = _detect_unused_variable(module)
     if flaw:
@@ -535,6 +625,10 @@ REVIEW_RULES = {
     "dict-keys": _rv_dict_keys,
     "append-comprehension": _rv_append_loop,
     "mutable-default": _rv_mutable_default,
+    "bare-except": _rv_bare_except,
+    "open-without-with": _rv_open_without_with,
+    "lambda-assign": _rv_lambda_assign,
+    "needless-lambda": _rv_needless_lambda,
 }
 
 
@@ -583,8 +677,30 @@ def _snapshot(frame_vars):
     return snap
 
 
-def trace_json(code, inputs_json, max_steps=1500):
-    """Run code under sys.settrace, recording the variables before each line."""
+def _scope_name(frame):
+    return "main" if frame.f_code.co_name == "<module>" else frame.f_code.co_name
+
+
+def _call_stack(frame):
+    """The learner's frames from the outermost (main) to this one."""
+    stack = []
+    while frame is not None:
+        if frame.f_code.co_filename == STUDENT_FILE:
+            stack.append(_scope_name(frame))
+        frame = frame.f_back
+    return stack[::-1]
+
+
+def trace_json(code, inputs_json, files_json="{}", max_steps=1500):
+    """Run code under sys.settrace, recording the variables before each line.
+
+    Each step also records the call stack, so recursion can be watched frame
+    by frame, and every return from one of the learner's functions becomes a
+    step of its own, showing the value handed back.
+    """
+    global _desk_files
+    _desk_files = json.loads(files_json)
+    _reset_desk()
     out = io.StringIO()
     feed = [str(v) for v in json.loads(inputs_json)]
     steps = []
@@ -597,18 +713,33 @@ def trace_json(code, inputs_json, max_steps=1500):
         out.write(value + "\n")
         return value
 
+    raising = set()
+
+    def record(frame, **extra):
+        if len(steps) >= max_steps:
+            raise _TooManySteps()
+        steps.append({
+            "line": frame.f_lineno,
+            "scope": _scope_name(frame),
+            "stack": _call_stack(frame),
+            "vars": _snapshot(frame.f_locals),
+            "out": len(out.getvalue()),
+            **extra,
+        })
+
     def tracer(frame, event, arg):
         if frame.f_code.co_filename != STUDENT_FILE:
             return None
         if event == "line":
-            if len(steps) >= max_steps:
-                raise _TooManySteps()
-            steps.append({
-                "line": frame.f_lineno,
-                "scope": "main" if frame.f_code.co_name == "<module>" else frame.f_code.co_name,
-                "vars": _snapshot(frame.f_locals),
-                "out": len(out.getvalue()),
-            })
+            raising.discard(id(frame))  # an exception caught inside this frame
+            record(frame)
+        elif event == "exception":
+            raising.add(id(frame))
+        elif event == "return" and frame.f_code.co_name != "<module>":
+            if id(frame) in raising:
+                raising.discard(id(frame))
+            else:
+                record(frame, event="return", value=_short_repr(arg))
         return tracer
 
     safe_builtins = dict(vars(builtins))
@@ -628,7 +759,7 @@ def trace_json(code, inputs_json, max_steps=1500):
         truncated = True
     except BaseException as exc:  # noqa: BLE001 - every error is shown in the Pensieve
         error = _error_info(exc)
-    steps.append({"line": None, "scope": "main", "vars": _snapshot(namespace), "out": len(out.getvalue())})
+    steps.append({"line": None, "scope": "main", "stack": ["main"], "vars": _snapshot(namespace), "out": len(out.getvalue())})
     return json.dumps({
         "steps": steps,
         "stdout": out.getvalue()[:MAX_OUTPUT],
@@ -641,19 +772,25 @@ def trace_json(code, inputs_json, max_steps=1500):
 # Entry points called from JavaScript. They take and return JSON strings.
 # --------------------------------------------------------------------------
 
-def run_json(code, inputs_json):
+def run_json(code, inputs_json, files_json="{}"):
+    global _desk_files
+    _desk_files = json.loads(files_json)
+    _reset_desk()
     stdout, _, error = _execute(code, json.loads(inputs_json))
     return json.dumps({"stdout": stdout, "error": error})
 
 
-def grade_json(code, tests_src, inputs_json, review_json="[]"):
+def grade_json(code, tests_src, inputs_json, review_json="[]", files_json="{}"):
     """Run the learner's code once (for display) and then every test_ function.
 
     Stops at the first failing test, so the learner focuses on one idea at a
-    time. If every test passes, Snape reviews the code.
+    time. If every test passes, Snape reviews the code. Each run and each test
+    starts from a fresh desk holding the exercise's files.
     """
-    global _student_code
+    global _student_code, _desk_files
     _student_code = code
+    _desk_files = json.loads(files_json)
+    _reset_desk()
     inputs = json.loads(inputs_json)
     stdout, _, error = _execute(code, inputs)
     result = {
@@ -680,6 +817,7 @@ def grade_json(code, tests_src, inputs_json, review_json="[]"):
         return json.dumps(result)
 
     for name, fn in tests:
+        _reset_desk()
         try:
             fn()
         except CheckFailed as failed:

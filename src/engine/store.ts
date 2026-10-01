@@ -136,6 +136,7 @@ const initialData = {
 const YEAR_BADGES: Record<number, { complete: string; detective: string }> = {
   1: { complete: "year-1", detective: "detective" },
   2: { complete: "year-2", detective: "cabinet-detective" },
+  3: { complete: "year-3", detective: "loop-detective" },
 };
 
 // Declared before the store: persisted saves are migrated while it is created.

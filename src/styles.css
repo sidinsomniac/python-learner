@@ -338,6 +338,14 @@ body.levitating .wand, body.levitating .letter { animation: float 3.4s ease-in-o
 .vars th { text-align: left; padding: 2px 8px 2px 0; color: var(--gold); font-weight: 600; width: 35%; }
 .vars td { padding: 2px 0; word-break: break-all; }
 .vars tr.changed td code { background: color-mix(in srgb, var(--ok) 25%, transparent); }
+.pensieve-code li.here.returning { outline-style: dashed; }
+.call-stack { list-style: none; margin: 0 0 8px; padding: 0; font-size: 0.85rem; }
+.call-stack li { border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; margin-bottom: 3px; background: var(--card2); }
+.call-stack li.top { border-color: var(--gold); }
+.call-stack li.folded { border-style: dashed; background: none; text-align: center; }
+.desk-files { margin: 0 0 8px; }
+.desk-files summary { cursor: pointer; }
+.desk-files pre { max-height: 220px; overflow: auto; }
 .pensieve-slider { flex: 1; min-width: 120px; }
 .pensieve h3 { margin: 4px 0; }
 .quest-top .lesson-no { min-width: 0; margin-right: 0.35em; }
@@ -382,7 +390,7 @@ body::before {
 }
 .ambience.visible { opacity: 0.9; }
 .main, .header { position: relative; z-index: 1; }
-.header { position: sticky; }
+.header { position: sticky; z-index: 2; }
 @media (max-width: 700px) { .header { position: relative; } }
 
 /* Story pop-ups. */

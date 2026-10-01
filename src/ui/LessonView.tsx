@@ -21,7 +21,7 @@ import type { ReviewRemark } from "../runtime/types";
 import { Cutscene } from "./Cutscene";
 import { renderMarkdown } from "./md";
 import { MentorPanel } from "./MentorPanel";
-import { CodeEditor, Console, InputsBox, Lesson as Lecture, splitInputs, useRunner } from "./parts";
+import { CodeEditor, Console, DeskFilesPanel, InputsBox, Lesson as Lecture, splitInputs, useRunner } from "./parts";
 import { Pensieve } from "./Pensieve";
 import { SkipDialog } from "./SkipDialog";
 import { go } from "./router";
@@ -139,7 +139,7 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
         <div className="stack">
           <Cutscene id={lesson.id} lines={lesson.scene} />
           <div className="card">
-            <Lecture markdown={lesson.lecture} />
+            <Lecture markdown={lesson.lecture} files={lesson.files} />
             {lesson.exercises[0] && (
               <button className="btn primary" onClick={() => setTab(firstOpenExercise(lesson, records)?.id ?? lesson.exercises[0].id)}>
                 {complete ? "Back to the exercises →" : "I'm ready - to the exercises →"}
@@ -294,7 +294,7 @@ function useCaster({ lesson, exercise, onFeedback, onSolved }: BoardProps) {
     setCasting(true);
     useGame.getState().recordAttempt(exercise.id);
     try {
-      const result = await python.grade(code, exercise.tests, inputs, reviewRulesFor(lesson.id));
+      const result = await python.grade(code, exercise.tests, inputs, reviewRulesFor(lesson.id), exercise.files);
       runner.setOutcome({ stdout: result.stdout, error: result.error, timedOut: result.timedOut });
       onFeedback(buildFeedback(result));
       applyEggs(result.stdout, code);
@@ -336,10 +336,11 @@ function CodeBoard(props: BoardProps & { code: string; setCode: (c: string) => v
           Reset
         </button>
       </div>
+      <DeskFilesPanel files={exercise.files} />
       <CodeEditor value={code} onChange={change} label="Quest code editor" />
       <InputsBox value={inputs} onChange={setInputs} />
       <div className="row">
-        <button className="btn" onClick={() => runner.run(code, splitInputs(inputs))} disabled={busy} data-testid="run">
+        <button className="btn" onClick={() => runner.run(code, splitInputs(inputs), exercise.files)} disabled={busy} data-testid="run">
           ▶ Run
         </button>
         <button className="btn" onClick={() => setPensieve({ code, inputs: splitInputs(inputs) })} disabled={busy} data-testid="pensieve-open">
@@ -350,7 +351,7 @@ function CodeBoard(props: BoardProps & { code: string; setCode: (c: string) => v
         </button>
       </div>
       <Console outcome={runner.outcome} busy={busy} />
-      {pensieve && <Pensieve code={pensieve.code} inputs={pensieve.inputs} onClose={() => setPensieve(null)} />}
+      {pensieve && <Pensieve code={pensieve.code} inputs={pensieve.inputs} files={exercise.files} onClose={() => setPensieve(null)} />}
     </div>
   );
 }
@@ -396,7 +397,7 @@ function ScrambleBoard(props: BoardProps & { code: string; setCode: (c: string) 
         ))}
       </ol>
       <div className="row">
-        <button className="btn" onClick={() => runner.run(code, exercise.inputs)} disabled={runner.busy || casting}>
+        <button className="btn" onClick={() => runner.run(code, exercise.inputs, exercise.files)} disabled={runner.busy || casting}>
           ▶ Run
         </button>
         <button className="btn" onClick={() => setPensieve(code)} disabled={runner.busy || casting}>
@@ -407,7 +408,7 @@ function ScrambleBoard(props: BoardProps & { code: string; setCode: (c: string) 
         </button>
       </div>
       <Console outcome={runner.outcome} busy={runner.busy || casting} />
-      {pensieve !== null && <Pensieve code={pensieve} inputs={exercise.inputs} onClose={() => setPensieve(null)} />}
+      {pensieve !== null && <Pensieve code={pensieve} inputs={exercise.inputs} files={exercise.files} onClose={() => setPensieve(null)} />}
     </div>
   );
 }
@@ -421,7 +422,7 @@ function DivinationBoard({ exercise, onFeedback, onSolved }: BoardProps) {
     setBusy(true);
     useGame.getState().recordAttempt(exercise.id);
     try {
-      const actual = await python.run(exercise.snippet ?? "", exercise.inputs);
+      const actual = await python.run(exercise.snippet ?? "", exercise.inputs, exercise.files);
       const verdict = compareProphecy(prophecy, actual.stdout);
       if (verdict.correct) {
         setRevealed(actual.stdout);

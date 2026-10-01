@@ -1,4 +1,4 @@
-import type { GradeOutcome, RunOutcome, TraceOutcome, WorkerRequest, WorkerResponse } from "./types";
+import type { DeskFiles, GradeOutcome, RunOutcome, TraceOutcome, WorkerRequest, WorkerResponse } from "./types";
 
 export const RUN_TIMEOUT_MS = 5000;
 
@@ -87,9 +87,9 @@ class PythonRunner {
     });
   }
 
-  async run(code: string, inputs: string[], timeoutMs = RUN_TIMEOUT_MS): Promise<RunOutcome> {
+  async run(code: string, inputs: string[], files: DeskFiles = {}, timeoutMs = RUN_TIMEOUT_MS): Promise<RunOutcome> {
     try {
-      return JSON.parse(await this.call({ kind: "run", code, inputs }, timeoutMs));
+      return JSON.parse(await this.call({ kind: "run", code, inputs, files }, timeoutMs));
     } catch (err) {
       if (err instanceof TimeoutError) return { stdout: "", error: null, timedOut: true };
       throw err;
@@ -101,10 +101,11 @@ class PythonRunner {
     tests: string,
     inputs: string[],
     review: string[] = [],
+    files: DeskFiles = {},
     timeoutMs = RUN_TIMEOUT_MS * 2,
   ): Promise<GradeOutcome> {
     try {
-      return JSON.parse(await this.call({ kind: "grade", code, tests, inputs, review }, timeoutMs));
+      return JSON.parse(await this.call({ kind: "grade", code, tests, inputs, review, files }, timeoutMs));
     } catch (err) {
       if (err instanceof TimeoutError) {
         return { stdout: "", error: null, flaws: [], passed: 0, total: 0, failure: null, review: [], timedOut: true };
@@ -114,9 +115,9 @@ class PythonRunner {
   }
 
   /** Record a spell line by line for the Pensieve. */
-  async trace(code: string, inputs: string[], timeoutMs = RUN_TIMEOUT_MS * 2): Promise<TraceOutcome> {
+  async trace(code: string, inputs: string[], files: DeskFiles = {}, timeoutMs = RUN_TIMEOUT_MS * 2): Promise<TraceOutcome> {
     try {
-      return JSON.parse(await this.call({ kind: "trace", code, inputs }, timeoutMs));
+      return JSON.parse(await this.call({ kind: "trace", code, inputs, files }, timeoutMs));
     } catch (err) {
       if (err instanceof TimeoutError) return { steps: [], stdout: "", error: null, truncated: true, timedOut: true };
       throw err;

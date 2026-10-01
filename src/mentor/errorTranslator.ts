@@ -51,6 +51,21 @@ export function translateError(e: PyError): Translation {
       return { creature: "Reaching past the end of the shelf!", question: `On ${where(e)}, how many items are there, and which position are you asking for? (Counting starts at 0!)` };
     case "KeyError":
       return { creature: "That key isn't in the dictionary!", question: `What keys actually exist when ${where(e)} runs?` };
+    case "RecursionError":
+      return { creature: "The Time-Turner won't stop turning!", question: `The spell kept calling itself until Python gave up. When should it stop? Is there a base case that is always reached, and does every call move closer to it?` };
+    case "FileNotFoundError": {
+      const file = msg.match(/'(.+?)'/)?.[1];
+      return {
+        creature: "That scroll isn't on the desk!",
+        question: file
+          ? `Python looked for \`${file}\` and found nothing. What files are on the desk? Is the name spelled exactly the same, with its ending?`
+          : `Which file did ${where(e)} try to open? Is it on the desk, spelled exactly the same?`,
+      };
+    }
+    case "IsADirectoryError":
+    case "PermissionError":
+    case "UnsupportedOperation":
+      return { creature: "The scroll refuses!", question: `On ${where(e)}, which mode did you open the file in? Can you read from a scroll opened for writing, or write to one opened for reading?` };
     case "AttributeError":
       return { creature: "That thing doesn't know that spell!", question: `On ${where(e)}, what type of value is before the dot, and does that type have the method you're calling?` };
     default:

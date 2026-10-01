@@ -152,6 +152,22 @@ def test_best():
 - `printed()` is what the last `call` printed - use it to insist on `return` rather than `print`.
 - For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
 
+## 7c. Exercises with files (Year 3, Lesson 2 onwards)
+
+An exercise (or a lesson, for its "Try it" examples) can put files on the **desk**, the spell's working folder:
+
+```yaml
+files:
+  ledger.txt: |
+    Tobias Wren,Hufflepuff,1926
+    Cedric Diggory,Hufflepuff,
+```
+
+- The player sees them in a "📂 On the desk" panel above the editor.
+- Every run, every test and every Pensieve replay starts from a fresh desk holding exactly these files, so a spell that writes a file can't leak it into the next test.
+- `write_files({...})` hands the spell a different set of files (the file version of `run_with`, so answers can't be memorised). `read_file(name)` checks what the spell wrote, or returns None.
+- The validator fails a lecture example that opens a file the lesson doesn't provide.
+
 ## 8. Time-Turner review cards
 
 Each lesson contributes small cards that come back on a spaced schedule: 1, 3, 7, 16, then 35 days, reset on a miss. The same cards feed the Dueling Club. They live in the lesson's `review.yaml`:

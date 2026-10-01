@@ -35,6 +35,7 @@ interface LessonMeta {
   scene?: SceneLine[];
   outro?: SceneLine[];
   clue?: string;
+  files?: Record<string, string>;
   exercises: string[];
 }
 
@@ -53,6 +54,7 @@ interface ExerciseMeta {
   galleons?: number;
   lines?: string[];
   snippet?: string;
+  files?: Record<string, string>;
 }
 
 const dirOf = (path: string) => path.slice(0, path.lastIndexOf("/") + 1);
@@ -80,6 +82,7 @@ function buildExercise(lessonId: string, dir: string, slot: string): Exercise {
     galleons: meta.galleons ?? reward.galleons,
     lines: meta.lines,
     snippet: meta.snippet,
+    files: meta.files ?? {},
   };
   if (exercise.type === "scramble") exercise.starter = (exercise.lines ?? []).join("\n") + "\n";
   return exercise;
@@ -103,6 +106,7 @@ function buildYears(): Year[] {
       outro: meta.outro ?? [],
       clue: meta.clue,
       lecture: lectures[`${dir}lecture.md`] ?? "",
+      files: meta.files ?? {},
       spellbook: spellbooks[`${dir}spellbook.md`] ?? "",
       exercises: meta.exercises.map((slot) => buildExercise(meta.id, dir, slot)),
       review: ((loadYaml(reviewFiles[`${dir}review.yaml`] ?? "[]") ?? []) as Omit<ReviewCard, "lessonId">[]).map(

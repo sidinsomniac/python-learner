@@ -142,7 +142,7 @@ A level-up pop-up shows the reward; the Trophy Room shows the whole track.
 - **Revision in the Library.** Interleaved practice about every 4 lessons.
 
 ### The Pensieve step-through
-Replay any spell line by line: the current line is highlighted, and a panel shows the variables and data structures. It works by running the code under `sys.settrace` inside Pyodide and recording each step. It powers:
+Replay any spell line by line: the current line is highlighted, and a panel shows the variables and data structures. ✅ From Year 3 it also shows the **call stack**, one frame per call, with every `return` as a step of its own, so recursion can be watched going down and coming back up (very deep stacks are folded in the middle). It works by running the code under `sys.settrace` inside Pyodide and recording each step. It powers:
 - the debugging lessons
 - algorithm visualisations
 - "Pensieve trace" exercises

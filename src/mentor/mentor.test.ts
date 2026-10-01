@@ -83,6 +83,14 @@ describe("error translation", () => {
     const n = translateError({ type: "NameError", message: "name 'Lumos' is not defined", line: 1, formatted: "" });
     expect(n.question).toContain("`Lumos`");
   });
+
+  it("explains Year 3's errors with questions: recursion and missing files", () => {
+    const r = translateError({ type: "RecursionError", message: "maximum recursion depth exceeded", line: 2, formatted: "" });
+    expect(r.question).toMatch(/base case/);
+    const f = translateError({ type: "FileNotFoundError", message: "[Errno 44] No such file or directory: 'ledgr.txt'", line: 1, formatted: "" });
+    expect(f.question).toContain("`ledgr.txt`");
+    expect(f.question).toMatch(/\?/);
+  });
 });
 
 describe("feedback", () => {

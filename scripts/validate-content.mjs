@@ -44,9 +44,22 @@ const py = await loadPyodide();
 py.runPython(read(root, "src", "runtime", "harness.py"));
 // No worker to terminate here, so stop runaway spells by counting lines.
 py.runPython("STEP_LIMIT = 200_000");
-const grade = (code, tests, inputs, review = []) =>
-  JSON.parse(py.globals.get("grade_json")(code, tests, JSON.stringify(inputs), JSON.stringify(review)));
-const run = (code, inputs) => JSON.parse(py.globals.get("run_json")(code, JSON.stringify(inputs)));
+const grade = (code, tests, inputs, review = [], files = {}) =>
+  JSON.parse(py.globals.get("grade_json")(code, tests, JSON.stringify(inputs), JSON.stringify(review), JSON.stringify(files)));
+const run = (code, inputs, files = {}) => JSON.parse(py.globals.get("run_json")(code, JSON.stringify(inputs), JSON.stringify(files)));
+// Desk files must be a map of file name -> text.
+function checkFiles(where, files) {
+  if (files === undefined) return {};
+  if (typeof files !== "object" || Array.isArray(files) || files === null) {
+    fail(where, "files must be a map of file name -> text");
+    return {};
+  }
+  for (const [name, text] of Object.entries(files)) {
+    if (typeof text !== "string") fail(where, `the file ${name} must hold text (quote it, or use a | block)`);
+    if (name.startsWith("/") || name.includes("..")) fail(where, `the file name ${name} must stay on the desk (no / at the start, no ..)`);
+  }
+  return files;
+}
 
 function checkScene(where, lines) {
   if (lines === undefined) return;
@@ -122,6 +135,7 @@ for (const { meta, dir, where, year } of lessons) {
   if (!KINDS.includes(kind)) fail(where, `unknown kind "${kind}"`);
   checkScene(`${where} scene`, meta.scene);
   checkScene(`${where} outro`, meta.outro);
+  const lessonFiles = checkFiles(`${where}/lesson.yaml`, meta.files);
 
   const lecture = read(dir, "lecture.md");
   if (!lecture) fail(where, "missing lecture.md");
@@ -165,6 +179,11 @@ for (const { meta, dir, where, year } of lessons) {
   }
 
   const lectureCode = fences(lecture ?? "", "python");
+  // "Try it" examples run with the lesson's desk files, so every file they open must be there.
+  lectureCode.forEach((block, i) => {
+    const out = run(block, [], lessonFiles);
+    if (out.error?.type === "FileNotFoundError") fail(where, `lecture code block ${i + 1} opens a file the lesson doesn't put on the desk (${out.error.message})`);
+  });
   const review = rulesFor(meta.id);
 
   for (const slot of meta.exercises ?? []) {
@@ -182,10 +201,11 @@ for (const { meta, dir, where, year } of lessons) {
     if (!TYPES.includes(ex.type)) fail(at, `unknown type "${ex.type}"`);
     for (const rung of HINT_RUNGS) if (!ex.hints?.[rung]) fail(at, `the hint ladder is missing "${rung}"`);
     const inputs = (ex.inputs ?? []).map(String);
+    const files = checkFiles(at, ex.files);
 
     if (ex.type === "divination") {
       if (!ex.snippet) fail(at, "divination needs a snippet");
-      else if (run(ex.snippet, inputs).error) fail(at, "the divination snippet raises an error");
+      else if (run(ex.snippet, inputs, files).error) fail(at, "the divination snippet raises an error");
       continue;
     }
 
@@ -200,7 +220,7 @@ for (const { meta, dir, where, year } of lessons) {
       continue;
     }
 
-    const solved = grade(solution, tests, inputs, review);
+    const solved = grade(solution, tests, inputs, review, files);
     if (solved.total === 0) fail(at, "tests define no test_ functions");
     if (solved.failure) fail(at, `the reference solution fails ${solved.failure.test}: ${JSON.stringify(solved.failure).slice(0, 300)}`);
     else if (solved.review.length) fail(at, `Snape isn't happy with the reference solution: ${solved.review.map((r) => r.id).join(", ")}`);
@@ -214,12 +234,12 @@ for (const { meta, dir, where, year } of lessons) {
         fail(at, "the solution must be a reordering of the scramble lines");
       }
     }
-    if (!grade(starter, tests, inputs).failure) fail(at, "the starter code already passes every test");
+    if (!grade(starter, tests, inputs, [], files).failure) fail(at, "the starter code already passes every test");
 
     // No copy-paste: no lecture example may solve a core or outstanding challenge.
     if (ex.tier === "core" || ex.tier === "outstanding") {
       lectureCode.forEach((block, i) => {
-        if (!grade(block, tests, inputs).failure) fail(at, `lecture code block ${i + 1} already solves this challenge`);
+        if (!grade(block, tests, inputs, [], files).failure) fail(at, `lecture code block ${i + 1} already solves this challenge`);
       });
     }
 

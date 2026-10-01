@@ -6,7 +6,7 @@ import { itemById } from "../lore/shop";
 import { applyEggs } from "../lore/applyEggs";
 import { translateError } from "../mentor/errorTranslator";
 import { python } from "../runtime/pythonRunner";
-import type { RunOutcome } from "../runtime/types";
+import type { DeskFiles, RunOutcome } from "../runtime/types";
 import { splitLecture, type CheckpointSpec } from "../engine/lecture";
 import { renderInline, renderMarkdown } from "./md";
 import { Pensieve } from "./Pensieve";
@@ -91,10 +91,10 @@ export const splitInputs = (text: string) => (text.trim() === "" ? [] : text.rep
 export function useRunner() {
   const [outcome, setOutcome] = useState<RunOutcome | null>(null);
   const [busy, setBusy] = useState(false);
-  const run = async (code: string, inputs: string[]) => {
+  const run = async (code: string, inputs: string[], files: DeskFiles = {}) => {
     setBusy(true);
     try {
-      const result = await python.run(code, inputs);
+      const result = await python.run(code, inputs, files);
       setOutcome(result);
       applyEggs(result.stdout, code);
       return result;
@@ -141,8 +141,29 @@ function Checkpoint({ spec }: { spec: CheckpointSpec }) {
   );
 }
 
+/** The files lying on the desk (the spell's working folder), shown so the learner can read them. */
+export function DeskFilesPanel({ files }: { files: DeskFiles }) {
+  const names = Object.keys(files);
+  if (names.length === 0) return null;
+  return (
+    <details className="desk-files" data-testid="desk-files">
+      <summary>
+        📂 On the desk: <code>{names.join(", ")}</code>
+      </summary>
+      {names.map((name) => (
+        <div key={name}>
+          <p className="small muted">
+            <code>{name}</code>
+          </p>
+          <pre className="console">{files[name] || " "}</pre>
+        </div>
+      ))}
+    </details>
+  );
+}
+
 /** A lesson: Markdown with "Try it" buttons and checkpoints, plus a sandbox. */
-export function Lesson({ markdown }: { markdown: string }) {
+export function Lesson({ markdown, files = {} }: { markdown: string; files?: DeskFiles }) {
   const ref = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState("# Try things out here! Press Run.\nprint(\"Lumos\")\n");
   const [inputs, setInputs] = useState("");
@@ -181,10 +202,11 @@ export function Lesson({ markdown }: { markdown: string }) {
       <div ref={sandboxRef} className="sandbox">
         <h3>🧪 Practice sandbox</h3>
         <p className="muted small">Experiment freely here. It won't affect your exercises.</p>
+        <DeskFilesPanel files={files} />
         <CodeEditor value={code} onChange={setCode} minHeight="120px" label="Sandbox editor" />
         <InputsBox value={inputs} onChange={setInputs} />
         <div className="row">
-          <button className="btn" onClick={() => runner.run(code, splitInputs(inputs))} disabled={runner.busy}>
+          <button className="btn" onClick={() => runner.run(code, splitInputs(inputs), files)} disabled={runner.busy}>
             ▶ Run
           </button>
           <button className="btn" onClick={() => setPensieve({ code, inputs: splitInputs(inputs) })} disabled={runner.busy}>
@@ -193,7 +215,7 @@ export function Lesson({ markdown }: { markdown: string }) {
         </div>
         <Console outcome={runner.outcome} busy={runner.busy} />
       </div>
-      {pensieve && <Pensieve code={pensieve.code} inputs={pensieve.inputs} onClose={() => setPensieve(null)} />}
+      {pensieve && <Pensieve code={pensieve.code} inputs={pensieve.inputs} files={files} onClose={() => setPensieve(null)} />}
     </div>
   );
 }

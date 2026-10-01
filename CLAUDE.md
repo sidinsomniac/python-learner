@@ -33,6 +33,8 @@ npm run validate-content && npm test && npm run build && CHROMIUM_PATH=/path/to/
 - Hints must not contain solution lines of 12 characters or more. Describe them in words instead.
 - Sort sets before printing them in predict cards or divination snippets.
 - Function-style tests use `student_function` with `call()` and `printed()`.
+- File exercises (Year 3 on) put files in `files:` (name → text, as `|` blocks). Every run and test starts from a fresh desk. Tests swap files with `write_files()` and check output with `read_file()`.
+- A new Snape rule goes into `review-rules.yaml` in the same commit as the lesson it starts at, or the validator fails.
 - Reference solutions must pass Snape's review rules active at that lesson (`content/review-rules.yaml`).
 
 ## Saves

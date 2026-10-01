@@ -32,7 +32,7 @@ Every lesson follows the same shape:
 When you're stuck:
 - **Automatic feedback.** Failing checks and Python errors are turned into *questions*.
 - **The hint ladder.** Nudge, guiding question, pseudocode, flaw pointer, then a similar-but-different example.
-- **🌀 The Pensieve.** Replay any spell line by line and watch every variable change.
+- **🌀 The Pensieve.** Replay any spell line by line and watch every variable change, and the call stack grow and shrink as a recursive spell calls itself.
 - **Ask the Professor.** An optional AI chat that uses your own API key (below).
 
 After you pass, **Professor Snape reviews your code**. Act on his remarks to earn an **O**.
@@ -100,7 +100,8 @@ lecture.md              the lesson. ```python blocks get "Try it" buttons, and
 spellbook.md            the notes page the student unlocks
 warmup.yaml             one file per exercise: tier, type, title, twist, task,
 core.yaml               inputs, starter, tests, hints (nudge / question /
-outstanding.yaml        pseudocode / flaw / analogous), snippet or lines
+outstanding.yaml        pseudocode / flaw / analogous), snippet or lines,
+                        and optional files (name -> text) laid on the desk
 warmup.solution.py      reference solutions - used only by the validator,
 core.solution.py        never shipped to the browser
 review.yaml             2-4 Time-Turner / Dueling Club cards (choice or predict)
@@ -114,6 +115,7 @@ Each year folder also has a `year.yaml`: title, mystery, the prologue scene, and
 - `source()` and `tree()` give the student's code as text or as an AST.
 - `calls(name)`, `uses(ast.For)` and `count_nodes(...)` check the code's structure.
 - `timed(fn, ...)` fails a slow solution.
+- `write_files({...})` replaces the files on the desk (the spell's working folder), and `read_file(name)` reads one back, or gives None. Every run and every test starts from a fresh desk holding the exercise's `files`.
 - `check(condition, question)` fails the test with your question if the condition is false.
 
 Tests run in order and stop at the first failure.

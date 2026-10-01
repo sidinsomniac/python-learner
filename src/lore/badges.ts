@@ -19,6 +19,8 @@ export const BADGES: Badge[] = [
   { id: "year-1", name: "First Year Complete", icon: "🎓", description: "Pass the First Year Trial and solve the mystery." },
   { id: "year-2", name: "Second Year Complete", icon: "🐍", description: "Pass the Second Year Trial and empty the Hoarder's Cabinet." },
   { id: "cabinet-detective", name: "Cabinet Detective", icon: "🗝️", description: "Uncover every clue of the Hoarder's Cabinet." },
+  { id: "year-3", name: "Third Year Complete", icon: "⏳", description: "Pass the Third Year Trial and free the prisoner of the loop." },
+  { id: "loop-detective", name: "Loop Detective", icon: "🕰️", description: "Uncover every clue of the Prisoner of the Loop." },
   { id: "time-turner", name: "Time-Turner", icon: "⏳", description: "Finish your first Time-Turner review." },
   { id: "streak-3", name: "Three in a Row", icon: "📅", description: "Review on three days in a row." },
   { id: "streak-7", name: "Perfect Attendance", icon: "🗓️", description: "Review on seven days in a row." },
