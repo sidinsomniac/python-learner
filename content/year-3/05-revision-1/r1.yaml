@@ -1,0 +1,34 @@
+tier: review
+type: divination
+title: The Library's Strange Hours
+task: Predict every line.
+snippet: |
+  def turn(hours):
+      try:
+          result = 12 // hours
+      except ZeroDivisionError:
+          print("no turning")
+          return None
+      else:
+          print("turned", result)
+          return result
+      finally:
+          print("click")
+
+  turn(4)
+  turn(0)
+  books = [("Hogwarts: A History", 3), ("Quidditch", 1), ("Unfogging", 3)]
+  print([b[0] for b in sorted(books, key=lambda b: -b[1])])
+hints:
+  nudge: Two puzzles. For turn(), note which blocks run in each call, and in what order. Then a sort with a negative key.
+  question: Does finally run even when the except block has just returned? Which two books tie, and do they swap places?
+  pseudocode: |
+    turn(4): no error - the else block prints, then finally prints
+    turn(0): the except block prints, then finally still prints
+    the books sort by copies, biggest first; equal ones keep their order
+  flaw: The usual slip is to think a return inside except skips finally. It never does.
+  analogous: |
+    ```text
+    try: ok -> else -> finally
+    try: error -> except -> finally
+    ```

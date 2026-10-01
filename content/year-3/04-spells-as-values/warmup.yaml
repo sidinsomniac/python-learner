@@ -1,0 +1,44 @@
+tier: warmup
+type: practice
+title: The Shortest Prophecy First
+task: |
+  Write `by_length(prophecies)`. It returns a **new** list of the prophecies
+  sorted from shortest to longest. Prophecies of equal length keep their
+  original order. Don't change the list you were given.
+
+  ```python
+  by_length(["The Grim!", "Beware", "A boy fades", "Tea"])
+  # -> ['Tea', 'Beware', 'The Grim!', 'A boy fades']
+  ```
+
+  Use `sorted` with a `key`.
+starter: |
+  def by_length(prophecies):
+      prophecies.sort()
+      return prophecies
+tests: |
+  def test_example():
+      fn = student_function("by_length")
+      given = ["The Grim!", "Beware", "A boy fades", "Tea"]
+      got = call(fn, given)
+      check(got == ["Tea", "Beware", "The Grim!", "A boy fades"], f"by_length(...) returned {got!r}. What is being compared - the words, or their lengths?")
+      check(given == ["The Grim!", "Beware", "A boy fades", "Tea"], "The original list changed! Which gives back a new list - sort() or sorted()?")
+
+  def test_ties():
+      got = call(student_function("by_length"), ["owl", "cat", "rat", "toad"])
+      check(got == ["owl", "cat", "rat", "toad"], f"Equal lengths should keep their order. You returned {got!r}.")
+
+  def test_key():
+      keys = [k for k in ast.walk(tree()) if isinstance(k, ast.keyword) and k.arg == "key"]
+      check(bool(keys), "Could sorted() do the comparing, if you told it what to compare with key=...?")
+hints:
+  nudge: sorted() can compare anything you choose. What should it compare here?
+  question: Which built-in spell gives the length of a string? Can you hand that spell to sorted itself?
+  pseudocode: |
+    give back the prophecies, sorted, using their lengths as the key
+  flaw: If the original list changes, you used .sort(), which works in place. sorted() makes a new list.
+  analogous: |
+    ```python
+    owls = ["Hedwig", "Errol", "Pig"]
+    print(sorted(owls, key=str.lower))
+    ```

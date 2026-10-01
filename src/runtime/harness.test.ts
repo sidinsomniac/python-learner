@@ -65,6 +65,20 @@ describe("the desk of files", () => {
   });
 });
 
+describe("raised()", () => {
+  it("reports the error a spell raises, or None", () => {
+    const code = "def check_year(n):\n    if not 1 <= n <= 7:\n        raise ValueError('year must be 1-7')\n    return n\n";
+    const tests = [
+      "def test_raises():",
+      "    fn = student_function('check_year')",
+      "    check(raised(fn, 9) == ('ValueError', 'year must be 1-7'), 'raises?')",
+      "    check(raised(fn, 3) is None, 'no error for 3')",
+      "",
+    ].join("\n");
+    expect(grade(code, tests).failure).toBeNull();
+  });
+});
+
 describe("the Pensieve's call stack", () => {
   const countdown = "def countdown(n):\n    if n == 0:\n        return 0\n    return countdown(n - 1)\n\ncountdown(2)\n";
 

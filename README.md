@@ -111,7 +111,7 @@ Each year folder also has a `year.yaml`: title, mystery, the prologue scene, and
 
 `tests` can use these helpers from `src/runtime/harness.py`:
 - `run_student(inputs)` and `run_with(name=value)` run the student's code, the second with some starting values swapped for others. They return `.stdout`, `.lines` and `.ns`.
-- `student_function(name)` gets a function the student defined; `call(fn, ...)` calls it safely (the student's crashes are reported as theirs), and `printed()` returns what that call printed.
+- `student_function(name)` gets a function the student defined; `call(fn, ...)` calls it safely (the student's crashes are reported as theirs), and `printed()` returns what that call printed. `raised(fn, ...)` expects an error and returns its `(type, message)`, or None.
 - `source()` and `tree()` give the student's code as text or as an AST.
 - `calls(name)`, `uses(ast.For)` and `count_nodes(...)` check the code's structure.
 - `timed(fn, ...)` fails a slow solution.

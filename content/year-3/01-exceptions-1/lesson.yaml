@@ -1,0 +1,21 @@
+id: y3-l01a
+year: 3
+order: 1
+number: 1
+part: { n: 1, of: 2 }
+title: "Dementor Defence: Catching Errors"
+location: The Defence Against the Dark Arts classroom
+concepts: [errors, try, except, specific exceptions, else, finally, "except ... as err"]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: lupin
+    line: Good afternoon! Books away - you won't need them. Today we face a Boggart. It takes the shape of whatever you fear most.
+  - who: narrator
+    line: The wardrobe rattles. When it bursts open, the Boggart becomes... a red error message. For Neville it reads ValueError. For Ron, KeyError. For Hermione, a ZeroDivisionError that won't stop flashing.
+  - who: ron
+    line: (backing away) Why's it different for everyone?
+  - who: lupin
+    line: Because errors come in many shapes, and a good defence names the shape it's facing. In Parseltongue the defence is called `try` and `except`.
+  - who: ashwood
+    line: Until now, one error stopped your whole spell dead. Today you learn to **catch** them - and to catch only the ones you mean to.
+clue: Cleaned up, the castle's error log shows something odd. **Every error this week was raised at exactly 3:03 pm** - the minute the fading boy walks.

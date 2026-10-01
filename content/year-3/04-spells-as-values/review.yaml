@@ -1,0 +1,21 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: key-len
+  type: predict
+  code: |
+    words = ["Lumos", "Nox", "Accio", "Wingardium"]
+    print(sorted(words, key=len))
+    print(max(words, key=len), min(words, key=len))
+  why: The key decides the order, but the items themselves come back. Lumos and Accio tie, so they keep their original order.
+- id: brackets
+  type: choice
+  q: '`def shout(t): return t.upper()`. What is the difference between `shout` and `shout("a")`?'
+  options: ["None", "`shout` is the spell itself; `shout(\"a\")` casts it and gives 'A'", "`shout` casts it with no argument"]
+  answer: 1
+  why: Without brackets you're talking about the function as a value; with brackets you call it.
+- id: tuple-key
+  type: predict
+  code: |
+    pets = [("Scabbers", 12), ("Crookshanks", 3), ("Hedwig", 3)]
+    print(sorted(pets, key=lambda p: (p[1], p[0])))
+    print(sorted(pets, key=lambda p: -p[1]))
+  why: Tuples compare item by item. A minus sign on a number reverses just that part.

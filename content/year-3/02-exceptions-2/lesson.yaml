@@ -1,0 +1,19 @@
+id: y3-l01b
+year: 3
+order: 2
+number: 1
+part: { n: 2, of: 2 }
+title: "Dementor Defence: Raising Errors"
+location: Professor McGonagall's office
+concepts: [raise, error messages, ValueError vs TypeError, isinstance, validation, guard clauses]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: mcgonagall
+    line: Hogsmeade permission slips. Three hundred of them - and this year the Ministry insists every one is checked before a single student passes the Dementors.
+  - who: mcgonagall
+    line: Some are forged, some are smudged, and one, I'm told, is signed by "a Mr Padfoot". I want a spell that refuses a bad slip *loudly*.
+  - who: ron
+    line: Refuses loudly? So it... causes an error? On purpose?
+  - who: ashwood
+    line: Exactly, Mr Weasley. Last lesson we caught errors. Today we **raise** them - so a bad value can never slip quietly through.
+clue: One slip passes every check. It's perfectly valid - but it's dated **1926** and signed by **T. Wren**. Nobody has used it in a hundred years.

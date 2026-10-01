@@ -65,9 +65,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **77** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
-| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **46 lessons and 140 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have. **18** pass at the moment. |
+| `npm test` | Unit tests (Vitest). **78** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **51 lessons and 155 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **19** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -162,6 +162,7 @@ content/
 | `student_function(name)` | Gets the function the student defined. |
 | `call(fn, *args, **kw)` | Calls it safely: a crash counts as the **student's** error and reports their line number, and a runaway loop is stopped. |
 | `printed()` | What the last `call` printed. Use it to insist on `return` rather than `print`. |
+| `raised(fn, *args)` | Calls the function expecting an error. Returns `(type name, message)`, e.g. `("ValueError", "year must be 1-7")`, or `None` if nothing was raised. |
 | `source()`, `tree()` | The student's code, as text or as a parsed tree. |
 | `calls(name)`, `uses(ast.X)`, `count_nodes(...)` | Checks on the code's structure. |
 | `timed(...)`, or `time.perf_counter()` in a test | Speed tests. |
@@ -182,7 +183,10 @@ Tests run in order and stop at the first failure.
 - `dict-keys`: from y2-l03a
 - `append-comprehension`: from y2-l06a
 - `mutable-default`: from y2-l09
-- **Written, but not switched on yet** (each goes into `review-rules.yaml` in the same commit as its lesson, because the validator rejects a rule that starts at an unknown lesson): `bare-except` (y3-l01a), `open-without-with` (y3-l02), `lambda-assign` and `needless-lambda` (y3-l03)
+- `bare-except` (a bare `except:`, or `except Exception: pass`): from y3-l01a
+- `open-without-with`: from y3-l02
+- `lambda-assign` (`f = lambda ...`) and `needless-lambda` (`key=lambda s: len(s)`): from y3-l03
+- A new rule goes into `review-rules.yaml` in the same commit as its lesson, because the validator rejects a rule that starts at an unknown lesson.
 - plus the Year 1 rules (unused variable, shadowed built-in, `str()` inside an f-string, comparing with `== True`, `range(len(...))`, `x = x + ...`, and others).
 
 ## 8. Content rules the validator enforces, and their traps
@@ -202,7 +206,7 @@ Tests run in order and stop at the first failure.
 1. **Colons in YAML.** A plain value containing `: ` breaks the YAML (for example ``q: What does `{"a": 1}` do?``). Quote it, or use `>-`.
 2. **`\n` inside `tests: |` blocks.** Write `\n`, not `\\n`: block scalars don't process escapes.
 3. **The step limit.** The validator stops any spell after **200,000 executed lines** (`STEP_LIMIT`). Keep scale tests around 20,000–50,000 items.
-4. **Hints that leak.** Pseudocode like `found = False` or `random.seed(seed)` counts as a solution line. Describe it in words: "remember that nothing is found yet".
+4. **Hints that leak.** Pseudocode like `found = False` or `random.seed(seed)` counts as a solution line. Describe it in words: "remember that nothing is found yet". This includes **short structural lines in the analogous example**: `except ValueError:`, `except ValueError as err:` and `parts = line.split(",")` all count. Use a different error type or variable name in the example.
 5. **Unpredictable output.** Predict cards and divination snippets must print the same thing every time. **Sort sets before printing them**, because string hashing is randomised.
 6. **Wide code blocks.** Code in task text is cut off past about 60 characters. Put expected results on their own line, as `# -> result`.
 7. **Starters that crash on load.** For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
@@ -247,6 +251,7 @@ location.reload();
 **Built:**
 - Year 1, The Philosopher's Syntax: 24 units and 73 exercises.
 - Year 2, The Chamber of Collections: 22 units and 67 exercises.
+- Year 3, The Prisoner of Recursion (in progress): batch A is built: `year.yaml` (the Time-Turner dusk theme and the prologue), y3-l01a, y3-l01b, y3-l02, y3-l03 and y3-r1. That's 5 units and 15 exercises.
 - Systems: story pop-ups, year colour themes, 10 random weather presets, Diagon Alley (cosmetics plus Felix Felicis and Time-Turner Sand), Peeves' Bargain (skipping costs Galleons and XP, and rises with each skip; Trials can't be skipped), level rewards up to level 20, the Time-Turner, the Dueling Club, the Pensieve, the Case File, badges.
 
 **Next, in order:**
@@ -262,7 +267,7 @@ location.reload();
      - friendly `RecursionError` and `FileNotFoundError` questions;
      - four new Snape rules, written but not switched on (§7);
      - `YEAR_BADGES[3]`, the `year-3` and `loop-detective` badges, and the new speakers in `cast.yaml` (lupin, trelawney, tobias, crookshanks). `YEAR_NAMES` already had Year 3.
-   - **Phase 3, next: content in four batches, each validated, committed and pushed.** Add an e2e test for a file exercise and the Pensieve's call stack with the first batch: l01a–r1, l04–r2, l08–r3, then l12, l13 and the Trial. The theme is Time-Turner dusk, silver and indigo.
+   - **Phase 3, in progress: content in four batches, each validated, committed and pushed.** Batch A is done, along with the e2e test for files on the desk and the Pensieve's call stack. The batches are A (l01a–r1, done), B (l04–r2, **next**), C (l08–r3), then D (l12, l13 and the Trial).
    - The save-safety fix (11.1) has been put off at the owner's request.
 3. Then Years 4–7, one at a time.
 4. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
@@ -279,6 +284,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-01 | Claude Code desktop session | Year 3 batch A: `year.yaml` plus y3-l01a, y3-l01b, y3-l02, y3-l03 and y3-r1 (15 exercises). `raised()` test helper. Snape's 4 Year 3 rules switched on. e2e test for Year 3 files and the call stack. Counts: 51 lessons, 155 exercises, 78 unit, 19 e2e (§3, §7, §8, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 engine support: the desk of files (`files:` in content, `write_files` and `read_file`), the Pensieve's call stack, `RecursionError` and file-error questions, 4 Snape rules (not switched on yet), Year 3 badges and cast, and harness tests in Pyodide. Tests: 77 unit, 18 e2e (§3, §5–§8, §11). Docs: README, GDD, exercise-design §7c. |
 | 2026-10-01 | Claude Code desktop session | Year 3 planned and scripted: the full scene-by-scene story in `story.md`, and the exact lesson table in `curriculum.md`. The build waits for the owner's review of the script (§10, §11). |
 | 2026-10-01 | Claude Code web session `session_01QRDafNtZXxe5n2GotwYapD` | Handoff guide and CLAUDE.md created. State: Years 1–2 built; the save-safety fix (§11.1) planned but not built. |

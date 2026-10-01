@@ -150,6 +150,7 @@ def test_best():
 
 - Always go through `call(fn, ...)`: a crash inside the student's function is reported as *their* error with a line number, and runaway loops are stopped.
 - `printed()` is what the last `call` printed - use it to insist on `return` rather than `print`.
+- `raised(fn, ...)` checks a spell that should refuse bad input: it returns `(type name, message)`, or `None` if nothing was raised (Year 3 on).
 - For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
 
 ## 7c. Exercises with files (Year 3, Lesson 2 onwards)

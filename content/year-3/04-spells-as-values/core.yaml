@@ -1,0 +1,63 @@
+tier: core
+type: practice
+title: The Inner Eye, In Order
+twist: spec reading - two keys, and one of them runs backwards
+task: |
+  Each of Trelawney's prophecies is a tuple `(date, certainty, text)`: the
+  date as `"YYYY-MM-DD"` text, and how certain she was, from 0 to 100.
+
+  Write `order_prophecies(records)`. It returns a **new** list:
+  - oldest date first;
+  - on the same date, the **most certain** first;
+  - if both match, the original order stays.
+
+  ```python
+  records = [
+      ("2026-09-03", 40, "A boy who walks in circles"),
+      ("2026-09-01", 10, "Tea leaves: a dog?"),
+      ("2026-09-03", 95, "Doom!"),
+  ]
+  order_prophecies(records)
+  # -> [('2026-09-01', 10, 'Tea leaves: a dog?'),
+  #     ('2026-09-03', 95, 'Doom!'),
+  #     ('2026-09-03', 40, 'A boy who walks in circles')]
+  ```
+
+  Don't change the list you were given.
+starter: |
+  def order_prophecies(records):
+      return sorted(records)
+tests: |
+  RECORDS = [
+      ("2026-09-03", 40, "A boy who walks in circles"),
+      ("2026-09-01", 10, "Tea leaves: a dog?"),
+      ("2026-09-03", 95, "Doom!"),
+  ]
+
+  def test_example():
+      given = list(RECORDS)
+      got = call(student_function("order_prophecies"), given)
+      check(got == [RECORDS[1], RECORDS[2], RECORDS[0]], f"order_prophecies(...) returned {got!r}. On 3 September, which prophecy was she more certain of?")
+      check(given == RECORDS, "The original list changed. Give back a new one.")
+
+  def test_ties_keep_order():
+      records = [("2026-09-05", 70, "Zebra"), ("2026-09-05", 70, "Apple"), ("2026-09-04", 70, "Mango")]
+      got = call(student_function("order_prophecies"), records)
+      check(got == [records[2], records[0], records[1]], f"With equal date and certainty, the original order should stay - even if the text would sort differently. You returned {got!r}.")
+
+  def test_backwards_certainty():
+      records = [("2026-10-01", 5, "a"), ("2026-10-01", 100, "b"), ("2026-10-01", 50, "c"), ("2026-09-30", 1, "d")]
+      got = [r[2] for r in call(student_function("order_prophecies"), records)]
+      check(got == ["d", "b", "c", "a"], f"The texts came out as {got}. Dates go up, but certainty goes down. Did one of them run the wrong way?")
+hints:
+  nudge: One key, made of two parts. The first part goes up; the second must go down.
+  question: What's in a tuple key that would make bigger certainties come first, while the dates still go oldest first? Why must the text NOT be part of the key?
+  pseudocode: |
+    give back the records sorted by a key that is:
+        (the date, the certainty made negative)
+  flaw: If equal prophecies come out alphabetically, the text crept into your key - sorting whole tuples compares the text too.
+  analogous: |
+    ```python
+    potions = [("Felix", 8), ("Draught", 2), ("Amortentia", 8)]
+    print(sorted(potions, key=lambda p: (-p[1], p[0])))
+    ```

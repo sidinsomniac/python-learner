@@ -340,6 +340,20 @@ def printed():
     return _last_printed
 
 
+def raised(fn, *args, **kwargs):
+    """Call the learner's function, expecting it to raise an error.
+
+    Returns (error type name, message) - e.g. ("ValueError", "year must be 3-7")
+    - or None if the call finished without raising. Runaway loops are still
+    stopped by call()'s guard.
+    """
+    try:
+        call(fn, *args, **kwargs)
+    except StudentCrashed as crashed:
+        return crashed.error["type"], crashed.error["message"]
+    return None
+
+
 def calls(name):
     """Does the learner's code call `name(...)` or `something.name(...)`?"""
     for node in ast.walk(tree()):
@@ -375,6 +389,7 @@ TEST_HELPERS = {
     "student_function": student_function,
     "call": call,
     "printed": printed,
+    "raised": raised,
     "run_with": run_with,
     "source": source,
     "tree": tree,

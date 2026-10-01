@@ -1,0 +1,44 @@
+tier: warmup
+type: practice
+title: Which Year?
+task: |
+  Write `check_year(n)`. If `n` is a Hogwarts year (1 to 7), return it.
+  Otherwise **raise** a `ValueError` with the message `year must be 1-7`.
+
+  ```python
+  check_year(3)    # -> 3
+  check_year(9)    # ValueError: year must be 1-7
+  ```
+starter: |
+  def check_year(n):
+      if 1 <= n <= 7:
+          return n
+      return None
+tests: |
+  def test_good_years():
+      fn = student_function("check_year")
+      for n in [1, 3, 7]:
+          check(call(fn, n) == n, f"check_year({n}) should give back {n}.")
+
+  def test_bad_years():
+      fn = student_function("check_year")
+      for n in [0, 8, -3, 100]:
+          got = raised(fn, n)
+          check(got is not None, f"check_year({n}) didn't raise anything. Returning None is quiet - how do you make a spell refuse loudly?")
+          check(got[0] == "ValueError", f"check_year({n}) raised a {got[0]}. Which error type fits a number with a bad value?")
+          check(got[1] == "year must be 1-7", f"The message was {got[1]!r}. Copy the message from the task exactly.")
+hints:
+  nudge: Instead of returning None for a bad year, raise an error with the message from the task.
+  question: Is the year the wrong *kind* of thing, or the right kind with a bad value? Which error type says that?
+  pseudocode: |
+    if n is outside 1 to 7:
+        raise the bad-value error with the task's message
+    give back n
+  flaw: If nothing is raised, check that you wrote `raise`, not `return`, in front of the error.
+  analogous: |
+    ```python
+    def check_floor(n):
+        if n < 0:
+            raise ValueError("no floors below the dungeons")
+        return n
+    ```

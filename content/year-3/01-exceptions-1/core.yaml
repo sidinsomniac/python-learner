@@ -1,0 +1,64 @@
+tier: core
+type: practice
+title: The Boggart Log
+twist: edge case - a log where every reading is bad, and readings that look false but aren't
+task: |
+  Lupin's Boggart detector writes its readings as text, and half of them are
+  garbage. Write `average_reading(readings)`.
+
+  `readings` is a list of strings. Turn each one into a decimal number with
+  `float()`. Skip any that can't be turned into a number. Return the
+  average of the good ones, **rounded to 2 decimal places**.
+
+  ```python
+  average_reading(["3", "??", "4.5", "", "-1.5"])
+  # -> 2.0
+  ```
+
+  If there are no good readings at all, return `None`.
+starter: |
+  def average_reading(readings):
+      total = 0
+      for reading in readings:
+          total += float(reading)
+      return round(total / len(readings), 2)
+tests: |
+  def test_example():
+      fn = student_function("average_reading")
+      got = call(fn, ["3", "??", "4.5", "", "-1.5"])
+      check(got == 2.0, f"average_reading(['3', '??', '4.5', '', '-1.5']) returned {got!r}. How many readings are good, and what do they add up to?")
+
+  def test_rounding_and_zero():
+      fn = student_function("average_reading")
+      got = call(fn, ["1", "0", "1"])
+      check(got == 0.67, f"['1', '0', '1'] gave {got!r}. Is '0' a good reading, or did it get skipped?")
+      got = call(fn, ["12a", "2.25"])
+      check(got == 2.25, f"['12a', '2.25'] gave {got!r}.")
+
+  def test_all_bad():
+      fn = student_function("average_reading")
+      got = call(fn, ["none", "", "?"])
+      check(got is None, f"When every reading is bad you returned {got!r}. What does the task ask for?")
+      check(call(fn, []) is None, "An empty log has no good readings either.")
+hints:
+  nudge: Gather the good readings as you go. A bad reading is simply left out.
+  question: What should you divide by - the number of readings, or the number of good ones? What happens if there are no good ones?
+  pseudocode: |
+    start with no good readings
+    for each reading:
+        try to turn it into a float and keep it
+        if that fails with the bad-value error: move on to the next reading
+    if no reading was kept: give back None
+    give back the average of the kept readings, rounded to 2 places
+  flaw: A ZeroDivisionError means no reading was good and you divided by zero. If '0' disappears, you skipped readings whose number is falsy.
+  analogous: |
+    ```python
+    def total_known(names, ages):
+        known = []
+        for name in names:
+            try:
+                known.append(ages[name])
+            except KeyError:
+                pass
+        return sum(known)
+    ```

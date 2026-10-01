@@ -1,0 +1,64 @@
+tier: review
+type: repair
+title: The Gringotts Tally
+files:
+  vault.csv: |
+    name,galleons
+    Potter,120
+    Weasley,7
+
+    Lestrange,lots
+    Malfoy,3000
+task: |
+  Griphook's spell adds up the Galleons in a vault file (`vault.csv`, on the
+  desk), but it crashes before it gets anywhere.
+
+  `total_galleons(path)` should return the total of the `galleons` column.
+  The first line is a header. Skip blank lines, and skip amounts that
+  aren't whole numbers.
+
+  ```python
+  total_galleons("vault.csv")
+  # -> 3127
+  ```
+
+  Find out why it crashes, then fix it. Snape will also ask who closes
+  the file.
+starter: |
+  def total_galleons(path):
+      vault = open(path)
+      total = 0
+      for line in vault:
+          name, amount = line.split(",")
+          total += int(amount)
+      return total
+tests: |
+  def test_vault():
+      got = call(student_function("total_galleons"), "vault.csv")
+      check(got == 3127, f"total_galleons('vault.csv') returned {got!r}. Which lines can't be added up?")
+
+  def test_another_vault():
+      write_files({"v.csv": "name,galleons\nLovegood,5\n\n\nDiggory,10\nPeeves,?\n"})
+      got = call(student_function("total_galleons"), "v.csv")
+      check(got == 15, f"For another vault, total_galleons returned {got!r}.")
+
+  def test_closed():
+      check(uses(ast.With), "Who closes the vault file? Is there a way to open it so it closes itself?")
+hints:
+  nudge: Run it and read the error. Then ask, line by line, what the header line and the blank line do to `int()` and to the unpacking.
+  question: What does a blank line split into? What does int(" galleons\n") do? Which lines should never reach int() at all?
+  pseudocode: |
+    open the file with `with`, and read its lines
+    for every line after the header:
+        split it; if it doesn't have exactly two parts: skip it
+        try adding its amount as an int; if that fails, skip it
+    give back the total
+  flaw: The first crash is the header - "galleons" isn't a number. The next is the blank line, which can't be unpacked into two names.
+  analogous: |
+    ```python
+    with open("owls.csv") as roost:
+        for line in roost.read().splitlines()[1:]:
+            fields = line.split(",")
+            if len(fields) == 3 and fields[2].isdigit():
+                print(fields[0], int(fields[2]))
+    ```

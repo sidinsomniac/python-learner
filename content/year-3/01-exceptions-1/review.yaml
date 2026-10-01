@@ -1,0 +1,31 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: try-skips
+  type: predict
+  code: |
+    try:
+        print("A")
+        n = int("x")
+        print("B")
+    except ValueError:
+        print("C")
+    print("D")
+  why: After the error, the rest of the try block is skipped and the except block runs. Then the spell carries on.
+- id: else-finally
+  type: predict
+  code: |
+    for b in [2, 0]:
+        try:
+            r = 8 // b
+        except ZeroDivisionError:
+            print("zero")
+        else:
+            print("got", r)
+        finally:
+            print("end")
+  why: else runs only when nothing went wrong; finally runs every time.
+- id: bare-except
+  type: choice
+  q: Why should you name the error in `except`, rather than writing a bare `except:`?
+  options: ["It runs faster", "A bare except also hides bugs you didn't expect, even typos", "A bare except is a SyntaxError"]
+  answer: 1
+  why: Catching everything swallows NameErrors and other genuine bugs. Catch only what you expect.

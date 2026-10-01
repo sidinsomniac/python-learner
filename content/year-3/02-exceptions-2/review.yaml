@@ -1,0 +1,27 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: raise-stops
+  type: predict
+  code: |
+    def check(n):
+        if n < 0:
+            raise ValueError("negative")
+        return n * 2
+
+    for n in [3, -1, 5]:
+        try:
+            print(check(n))
+        except ValueError as err:
+            print("refused", err)
+  why: The raise stops check() for -1, the caller catches it, and the loop carries on with 5.
+- id: type-or-value
+  type: choice
+  q: '`set_volume(level)` is called with `level="loud"`. Which error should it raise?'
+  options: ["ValueError", "TypeError", "KeyError"]
+  answer: 1
+  why: Text where a number belongs is the wrong kind of thing, so it's a TypeError.
+- id: bool-is-int
+  type: choice
+  q: What does `isinstance(True, int)` give?
+  options: ["True", "False", "An error"]
+  answer: 0
+  why: In Python, True and False are a special kind of int (1 and 0). Rule them out separately if they're not allowed.

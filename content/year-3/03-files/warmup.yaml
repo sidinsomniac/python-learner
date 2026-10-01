@@ -1,0 +1,56 @@
+tier: warmup
+type: practice
+title: Counting the Register
+files:
+  register.txt: |
+    Harry Potter
+    Hermione Granger
+
+    Ron Weasley
+    Neville Longbottom
+       
+task: |
+  Write `count_names(path)`. It opens the file called `path` and returns
+  how many lines have a name on them. Blank lines, and lines of only
+  spaces, don't count.
+
+  ```python
+  count_names("register.txt")
+  # -> 4
+  ```
+
+  Open the "📂 On the desk" panel to see the file.
+starter: |
+  def count_names(path):
+      return 4
+tests: |
+  def test_register():
+      got = call(student_function("count_names"), "register.txt")
+      check(got == 4, f"count_names('register.txt') returned {got!r}. Which lines are blank, or only spaces?")
+
+  def test_another_file():
+      write_files({"owlery.txt": "Hedwig\nErrol\n\n\nPigwidgeon\nHermes\nArchimedes\n"})
+      got = call(student_function("count_names"), "owlery.txt")
+      check(got == 5, f"For a different file, count_names('owlery.txt') returned {got!r}. Does your spell really open the file it's given?")
+
+  def test_empty():
+      write_files({"empty.txt": ""})
+      check(call(student_function("count_names"), "empty.txt") == 0, "An empty file has no names.")
+
+  def test_with():
+      check(uses(ast.With), "Open the file with `with`, so it's closed for you.")
+hints:
+  nudge: Open the file, go through it line by line, and count the lines that still have something on them after stripping.
+  question: What does a blank line look like after `.strip()`? And a line of only spaces?
+  pseudocode: |
+    open the file at path, with `with`
+        count starts at 0
+        for each line: if the stripped line isn't empty, count it
+    give back the count
+  flaw: If you get 6, your spell counts the blank line and the line of spaces. If you get 4 for every file, check you aren't returning a fixed number!
+  analogous: |
+    ```python
+    def count_owls(path):
+        with open(path) as roost:
+            return len(roost.read().split())
+    ```

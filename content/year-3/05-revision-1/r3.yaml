@@ -1,0 +1,53 @@
+tier: review
+type: practice
+title: The Top of the Class
+task: |
+  Write `top_n(records, n, key)`. `key` is a spell that scores a record.
+  Return the `n` records with the **highest** scores, highest first. Records
+  with equal scores keep their original order. If `n` is bigger than the
+  number of records, return them all.
+
+  ```python
+  marks = [("Neville", 6), ("Hermione", 10), ("Ron", 6), ("Harry", 8)]
+
+  def mark(record):
+      return record[1]
+
+  top_n(marks, 3, mark)
+  # -> [('Hermione', 10), ('Harry', 8), ('Neville', 6)]
+  ```
+starter: |
+  def top_n(records, n, key):
+      pass
+tests: |
+  MARKS = [("Neville", 6), ("Hermione", 10), ("Ron", 6), ("Harry", 8)]
+
+  def mark(record):
+      return record[1]
+
+  def test_example():
+      got = call(student_function("top_n"), MARKS, 3, mark)
+      check(got == [("Hermione", 10), ("Harry", 8), ("Neville", 6)], f"top_n(marks, 3, mark) returned {got!r}. Neville and Ron tie - who came first in the list?")
+
+  def test_any_key():
+      fn = student_function("top_n")
+      got = call(fn, ["Lumos", "Expecto Patronum", "Nox", "Accio"], 2, len)
+      check(got == ["Expecto Patronum", "Lumos"], f"With key=len, the two longest come first. You returned {got!r}. Is your spell using the key it's given?")
+
+  def test_edges():
+      fn = student_function("top_n")
+      check(call(fn, MARKS, 10, mark) == [("Hermione", 10), ("Harry", 8), ("Neville", 6), ("Ron", 6)], "If n is too big, give back every record, best first.")
+      check(call(fn, MARKS, 0, mark) == [], "top 0 is nobody at all.")
+      check(MARKS == [("Neville", 6), ("Hermione", 10), ("Ron", 6), ("Harry", 8)], "The original list must not change.")
+hints:
+  nudge: Sort by the key, biggest first, and then take a slice.
+  question: Does reverse=True keep tied records in their original order? What does a slice do if it asks for more items than there are?
+  pseudocode: |
+    sort the records by the key given, highest first (stable)
+    give back the first n of them
+  flaw: If Ron comes before Neville, you sorted and then reversed the whole list - that flips the ties too. Let sorted do the reversing.
+  analogous: |
+    ```python
+    owls = ["Hedwig", "Pig", "Errol"]
+    print(sorted(owls, key=len, reverse=True)[:1])
+    ```

@@ -1,0 +1,51 @@
+tier: warmup
+type: practice
+title: The Safe Transfiguration
+task: |
+  Write `safe_int(text)`. It returns `text` turned into a whole number - or
+  `None` if it can't be.
+
+  ```python
+  safe_int("42")      # -> 42
+  safe_int("-3")      # -> -3
+  safe_int("seven")   # -> None
+  safe_int("3.5")     # -> None
+  ```
+
+  Let `int()` do the checking, and catch the error it raises.
+starter: |
+  def safe_int(text):
+      return int(text)
+tests: |
+  def test_numbers():
+      fn = student_function("safe_int")
+      check(call(fn, "42") == 42, f"safe_int('42') returned {call(fn, '42')!r}.")
+      check(call(fn, "-3") == -3, f"safe_int('-3') returned {call(fn, '-3')!r}. Is a minus sign allowed?")
+      check(call(fn, " 7 ") == 7, "int() is happy with spaces around a number. Is your spell?")
+
+  def test_not_numbers():
+      fn = student_function("safe_int")
+      for text in ["seven", "3.5", "", "4 2"]:
+          got = call(fn, text)
+          check(got is None, f"safe_int({text!r}) returned {got!r}. What should come back when int() can't do it?")
+
+  def test_uses_try():
+      check(uses(ast.Try), "Could int() itself do the checking, with try and except catching its error?")
+hints:
+  nudge: Try the conversion. If int() raises an error, that's your answer that it wasn't a number.
+  question: Which error type does int("seven") raise? What should the spell give back in that case?
+  pseudocode: |
+    define safe_int(text)
+        try:
+            give back text turned into an int
+        if that raises the "bad value" error:
+            give back nothing (None)
+  flaw: If "-3" gives None, you checked with .isdigit() - which says False for a minus sign. Let int() decide instead.
+  analogous: |
+    ```python
+    def safe_age(ages, name):
+        try:
+            return ages[name]
+        except KeyError:
+            return 0
+    ```

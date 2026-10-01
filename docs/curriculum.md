@@ -94,7 +94,7 @@ The story is [The Jinxed Ledger](story.md#year-1-the-jinxed-ledger); each lesson
 | 14 | Debugging Craft | tracebacks, print-debugging, `assert`, removing while looping, the Pensieve | the glimmer gauge · the un-collecting counter-spell · ⭐ Lockhart's ledger (four bugs) |
 | 🏁 | **Trial: Messages of the Chamber** | | `caesar_shift` → `letter_frequencies` → `crack` (English scoring, fair ties) → `open_cabinet`: decode six notes and speak the password |
 
-## Year 3: The Prisoner of Recursion 📝 scripted, not built yet
+## Year 3: The Prisoner of Recursion 🚧 being built (lessons 1–3 and R1 are done)
 
 *Requires Year 2. Ends able to handle errors and files, use recursion, and reason about efficiency.*
 The story is [The Prisoner of the Loop](story.md#year-3-the-prisoner-of-the-loop). Every exercise is function-style. There are 20 units: 16 lessons, 3 revisions and the Trial, for about 64 exercises.

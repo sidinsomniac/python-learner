@@ -1,0 +1,22 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: with-closes
+  type: choice
+  q: What does `with open("a.txt") as f:` do when its block ends?
+  options: ["Deletes a.txt", "Closes the file", "Nothing - you must call f.close()"]
+  answer: 1
+  why: The with block closes the file for you, even if an error happened inside it.
+- id: write-mode
+  type: choice
+  q: '`notes.txt` holds 10 lines. What happens after `open("notes.txt", "w")`?'
+  options: ["The 10 lines are still there", "The file is wiped, ready for new writing", "A FileExistsError"]
+  answer: 1
+  why: Mode "w" starts the file from empty. Use "a" to add to the end instead.
+- id: split-spaces
+  type: predict
+  code: |
+    line = " Errol , Ron ,3\n"
+    parts = line.split(",")
+    clean = [p.strip() for p in parts]
+    print(parts)
+    print(clean, int(clean[2]) + 1)
+  why: split only cuts at commas - spaces and the newline stay until you strip them.

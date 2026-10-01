@@ -1,0 +1,18 @@
+id: y3-l03
+year: 3
+order: 4
+number: 3
+title: Spells as Values
+location: The Divination tower
+concepts: [functions as values, passing functions, "sorted(key=)", lambda, "min/max with key", map, filter, sorting by several keys]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: trelawney
+    line: (drifting out of the incense) Ah, {name}. I have been expecting you. I *Saw* the fading boy, you know - long before he came. It is all in my prophecies.
+  - who: hermione
+    line: (very quietly) She's got four hundred prophecies in there, all out of order. She could have "seen" anything.
+  - who: trelawney
+    line: Sort them, then, if you must. By the date I wrote them - and then by how *certain* the Inner Eye was. The most certain first, naturally.
+  - who: ashwood
+    line: To sort by your own rule, you hand `sorted` a spell that says what matters. Today, spells become things you can pass around - like any other value.
+clue: Sorted properly, Trelawney's prophecy of "a boy who walks in circles" was written **the day after** the first sighting. **Trelawney is cleared** - and rather embarrassed.

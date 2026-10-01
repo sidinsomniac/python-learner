@@ -1,0 +1,19 @@
+id: y3-r1
+year: 3
+order: 5
+number: R1
+kind: revision
+title: Revision I - Two Classes at Once
+location: The Library
+concepts: [try and except, raise, files, sorting with key, lambda]
+exercises: [r1, r2, r3]
+scene:
+  - who: ron
+    line: Hermione, you were in Arithmancy *and* Muggle Studies this morning. At the same time. I saw you in both!
+  - who: hermione
+    line: (going pink, and pulling a tiny golden hourglass out of her robes) Fine. It's a Time-Turner. McGonagall got it for me so I can take extra classes. Each turn sends you back one hour.
+  - who: hermione
+    line: There's one rule, and she made me promise it a hundred times. *Never turn it twice without stopping.*
+  - who: ashwood
+    line: A sound rule. Hold on to it. Now, revision - errors, files and sorting - and let's lay out what we know about our fading boy.
+clue: "Recap: a boy from 1926, who appears at exactly 3:03, with **no leaving date**. And a Time-Turner rule: *never turn twice without stopping*."

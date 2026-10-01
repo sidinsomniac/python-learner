@@ -1,0 +1,81 @@
+tier: outstanding
+type: practice
+title: The Brewing Line
+twist: inversion - a spell whose answer is another spell
+task: |
+  Write two spells.
+
+  **`pipeline(spells, value)`** casts each spell in the list on `value`,
+  **in order**, feeding each result into the next, and returns the final
+  result. With no spells, the value comes back unchanged.
+
+  ```python
+  pipeline([str.strip, str.upper], "  nox ")
+  # -> 'NOX'
+  ```
+
+  **`make_pipeline(spells)`** doesn't cast anything yet: it returns a **new
+  spell** that takes one value and runs it through the whole pipeline.
+
+  ```python
+  tidy = make_pipeline([str.strip, str.title])
+  tidy("  tobias wren ")
+  # -> 'Tobias Wren'
+  tidy(" luna")
+  # -> 'Luna'
+  ```
+starter: |
+  def pipeline(spells, value):
+      pass
+
+  def make_pipeline(spells):
+      pass
+tests: |
+  def add_one(n):
+      return n + 1
+
+  def double(n):
+      return n * 2
+
+  def test_pipeline():
+      fn = student_function("pipeline")
+      check(call(fn, [str.strip, str.upper], "  nox ") == "NOX", f"pipeline([str.strip, str.upper], '  nox ') returned {call(fn, [str.strip, str.upper], '  nox ')!r}.")
+      check(call(fn, [add_one, double], 3) == 8, "First add one, then double: 3 -> 4 -> 8. Is your order right?")
+      check(call(fn, [double, add_one], 3) == 7, "Double first, then add one: 3 -> 6 -> 7.")
+      check(call(fn, [], 5) == 5, "With no spells, the value should come back unchanged.")
+
+  def test_make_pipeline():
+      maker = student_function("make_pipeline")
+      tidy = call(maker, [str.strip, str.title])
+      check(callable(tidy), f"make_pipeline should give back a spell, something you can call. It gave back {tidy!r}.")
+      check(call(tidy, "  tobias wren ") == "Tobias Wren", "The spell it makes should run the value through every step.")
+      check(call(tidy, " luna") == "Luna", "The spell should work again and again, on new values.")
+
+  def test_nothing_cast_early():
+      seen = []
+      def spy(value):
+          seen.append(value)
+          return value
+      call(student_function("make_pipeline"), [spy])
+      check(seen == [], "make_pipeline cast a spell straight away. It should only build a new spell - the casting happens later.")
+hints:
+  nudge: pipeline is a loop that keeps replacing the value. make_pipeline defines a small spell inside itself, and returns that spell without calling it.
+  question: Inside make_pipeline, what does the new spell need to remember from the outside? What's the difference between returning `inner` and returning `inner(...)`?
+  pseudocode: |
+    pipeline(spells, value):
+        for each spell: replace value with the spell cast on value
+        give back value
+    make_pipeline(spells):
+        define a new spell taking one value, which gives back pipeline(spells, that value)
+        give back the new spell itself - no brackets
+  flaw: If make_pipeline returns a string or number, you called the inner spell instead of returning it.
+  analogous: |
+    ```python
+    def make_greeter(greeting):
+        def greet(name):
+            return f"{greeting}, {name}!"
+        return greet
+
+    hello = make_greeter("Hello")
+    print(hello("Luna"))
+    ```

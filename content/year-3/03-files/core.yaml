@@ -1,0 +1,94 @@
+tier: core
+type: practice
+title: The Smudged Ledger of 1926
+twist: edge case - a file with blank lines, stray spaces, missing fields and smudged numbers
+files:
+  ledger.csv: |
+    name,house,started,left
+    Albus Dumbledore,Gryffindor,1892,1899
+
+     Tobias Wren , Hufflepuff , 1923 ,
+    Elphias Doge,Gryffindor,1892,1899
+    Myrtle Warren,Ravenclaw,1940,1943
+    Unknown,,
+    Newt Scamander,Hufflepuff,19O8,1913
+    Pomona Sprout,Hufflepuff,1931
+    Rubeus Hagrid,Gryffindor,1940,194?
+task: |
+  Madam Pince's ledger (`ledger.csv`, on the desk) has a header line, then
+  one student per line: `name,house,started,left`. It's badly smudged.
+
+  Write `load_ledger(path)`. It returns a list of dictionaries, one for each
+  usable student, in file order:
+
+  ```python
+  {"name": "Albus Dumbledore", "house": "Gryffindor", "started": 1892, "left": 1899}
+  ```
+
+  The rules:
+  - Skip the header line, and skip blank lines.
+  - Strip the spaces from around every field.
+  - A line needs at least a name, a house and a `started` year. A line with
+    fewer fields, or whose `started` isn't a whole number, is skipped.
+  - `left` is an `int` - or `None` if it's missing, blank or not a number.
+starter: |
+  def load_ledger(path):
+      with open(path) as ledger:
+          lines = ledger.read().splitlines()
+      rows = []
+      for line in lines:
+          name, house, started, left = line.split(",")
+          rows.append({"name": name, "house": house, "started": int(started), "left": int(left)})
+      return rows
+tests: |
+  def test_ledger():
+      got = call(student_function("load_ledger"), "ledger.csv")
+      check(isinstance(got, list), f"load_ledger should give back a list. It gave {type(got).__name__}.")
+      names = [row.get("name") for row in got]
+      check(names == ["Albus Dumbledore", "Tobias Wren", "Elphias Doge", "Myrtle Warren", "Pomona Sprout", "Rubeus Hagrid"],
+            f"These students came back: {names}. Which lines should be skipped, and is every name stripped?")
+
+  def test_fields():
+      rows = call(student_function("load_ledger"), "ledger.csv")
+      first = rows[0]
+      check(first == {"name": "Albus Dumbledore", "house": "Gryffindor", "started": 1892, "left": 1899},
+            f"The first row came back as {first!r}. Are the years ints?")
+      tobias = rows[1]
+      check(tobias == {"name": "Tobias Wren", "house": "Hufflepuff", "started": 1923, "left": None},
+            f"Tobias came back as {tobias!r}. What should `left` be when it's blank?")
+      check(rows[4]["left"] is None, "Pomona Sprout's line has no `left` field at all.")
+      check(rows[5]["left"] is None, "Hagrid's `left` is smudged (194?). What should a smudged leaving year become?")
+
+  def test_another_ledger():
+      write_files({"other.csv": "name,house,started,left\nLuna Lovegood,Ravenclaw,1992,1999\n\nBad Line\nCedric Diggory , Hufflepuff , 1989 , \n"})
+      got = call(student_function("load_ledger"), "other.csv")
+      check(got == [{"name": "Luna Lovegood", "house": "Ravenclaw", "started": 1992, "left": 1999},
+                    {"name": "Cedric Diggory", "house": "Hufflepuff", "started": 1989, "left": None}],
+            f"For another ledger you returned {got!r}.")
+      write_files({"header.csv": "name,house,started,left\n"})
+      check(call(student_function("load_ledger"), "header.csv") == [], "A ledger with only a header has no students.")
+hints:
+  nudge: Read all the lines, skip the first, and for each line decide - usable or not? A small helper that turns text into a year or None will do a lot of the work.
+  question: What does a line with only two commas split into? What does int('') do? What about int('19O8')?
+  pseudocode: |
+    a helper turns text into an int, or None if it can't
+    read the file's lines
+    for every line after the header:
+        split it on commas and strip each part
+        if there are fewer than 3 parts: skip it
+        turn the started part into a year; if that gives None: skip the line
+        left is the fourth part turned into a year, if there is a fourth part, else None
+        keep a dictionary of the four fields
+    give back the kept dictionaries
+  flaw: A ValueError means a smudged number reached int() unprotected. If Tobias is missing, check you strip the spaces around his fields.
+  analogous: |
+    ```python
+    def read_scores(path):
+        scores = {}
+        with open(path) as table:
+            for line in table.read().splitlines()[1:]:
+                parts = [p.strip() for p in line.split(",")]
+                if len(parts) == 2 and parts[1].isdigit():
+                    scores[parts[0]] = int(parts[1])
+        return scores
+    ```

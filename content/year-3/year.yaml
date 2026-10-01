@@ -1,0 +1,29 @@
+year: 3
+title: The Prisoner of Recursion
+mystery: The Prisoner of the Loop
+theme:
+  mood: Time-Turner dusk - silver and indigo
+  gold: "#c8cfe8"
+  gold2: "#eef1fb"
+  bg: "#0b0d1a"
+  bg2: "#131731"
+  card: "#171b36"
+  card2: "#1f2444"
+  line: "#34396a"
+intro:
+  - who: narrator
+    line: Rain lashes the Hogwarts Express. Somewhere past the moors the train shudders to a halt, the lamps flicker out, and frost creeps across the window of your compartment.
+  - who: narrator
+    line: A tall, hooded shape glides past in the corridor. Every warm thought you've ever had seems to drain out through your shoes.
+  - who: lupin
+    line: (snapping a bar of chocolate into pieces) Eat. It helps. That was a Dementor - one of the Ministry's guards. They're looking for a prisoner, apparently, though nobody will say who.
+  - who: dumbledore
+    line: (at the Welcome Feast) The Dementors will stand at every entrance to the grounds this year. They are not known for forgiveness - so do not give them a reason.
+  - who: narrator
+    line: The next afternoon, at three minutes past three, a pale boy in old-fashioned robes walks straight through you in the third-floor corridor. He doesn't look up.
+  - who: tobias
+    line: One more turn... and I'll get it right.
+  - who: narrator
+    line: Then he's gone. Every torch in the corridor gutters, and somewhere outside, the Dementors turn towards the castle.
+  - who: ashwood
+    line: Welcome back, {name}. A boy who repeats himself, and guards drawn to trouble. This year we learn what to do when spells go **wrong** - and what happens when a spell **calls itself**.

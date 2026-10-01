@@ -1,0 +1,84 @@
+tier: outstanding
+type: practice
+title: A Fair Copy
+twist: combination - read, clean, write a new file, and report what was lost
+files:
+  ledger.csv: |
+    name,house,started,left
+    Albus Dumbledore,Gryffindor,1892,1899
+
+     Tobias Wren , Hufflepuff , 1923 ,
+    Unknown,,
+    Newt Scamander,Hufflepuff,19O8,1913
+    Pomona Sprout,Hufflepuff,1931
+task: |
+  Madam Pince wants a clean copy of the ledger. Write
+  `clean_copy(source, target)`.
+
+  Read `source` using the rules from the Core challenge. Then write `target`
+  with the same header, `name,house,started,left`, followed by one line for
+  every usable student: fields stripped, separated by commas, with `left`
+  left **empty** when it's `None`. Every line ends with `\n`.
+
+  Return how many lines were **dropped**: data lines that weren't blank but
+  weren't usable. Blank lines don't count as dropped.
+
+  ```python
+  clean_copy("ledger.csv", "clean.csv")
+  # -> 2
+  ```
+
+  `clean.csv` then holds:
+
+  ```text
+  name,house,started,left
+  Albus Dumbledore,Gryffindor,1892,1899
+  Tobias Wren,Hufflepuff,1923,
+  Pomona Sprout,Hufflepuff,1931,
+  ```
+starter: |
+  def clean_copy(source, target):
+      pass
+tests: |
+  EXPECTED = "name,house,started,left\nAlbus Dumbledore,Gryffindor,1892,1899\nTobias Wren,Hufflepuff,1923,\nPomona Sprout,Hufflepuff,1931,\n"
+
+  def test_copy():
+      got = call(student_function("clean_copy"), "ledger.csv", "clean.csv")
+      written = read_file("clean.csv")
+      check(written is not None, "No clean.csv appeared on the desk. Did you open the target in write mode?")
+      check(written == EXPECTED, f"clean.csv holds:\n{written}\nCompare it line by line with the task. Is there a header? A newline after every line?")
+      check(got == 2, f"clean_copy returned {got!r}. How many non-blank lines were thrown away?")
+
+  def test_source_untouched():
+      call(student_function("clean_copy"), "ledger.csv", "clean.csv")
+      check(read_file("ledger.csv").startswith("name,house,started,left\nAlbus"), "The original ledger must not change.")
+
+  def test_another():
+      write_files({"in.csv": "name,house,started,left\nLuna Lovegood , Ravenclaw,1992,1999\nnot a student\n\n"})
+      got = call(student_function("clean_copy"), "in.csv", "out.csv")
+      check(read_file("out.csv") == "name,house,started,left\nLuna Lovegood,Ravenclaw,1992,1999\n", f"For another ledger, out.csv holds:\n{read_file('out.csv')}")
+      check(got == 1, f"One line was thrown away there, but you returned {got!r}.")
+hints:
+  nudge: Read and judge every line as before, but keep two things - the clean lines to write, and a count of the bad ones.
+  question: What should `left` look like in the file when it's None? How do you tell a dropped line from a blank one?
+  pseudocode: |
+    a helper turns text into an int, or None
+    read the source's lines
+    clean lines start with the header; dropped starts at 0
+    for every line after the header:
+        skip it quietly if it's blank
+        split and strip; if it's not usable, count it as dropped and move on
+        build "name,house,started,left" with left empty when it's None
+    open the target for writing and write every clean line plus a newline
+    give back the dropped count
+  flaw: If clean.csv is missing its last newline, you joined the lines with "\n" but never added one at the end.
+  analogous: |
+    ```python
+    def shout_copy(source, target):
+        with open(source) as quiet:
+            words = quiet.read().split()
+        with open(target, "w") as loud:
+            for word in words:
+                loud.write(word.upper() + "\n")
+        return len(words)
+    ```

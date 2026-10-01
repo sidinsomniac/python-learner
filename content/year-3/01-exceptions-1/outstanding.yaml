@@ -1,0 +1,84 @@
+tier: outstanding
+type: practice
+title: Riddikulus, in Order
+twist: constraint - stop at the first error, and name it without a bare except
+task: |
+  The Boggart takes a different shape for each student. Write
+  `first_error(spells)`.
+
+  `spells` is a list of functions that take no arguments. Call them **in
+  order**. As soon as one raises an error, stop (don't call the rest) and
+  return the **name** of that error's type, as a string. If none of them
+  raises, return `None`.
+
+  ```python
+  def lumos():
+      return "light"
+
+  def lookup():
+      return {}["boggart"]
+
+  def share():
+      return 1 / 0
+
+  first_error([lumos, lookup, share])
+  # -> 'KeyError'   (share is never called)
+  first_error([lumos])
+  # -> None
+  ```
+
+  You don't know in advance which kinds of error will appear, but a bare
+  `except:` is not allowed. Every value knows its own type: `type(value)`.
+  And every type knows its own name.
+starter: |
+  def first_error(spells):
+      pass
+tests: |
+  def test_example():
+      fn = student_function("first_error")
+      called = []
+      def lumos():
+          called.append("lumos")
+          return "light"
+      def lookup():
+          called.append("lookup")
+          return {}["boggart"]
+      def share():
+          called.append("share")
+          return 1 / 0
+      got = call(fn, [lumos, lookup, share])
+      check(got == "KeyError", f"first_error([lumos, lookup, share]) returned {got!r}. Which spell fails first, and what kind of error is it?")
+      check(called == ["lumos", "lookup"], f"These spells were called: {called}. Should anything run after the first error?")
+
+  def test_no_errors():
+      fn = student_function("first_error")
+      check(call(fn, [lambda: 1, lambda: "x"]) is None, "When every spell works, what should come back?")
+      check(call(fn, []) is None, "With no spells at all, nothing can go wrong.")
+
+  def test_other_shapes():
+      fn = student_function("first_error")
+      check(call(fn, [lambda: int("x")]) == "ValueError", "int('x') is a ValueError. Did you name the type, or turn the error itself into text?")
+      check(call(fn, [lambda: [][3], lambda: 1 / 0]) == "IndexError", "The first error here is an IndexError.")
+
+  def test_no_bare_except():
+      handlers = [n for n in ast.walk(tree()) if isinstance(n, ast.ExceptHandler)]
+      check(bool(handlers), "Where does your spell catch the errors?")
+      check(all(h.type is not None for h in handlers), "A bare `except:` catches everything, even typos. Which named type is wide enough to cover every ordinary error?")
+hints:
+  nudge: One try around each call. When something is caught, you have the error itself - ask it what type it is.
+  question: Which exception type is the parent of all the ordinary errors? Once you've caught one `as err`, how do you get the *name* of its type, rather than its message?
+  pseudocode: |
+    for each spell in order:
+        try: call it
+        if it raises any ordinary error, caught as err:
+            give back the name of err's type
+    nothing failed: give back None
+  flaw: If you got 'boggart' back, you returned the error's message (str(err)). The type has a `__name__`.
+  analogous: |
+    ```python
+    print(type(3.5).__name__)   # float
+    try:
+        [][0]
+    except Exception as problem:
+        print("caught", problem)
+    ```

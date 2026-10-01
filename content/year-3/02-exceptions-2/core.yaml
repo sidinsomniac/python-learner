@@ -1,0 +1,115 @@
+tier: core
+type: practice
+title: The Hogsmeade Slip Inspector
+twist: edge case - eight different ways a slip can be bad, each refused in its own way
+task: |
+  A permission slip is a dictionary like this:
+
+  ```python
+  slip = {
+      "name": "Neville Longbottom",
+      "year": 3,
+      "house": "Gryffindor",
+      "signed_by": "Augusta Longbottom",
+      "date": "2026-10-31",
+  }
+  ```
+
+  Write `validate_slip(slip)`. Return `True` for a good slip. Otherwise
+  raise an error. Every message must **mention the field** it's about
+  (for example `"year must be 3-7"`).
+
+  | Bad slip | Raise |
+  |---|---|
+  | not a dictionary at all | `TypeError` |
+  | a field is missing | `ValueError` naming the field |
+  | `name` is empty or only spaces | `ValueError` |
+  | `year` isn't a whole number (`"3"`, `3.0` - and `True` is not a year!) | `TypeError` |
+  | `year` isn't 3 to 7 | `ValueError` |
+  | `house` isn't one of the four houses, spelled exactly | `ValueError` |
+  | `signed_by` is empty or only spaces | `ValueError` |
+  | `date` isn't shaped like `YYYY-MM-DD` | `ValueError` |
+
+  A good date is 10 characters: digits, with `-` at positions 4 and 7.
+starter: |
+  def validate_slip(slip):
+      return True
+tests: |
+  GOOD = {"name": "Neville Longbottom", "year": 3, "house": "Gryffindor",
+          "signed_by": "Augusta Longbottom", "date": "2026-10-31"}
+
+  def bad(**changes):
+      slip = dict(GOOD)
+      for key, value in changes.items():
+          if value is None:
+              del slip[key]
+          else:
+              slip[key] = value
+      return slip
+
+  def expect(fn, slip, kind, field, what):
+      got = raised(fn, slip)
+      check(got is not None, f"A slip with {what} was accepted. Should it be?")
+      check(got[0] == kind, f"A slip with {what} raised {got[0]}. Is that the wrong *kind* of thing (TypeError) or a bad value (ValueError)?")
+      check(field in got[1], f"For {what}, your message was {got[1]!r}. Does it mention `{field}`?")
+
+  def test_good():
+      fn = student_function("validate_slip")
+      check(call(fn, dict(GOOD)) is True, "A perfectly good slip should give back True.")
+      check(call(fn, bad(name="Tobias Wren", year=3, house="Hufflepuff", signed_by="E. Wren", date="1926-06-03")) is True, "An old slip can still be a valid one.")
+
+  def test_not_a_dict():
+      got = raised(student_function("validate_slip"), ["Neville", 3])
+      check(got is not None and got[0] == "TypeError", "What should happen if the slip isn't a dictionary at all?")
+
+  def test_missing():
+      fn = student_function("validate_slip")
+      for field in ["name", "year", "house", "signed_by", "date"]:
+          expect(fn, bad(**{field: None}), "ValueError", field, f"no `{field}`")
+
+  def test_names_and_signatures():
+      fn = student_function("validate_slip")
+      expect(fn, bad(name=""), "ValueError", "name", "an empty name")
+      expect(fn, bad(name="   "), "ValueError", "name", "a name of only spaces")
+      expect(fn, bad(signed_by=" "), "ValueError", "signed_by", "a blank signature")
+
+  def test_year():
+      fn = student_function("validate_slip")
+      expect(fn, bad(year="3"), "TypeError", "year", "year '3' (text)")
+      expect(fn, bad(year=3.0), "TypeError", "year", "year 3.0")
+      expect(fn, bad(year=True), "TypeError", "year", "year True")
+      expect(fn, bad(year=2), "ValueError", "year", "year 2")
+      expect(fn, bad(year=8), "ValueError", "year", "year 8")
+      check(call(fn, bad(year=7)) is True, "Seventh years can go to Hogsmeade too.")
+
+  def test_house_and_date():
+      fn = student_function("validate_slip")
+      expect(fn, bad(house="gryffindor"), "ValueError", "house", "house 'gryffindor'")
+      expect(fn, bad(house="Durmstrang"), "ValueError", "house", "house 'Durmstrang'")
+      for date in ["31/10/2026", "2026-1-31", "2026-10-3x", "", "2026_10_31"]:
+          expect(fn, bad(date=date), "ValueError", "date", f"date {date!r}")
+hints:
+  nudge: Write one guard clause per row of the table, in a safe order - each one raises, and whatever survives them all is a good slip.
+  question: Why must "is it a dictionary?" come first, and "is the year an int?" come before "is the year 3 to 7"? What does isinstance say about True?
+  pseudocode: |
+    if slip isn't a dict: raise the wrong-kind error
+    for each required field: if it's missing, raise a bad-value error naming it
+    if the name, stripped, is empty: raise
+    if the year is a bool, or isn't an int: raise the wrong-kind error
+    if the year isn't between 3 and 7: raise
+    if the house isn't in the four houses: raise
+    if the signature, stripped, is empty: raise
+    if the date isn't 10 long, with dashes at 4 and 7 and digits everywhere else: raise
+    give back True
+  flaw: If `year=True` is accepted, remember that True counts as an int (it's 1). Rule booleans out first.
+  analogous: |
+    ```python
+    def check_wand(wand):
+        if not isinstance(wand, dict):
+            raise TypeError("wand must be a dict")
+        if "wood" not in wand:
+            raise ValueError("missing wood")
+        if not isinstance(wand["length"], (int, float)) or isinstance(wand["length"], bool):
+            raise TypeError("length must be a number")
+        return True
+    ```

@@ -1,0 +1,94 @@
+tier: outstanding
+type: practice
+title: The Whole Sack
+twist: combination - one spell raises with a clear message, another catches and reports
+task: |
+  The slips arrive as lines of text: `name,year,house`. Write two spells.
+
+  **`parse_slip(line)`** splits the line on commas, strips the spaces from
+  each part, and returns a tuple `(name, year, house)` with `year` as an
+  `int`. If anything is wrong it raises `ValueError` with **exactly** one of
+  these messages:
+
+  - `expected 3 fields`
+  - `no name`
+  - `year is not a number`
+  - `year must be 3-7`
+
+  **`check_sack(lines)`** uses `parse_slip` on every line and returns a tuple
+  `(names, problems)`: the names from good slips, in order, and a list of
+  messages like `"line 2: year is not a number"` for bad ones. Lines are
+  numbered from 1. Blank lines are skipped without a problem, but they still
+  count when numbering.
+
+  ```python
+  check_sack(["Luna, 3, Ravenclaw", "Ron,three,Gryffindor", "", ",4,Slytherin"])
+  # -> (['Luna'], ['line 2: year is not a number', 'line 4: no name'])
+  ```
+starter: |
+  def parse_slip(line):
+      pass
+
+  def check_sack(lines):
+      pass
+tests: |
+  def test_parse_good():
+      fn = student_function("parse_slip")
+      got = call(fn, " Luna , 3,Ravenclaw ")
+      check(got == ("Luna", 3, "Ravenclaw"), f"parse_slip(' Luna , 3,Ravenclaw ') returned {got!r}. Are the parts stripped, and is the year an int?")
+
+  def test_parse_bad():
+      fn = student_function("parse_slip")
+      cases = [
+          ("Luna,3", "expected 3 fields"),
+          ("Luna,3,Ravenclaw,extra", "expected 3 fields"),
+          ("  ,3,Ravenclaw", "no name"),
+          ("Ron,three,Gryffindor", "year is not a number"),
+          ("Ron,3.5,Gryffindor", "year is not a number"),
+          ("Ginny,2,Gryffindor", "year must be 3-7"),
+      ]
+      for line, message in cases:
+          got = raised(fn, line)
+          check(got == ("ValueError", message), f"parse_slip({line!r}) raised {got!r}. It should raise ValueError({message!r}). Could you catch int()'s own error and raise your own message instead?")
+
+  def test_sack():
+      fn = student_function("check_sack")
+      got = call(fn, ["Luna, 3, Ravenclaw", "Ron,three,Gryffindor", "", ",4,Slytherin"])
+      check(got == (["Luna"], ["line 2: year is not a number", "line 4: no name"]), f"check_sack(...) returned {got!r}. Do blank lines still count towards the line numbers?")
+      check(call(fn, []) == ([], []), "An empty sack has no names and no problems.")
+
+  def test_uses_parse_slip():
+      check(calls("parse_slip"), "check_sack should use parse_slip, and catch what it raises.")
+      check(uses(ast.Raise), "parse_slip should raise its errors with `raise`.")
+hints:
+  nudge: parse_slip refuses bad lines by raising. check_sack tries each line and turns every refusal into a message.
+  question: int("three") raises a ValueError with Python's own message. How can you replace that message with yours? Where do you get the line number from in check_sack?
+  pseudocode: |
+    parse_slip(line):
+        split on commas and strip each part
+        if there aren't exactly 3 parts: raise with the first message
+        if the name is empty: raise
+        try to turn the year into an int; if that fails, raise your own message
+        if the year isn't 3 to 7: raise
+        give back the three values as a tuple
+    check_sack(lines):
+        for each line, numbered from 1:
+            skip it if it's blank
+            try parse_slip; on success keep the name
+            on a bad-value error, keep "line N: " plus the error's message
+        give back both lists
+  flaw: If a line number is off by one, did you number from 0? If blank lines shift the numbers, are you counting only the lines you kept?
+  analogous: |
+    ```python
+    def house_of(name, houses):
+        try:
+            return houses[name]
+        except KeyError:
+            raise KeyError(f"{name} has not been sorted")
+
+    for n, name in enumerate(["Luna", "Tobias"], start=1):
+        try:
+            print(house_of(name, {"Luna": "Ravenclaw"}))
+        except KeyError as problem:
+            print(f"item {n}: {problem}")
+    ```

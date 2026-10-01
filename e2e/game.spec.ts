@@ -35,6 +35,7 @@ function completed(lessons: string[]) {
 }
 
 const YEAR1 = ["y1-l01", "y1-l02", "y1-l03", "y1-r1", "y1-l04a", "y1-l04b", "y1-l05", "y1-l06", "y1-l07", "y1-l08a", "y1-l08b", "y1-r2", "y1-l09", "y1-l10a", "y1-l10b", "y1-l11", "y1-l12", "y1-l13a", "y1-l13b", "y1-r3", "y1-l14a", "y1-l14b", "y1-l15"];
+const YEAR2 = ["y2-l01a", "y2-l01b", "y2-l02", "y2-l03a", "y2-l03b", "y2-l03c", "y2-r1", "y2-l04", "y2-l05", "y2-l06a", "y2-l06b", "y2-l07", "y2-r2", "y2-l08", "y2-l09", "y2-l10", "y2-l11", "y2-l12", "y2-r3", "y2-l13", "y2-l14"];
 const YEAR2_TO_L06 = ["y2-l01a", "y2-l01b", "y2-l02", "y2-l03a", "y2-l03b", "y2-l03c", "y2-r1", "y2-l04", "y2-l05", "y2-l06a", "y2-l06b"];
 
 async function setCode(page: Page, code: string) {
@@ -351,4 +352,34 @@ test("a lesson's story pops up even when the lesson reopens on an exercise", asy
   await page.goto("/#/lesson/y1-l01");
   await expect(page.getByTestId("tab-core")).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("cutscene")).toContainText("Every witch and wizard begins");
+});
+
+test("Year 3 lays files on the desk, and the Pensieve shows a spell calling itself", async ({ page }) => {
+  await seed(page, { exercises: completed([...YEAR1, "y1-trial", ...YEAR2, "y2-trial", "y3-l01a", "y3-l01b"]) });
+  await page.goto("/#/lesson/y3-l02");
+  await expect(page.locator("html")).toHaveAttribute("data-year", "3");
+  await waitForPython(page);
+  await page.getByTestId("tab-warmup").click();
+  await expect(page.getByTestId("desk-files")).toContainText("register.txt");
+
+  // The spell reads the file on the desk; the examiners also hand it files of their own.
+  await setCode(page, ["def count_names(path):", "    with open(path) as register:", "        return sum(1 for line in register if line.strip())"].join("\n"));
+  await page.getByTestId("cast").click();
+  await page.getByTestId("reward").getByRole("button", { name: "Stay here" }).click();
+
+  // A recursive spell, replayed: the call stack grows one frame per call.
+  await setCode(page, ["def countdown(n):", "    if n == 0:", "        return 0", "    return countdown(n - 1)", "", "countdown(2)"].join("\n"));
+  await page.getByTestId("pensieve-open").click();
+  const pensieve = page.getByTestId("pensieve");
+  await expect(pensieve).toContainText("about to run line 1");
+  const next = pensieve.getByRole("button", { name: "Next step" });
+  await next.click();
+  await next.click();
+  await expect(pensieve.getByTestId("call-stack")).toContainText("countdown()");
+  await expect(pensieve).toContainText("1 spell deep");
+  for (let i = 0; i < 4; i++) await next.click();
+  await expect(pensieve).toContainText("3 spells deep");
+  await next.click(); // line 3, at the bottom of the stack
+  await next.click(); // ...which hands its answer back
+  await expect(pensieve).toContainText("countdown() hands back 0");
 });

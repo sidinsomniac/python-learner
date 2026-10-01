@@ -14,3 +14,7 @@ enumerate-counter: y2-l02
 dict-keys: y2-l03a
 append-comprehension: y2-l06a
 mutable-default: y2-l09
+bare-except: y3-l01a
+open-without-with: y3-l02
+lambda-assign: y3-l03
+needless-lambda: y3-l03
