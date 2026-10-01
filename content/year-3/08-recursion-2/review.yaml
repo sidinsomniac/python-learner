@@ -1,0 +1,28 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: recursion-error
+  type: choice
+  q: A spell stops with RecursionError. Which question finds the bug fastest?
+  options: ["Is the list too long?", "Is there a base case, and does every call get closer to it?", "Should I use a bigger computer?"]
+  answer: 1
+  why: A RecursionError nearly always means the calls never reach a base case.
+- id: list-recursion
+  type: predict
+  code: |
+    def total(items):
+        if not items:
+            return 0
+        return items[0] + total(items[1:])
+
+    print(total([4, 5, 6]), total([]))
+  why: 4 + (5 + (6 + 0)). The empty list is the base case.
+- id: deep-count
+  type: predict
+  code: |
+    def count(items):
+        n = 0
+        for item in items:
+            n += count(item) if isinstance(item, list) else 1
+        return n
+
+    print(count([1, [2, [3, 4]], []]))
+  why: Lists are opened up recursively; only non-list items are counted.

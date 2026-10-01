@@ -1,0 +1,42 @@
+tier: warmup
+type: practice
+title: The Turning Hours
+task: |
+  Write `countdown(n)`, **recursively**. It returns a list counting down
+  from `n` to `1`. For `0`, it returns an empty list.
+
+  ```python
+  countdown(4)   # -> [4, 3, 2, 1]
+  countdown(1)   # -> [1]
+  countdown(0)   # -> []
+  ```
+
+  No loops: let the spell cast itself.
+starter: |
+  def countdown(n):
+      return [n] + countdown(n - 1)
+tests: |
+  def test_counts():
+      fn = student_function("countdown")
+      check(call(fn, 0) == [], f"countdown(0) returned {call(fn, 0)!r}. What is the base case?")
+      check(call(fn, 1) == [1], f"countdown(1) returned {call(fn, 1)!r}.")
+      check(call(fn, 4) == [4, 3, 2, 1], f"countdown(4) returned {call(fn, 4)!r}.")
+      check(call(fn, 30) == list(range(30, 0, -1)), "countdown(30) should count all the way down.")
+
+  def test_recursive():
+      check(recursive("countdown"), "Does countdown call itself?")
+      check(not uses(ast.For, ast.While, ast.comprehension), "No loops here - let the recursion do the repeating.")
+hints:
+  nudge: The starter has the recursive case already. What's missing is the stopping rule.
+  question: What is the smallest n, and what should countdown give back for it - without calling itself?
+  pseudocode: |
+    if n is 0: give back an empty list
+    otherwise: give back a list holding n, followed by the countdown from n - 1
+  flaw: A RecursionError means the base case is missing, or it's never reached.
+  analogous: |
+    ```python
+    def count_up(n):
+        if n == 0:
+            return []
+        return count_up(n - 1) + [n]
+    ```

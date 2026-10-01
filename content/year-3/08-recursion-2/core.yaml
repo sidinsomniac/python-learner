@@ -1,0 +1,69 @@
+tier: core
+type: practice
+title: Unfolding the Hours
+twist: edge case - lists nested to any depth, including empty ones
+task: |
+  Tobias's diary keeps time in lists inside lists inside lists. Write
+  `flatten(nested)`, **recursively**. It returns a new, flat list of every
+  item that isn't a list, in order, however deeply it was nested.
+
+  ```python
+  flatten([1, [2, [3, []]], 4])
+  # -> [1, 2, 3, 4]
+  flatten([[[]], []])
+  # -> []
+  flatten(["3:03", ["pm", ["1926"]]])
+  # -> ['3:03', 'pm', '1926']
+  ```
+
+  Strings count as items, not lists, and the list you're given must not
+  change.
+starter: |
+  def flatten(nested):
+      flat = []
+      for item in nested:
+          flat.extend(item)
+      return flat
+tests: |
+  def test_example():
+      fn = student_function("flatten")
+      check(call(fn, [1, [2, [3, []]], 4]) == [1, 2, 3, 4], f"flatten([1, [2, [3, []]], 4]) returned {call(fn, [1, [2, [3, []]], 4])!r}.")
+
+  def test_empties():
+      fn = student_function("flatten")
+      check(call(fn, []) == [], "An empty list flattens to an empty list.")
+      check(call(fn, [[[]], []]) == [], f"[[[]], []] has no items at all. You returned {call(fn, [[[]], []])!r}.")
+
+  def test_strings_and_depth():
+      fn = student_function("flatten")
+      got = call(fn, ["3:03", ["pm", ["1926"]]])
+      check(got == ["3:03", "pm", "1926"], f"Strings are items, not lists to open up. You returned {got!r}.")
+      deep = [7]
+      for _ in range(200):
+          deep = [deep]
+      check(call(fn, deep) == [7], "A 7 nested two hundred lists deep should still be found.")
+
+  def test_untouched():
+      fn = student_function("flatten")
+      given = [1, [2, [3]]]
+      call(fn, given)
+      check(given == [1, [2, [3]]], "The list you were given changed! Build a new one.")
+      check(recursive("flatten"), "flatten should call itself for the lists inside lists.")
+hints:
+  nudge: Look at one item at a time. Either it's a list (a smaller version of the whole problem) or it's an ordinary item.
+  question: If flatten already works on the inner list, what do you do with the list it gives back? How do you tell a list from a string?
+  pseudocode: |
+    start with an empty flat list
+    for each item:
+        if the item is itself a list: add every item of its flattened version
+        otherwise: add the item itself
+    give back the flat list
+  flaw: If strings come back as single letters, you opened them up as if they were lists. Ask isinstance(item, list), not "can I loop over it?".
+  analogous: |
+    ```python
+    def deep_sum(items):
+        total = 0
+        for item in items:
+            total += deep_sum(item) if isinstance(item, list) else item
+        return total
+    ```

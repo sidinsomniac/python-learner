@@ -1,0 +1,19 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: shapes
+  type: choice
+  q: A spell halves the remaining search space at every step. What is its shape?
+  options: ["O(n)", "O(log n)", "O(n²)"]
+  answer: 1
+  why: Halving a million down to one takes only about 20 steps - that's logarithmic.
+- id: hidden-loop
+  type: choice
+  q: '`for x in items: if x in seen: ...` with `seen` a LIST of n items. What shape?'
+  options: ["O(n)", "O(n²)", "O(1)"]
+  answer: 1
+  why: "`in` on a list checks item by item, so each of the n passes hides another n steps. Use a set."
+- id: tenfold
+  type: choice
+  q: An O(n) spell takes 2 seconds on 1,000,000 items. Roughly how long on 10,000,000?
+  options: ["2 seconds", "20 seconds", "200 seconds"]
+  answer: 1
+  why: Linear spells grow in step with the data - ten times the data, ten times the time.

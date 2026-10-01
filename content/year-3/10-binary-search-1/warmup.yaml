@@ -1,0 +1,81 @@
+tier: warmup
+type: practice
+title: Find the Spell
+task: |
+  Write `find(spells, target)`. `spells` is a list of spell names in
+  alphabetical order, with no repeats. Return the position of `target`,
+  or `-1` if it isn't there.
+
+  ```python
+  find(["Accio", "Lumos", "Nox", "Riddikulus"], "Nox")   # -> 2
+  find(["Accio", "Lumos"], "Crucio")                     # -> -1
+  ```
+
+  The examiners count every look you take into the list. A list of 100,000
+  spells must take no more than 40 looks.
+starter: |
+  def find(spells, target):
+      for i, spell in enumerate(spells):
+          if spell == target:
+              return i
+      return -1
+tests: |
+  class Shelf(list):
+      looks = 0
+      def __getitem__(self, i):
+          Shelf.looks += 1
+          return list.__getitem__(self, i)
+      def __iter__(self):
+          Shelf.looks += len(self)
+          return list.__iter__(self)
+      def __contains__(self, x):
+          Shelf.looks += len(self)
+          return list.__contains__(self, x)
+      def index(self, *args):
+          Shelf.looks += len(self)
+          return list.index(self, *args)
+
+  def test_small():
+      fn = student_function("find")
+      spells = ["Accio", "Lumos", "Nox", "Riddikulus"]
+      for i, spell in enumerate(spells):
+          check(call(fn, spells, spell) == i, f"find(spells, {spell!r}) returned {call(fn, spells, spell)!r}.")
+      check(call(fn, spells, "Crucio") == -1, "Crucio isn't there. What should come back?")
+      check(call(fn, spells, "Aardvark") == -1 and call(fn, spells, "Zzz") == -1, "Missing spells smaller or bigger than everything should give -1 too.")
+      check(call(fn, [], "Nox") == -1, "An empty list holds nothing.")
+
+  def test_halving():
+      fn = student_function("find")
+      shelf = Shelf(f"spell{i:06d}" for i in range(100000))
+      for target in ["spell000000", "spell099999", "spell061803", "spell1"]:
+          Shelf.looks = 0
+          got = call(fn, shelf, target)
+          want = int(target[5:]) if len(target) == 11 else -1
+          check(got == want, f"find(..., {target!r}) returned {got!r}.")
+          check(Shelf.looks <= 40, f"That search took {Shelf.looks} looks into the list. Can you throw away half of what's left with every look?")
+hints:
+  nudge: Keep a low and a high marker. Look in the middle, and move one of the markers past it.
+  question: If the middle spell comes before the target alphabetically, which half can you throw away? When do you know it isn't there at all?
+  pseudocode: |
+    lo is the first position, hi the last
+    while lo hasn't passed hi:
+        mid is halfway between them
+        if the spell at mid is the target: give back mid
+        if it's smaller than the target: move lo to just after mid
+        otherwise: move hi to just before mid
+    give back -1
+  flaw: If it loops forever, a marker moved to mid instead of past it. If the last spell is never found, check `<=` in the loop condition.
+  analogous: |
+    ```python
+    def has_page(pages, wanted):
+        low, high = 0, len(pages) - 1
+        while low <= high:
+            middle = (low + high) // 2
+            if pages[middle] == wanted:
+                return True
+            if pages[middle] < wanted:
+                low = middle + 1
+            else:
+                high = middle - 1
+        return False
+    ```

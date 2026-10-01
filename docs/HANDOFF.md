@@ -65,8 +65,8 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **78** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
-| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **51 lessons and 155 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
+| `npm test` | Unit tests (Vitest). **79** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **58 lessons and 176 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
 | `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **19** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
@@ -165,6 +165,7 @@ content/
 | `raised(fn, *args)` | Calls the function expecting an error. Returns `(type name, message)`, e.g. `("ValueError", "year must be 1-7")`, or `None` if nothing was raised. |
 | `source()`, `tree()` | The student's code, as text or as a parsed tree. |
 | `calls(name)`, `uses(ast.X)`, `count_nodes(...)` | Checks on the code's structure. |
+| `recursive(name)` | Does the student's function `name` call itself? Pair it with `not uses(ast.For, ast.While, ast.comprehension)` for "no loops". |
 | `timed(...)`, or `time.perf_counter()` in a test | Speed tests. |
 | `write_files({name: text})` | Replaces every file on the desk, so the spell meets a file it has never seen (the file version of `run_with`). |
 | `read_file(name)` | The text of a file on the desk, e.g. one the spell wrote, or `None`. |
@@ -211,6 +212,8 @@ Tests run in order and stop at the first failure.
 6. **Wide code blocks.** Code in task text is cut off past about 60 characters. Put expected results on their own line, as `# -> result`.
 7. **Starters that crash on load.** For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
 8. **Files are text.** In a `files:` map, give every file a `|` block or quoted text. A bare number, or a value with `: `, isn't text. To end a file without a final newline, use `|-`.
+9. **Counting looks.** To insist on binary search, pass a `list` subclass that counts `__getitem__`, and charges `len(self)` for `__iter__`, `__contains__` and `index` (see `content/year-3/10-binary-search-1/core.yaml`). For a yes/no oracle, count the calls inside a closure and raise after the limit.
+10. **Slow starters in scale tests.** An O(n²) starter is stopped by the validator's step limit (and by the 10-second timeout in the browser), so it fails as it should. Keep the reference solution's run under about 150,000 traced lines.
 
 ## 9. Saves (localStorage)
 
@@ -251,7 +254,7 @@ location.reload();
 **Built:**
 - Year 1, The Philosopher's Syntax: 24 units and 73 exercises.
 - Year 2, The Chamber of Collections: 22 units and 67 exercises.
-- Year 3, The Prisoner of Recursion (in progress): batch A is built: `year.yaml` (the Time-Turner dusk theme and the prologue), y3-l01a, y3-l01b, y3-l02, y3-l03 and y3-r1. That's 5 units and 15 exercises.
+- Year 3, The Prisoner of Recursion (in progress): 12 of its 20 units (36 exercises) are built. That's `year.yaml` (the Time-Turner dusk theme and the prologue), batch A (y3-l01a to y3-r1) and batch B (y3-l04, y3-l05a, y3-l05b, y3-l06, y3-l07a, y3-l07b, y3-r2).
 - Systems: story pop-ups, year colour themes, 10 random weather presets, Diagon Alley (cosmetics plus Felix Felicis and Time-Turner Sand), Peeves' Bargain (skipping costs Galleons and XP, and rises with each skip; Trials can't be skipped), level rewards up to level 20, the Time-Turner, the Dueling Club, the Pensieve, the Case File, badges.
 
 **Next, in order:**
@@ -267,7 +270,7 @@ location.reload();
      - friendly `RecursionError` and `FileNotFoundError` questions;
      - four new Snape rules, written but not switched on (§7);
      - `YEAR_BADGES[3]`, the `year-3` and `loop-detective` badges, and the new speakers in `cast.yaml` (lupin, trelawney, tobias, crookshanks). `YEAR_NAMES` already had Year 3.
-   - **Phase 3, in progress: content in four batches, each validated, committed and pushed.** Batch A is done, along with the e2e test for files on the desk and the Pensieve's call stack. The batches are A (l01a–r1, done), B (l04–r2, **next**), C (l08–r3), then D (l12, l13 and the Trial).
+   - **Phase 3, in progress: content in four batches, each validated, committed and pushed.** Batch A is done, along with the e2e test for files on the desk and the Pensieve's call stack. The batches are A (l01a–r1, done), B (l04–r2, done), C (l08–r3, **next**), then D (l12, l13 and the Trial).
    - The save-safety fix (11.1) has been put off at the owner's request.
 3. Then Years 4–7, one at a time.
 4. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
@@ -284,6 +287,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-01 | Claude Code desktop session | Year 3 batch B: y3-l04 (`*args`/`**kwargs`), y3-l05a and y3-l05b (recursion), y3-l06 (Big-O), y3-l07a and y3-l07b (binary search) and y3-r2. `recursive()` test helper. The binary-search tests count looks with a `Shelf(list)` subclass. Counts: 58 lessons, 176 exercises, 79 unit, 19 e2e (§3, §7, §8, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 batch A: `year.yaml` plus y3-l01a, y3-l01b, y3-l02, y3-l03 and y3-r1 (15 exercises). `raised()` test helper. Snape's 4 Year 3 rules switched on. e2e test for Year 3 files and the call stack. Counts: 51 lessons, 155 exercises, 78 unit, 19 e2e (§3, §7, §8, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 engine support: the desk of files (`files:` in content, `write_files` and `read_file`), the Pensieve's call stack, `RecursionError` and file-error questions, 4 Snape rules (not switched on yet), Year 3 badges and cast, and harness tests in Pyodide. Tests: 77 unit, 18 e2e (§3, §5–§8, §11). Docs: README, GDD, exercise-design §7c. |
 | 2026-10-01 | Claude Code desktop session | Year 3 planned and scripted: the full scene-by-scene story in `story.md`, and the exact lesson table in `curriculum.md`. The build waits for the owner's review of the script (§10, §11). |

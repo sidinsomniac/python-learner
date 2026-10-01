@@ -1,0 +1,60 @@
+tier: outstanding
+type: practice
+title: Every Possible Potion
+twist: inversion - the answer to a big problem is built from both versions of a smaller one
+task: |
+  Snape gives you some ingredients. Write `subsets(items)`, **recursively**.
+  It returns a list of **every** possible selection of them (including
+  none, and all), each as a list keeping the ingredients' order.
+
+  The order of the answer is fixed, and it comes straight from the
+  recursion: first every subset of the *rest* of the ingredients (without
+  the first one), then the same subsets again, each with the first
+  ingredient put at the front.
+
+  ```python
+  subsets([])
+  # -> [[]]
+  subsets(["moly", "newt"])
+  # -> [[], ['newt'], ['moly'], ['moly', 'newt']]
+  subsets(["asp", "moly", "newt"])
+  # -> [[], ['newt'], ['moly'], ['moly', 'newt'],
+  #     ['asp'], ['asp', 'newt'], ['asp', 'moly'], ['asp', 'moly', 'newt']]
+  ```
+starter: |
+  def subsets(items):
+      return [items]
+tests: |
+  def test_small():
+      fn = student_function("subsets")
+      check(call(fn, []) == [[]], f"subsets([]) returned {call(fn, [])!r}. How many ways are there to choose from nothing?")
+      check(call(fn, ["moly"]) == [[], ["moly"]], f"subsets(['moly']) returned {call(fn, ['moly'])!r}.")
+      check(call(fn, ["moly", "newt"]) == [[], ["newt"], ["moly"], ["moly", "newt"]], f"subsets(['moly', 'newt']) returned {call(fn, ['moly', 'newt'])!r}.")
+
+  def test_three():
+      got = call(student_function("subsets"), ["asp", "moly", "newt"])
+      want = [[], ["newt"], ["moly"], ["moly", "newt"], ["asp"], ["asp", "newt"], ["asp", "moly"], ["asp", "moly", "newt"]]
+      check(got == want, f"For three ingredients you returned {got!r}. The subsets without 'asp' come first, then the same ones with 'asp' in front.")
+
+  def test_ten():
+      got = call(student_function("subsets"), list(range(10)))
+      check(len(got) == 1024, f"Ten ingredients have 1024 subsets. You found {len(got)}.")
+      check(got[-1] == list(range(10)) and got[0] == [], "The first subset is empty and the last holds everything.")
+      check(recursive("subsets"), "subsets should call itself on the rest of the ingredients.")
+hints:
+  nudge: Every subset either leaves out the first ingredient or includes it. Both kinds come from the subsets of the rest.
+  question: If you already had every subset of the rest, how would you make the ones that include the first ingredient? What's the only subset of nothing?
+  pseudocode: |
+    if there are no items: give back a list holding one empty list
+    without = the subsets of every item after the first
+    with_first = each of those, with the first item put in front
+    give back without followed by with_first
+  flaw: If you get [] for subsets([]), remember that choosing nothing is still one choice - the empty selection.
+  analogous: |
+    ```python
+    def all_codes(length):
+        if length == 0:
+            return [""]
+        shorter = all_codes(length - 1)
+        return [code + "0" for code in shorter] + [code + "1" for code in shorter]
+    ```

@@ -1,0 +1,19 @@
+id: y3-l05b
+year: 3
+order: 8
+number: 5
+part: { n: 2, of: 2 }
+title: "The Time-Turner: Stacks of Time"
+location: Professor McGonagall's cabinet, after hours
+concepts: [the call stack, RecursionError, recursion on lists, nested lists, "isinstance", memoization]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: hermione
+    line: (whispering, the prototype glittering on the desk between you) If every turn calls the next turn... where does it keep them all?
+  - who: ashwood
+    line: On a stack. Each call waits on top of the one before, like books piled higher and higher. Open the Pensieve and watch one grow.
+  - who: ron
+    line: And if it never stops? Does the pile just... keep going?
+  - who: ashwood
+    line: Not forever. Python allows about a thousand. After that the pile topples - and you get a `RecursionError`. Let's see what a hundred years of turning would do.
+clue: A century of hourly turns is about **876,000** calls deep. The boy is fading because **his stack is overflowing** - and Dementors are drawn to the overflow.

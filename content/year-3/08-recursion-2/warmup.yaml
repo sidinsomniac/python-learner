@@ -1,0 +1,39 @@
+tier: warmup
+type: repair
+title: The Prototype's Missing Rule
+task: |
+  Here is the 1926 prototype's charm. `turn(hours)` should return the hours
+  it passes through, all the way back to 0:
+
+  ```python
+  turn(3)   # -> [3, 2, 1, 0]
+  turn(0)   # -> [0]
+  ```
+
+  As written it never stops. Give it the rule it was missing.
+starter: |
+  def turn(hours):
+      return [hours] + turn(hours - 1)
+tests: |
+  def test_turns():
+      fn = student_function("turn")
+      check(call(fn, 0) == [0], f"turn(0) returned {call(fn, 0)!r}. Should turn(0) turn any further?")
+      check(call(fn, 3) == [3, 2, 1, 0], f"turn(3) returned {call(fn, 3)!r}.")
+      check(call(fn, 400) == list(range(400, -1, -1)), "turn(400) should reach 0 too.")
+
+  def test_still_recursive():
+      check(recursive("turn"), "Keep the charm recursive - just teach it when to stop.")
+hints:
+  nudge: Every recursive spell needs a case where it stops calling itself. Which hour is the last one?
+  question: What should turn(0) give back, without calling turn again?
+  pseudocode: |
+    if hours is 0: give back a list holding just 0
+    otherwise: give back hours, followed by the turns from hours - 1
+  flaw: The RecursionError is the stack toppling - the charm keeps going past 0 into -1, -2, -3...
+  analogous: |
+    ```python
+    def stairs(step):
+        if step == 1:
+            return ["landing"]
+        return [f"step {step}"] + stairs(step - 1)
+    ```

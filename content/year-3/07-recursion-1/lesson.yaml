@@ -1,0 +1,21 @@
+id: y3-l05a
+year: 3
+order: 7
+number: 5
+part: { n: 1, of: 2 }
+title: "The Time-Turner: Recursion"
+location: Professor McGonagall's cabinet of old Time-Turners
+concepts: [recursion, base case, recursive case, trusting the smaller call, recursion on numbers, recursion on strings]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: mcgonagall
+    line: (unlocking a glass cabinet full of tarnished hourglasses) Prototypes. The Ministry tried a dozen designs before they got Time-Turners right. This one is the model that went on public display in 1926.
+  - who: mcgonagall
+    line: Its charm is engraved on the frame. "TURN - go back one hour - then TURN."
+  - who: hermione
+    line: Then turn again? But when does it *stop*?
+  - who: mcgonagall
+    line: (very quietly) That, Miss Granger, is exactly why it was withdrawn.
+  - who: ashwood
+    line: A spell that casts itself is called **recursive**. It's one of the most powerful ideas in Parseltongue - as long as it knows when to stop.
+clue: The prototype's charm **calls itself**, and it has no rule for when to stop. Once started, **it never stops**.

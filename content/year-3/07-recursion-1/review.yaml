@@ -1,0 +1,27 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: base-case
+  type: choice
+  q: What is the job of a recursive spell's base case?
+  options: ["To call the spell again", "To answer the smallest problem directly, so the calls stop", "To print the answer"]
+  answer: 1
+  why: Without a base case that is always reached, the calls never end.
+- id: unwind
+  type: predict
+  code: |
+    def echo(n):
+        if n == 0:
+            return "!"
+        return str(n) + echo(n - 1) + str(n)
+
+    print(echo(3))
+  why: Each call puts its n on both sides of the smaller call's answer, so the middle is built first.
+- id: factorial
+  type: predict
+  code: |
+    def fact(n):
+        if n <= 1:
+            return 1
+        return n * fact(n - 1)
+
+    print(fact(4), fact(1), fact(0))
+  why: 4 * 3 * 2 * 1 = 24. The base case answers both 1 and 0 directly.

@@ -1,0 +1,73 @@
+tier: outstanding
+type: practice
+title: Two Owls, One Parcel
+twist: scale - find a matching pair among 20,000 in one pass
+task: |
+  A parcel needs exactly two owls whose strengths add up to `target`.
+  Write `pair_with_sum(strengths, target)`. Return the positions `(i, j)`
+  of a matching pair, with `i < j` - or `None` if no pair works.
+
+  If several pairs work, choose the one whose **second** position `j` is
+  smallest; if several pairs share that `j`, the smallest `i`.
+
+  ```python
+  pair_with_sum([4, 7, 1, 5, 3], 8)
+  # -> (1, 2)   7 + 1. (3 + 5 also makes 8, but its second owl comes later)
+  pair_with_sum([2, 2], 4)
+  # -> (0, 1)
+  pair_with_sum([1, 2], 7)
+  # -> None
+  ```
+
+  The examiners use 20,000 owls, so trying every pair is too slow.
+starter: |
+  def pair_with_sum(strengths, target):
+      for i in range(len(strengths)):
+          for j in range(i + 1, len(strengths)):
+              if strengths[i] + strengths[j] == target:
+                  return i, j
+      return None
+tests: |
+  import time
+
+  def test_small():
+      fn = student_function("pair_with_sum")
+      check(call(fn, [4, 7, 1, 5, 3], 8) == (1, 2), f"pair_with_sum([4, 7, 1, 5, 3], 8) returned {call(fn, [4, 7, 1, 5, 3], 8)!r}.")
+      check(call(fn, [2, 2], 4) == (0, 1), "Two owls of strength 2 make 4.")
+      check(call(fn, [1, 2], 7) is None, "No pair makes 7.")
+      check(call(fn, [4], 8) is None, "One owl can't pair with itself.")
+
+  def test_choice():
+      fn = student_function("pair_with_sum")
+      got = call(fn, [3, 5, 3, 1, 7], 8)
+      check(got == (0, 1), f"3 + 5 is found as soon as the 5 arrives. You returned {got!r}.")
+      got = call(fn, [6, 6, 2], 8)
+      check(got == (0, 2), f"The 2 can pair with either 6 - which one has the smaller position? You returned {got!r}.")
+
+  def test_race():
+      fn = student_function("pair_with_sum")
+      strengths = list(range(0, 40000, 2)) + [1]
+      start = time.perf_counter()
+      got = call(fn, strengths, 39999)
+      took = time.perf_counter() - start
+      check(got == (19999, 20000), f"With 20,000 owls you returned {got!r}.")
+      check(took < 3, f"Your spell took {took:.1f}s. Could a dictionary remember where each strength was first seen?")
+hints:
+  nudge: For each new owl, you know exactly which strength would complete the pair. Have you met an owl with that strength already?
+  question: What should a dictionary map from and to, so that one look tells you where the partner is? Should you overwrite an earlier position if a strength appears twice?
+  pseudocode: |
+    remember: strength -> the first position where it was seen
+    for each position j and strength:
+        partner = target minus this strength
+        if partner has been seen: give back (where it was seen, j)
+        if this strength hasn't been seen before: remember it at j
+    give back None
+  flaw: If [6, 6, 2] gives (1, 2), you overwrote the first 6's position with the second's.
+  analogous: |
+    ```python
+    def first_positions(words):
+        where = {}
+        for pos, word in enumerate(words):
+            where.setdefault(word, pos)
+        return where
+    ```

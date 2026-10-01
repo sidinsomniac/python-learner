@@ -1,0 +1,65 @@
+tier: outstanding
+type: practice
+title: The Arithmancer's Root
+twist: inversion - search the ANSWERS, not a list
+task: |
+  Write `isqrt(n)`: the biggest whole number `r` with `r * r <= n`, for any
+  whole number `n` of 0 or more.
+
+  ```python
+  isqrt(16)          # -> 4
+  isqrt(15)          # -> 3
+  isqrt(0)           # -> 0
+  isqrt(10 ** 30)    # -> 1000000000000000
+  ```
+
+  No `** 0.5`, no `math`. "Is r * r too big?" is a yes/no question that
+  stays "yes" once it starts. Halve your way to the answer.
+starter: |
+  def isqrt(n):
+      r = 0
+      while (r + 1) * (r + 1) <= n:
+          r += 1
+      return r
+tests: |
+  import math
+
+  def test_small():
+      fn = student_function("isqrt")
+      for n in [0, 1, 2, 3, 4, 15, 16, 17, 24, 25, 99, 100, 101]:
+          got = call(fn, n)
+          check(got == math.isqrt(n), f"isqrt({n}) returned {got!r}.")
+
+  def test_huge():
+      fn = student_function("isqrt")
+      for n in [10 ** 30, 10 ** 30 - 1, (10 ** 15 + 7) ** 2, 123456789 ** 4 + 5]:
+          got = call(fn, n)
+          check(got == math.isqrt(n), f"For a huge n, isqrt returned {got!r}. Counting up one at a time will never get there - can you halve?")
+
+  def test_no_shortcuts():
+      check(not uses(ast.Import, ast.ImportFrom), "No math module, and no imports at all - find it by halving.")
+      powers = [n for n in ast.walk(tree()) if isinstance(n, ast.BinOp) and isinstance(n.op, ast.Pow)]
+      check(not powers, "No ** at all - multiply r by itself.")
+hints:
+  nudge: The answer lies somewhere from 0 to n. Ask about the middle - is its square too big? - and throw half away.
+  question: Which candidates can you rule out if mid * mid is bigger than n? And if it's not too big, could mid itself be the answer?
+  pseudocode: |
+    lo is 0, hi is n
+    while lo is less than hi:
+        mid is halfway, rounding UP
+        if mid squared is at most n: mid could be the answer, so lo becomes mid
+        otherwise: hi becomes mid - 1
+    give back lo
+  flaw: If it loops forever, mid rounded down to lo again. When lo becomes mid, round mid upwards.
+  analogous: |
+    ```python
+    def biggest_cube_root(n):
+        low, high = 0, n
+        while low < high:
+            middle = (low + high + 1) // 2
+            if middle * middle * middle <= n:
+                low = middle
+            else:
+                high = middle - 1
+        return low
+    ```

@@ -1,0 +1,28 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: needs-sorted
+  type: choice
+  q: What must be true of a list before binary search can work on it?
+  options: ["It has no repeats", "It is sorted", "It is shorter than 1,000"]
+  answer: 1
+  why: Throwing half away only works if everything on one side is smaller and on the other side bigger.
+- id: trace-search
+  type: predict
+  code: |
+    shelf = [2, 5, 8, 12, 16, 23, 38]
+    lo, hi = 0, len(shelf) - 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        print(mid, shelf[mid])
+        if shelf[mid] == 23:
+            break
+        if shelf[mid] < 23:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+  why: The middles are 3, then 5. 12 is too small, so lo jumps to 4; then 23 is found at once.
+- id: off-by-one
+  type: choice
+  q: '`lo = mid` instead of `lo = mid + 1` (with `while lo <= hi`). What can happen?'
+  options: ["Nothing - it's the same", "It can loop forever", "It returns -1 too early"]
+  answer: 1
+  why: When lo and hi meet, mid equals lo, so lo = mid changes nothing and the loop never ends.

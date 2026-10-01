@@ -1,0 +1,93 @@
+tier: core
+type: practice
+title: The First Sighting
+twist: edge case - repeats; any match isn't good enough, it must be the first
+task: |
+  The Sightings Register is a list of dates, sorted, and many dates appear
+  more than once. Write `first_sighting(days, day)`: the position of the
+  **first** time `day` appears - or `-1` if it never does.
+
+  ```python
+  days = ["1926-06-01", "1926-06-03", "1926-06-03", "1926-06-03", "1926-06-04"]
+  first_sighting(days, "1926-06-03")   # -> 1
+  first_sighting(days, "1926-06-02")   # -> -1
+  ```
+
+  The examiners count your looks. On 100,000 dates you may take at most
+  45 looks.
+starter: |
+  def first_sighting(days, day):
+      lo, hi = 0, len(days) - 1
+      while lo <= hi:
+          mid = (lo + hi) // 2
+          if days[mid] == day:
+              return mid
+          if days[mid] < day:
+              lo = mid + 1
+          else:
+              hi = mid - 1
+      return -1
+tests: |
+  class Shelf(list):
+      looks = 0
+      def __getitem__(self, i):
+          Shelf.looks += 1
+          return list.__getitem__(self, i)
+      def __iter__(self):
+          Shelf.looks += len(self)
+          return list.__iter__(self)
+      def __contains__(self, x):
+          Shelf.looks += len(self)
+          return list.__contains__(self, x)
+      def index(self, *args):
+          Shelf.looks += len(self)
+          return list.index(self, *args)
+
+  DAYS = ["1926-06-01", "1926-06-03", "1926-06-03", "1926-06-03", "1926-06-04"]
+
+  def test_example():
+      fn = student_function("first_sighting")
+      check(call(fn, DAYS, "1926-06-03") == 1, f"first_sighting(days, '1926-06-03') returned {call(fn, DAYS, '1926-06-03')!r}. Is that the FIRST 3 June?")
+      check(call(fn, DAYS, "1926-06-02") == -1, "2 June isn't in the register.")
+      check(call(fn, DAYS, "1926-06-01") == 0 and call(fn, DAYS, "1926-06-04") == 4, "The first and last dates should be found too.")
+
+  def test_all_the_same():
+      fn = student_function("first_sighting")
+      same = ["1926-06-03"] * 9
+      check(call(fn, same, "1926-06-03") == 0, f"When every entry is the same day, the first is at 0. You returned {call(fn, same, '1926-06-03')!r}.")
+      check(call(fn, [], "1926-06-03") == -1, "An empty register holds nothing.")
+
+  def test_big_register():
+      fn = student_function("first_sighting")
+      register = Shelf(day for day in range(20000) for _ in range(5))
+      for day, want in [(0, 0), (19999, 99995), (7777, 38885), (20000, -1), (-1, -1)]:
+          Shelf.looks = 0
+          got = call(fn, register, day)
+          check(got == want, f"In a register of 100,000 entries, the first {day} is at {want}. You returned {got!r}.")
+          check(Shelf.looks <= 45, f"That took {Shelf.looks} looks. After finding a match, are you still halving - or walking left one step at a time?")
+hints:
+  nudge: When the middle matches, don't stop. Remember it, and keep searching the LEFT half for an earlier one.
+  question: After a match at mid, could the first match be at mid itself? Could it be to the right of mid? Why is walking left one step at a time too slow?
+  pseudocode: |
+    lo and hi cover the whole list; nothing found yet
+    while lo hasn't passed hi:
+        mid is halfway
+        if the day at mid is too early: move lo past mid
+        otherwise:
+            if it's a match: remember mid as the best so far
+            move hi to just before mid, to look further left
+    give back the best found, or -1 if there was none
+  flaw: If an all-equal list of a million entries is slow, you found one match and then walked back step by step. That's O(n) again.
+  analogous: |
+    ```python
+    def last_page_before(pages, limit):
+        low, high, best = 0, len(pages) - 1, -1
+        while low <= high:
+            middle = (low + high) // 2
+            if pages[middle] < limit:
+                best = middle
+                low = middle + 1
+            else:
+                high = middle - 1
+        return best
+    ```

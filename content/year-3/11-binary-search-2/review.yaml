@@ -1,0 +1,25 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: condition-shape
+  type: choice
+  q: Which yes/no answers (going up through the pages) can binary search find the first "yes" in?
+  options: ["no, yes, no, yes", "no, no, yes, yes, yes", "yes, no, no, yes"]
+  answer: 1
+  why: Halving needs a single boundary - once yes, always yes.
+- id: first-yes
+  type: predict
+  code: |
+    lo, hi, best = 1, 20, None
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if mid * mid >= 50:
+            best, hi = mid, mid - 1
+        else:
+            lo = mid + 1
+    print(best)
+  why: The first number whose square is at least 50 is 8 (7 squared is only 49).
+- id: questions
+  type: choice
+  q: Roughly how many questions does it take to find the boundary among 1,000,000 possibilities?
+  options: ["20", "1,000", "1,000,000"]
+  answer: 0
+  why: Every question halves what's left, and 2 to the 20th is about a million.

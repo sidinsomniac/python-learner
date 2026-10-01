@@ -1,0 +1,50 @@
+tier: core
+type: practice
+title: The Hiccuping Digits
+twist: constraint - no loops and no turning the number into text
+task: |
+  Write `digit_sum(n)`, **recursively**: the sum of the digits of a whole
+  number `n` (`n` is 0 or more).
+
+  ```python
+  digit_sum(1926)   # -> 18
+  digit_sum(7)      # -> 7
+  digit_sum(0)      # -> 0
+  ```
+
+  No loops, and no `str()`. Two Arithmancy spells can split a number into
+  "the last digit" and "everything before it". Which?
+starter: |
+  def digit_sum(n):
+      return sum(int(d) for d in str(n))
+tests: |
+  def test_sums():
+      fn = student_function("digit_sum")
+      check(call(fn, 1926) == 18, f"digit_sum(1926) returned {call(fn, 1926)!r}.")
+      check(call(fn, 7) == 7, f"digit_sum(7) returned {call(fn, 7)!r}.")
+      check(call(fn, 0) == 0, f"digit_sum(0) returned {call(fn, 0)!r}.")
+      check(call(fn, 1000) == 1, f"digit_sum(1000) returned {call(fn, 1000)!r}. Zeros in the middle still count as digits.")
+
+  def test_huge():
+      fn = student_function("digit_sum")
+      n = 98765432109876543210
+      check(call(fn, n) == 90, f"digit_sum of a 20-digit number returned {call(fn, n)!r}.")
+
+  def test_rules():
+      check(recursive("digit_sum"), "Does digit_sum call itself on a smaller number?")
+      check(not uses(ast.For, ast.While, ast.comprehension), "No loops: let the recursion do the repeating.")
+      check(not calls("str"), "No str() - can you peel off the last digit with arithmetic alone?")
+hints:
+  nudge: The last digit of n is easy to get, and so is "n without its last digit". The second one is a smaller problem.
+  question: What do n % 10 and n // 10 give for 1926? When should the recursion stop?
+  pseudocode: |
+    if n is 0: give back 0
+    otherwise: give back the last digit plus the digit sum of n without its last digit
+  flaw: If digit_sum(0) recurses forever, check your base case. 0 // 10 is still 0!
+  analogous: |
+    ```python
+    def count_digits(n):
+        if n < 10:
+            return 1
+        return 1 + count_digits(n // 10)
+    ```

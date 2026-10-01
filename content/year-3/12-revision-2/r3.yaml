@@ -1,0 +1,52 @@
+tier: review
+type: practice
+title: How Many Turns?
+task: |
+  This spell calls itself twice:
+
+  ```python
+  def fib(n):
+      if n < 2:
+          return n
+      return fib(n - 1) + fib(n - 2)
+  ```
+
+  Write `calls_needed(n)`: how many times `fib` is called **in total**
+  (counting the first call) when you work out `fib(n)`.
+
+  ```python
+  calls_needed(0)   # -> 1
+  calls_needed(2)   # -> 3   fib(2), fib(1), fib(0)
+  calls_needed(5)   # -> 15
+  ```
+
+  Think recursively: one call, plus however many calls each of its two
+  smaller calls makes.
+starter: |
+  def calls_needed(n):
+      return n
+tests: |
+  def test_small():
+      fn = student_function("calls_needed")
+      for n, want in [(0, 1), (1, 1), (2, 3), (3, 5), (5, 15)]:
+          got = call(fn, n)
+          check(got == want, f"calls_needed({n}) returned {got!r}. Count fib({n}) itself, then everything its two smaller calls do.")
+
+  def test_bigger():
+      fn = student_function("calls_needed")
+      check(call(fn, 15) == 1973, f"calls_needed(15) returned {call(fn, 15)!r}.")
+      check(call(fn, 20) == 21891, "Twenty-one thousand calls for fib(20)! That's why Lesson 5 remembered answers.")
+hints:
+  nudge: The number of calls follows the same shape as fib itself.
+  question: For n below 2, fib doesn't call itself - so how many calls is that? For bigger n, how many calls do fib(n - 1) and fib(n - 2) each make?
+  pseudocode: |
+    if n is below 2: just the one call
+    otherwise: one call, plus the calls needed for n - 1, plus the calls needed for n - 2
+  flaw: If calls_needed(0) is 0, you forgot to count the call that asks about 0 itself.
+  analogous: |
+    ```python
+    def leaves(depth):
+        if depth == 0:
+            return 1
+        return leaves(depth - 1) + leaves(depth - 1)
+    ```

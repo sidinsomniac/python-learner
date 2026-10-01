@@ -113,7 +113,7 @@ Each year folder also has a `year.yaml`: title, mystery, the prologue scene, and
 - `run_student(inputs)` and `run_with(name=value)` run the student's code, the second with some starting values swapped for others. They return `.stdout`, `.lines` and `.ns`.
 - `student_function(name)` gets a function the student defined; `call(fn, ...)` calls it safely (the student's crashes are reported as theirs), and `printed()` returns what that call printed. `raised(fn, ...)` expects an error and returns its `(type, message)`, or None.
 - `source()` and `tree()` give the student's code as text or as an AST.
-- `calls(name)`, `uses(ast.For)` and `count_nodes(...)` check the code's structure.
+- `calls(name)`, `uses(ast.For)` and `count_nodes(...)` check the code's structure; `recursive(name)` checks that a function calls itself.
 - `timed(fn, ...)` fails a slow solution.
 - `write_files({...})` replaces the files on the desk (the spell's working folder), and `read_file(name)` reads one back, or gives None. Every run and every test starts from a fresh desk holding the exercise's `files`.
 - `check(condition, question)` fails the test with your question if the condition is false.

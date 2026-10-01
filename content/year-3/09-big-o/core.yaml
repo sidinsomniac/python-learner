@@ -1,0 +1,70 @@
+tier: core
+type: practice
+title: Draco's Owl Race
+twist: scale - right answers aren't enough when there are 30,000 owls
+task: |
+  Write `first_repeat(owls)`. Reading the list from the start, return the
+  first owl that turns up for a **second time** - or `None` if no owl ever
+  repeats.
+
+  ```python
+  first_repeat(["Hedwig", "Errol", "Pig", "Errol", "Hedwig"])
+  # -> 'Errol'   (the second Errol comes before the second Hedwig)
+  first_repeat(["Hermes"])
+  # -> None
+  ```
+
+  The starter gets the right answers, but it compares every owl with every
+  owl before it. The examiners will race it against **30,000** owls. Can you
+  make it one pass?
+starter: |
+  def first_repeat(owls):
+      for j in range(len(owls)):
+          for i in range(j):
+              if owls[i] == owls[j]:
+                  return owls[j]
+      return None
+tests: |
+  import time
+
+  def test_small():
+      fn = student_function("first_repeat")
+      got = call(fn, ["Hedwig", "Errol", "Pig", "Errol", "Hedwig"])
+      check(got == "Errol", f"first_repeat(...) returned {got!r}. Which owl's SECOND appearance comes first?")
+      check(call(fn, ["Hermes"]) is None, "With only one owl, nothing can repeat.")
+      check(call(fn, []) is None, "With no owls, nothing can repeat.")
+      check(call(fn, [5, 3, 5, 3]) == 5, "Owl numbers can repeat too.")
+
+  def test_order():
+      fn = student_function("first_repeat")
+      got = call(fn, ["a", "b", "b", "a"])
+      check(got == "b", f"In ['a', 'b', 'b', 'a'], b is the first to be seen twice. You returned {got!r}.")
+
+  def test_race():
+      fn = student_function("first_repeat")
+      owls = list(range(30000)) + [29999]
+      start = time.perf_counter()
+      got = call(fn, owls)
+      took = time.perf_counter() - start
+      check(got == 29999, f"With 30,000 owls you returned {got!r}.")
+      check(took < 3, f"Your spell took {took:.1f}s for 30,000 owls. Is something hiding a loop inside your loop?")
+hints:
+  nudge: Walk through the owls once, remembering every owl you've already seen - somewhere you can check in a single step.
+  question: Which collection answers "have I seen this before?" without looking through everything? Is `owl in a_list` one step?
+  pseudocode: |
+    start with nothing seen
+    for each owl in order:
+        if it has been seen already: give it back
+        otherwise remember it
+    give back None
+  flaw: If the race times out but the small tests pass, you're remembering owls in a list - `in` on a list hides a whole loop.
+  analogous: |
+    ```python
+    def all_different(spells):
+        met = set()
+        for spell in spells:
+            if spell in met:
+                return False
+            met.add(spell)
+        return True
+    ```

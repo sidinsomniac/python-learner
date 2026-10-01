@@ -79,6 +79,14 @@ describe("raised()", () => {
   });
 });
 
+describe("recursive()", () => {
+  it("spots a function that calls itself, and not one that is merely called", () => {
+    const tests = "def test_r():\n    check(recursive('down'), 'down should recurse')\n    check(not recursive('loop'), 'loop does not')\n";
+    const code = "def down(n):\n    return [] if n == 0 else [n] + down(n - 1)\n\ndef loop(n):\n    return list(range(n, 0, -1))\n\nloop(3)\n";
+    expect(grade(code, tests).failure).toBeNull();
+  });
+});
+
 describe("the Pensieve's call stack", () => {
   const countdown = "def countdown(n):\n    if n == 0:\n        return 0\n    return countdown(n - 1)\n\ncountdown(2)\n";
 

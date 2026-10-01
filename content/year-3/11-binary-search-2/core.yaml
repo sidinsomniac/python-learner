@@ -1,0 +1,81 @@
+tier: core
+type: practice
+title: The First Faded Page
+twist: scale - a million pages, and only 25 looks; and maybe nothing has faded at all
+task: |
+  The diary has pages `1` to `n`. `is_faded(page)` returns `True` or
+  `False`, and once a page has faded, every later page has faded too.
+
+  Write `first_faded(n, is_faded)`: the number of the **first** faded page,
+  or `None` if no page has faded.
+
+  ```python
+  # pages 1..10, fading from page 7 onward:
+  first_faded(10, lambda page: page >= 7)   # -> 7
+  first_faded(10, lambda page: False)       # -> None
+  ```
+
+  The pages are fragile: on a diary of 1,000,000 pages you may call
+  `is_faded` at most **25** times. There's no page 0, and no page past `n`.
+starter: |
+  def first_faded(n, is_faded):
+      for page in range(1, n + 1):
+          if is_faded(page):
+              return page
+      return None
+tests: |
+  def diary(n, fades_from):
+      looked = []
+      def is_faded(page):
+          if not 1 <= page <= n:
+              raise ValueError(f"There is no page {page} in a diary of {n} pages.")
+          looked.append(page)
+          if len(looked) > 25:
+              raise ValueError("The diary crumbles - more than 25 pages were turned!")
+          return fades_from is not None and page >= fades_from
+      return is_faded, looked
+
+  def test_small():
+      fn = student_function("first_faded")
+      is_faded, _ = diary(10, 7)
+      check(call(fn, 10, is_faded) == 7, f"Fading from page 7, you returned {call(fn, 10, diary(10, 7)[0])!r}.")
+      is_faded, _ = diary(10, None)
+      check(call(fn, 10, is_faded) is None, "When no page has faded, there is no first faded page.")
+
+  def test_edges():
+      fn = student_function("first_faded")
+      for n, fades in [(10, 1), (10, 10), (1, 1), (1, None), (2, 2)]:
+          is_faded, looked = diary(n, fades)
+          got = call(fn, n, is_faded)
+          check(got == fades, f"With {n} pages fading from {fades}, you returned {got!r} after looking at {looked}.")
+
+  def test_million():
+      fn = student_function("first_faded")
+      for fades in [1, 618034, 1000000, None, 2]:
+          is_faded, looked = diary(1000000, fades)
+          got = call(fn, 1000000, is_faded)
+          check(got == fades, f"A million pages fading from {fades}: you returned {got!r}.")
+          check(len(looked) <= 25, f"That took {len(looked)} looks.")
+hints:
+  nudge: The pages go clear, clear, clear, faded, faded. You're hunting for the boundary - the first "yes".
+  question: When a page IS faded, could the first faded page be earlier? When it ISN'T, which side must the answer be on? What do you return if you never see a faded page?
+  pseudocode: |
+    lo is page 1, hi is page n; nothing found yet
+    while lo hasn't passed hi:
+        mid is halfway
+        if mid has faded: remember it, and move hi to just before mid
+        otherwise: move lo to just after mid
+    give back what you remembered (None if nothing)
+  flaw: '"There is no page 0" means a marker slipped below 1 - start lo at 1, not 0. If you get the wrong page by one, check what you remember and when.'
+  analogous: |
+    ```python
+    def smallest_enough(limit, enough):
+        low, high, best = 1, limit, None
+        while low <= high:
+            middle = (low + high) // 2
+            if enough(middle):
+                best, high = middle, middle - 1
+            else:
+                low = middle + 1
+        return best
+    ```

@@ -1,0 +1,70 @@
+tier: outstanding
+type: practice
+title: The Mirror of Erised, Recursively
+twist: constraint - recursion only, no slicing backwards
+task: |
+  Write two recursive spells. No loops, and no `[::-1]`, `reversed` or
+  `.reverse()`.
+
+  **`reverse(text)`** returns the text backwards.
+
+  ```python
+  reverse("Nox")   # -> 'xoN'
+  reverse("")      # -> ''
+  ```
+
+  **`is_palindrome(text)`** returns True if the text reads the same both
+  ways, **ignoring capitals**. Compare the outer two letters, then look
+  inwards.
+
+  ```python
+  is_palindrome("Racecar")   # -> True
+  is_palindrome("Tobias")    # -> False
+  is_palindrome("")          # -> True
+  ```
+starter: |
+  def reverse(text):
+      return text[::-1]
+
+  def is_palindrome(text):
+      return text == text[::-1]
+tests: |
+  def test_reverse():
+      fn = student_function("reverse")
+      for text in ["Nox", "", "a", "Wingardium Leviosa"]:
+          got = call(fn, text)
+          check(got == "".join(reversed(text)), f"reverse({text!r}) returned {got!r}.")
+
+  def test_palindromes():
+      fn = student_function("is_palindrome")
+      for text in ["Racecar", "", "x", "abba", "Abba", "level"]:
+          check(call(fn, text) is True, f"is_palindrome({text!r}) should be True.")
+      for text in ["Tobias", "ab", "abca", "Abc"]:
+          check(call(fn, text) is False, f"is_palindrome({text!r}) should be False.")
+
+  def test_rules():
+      check(recursive("reverse") and recursive("is_palindrome"), "Both spells should call themselves.")
+      check(not uses(ast.For, ast.While, ast.comprehension), "No loops in either spell.")
+      method_reverse = [n for n in ast.walk(tree()) if isinstance(n, ast.Attribute) and n.attr == "reverse"]
+      check(not calls("reversed") and not method_reverse, "No reversed() or .reverse() - build it with recursion.")
+      negative_steps = [n for n in ast.walk(tree()) if isinstance(n, ast.Slice) and n.step is not None]
+      check(not negative_steps, "No [::-1]: peel off one letter at a time instead.")
+hints:
+  nudge: For reverse, the first letter belongs at the end. For is_palindrome, check the two outer letters, then the middle.
+  question: What is reverse("ox") + "N"? What's left of "racecar" once you remove both ends, and when is there nothing left to check?
+  pseudocode: |
+    reverse(text):
+        if text is empty: give back the empty text
+        give back reverse(everything but the first letter) followed by the first letter
+    is_palindrome(text):
+        if text has 0 or 1 letters: give back True
+        if the first and last letters differ, ignoring capitals: give back False
+        give back is_palindrome of the middle
+  flaw: If "Abba" fails, compare the lowercase versions of the two letters. If you get an IndexError, a text of length 1 or 0 reached the comparison.
+  analogous: |
+    ```python
+    def shout_each(text):
+        if not text:
+            return ""
+        return text[0].upper() + "!" + shout_each(text[1:])
+    ```

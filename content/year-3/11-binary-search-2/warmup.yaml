@@ -1,0 +1,66 @@
+tier: warmup
+type: practice
+title: Seven Guesses
+task: |
+  Trelawney is thinking of a number from 1 to 100. Write
+  `guess_number(ask)`. `ask` is a spell: `ask(guess)` returns `"higher"`,
+  `"lower"` or `"correct"`. Return her number. You get **at most 7**
+  guesses.
+
+  ```python
+  # if she's thinking of 64:
+  # ask(50) -> 'higher', ask(75) -> 'lower', ... ask(64) -> 'correct'
+  ```
+starter: |
+  def guess_number(ask):
+      guess = 1
+      while ask(guess) != "correct":
+          guess += 1
+      return guess
+tests: |
+  def oracle(secret):
+      asked = []
+      def ask(guess):
+          asked.append(guess)
+          if len(asked) > 7:
+              raise ValueError("Trelawney sighs. That was your eighth guess!")
+          if guess == secret:
+              return "correct"
+          return "higher" if secret > guess else "lower"
+      return ask, asked
+
+  def test_some_numbers():
+      fn = student_function("guess_number")
+      for secret in [64, 50, 1, 100, 37]:
+          ask, asked = oracle(secret)
+          got = call(fn, ask)
+          check(got == secret, f"She was thinking of {secret}, but you returned {got!r} after asking {asked}.")
+
+  def test_every_number():
+      fn = student_function("guess_number")
+      for secret in range(1, 101):
+          ask, asked = oracle(secret)
+          check(call(fn, ask) == secret, f"For {secret} you asked {asked}.")
+hints:
+  nudge: Always guess the middle of what's still possible. "higher" and "lower" each rule out half.
+  question: If she says "higher" to 50, what's the smallest number it could now be? When she says "lower" to 75, the biggest?
+  pseudocode: |
+    the number is somewhere from low = 1 to high = 100
+    repeat:
+        guess the middle
+        if correct: give it back
+        if she says higher: low becomes guess + 1
+        otherwise: high becomes guess - 1
+  flaw: If you run out of guesses near 1 or 100, check that low and high move PAST the guess, not onto it.
+  analogous: |
+    ```python
+    def find_floor(ask_above):
+        low, high = 1, 7
+        while low < high:
+            middle = (low + high) // 2
+            if ask_above(middle):
+                low = middle + 1
+            else:
+                high = middle
+        return low
+    ```

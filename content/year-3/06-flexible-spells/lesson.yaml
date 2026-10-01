@@ -1,0 +1,18 @@
+id: y3-l04
+year: 3
+order: 6
+number: 4
+title: Flexible Spells
+location: The Gryffindor common room
+concepts: ["*args", "**kwargs", keyword-only parameters, "unpacking with * and **"]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: twins
+    line: (pressing a blank, folded parchment into your hands) We've decided you need this more than we do. Tap it with your wand and say "I solemnly swear that I am up to no good".
+  - who: narrator
+    line: Ink spreads across the parchment like a spider's web - corridors, staircases, and hundreds of tiny labelled dots, moving.
+  - who: twins
+    line: The Marauder's Map. Shows everyone, everywhere. Trouble is, the third floor is busy, and nobody's got time to write every sighting down.
+  - who: ashwood
+    line: Then we need a spell that can take *any* number of sightings - one, five, or none at all. Python has a way to say "and the rest".
+clue: The Map's log shows a dot labelled **Tobias Wren** walking the same twelve squares, at the same minute, every single day.

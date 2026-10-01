@@ -150,6 +150,7 @@ def test_best():
 
 - Always go through `call(fn, ...)`: a crash inside the student's function is reported as *their* error with a line number, and runaway loops are stopped.
 - `printed()` is what the last `call` printed - use it to insist on `return` rather than `print`.
+- `recursive(name)` checks that a function calls itself (Year 3 on). Pair it with `not uses(ast.For, ast.While, ast.comprehension)` to forbid loops.
 - `raised(fn, ...)` checks a spell that should refuse bad input: it returns `(type name, message)`, or `None` if nothing was raised (Year 3 on).
 - For repair exercises whose starter crashes at the top level, get the function with `run_student(allow_error=True).ns.get(name)`.
 

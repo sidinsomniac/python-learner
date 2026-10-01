@@ -1,0 +1,28 @@
+tier: review
+type: divination
+title: Down and Back Up
+task: Predict every line.
+snippet: |
+  def turn(n):
+      if n == 0:
+          print("stop")
+          return 0
+      print("down", n)
+      result = turn(n - 1) + n
+      print("up", n, result)
+      return result
+
+  print(turn(3))
+hints:
+  nudge: Every call prints on its way down, waits for the smaller call, and only then prints on its way back up.
+  question: Which call prints "up" first - turn(3) or turn(1)? What does turn(1) get back from turn(0)?
+  pseudocode: |
+    turn(3), turn(2) and turn(1) each print "down" and wait
+    turn(0) prints "stop" and gives back 0
+    turn(1) adds 1 and prints "up"; then turn(2); then turn(3)
+    the final total is printed last
+  flaw: The usual slip is printing all the "up" lines in the order 3, 2, 1. The deepest call finishes first.
+  analogous: |
+    ```text
+    down 2 -> down 1 -> stop -> up 1 1 -> up 2 3
+    ```

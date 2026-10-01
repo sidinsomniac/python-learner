@@ -1,0 +1,55 @@
+tier: review
+type: repair
+title: The Endless Search
+task: |
+  Lockhart's page-finder works on most pages, but for some it searches
+  forever. `find_page(pages, wanted)` gets a sorted list of page numbers
+  and should return the position of `wanted`, or `-1`.
+
+  ```python
+  find_page([2, 4, 8, 16], 16)   # -> 3   (but it never finishes!)
+  ```
+
+  Find the two lines that stop it from ever finishing, and fix them.
+starter: |
+  def find_page(pages, wanted):
+      lo, hi = 0, len(pages) - 1
+      while lo <= hi:
+          mid = (lo + hi) // 2
+          if pages[mid] == wanted:
+              return mid
+          if pages[mid] < wanted:
+              lo = mid
+          else:
+              hi = mid
+      return -1
+tests: |
+  def test_found():
+      fn = student_function("find_page")
+      pages = [2, 4, 8, 16]
+      for i, page in enumerate(pages):
+          check(call(fn, pages, page) == i, f"find_page({pages}, {page}) returned {call(fn, pages, page)!r}.")
+
+  def test_missing():
+      fn = student_function("find_page")
+      for wanted in [1, 3, 17]:
+          check(call(fn, [2, 4, 8, 16], wanted) == -1, f"{wanted} isn't there - find_page should give -1.")
+      check(call(fn, [], 5) == -1, "An empty book has no pages.")
+
+  def test_bigger():
+      fn = student_function("find_page")
+      pages = list(range(0, 3000, 3))
+      check(all(call(fn, pages, p) == p // 3 for p in pages[::37]), "Every page in a longer book should be found.")
+hints:
+  nudge: Watch lo and hi in the Pensieve for find_page([2, 4, 8, 16], 16). Do they ever stop changing?
+  question: Once pages[mid] has been checked, should mid still be inside the range you search next?
+  pseudocode: |
+    if the page at mid is too small: the next search starts just after mid
+    otherwise: the next search ends just before mid
+  flaw: When lo and hi are next to each other, mid equals lo - so moving lo to mid changes nothing, and the loop never ends.
+  analogous: |
+    ```python
+    low, high = 0, 9
+    middle = (low + high) // 2   # 4
+    low = middle + 1             # 5: 4 is never looked at again
+    ```

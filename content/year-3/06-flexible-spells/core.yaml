@@ -1,0 +1,61 @@
+tier: core
+type: practice
+title: The Marauder's Log
+twist: edge case - no sightings at all, sightings that aren't text, and a level that must be named
+task: |
+  Write `log(*sightings, sep=", ", level="INFO")`. It **returns** one line
+  of text: the level in square brackets, a space, then every sighting
+  joined with `sep`. Sightings can be numbers, so turn each into text.
+  If there are no sightings at all, the line says `nothing seen`.
+
+  ```python
+  log("Tobias Wren", "3rd floor")
+  # -> '[INFO] Tobias Wren, 3rd floor'
+  log(3, 3, sep=":", level="WARN")
+  # -> '[WARN] 3:3'
+  log()
+  # -> '[INFO] nothing seen'
+  log("Filch", "WARN")
+  # -> '[INFO] Filch, WARN'   (WARN here is just a sighting)
+  ```
+starter: |
+  def log(sighting, level="INFO"):
+      print(f"[{level}] {sighting}")
+tests: |
+  def test_example():
+      fn = student_function("log")
+      got = call(fn, "Tobias Wren", "3rd floor")
+      check(got == "[INFO] Tobias Wren, 3rd floor", f"log('Tobias Wren', '3rd floor') returned {got!r}.")
+      check(printed() == "", "log should RETURN its line, not print it.")
+
+  def test_options():
+      fn = student_function("log")
+      got = call(fn, 3, 3, sep=":", level="WARN")
+      check(got == "[WARN] 3:3", f"log(3, 3, sep=':', level='WARN') returned {got!r}. Are the numbers turned into text?")
+      got = call(fn, "a", "b", "c", sep="")
+      check(got == "[INFO] abc", f"With sep='' you returned {got!r}.")
+
+  def test_nothing():
+      fn = student_function("log")
+      check(call(fn) == "[INFO] nothing seen", f"log() returned {call(fn)!r}.")
+      check(call(fn, level="ERROR") == "[ERROR] nothing seen", "log(level='ERROR') has no sightings either.")
+
+  def test_level_is_named():
+      got = call(student_function("log"), "Filch", "WARN")
+      check(got == "[INFO] Filch, WARN", f"log('Filch', 'WARN') returned {got!r}. Can `level` ever be filled by position, if it comes after the starred parameter?")
+hints:
+  nudge: Star the sightings. Put sep and level after them, so they can only ever be given by name.
+  question: How do you join a tuple of things that might be numbers? What does joining an empty tuple give - and is that what the task wants?
+  pseudocode: |
+    define log with starred sightings, then sep and level with their defaults
+        if there are no sightings: the text is "nothing seen"
+        otherwise: the text is every sighting turned into a string, joined with sep
+        give back the level in brackets, a space, and the text
+  flaw: A TypeError from join means a number reached it unconverted. If 'WARN' becomes the level, level is still in front of the star.
+  analogous: |
+    ```python
+    def shout(*words, mark="!"):
+        if not words:
+            return "..."
+        return " ".join(str(w).upper() for w in words) + mark
+    ```

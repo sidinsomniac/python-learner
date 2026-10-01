@@ -1,0 +1,43 @@
+tier: warmup
+type: divination
+title: Four Spells, Counted
+task: Predict every line.
+snippet: |
+  def one(n):
+      return 1
+
+  def every(n):
+      steps = 0
+      for _ in range(n):
+          steps += 1
+      return steps
+
+  def pairs(n):
+      steps = 0
+      for _ in range(n):
+          for _ in range(n):
+              steps += 1
+      return steps
+
+  def halves(n):
+      steps = 0
+      while n > 1:
+          n //= 2
+          steps += 1
+      return steps
+
+  for n in [8, 64]:
+      print(n, one(n), every(n), pairs(n), halves(n))
+hints:
+  nudge: For each spell, count how many times its innermost line runs when n is 8, then when n is 64.
+  question: How many times can you halve 8 before you reach 1? And 64?
+  pseudocode: |
+    one: always 1
+    every: n
+    pairs: n times n
+    halves: how many halvings take n down to 1
+  flaw: The usual slip is with halves - 8 becomes 4, 2, 1. That's three halvings, not four.
+  analogous: |
+    ```text
+    n = 16: one 1, every 16, pairs 256, halves 4
+    ```

@@ -1,0 +1,19 @@
+id: y3-r2
+year: 3
+order: 12
+number: R2
+kind: revision
+title: Revision II - Why Doesn't He Stop?
+location: The Library
+concepts: ["*args and **kwargs", recursion, the call stack, Big-O, binary search]
+exercises: [r1, r2, r3]
+scene:
+  - who: ron
+    line: (dropping into a chair) I don't get it. If he knows he's stuck, why doesn't he just... *stop*?
+  - who: hermione
+    line: Because the charm doesn't know how. It was never told when to stop. It just keeps calling itself.
+  - who: lupin
+    line: (arriving with a stack of books, and looking grave) I'm afraid I have news. The Ministry has decided the third-floor corridor is "an anomaly". On the last day of term, they'll seal it - with him inside.
+  - who: ashwood
+    line: Then we have until the end of term. Revision first - recursion, speed and searching - because we'll need every one of them.
+clue: A deadline. The Ministry will **seal the corridor on the last day of term** - so the boy must be freed before then.

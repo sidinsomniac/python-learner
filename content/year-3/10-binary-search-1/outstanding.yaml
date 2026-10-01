@@ -1,0 +1,82 @@
+tier: outstanding
+type: practice
+title: A Place on the Shelf
+twist: constraint - no bisect module, and every look counted
+task: |
+  Write `insert_position(items, x)`. `items` is sorted. Return the position
+  where `x` should be inserted to keep it sorted, **before** any items equal
+  to `x`.
+
+  ```python
+  insert_position([10, 20, 20, 30], 20)   # -> 1
+  insert_position([10, 20, 30], 25)       # -> 2
+  insert_position([10, 20, 30], 99)       # -> 3   (at the very end)
+  insert_position([], 5)                  # -> 0
+  ```
+
+  Don't use the `bisect` module (that's what it does!). On 100,000 items you
+  may take at most 20 looks: one look per halving.
+starter: |
+  def insert_position(items, x):
+      for i, item in enumerate(items):
+          if item >= x:
+              return i
+      return len(items)
+tests: |
+  class Shelf(list):
+      looks = 0
+      def __getitem__(self, i):
+          Shelf.looks += 1
+          return list.__getitem__(self, i)
+      def __iter__(self):
+          Shelf.looks += len(self)
+          return list.__iter__(self)
+      def __contains__(self, x):
+          Shelf.looks += len(self)
+          return list.__contains__(self, x)
+      def index(self, *args):
+          Shelf.looks += len(self)
+          return list.index(self, *args)
+
+  def test_examples():
+      fn = student_function("insert_position")
+      cases = [([10, 20, 20, 30], 20, 1), ([10, 20, 30], 25, 2), ([10, 20, 30], 99, 3), ([10, 20, 30], 1, 0), ([], 5, 0), ([7], 7, 0), ([7], 8, 1)]
+      for items, x, want in cases:
+          got = call(fn, items, x)
+          check(got == want, f"insert_position({items}, {x}) returned {got!r}, not {want}.")
+
+  def test_no_bisect():
+      imports = [n for n in ast.walk(tree()) if isinstance(n, (ast.Import, ast.ImportFrom))]
+      check(not imports, "No imports needed - and certainly not bisect. Halve the range yourself.")
+
+  def test_looks():
+      fn = student_function("insert_position")
+      shelf = Shelf(range(0, 200000, 2))
+      for x, want in [(0, 0), (1, 1), (199998, 99999), (200001, 100000), (-5, 0), (77777, 38889)]:
+          Shelf.looks = 0
+          got = call(fn, shelf, x)
+          check(got == want, f"On 100,000 even numbers, {x} belongs at {want}. You returned {got!r}.")
+          check(Shelf.looks <= 20, f"That took {Shelf.looks} looks. Can you manage one look per halving?")
+hints:
+  nudge: This time the answer can be len(items), one past the end. Let hi start there, and let the range shrink until lo meets hi.
+  question: If items[mid] is smaller than x, can the answer be mid? If items[mid] is bigger or equal, could the answer still be mid?
+  pseudocode: |
+    lo starts at 0, hi at the length of items
+    while lo is less than hi:
+        mid is halfway
+        if the item at mid is smaller than x: the answer is after mid, so lo moves past mid
+        otherwise: the answer is mid or before, so hi moves to mid
+    lo and hi have met: that's the position
+  flaw: If it loops forever, check which marker moves to mid and which moves past it - and that the loop stops when they meet.
+  analogous: |
+    ```python
+    def count_below(sorted_marks, limit):
+        low, high = 0, len(sorted_marks)
+        while low < high:
+            middle = (low + high) // 2
+            if sorted_marks[middle] < limit:
+                low = middle + 1
+            else:
+                high = middle
+        return low
+    ```

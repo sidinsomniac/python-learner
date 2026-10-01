@@ -1,0 +1,71 @@
+tier: outstanding
+type: practice
+title: The Tally Charm
+twist: combination - a spell that wraps any spell, passes everything through, and keeps count
+task: |
+  Write `counted(spell)`. It returns a **new spell** that:
+  - takes **any** arguments, positional and named, and passes them all
+    to `spell` unchanged;
+  - returns whatever `spell` returns;
+  - counts how many times it has been cast, in an attribute called
+    `calls` (a function can carry attributes, like `wrapper.calls`).
+
+  ```python
+  counted_max = counted(max)
+  counted_max(3, 9, 4)                  # -> 9
+  counted_max(["ab", "c"], key=len)     # -> 'ab'
+  counted_max.calls                     # -> 2
+  ```
+
+  Every spell made by `counted` keeps its own count.
+starter: |
+  def counted(spell):
+      return spell
+tests: |
+  def test_passes_through():
+      maker = student_function("counted")
+      counted_max = call(maker, max)
+      check(call(counted_max, 3, 9, 4) == 9, "counted(max)(3, 9, 4) should be 9.")
+      check(call(counted_max, ["ab", "c"], key=len) == "ab", "Keyword arguments like key=len must reach the spell too.")
+
+  def test_counts():
+      maker = student_function("counted")
+      counted_len = call(maker, len)
+      check(getattr(counted_len, "calls", None) == 0, f"Before it's cast, calls should be 0. It's {getattr(counted_len, 'calls', 'missing')!r}.")
+      call(counted_len, "abc")
+      call(counted_len, [])
+      call(counted_len, "x")
+      check(counted_len.calls == 3, f"After three casts, calls is {counted_len.calls!r}.")
+
+  def test_separate_counts():
+      maker = student_function("counted")
+      a = call(maker, abs)
+      b = call(maker, abs)
+      call(a, -1)
+      call(a, -2)
+      call(b, -3)
+      check((a.calls, b.calls) == (2, 1), f"Two counted spells should keep separate counts. They have {(a.calls, b.calls)}.")
+
+  def test_returns_new_spell():
+      maker = student_function("counted")
+      check(call(maker, max) is not max, "counted should give back a NEW spell, not the original.")
+hints:
+  nudge: Define a wrapper inside counted that takes *args and **kwargs, adds one to its own count, and casts the real spell with everything it was given.
+  question: Where should the count start - inside the wrapper, or once, just after defining it? How does the wrapper hand on the named arguments as named arguments?
+  pseudocode: |
+    counted(spell):
+        define wrapper taking any positional and any named arguments
+            add one to wrapper's calls
+            give back spell cast with all of them, spread out again
+        set wrapper's calls to 0
+        give back wrapper
+  flaw: If calls keeps resetting, you set it to 0 inside the wrapper. If key=len is ignored, the wrapper didn't pass **kwargs on.
+  analogous: |
+    ```python
+    def announced(charm):
+        def run(*args, **kwargs):
+            print("Casting!")
+            return charm(*args, **kwargs)
+        run.label = charm.__name__
+        return run
+    ```

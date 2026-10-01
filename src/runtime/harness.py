@@ -366,6 +366,17 @@ def calls(name):
     return False
 
 
+def recursive(name):
+    """Does the learner's function `name` call itself somewhere in its body?"""
+    for node in ast.walk(tree()):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
+            return any(
+                isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name) and inner.func.id == name
+                for inner in ast.walk(node)
+            )
+    return False
+
+
 def uses(*node_types):
     """Does the learner's code contain any of these AST node types?"""
     return any(isinstance(node, node_types) for node in ast.walk(tree()))
@@ -394,6 +405,7 @@ TEST_HELPERS = {
     "source": source,
     "tree": tree,
     "calls": calls,
+    "recursive": recursive,
     "uses": uses,
     "count_nodes": count_nodes,
     "timed": timed,

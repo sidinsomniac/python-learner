@@ -1,0 +1,26 @@
+# Time-Turner and Dueling Club cards for this lesson.
+- id: args-tuple
+  type: predict
+  code: |
+    def roll(*names, house="?"):
+        return f"{len(names)} {names} {house}"
+
+    print(roll())
+    print(roll("Luna", "Ravenclaw"))
+    print(roll("Cho", house="Ravenclaw"))
+  why: Positional arguments all land in the tuple; house can only be set by name.
+- id: kwargs-dict
+  type: choice
+  q: 'Inside `def f(**opts)`, what is `opts` after `f(a=1, b=2)`?'
+  options: ["(1, 2)", "{'a': 1, 'b': 2}", "['a', 'b']"]
+  answer: 1
+  why: Two stars collect the named arguments into a dictionary.
+- id: star-call
+  type: predict
+  code: |
+    def duel(a, b, rounds=1):
+        return f"{a}-{b}x{rounds}"
+
+    pair = ("Harry", "Draco")
+    print(duel(*pair), duel(*pair, **{"rounds": 3}))
+  why: "* spreads the tuple into a and b; ** spreads the dict into rounds=3."

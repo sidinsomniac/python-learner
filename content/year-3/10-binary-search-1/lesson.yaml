@@ -1,0 +1,19 @@
+id: y3-l07a
+year: 3
+order: 10
+number: 7
+part: { n: 1, of: 2 }
+title: "★ Binary Search: Halving the Hall"
+location: The Hall of Records
+concepts: [binary search, sorted data, lo and hi, the middle, off-by-one errors, first occurrence, insert position]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: pince
+    line: The Sightings Register. Every report of the fading boy since 1926 - thirty-six thousand of them, in date order. Do *not* read them one at a time. I close at six.
+  - who: ron
+    line: Thirty-six thousand? We'll be here till we're the ones fading.
+  - who: hermione
+    line: They're in order, Ron. That changes everything. Open it in the middle - if the date's too late, the answer is in the first half. Throw the other half away.
+  - who: ashwood
+    line: Halve, and halve again. Thirty-six thousand pages take only sixteen looks. The idea is simple. Getting every edge exactly right is the art.
+clue: The first sighting of the fading boy ever recorded was on **3 June 1926** - in the middle of **exam week**.
