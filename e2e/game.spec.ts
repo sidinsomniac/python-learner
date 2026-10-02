@@ -391,3 +391,28 @@ test("Year 3 lays files on the desk, and the Pensieve shows a spell calling itse
   await next.click(); // ...which hands its answer back
   await expect(pensieve).toContainText("countdown() hands back 0");
 });
+
+test("arrows move between unlocked lessons, and stop at a locked one", async ({ page }) => {
+  await seed(page, { exercises: completed(["y1-l01"]) });
+  await page.goto("/#/lesson/y1-l02");
+  await expect(page.getByTestId("lesson-next")).toBeDisabled();
+  await page.getByTestId("lesson-prev").click();
+  await expect(page).toHaveURL(/lesson\/y1-l01/);
+  await expect(page.getByTestId("lesson-prev")).toBeDisabled();
+  await page.getByTestId("lesson-next").click();
+  await expect(page).toHaveURL(/lesson\/y1-l02/);
+});
+
+test("a save pasted in Settings brings the progress back", async ({ page }) => {
+  await seed(page);
+  await page.goto("/#/settings");
+  const lost = { state: { name: "Siddhartha", house: "ravenclaw", xp: 1959, bestLevel: 6, galleons: 370, exercises: completed(["y1-l01", "y1-l02"]) } };
+  await page.getByTestId("paste-save").fill(JSON.stringify(lost));
+  await page.getByTestId("paste-save-restore").click();
+  await expect(page.getByTestId("restore-msg")).toContainText("1959 XP, 370 Galleons");
+  await expect(page.getByTestId("galleons")).toContainText("370");
+  await page.goto("/");
+  await expect(page.getByTestId("lesson-y1-l03")).toBeEnabled();
+  await page.goto("/#/settings");
+  await expect(page.getByTestId("backups")).toBeVisible();
+});

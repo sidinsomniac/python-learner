@@ -69,7 +69,10 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
   });
   const complete = isLessonComplete(lesson, records);
   const grade = lessonGrade(lesson, records);
-  const next = LESSONS[LESSONS.findIndex((l) => l.id === lesson.id) + 1];
+  const index = LESSONS.findIndex((l) => l.id === lesson.id);
+  const prev = index > 0 ? LESSONS[index - 1] : undefined;
+  const next = LESSONS[index + 1];
+  const nextOpen = Boolean(next && (isLessonUnlocked(next, YEARS, records, skipped) || next.exercises.some((e) => records[e.id])));
   const exercise = lesson.exercises.find((e) => e.id === tab);
 
   // The opening scene pops up even when the lesson reopens on an exercise tab.
@@ -80,9 +83,15 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
   return (
     <div className="quest">
       <div className="quest-top">
-        <a href="#/" className="small">
-          ← Great Hall
-        </a>
+        <nav className="lesson-nav" aria-label="Lessons">
+          <a href="#/" className="small">
+            🏰 Great Hall
+          </a>
+          <span className="lesson-arrows">
+            <LessonArrow target={prev} direction="prev" open={Boolean(prev)} />
+            <LessonArrow target={next} direction="next" open={nextOpen} />
+          </span>
+        </nav>
         <h1>
           <span className="lesson-no">{displayNumber(lesson)}</span> {lesson.title}
           {lesson.part && <span className="muted small"> (Part {lesson.part.n} of {lesson.part.of})</span>}
@@ -158,6 +167,34 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
         />
       )}
     </div>
+  );
+}
+
+function LessonArrow({ target, direction, open }: { target?: Lesson; direction: "prev" | "next"; open: boolean }) {
+  const arrow = direction === "prev" ? "←" : "→";
+  const label = target ? `${displayNumber(target)} ${target.title}` : direction === "prev" ? "This is the first lesson" : "This is the last lesson";
+  const title = !target
+    ? label
+    : open
+      ? `${direction === "prev" ? "Previous" : "Next"}: ${label}`
+      : `🔒 ${label} - finish this lesson to unlock it`;
+  return (
+    <button
+      className="btn ghost small lesson-arrow"
+      disabled={!target || !open}
+      title={title}
+      aria-label={title}
+      data-testid={`lesson-${direction}`}
+      onClick={() => {
+        if (!target) return;
+        go(`#/lesson/${target.id}`);
+        window.scrollTo(0, 0);
+      }}
+    >
+      {direction === "prev" ? `${arrow} ` : ""}
+      <span className="lesson-arrow-label">{target ? (open ? label : `🔒 ${label}`) : label}</span>
+      {direction === "next" ? ` ${arrow}` : ""}
+    </button>
   );
 }
 

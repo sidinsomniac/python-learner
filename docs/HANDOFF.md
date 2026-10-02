@@ -65,9 +65,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **79** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **85** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **20** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **22** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -221,14 +221,23 @@ Tests run in order and stop at the first failure.
 
 - **Key:** `parseltongue-save-v1`.
 - **Format:** `{"state": {...}, "version": 3}`. The current version is `SAVE_VERSION = 3`, in `src/engine/store.ts`.
-- **⚠️ Never write a save without `"version": 3`.** A save with no version is treated as version 0. The version-1 conversion then runs on it and **wipes `exercises`**. This is the probable cause of the owner's lost progress. Fixing it is still to do: see 11.1.
+- **How upgrades decide.** zustand only upgrades a stored save when its `version` is a number different from `SAVE_VERSION`. A save with no `version` is loaded as it is. `detectSaveVersion` (in `store.ts`) then judges the real version **from the contents**:
+  - has `bestLevel` or `owned` → version 3;
+  - has `exercises` → at least version 2;
+  - has `completed` → version 1.
+
+  So a mislabelled save can no longer go through the version-1 upgrade and lose its exercises. The version-3 upgrade also keeps owned items, and doesn't pay level rewards twice. Still write `"version": 3` when editing a save by hand.
 - **Main fields:**
   - `name`, `house`, `xp`, `bestLevel`, `galleons`, `housePoints`
   - `exercises`: `{ "y1-l01.core": {completedAt, attempts, hintsUsed, xpEarned, grade} }`
   - `clues`: `{lessonId: timestamp}`
-  - `scenesSeen`: `{lessonId: true, "<lessonId>:outro": true}`
+  - `scenesSeen`: `{lessonId: true, "<lessonId>:outro": true, "year-N": true}`
   - `skipped`, `owned`, `equipped`, `aids`, `cards`, `duels`, `badges`, `drafts`, `hintsUnlocked`
-- **Backup and restore:** Settings → Download backup / Restore backup. Restore only accepts the downloaded backup format.
+- **Restoring, in Settings:**
+  - **Download backup / Restore backup** for a save file.
+  - **Paste a save** accepts a downloaded backup, the raw localStorage value (`{"state": ..., "version": n}`), or a bare state object. All three go through `unwrapSave`.
+  - After any import, `rebuildDerived` fills in what can be worked out from the finished exercises: clues, seen scenes, `bestLevel` from XP, and level-reward items. **Badges are not rebuilt.**
+- **Automatic backups.** Each time the game loads, before any upgrade, `backupRawSave` copies the raw save to `parseltongue-save-backup`. It keeps the **last 3 different copies**, with timestamps. Settings → **Automatic backups** lists them and restores one.
 
 **Console "cheat code".** Paste this in the browser's DevTools console to edit the save directly:
 ```js
@@ -260,7 +269,7 @@ location.reload();
 - Systems: story pop-ups, year colour themes, 10 random weather presets, Diagon Alley (cosmetics plus Felix Felicis and Time-Turner Sand), Peeves' Bargain (skipping costs Galleons and XP, and rises with each skip; Trials can't be skipped), level rewards up to level 20, the Time-Turner, the Dueling Club, the Pensieve, the Case File, badges.
 
 **Next, in order:**
-1. **Save safety** (planned, not built yet; the owner put it off while Year 3 was built). This is still the most important fix:
+1. ✅ **Save safety** (done 2026-10-02, see §9). Lessons also gained ← / → arrows to the previous and next lesson; the next arrow shows 🔒 until that lesson is unlocked, and the arrows cross years. *Previously planned, kept for reference:*
    - Make `migrateSave` work out the version from the save's contents: `exercises` present means version 2 or later; `bestLevel` present means version 3.
    - Let `importSave` accept the `{state, version}` form, with a "Paste a save" box in Settings, and rebuild clues and scenes seen after an import.
    - Keep a rolling automatic backup in `parseltongue-save-backup` (last 3 copies), written before any upgrade runs.
@@ -281,6 +290,8 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | Merged the web session's save safety and lesson arrows (`c076186`) with Year 3 (`207ec70`). Kept both sides' e2e tests and `.gitignore` lines. Counts after the merge: 66 lessons, 201 exercises, 85 unit, 22 e2e (§3, §13). |
+| 2026-10-02 | Claude Code web session `session_01QRDafNtZXxe5n2GotwYapD` | **Save safety**: version judged from contents, Paste a save, rebuild after import, 3 automatic backups (§9). **Lesson arrows** ←/→ in the lesson header (`LessonArrow` in `LessonView.tsx`). Corrected §9: a save with no version is loaded as it is, not wiped. Tests: 69 unit, 20 browser (§3). |
 | 2026-10-01 | Claude Code desktop session | **Year 3 complete.** Batch D: y3-l12 (string spells: RLE, longest palindrome), y3-l13 (Game of Life and the copying trap) and the Trial (a maze of hours: `load_maze`, `find`, `reachable`, `escape_report`). e2e test that Year 3 opens after the Year 2 Trial. Counts: 66 lessons, 201 exercises, 79 unit, 20 e2e. Docs: README, GDD, curriculum (§2, §3, §10, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 batch C: y3-l08 (sorting by hand), y3-l09 (sorting smart), y3-l10 (grids and flood fill), y3-l11 (testing: students write checkers that must catch broken spells) and y3-r3. Counts: 63 lessons, 191 exercises, 79 unit, 19 e2e (§3, §8, §11). |
 | 2026-10-01 | Claude Code desktop session | Year 3 batch B: y3-l04 (`*args`/`**kwargs`), y3-l05a and y3-l05b (recursion), y3-l06 (Big-O), y3-l07a and y3-l07b (binary search) and y3-r2. `recursive()` test helper. The binary-search tests count looks with a `Shelf(list)` subclass. Counts: 58 lessons, 176 exercises, 79 unit, 19 e2e (§3, §7, §8, §11). |
