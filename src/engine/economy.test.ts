@@ -193,8 +193,9 @@ describe("the Dueling Club", () => {
 });
 
 describe("living backgrounds", () => {
-  it("has ten presets and never repeats one back to back", () => {
-    expect(PRESETS).toHaveLength(10);
+  it("has eighteen presets, all different, and never repeats one back to back", () => {
+    expect(PRESETS).toHaveLength(18);
+    expect(new Set(PRESETS.map((p) => p.id)).size).toBe(18);
     let prev = pickPreset(null);
     for (let i = 0; i < 200; i++) {
       const next = pickPreset(prev);

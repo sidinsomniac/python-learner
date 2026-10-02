@@ -126,7 +126,17 @@ A level-up pop-up shows the reward; the Trophy Room shows the whole track.
 ### Living castle ✅ built
 - **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2, Time-Turner dusk (silver and indigo) for Year 3.
 - **Story pop-ups.** Prologues, lesson scenes and outros open as a modal the first time - click through line by line, or Skip. Afterwards they stay on the page as a "📜 Story" card that can be read again.
-- **Living backgrounds** (`src/ui/Ambience.tsx`). Ten weather presets, picked at random for each screen and never the same twice in a row: Enchanted Ceiling (floating candles), First Snow, Storm over the Lake, Goblet Embers, Dementor Mist, Forbidden Forest fireflies, Autumn Grounds, Aurora, Astronomy Tower shooting stars and Owl Post. They draw in the current year's colours, pause when the tab is hidden, and switch off in Settings or with the system's reduced-motion setting.
+- **Living backgrounds** (`src/ui/Ambience.tsx`, drawn by `src/ui/backdrop/`). Eighteen presets, picked at random for each screen and never the same twice in a row:
+  - **the originals:** Enchanted Ceiling (floating candles), First Snow, Storm over the Lake, Goblet Embers, Dementor Mist, Forbidden Forest fireflies, Autumn Grounds, Aurora, Astronomy Tower shooting stars and Owl Post;
+  - **added 2026-10-02:** Expecto Patronum (a silver stag), the Golden Snitch, the Floo Network, Fawkes, the Black Lake, the Hogwarts Express, the Pensieve and the Time-Turner.
+
+  They're hand-drawn on a canvas with no library:
+  - cached glow sprites and additive light;
+  - depth layers that drift slightly with the mouse;
+  - a cross-fade between presets;
+  - particle counts that scale with the screen and drop automatically if frames run slow.
+
+  They pause when the tab is hidden, and switch off in Settings or with the system's reduced-motion setting.
 - **Celebrations.** Sparkles when you pass, a golden flare for an O, fireworks on level-up, a dawn glow when a year's mystery is solved.
 
 ### The castle hub

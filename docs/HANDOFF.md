@@ -38,7 +38,7 @@ This is everything you need to carry on building the game somewhere else: on you
 | Goals (2026-10-02) | The owner is an experienced **front-end (JS/TS) developer**. From Year 4, give **equal weight** to **★ interview prep** (patterns, data structures) and **🛠 practical Python** for **backend APIs** (JSON, HTTP, FastAPI, async) and **AI/LLM apps and agents**. Don't spend lessons on what a TS developer already knows, and don't drop tuples or sets: they're interview-core. See `docs/curriculum.md`, "Who this is for". |
 | Story | Harry Potter flavour: an original mystery each year with the canon cast, plenty of easter eggs, and rich immersion. |
 | AI professor | Claude **and** DeepSeek API keys, both optional. Keys stay in the browser and are never exported. |
-| Living backgrounds | **10 random presets**, deliberately **not** tied to particular years. |
+| Living backgrounds | **18 random presets** (10 at first, plus 8 more on 2026-10-02 at the owner's request: richer and higher quality), deliberately **not** tied to particular years. Subtle mouse parallax and a cross-fade between presets. No animation library. |
 | Story scenes | A modal you click through or skip, which then stays on the page as a "📜 Story" card. |
 | Delivery | One Year at a time: write the year's script in `docs/story.md` first, then its content, then commit and push. |
 
@@ -95,10 +95,14 @@ src/engine/
                 migrateSave, exportSave
   review.ts     Time-Turner spaced repetition (intervals 1/3/7/16/35 days)
   duel.ts       Dueling Club opponents and scoring (seeded random number generator)
-  ambience.ts   the 10 weather presets; pickPreset never repeats one back to back
+  ambience.ts   the 18 background presets; pickPreset never repeats one back to back
   pensieve.ts   stackFrames: how the Pensieve folds a deep call stack
 src/lore/       shop.ts (items, learning aids), levels.ts (LEVEL_REWARDS, feature unlocks),
                 badges.ts, lore.ts (titles, YEAR_NAMES), easterEggs.ts
+src/ui/backdrop/  the living backgrounds, as hand-written Canvas 2D:
+                engine.ts (cached glow sprites, additive light, parallax, quality scaling),
+                classic.ts (the first 10 presets), magic.ts (8 more),
+                creatures.ts (the Patronus stag and the owls, drawn as detailed silhouettes)
 src/runtime/
   harness.py    the Python grader (section 7), the desk of files, the Pensieve tracer
   harness.test.ts  runs harness.py in Pyodide: desk files, call stack, Snape's rules
@@ -267,7 +271,7 @@ location.reload();
 - Year 1, The Philosopher's Syntax: 24 units and 73 exercises.
 - Year 2, The Chamber of Collections: 22 units and 67 exercises.
 - Year 3, The Prisoner of Recursion: 20 units and 61 exercises, with the Time-Turner dusk theme (silver and indigo). It has its own engine support: the desk of files, the Pensieve's call stack, `raised()` and `recursive()`, and 4 new Snape rules.
-- Systems: story pop-ups, year colour themes, 10 random weather presets, Diagon Alley (cosmetics plus Felix Felicis and Time-Turner Sand), Peeves' Bargain (skipping costs Galleons and XP, and rises with each skip; Trials can't be skipped), level rewards up to level 20, the Time-Turner, the Dueling Club, the Pensieve, the Case File, badges.
+- Systems: story pop-ups, year colour themes, 18 random living-background presets (with parallax, cross-fades and quality that scales down on slow machines), Diagon Alley (cosmetics plus Felix Felicis and Time-Turner Sand), Peeves' Bargain (skipping costs Galleons and XP, and rises with each skip; Trials can't be skipped), level rewards up to level 20, the Time-Turner, the Dueling Club, the Pensieve, the Case File, badges.
 
 **Next, in order:**
 1. ✅ **Save safety** (done 2026-10-02, see §9). Lessons also gained ← / → arrows to the previous and next lesson; the next arrow shows 🔒 until that lesson is unlocked, and the arrows cross years. *Previously planned, kept for reference:*
@@ -297,6 +301,13 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | **Living backgrounds rebuilt** (no library: hand-written Canvas 2D in `src/ui/backdrop/`):
+- cached glow sprites, additive light, depth layers, gentle mouse parallax, a cross-fade between presets, and particle counts that scale down automatically on slow machines;
+- the 10 presets redrawn;
+- 8 new ones: Patronus, Golden Snitch, Floo fire, Fawkes, the Black Lake, the Hogwarts Express, the Pensieve and the Time-Turner;
+- a detailed stag silhouette and proper owls.
+
+The outgoing canvas uses `data-testid="ambience-leaving"`. Tests: 85 unit, 22 e2e (§1, §5, §11). |
 | 2026-10-02 | Claude Code desktop session | Year 2 swaps from the redesign. y2-l10 (Modules) teaches `collections.Counter`, `defaultdict` and `json`, and its ⭐ "The Farthest Vanishings" was replaced by **The Owl Post Manifest** (JSON in, group and count, JSON out). y2-l03b's lecture points ahead to `Counter`. The swap went in Lesson 10, not 3b as planned, because `import` is taught there. Counts unchanged: 66 lessons, 201 exercises (§11). |
 | 2026-10-02 | Claude Code desktop session | Year 3 swaps from the redesign. y3-l08 is now **Two Pointers and Sliding Window** (folder `13-two-pointers`; same id, order and clue, so saves are safe). y3-l02 gained a JSON section, and its ⭐ is now **The Ledger as JSON**. Revision III and the story table were updated to match. Counts unchanged: 66 lessons, 201 exercises (§11). |
 | 2026-10-02 | Claude Code desktop session | **Curriculum redesign** for the owner's goals: an even split between interviews and practical Python (backend APIs, LLM apps). Rewrote the Year 4–7 plan in `curriculum.md`, adding a practical ladder and the planned swaps in Years 2–3. Re-aimed the Year 4–7 outlines in `story.md`. Added the audience, goals and in-browser mocks (`owl_post`, `Oracle`) to the GDD roadmap. Added the owner's goals to §1 and the plan to §11. |

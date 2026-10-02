@@ -1,4 +1,4 @@
-// Ten weather presets for the castle's living background, picked at random.
+// The castle's living-background presets, picked at random for each screen.
 
 export type Preset =
   | "candles"
@@ -10,7 +10,15 @@ export type Preset =
   | "leaves"
   | "aurora"
   | "shooting-stars"
-  | "owl-post";
+  | "owl-post"
+  | "patronus"
+  | "snitch"
+  | "floo"
+  | "fawkes"
+  | "lake"
+  | "express"
+  | "pensieve"
+  | "time-turner";
 
 export const PRESETS: { id: Preset; name: string }[] = [
   { id: "candles", name: "Enchanted Ceiling" },
@@ -23,6 +31,14 @@ export const PRESETS: { id: Preset; name: string }[] = [
   { id: "aurora", name: "Aurora" },
   { id: "shooting-stars", name: "Astronomy Tower" },
   { id: "owl-post", name: "Owl Post" },
+  { id: "patronus", name: "Expecto Patronum" },
+  { id: "snitch", name: "The Golden Snitch" },
+  { id: "floo", name: "The Floo Network" },
+  { id: "fawkes", name: "Fawkes" },
+  { id: "lake", name: "The Black Lake" },
+  { id: "express", name: "The Hogwarts Express" },
+  { id: "pensieve", name: "The Pensieve" },
+  { id: "time-turner", name: "The Time-Turner" },
 ];
 
 /** A random preset - never the same as the one before. */
