@@ -56,6 +56,47 @@ Algorithmic thinking starts on day one, as small puzzles. Formal DSA begins in Y
 | 6 | 🟡 to 🔴 Graphs | graph representations, DFS/BFS, topological sort, Dijkstra, union-find, tries |
 | 7 | 🔴 Advanced | dynamic programming (memoization, tabulation, grids, LCS, edit distance, knapsack), greedy, bit manipulation, timed mock interviews |
 
+**The recursion thread.** Recursion starts in Year 3 and comes back every year after that, each time doing more:
+
+| Year | Where recursion appears |
+|---|---|
+| 3 | Recursion Pt1 (numbers, strings) and Pt2 (call stack, nested lists, subsets) · recursive flood fill · the Trial's maze |
+| 4 | reversing a linked list recursively · BFS shown as the iterative alternative to recursive search |
+| 5 | merge sort and quickselect · backtracking (subsets, permutations, combination sum, word search) · trees (traversals, invert, same and symmetric trees, diameter, BST checks) |
+| 6 | DFS on graphs (recursive, then iterative) · tries |
+| 7 | memoization (top-down dynamic programming) · the agent loop's stopping rule, which is a base case again |
+
+### LeetCode Easy coverage
+
+Every classic LeetCode **Easy** problem an interviewer is likely to ask is taught somewhere. Many appear under story names, so the LeetCode name is given here.
+
+| Problem (LeetCode name) | Where |
+|---|---|
+| Two Sum | Y3 Big-O ⭐ (a pair summing to a target in O(n)) · Y4 Hashing |
+| Valid Parentheses | Y4 Stacks 🟢 |
+| Merge Two Sorted Lists | Y2 Seek and Count 🟡 (lists) · Y4 Linked Lists (nodes) |
+| Best Time to Buy and Sell Stock | Y5 Sliding Window 🟢 (running minimum) |
+| Maximum Subarray (Kadane) | Y5 Sliding Window 🟡 |
+| Valid Palindrome | Y1 Slicing Pt2 🔥 · Y3 String Spells |
+| Reverse String | Y1 Trunks Pt2 ⭐ (two pointers) · Y3 Recursion Pt1 ⭐ |
+| Contains Duplicate | Y2 Sets |
+| Valid Anagram | Y2 Seek and Count · Y4 Hashing 🟢 |
+| Majority Element | Y4 Hashing 🟢 (counting), then ⭐ Boyer–Moore voting |
+| Roman to Integer | Y4 Hashing 🟢 |
+| Longest Common Prefix | Y3 String Spells |
+| Binary Search · Search Insert Position · First Bad Version · Sqrt(x) | Y3 Binary Search Pt1 and Pt2 |
+| Move Zeroes · Merge Sorted Array (in place, from the back) | Y5 Two Pointers 🟢 |
+| Linked List Cycle · Middle of the Linked List · Reverse Linked List | Y4 Linked Lists |
+| Happy Number | Y4 Linked Lists (fast and slow pointers on numbers) |
+| Maximum Depth · Invert Binary Tree · Same Tree · Symmetric Tree | Y5 Trees I 🟢 |
+| Climbing Stairs · Fibonacci Number | Y7 DP I 🟢 · Y3 Recursion Pt2 (memoization teaser) |
+| Single Number · Missing Number · Counting Bits | Y7 Bit Manipulation |
+| Fizz Buzz · Palindrome Number | Y1 For Every Student ⭐ · Y1 Slicing Pt2 |
+| Flood Fill · Number of Islands | Y3 The Marauder's Grid |
+| Transpose Matrix | Y2 Comprehensions ⭐ · Y4 Matrix Patterns 🟢 |
+
+The Year 5 O.W.L.s and the Year 7 Mock Interviews include **timed mixed Easy sets** drawn from this table, as interview rehearsal.
+
 ## The practical ladder (🛠)
 
 | Year | Level | Topics |
@@ -166,7 +207,7 @@ Shortest paths are left for Year 4's breadth-first search, so the Trial asks onl
 |---|---|---|---|
 | 1 | 🛠 Objects for TypeScript Developers | `class`, `__init__`, `self`, methods, `__repr__`, `__eq__`; what's different from TS (no `private`, no `this` binding, duck typing) | model a Triwizard `Champion` from a spec, and repair the shared-list class attribute *(debug)* |
 | 2 | 🛠 Dataclasses, Enums and Type Hints | `@dataclass` (`field`, `frozen`, ordering), `Enum`, annotations, `Optional`, `list[str]`, `dict[str, int]` | refactor a noisy class into a typed dataclass *(refactor)* |
-| 3 | ★ Hashing Patterns **Pt1/Pt2** | `Counter`, `most_common`, `defaultdict(list)`, hashable keys, tuples as keys | 🟢 is it an anagram? · 🟡 group anagrams · 🟡 top-k frequent spells · 🔴 longest consecutive run |
+| 3 | ★ Hashing Patterns **Pt1/Pt2** | `Counter`, `most_common`, `defaultdict(list)`, hashable keys, tuples as keys | 🟢 is it an anagram? · 🟢 roman numerals on the Triwizard trophies (roman to integer) · 🟢 the verdict most judges gave (majority element), then ⭐ in O(1) space (Boyer–Moore) · 🟡 group anagrams · 🟡 top-k frequent spells · 🔴 longest consecutive run |
 | R1 | Library Revision I | | |
 | 4 | 🛠 JSON Payloads | `json.loads`/`dumps`, nested dict and list data, validating a payload, turning it into dataclasses | parse a Triwizard scoreboard payload with missing and mistyped fields *(edge case)* |
 | 5 | ★ Stacks | stack with a list, matching brackets, the monotonic stack | 🟢 valid brackets · 🟡 next warmer day · 🔴 evaluate reverse-Polish arithmetic |
@@ -175,7 +216,7 @@ Shortest paths are left for Year 4's breadth-first search, so the Trial asks onl
 | R2 | Library Revision II | | |
 | 8 | ★ Heaps and Priority Queues | `heapq`, tuples as priorities, top-k, k-th largest | 🟢 the three fastest brooms · 🟡 k-th largest score · 🔴 merge k sorted lists |
 | 9 | 🛠 Building an API Client | a client class, pagination, retries with backoff, caching responses | page through every judge's scores, retrying politely *(combination)* |
-| 10 | ★ Linked Lists | nodes, fast and slow pointers, reversing | 🟢 the middle node · 🟡 reverse the list · 🔴 detect a cycle and find where it starts |
+| 10 | ★ Linked Lists | nodes, fast and slow pointers, reversing | 🟢 the middle node · 🟢 the happy-number charm (fast and slow pointers on numbers) · 🟡 reverse the list, iteratively and recursively · 🔴 detect a cycle and find where it starts |
 | 11 | 🛠 Errors and Logging in Services | custom exception classes, `raise ... from`, `logging`, error responses | turn internal errors into clean API error payloads *(design)* |
 | R3 | Library Revision III | | |
 | 12 | ★ Matrix Patterns | rotate, spiral order, set-matrix-zeroes, in place | 🟢 transpose · 🟡 spiral order · 🔴 rotate in place |
@@ -190,8 +231,8 @@ Shortest paths are left for Year 4's breadth-first search, so the Trial asks onl
 | # | Lesson | ★ Problems (🟢 easy · 🟡 medium · 🔴 hard), or 🛠 practical work |
 |---|---|---|
 | 1 | 🛠 Closures and Decorators **Pt1/Pt2** | `nonlocal`, wrapping functions, `functools.wraps`, decorators with arguments; build `@timed`, `@retry` and a route-registering `@app.get` like FastAPI's |
-| 2 | ★ Two Pointers, Advanced | 🟢 container with most water · 🟡 three-sum · 🔴 trapping rainwater |
-| 3 | ★ Sliding Window, Advanced | 🟢 best k-day streak · 🟡 longest substring without repeats · 🔴 minimum window containing all ingredients |
+| 2 | ★ Two Pointers, Advanced | 🟢 move zeroes · 🟢 merge two sorted shelves in place, filling from the back · 🟢 container with most water · 🟡 three-sum · 🔴 trapping rainwater |
+| 3 | ★ Sliding Window, Advanced | 🟢 the best day to buy and sell a broomstick (running minimum) · 🟡 the best run of house points (maximum subarray, Kadane) · 🟢 best k-day streak · 🟡 longest substring without repeats · 🔴 minimum window containing all ingredients |
 | R1 | Library Revision I | |
 | 4 | 🛠 Iterators and Generators | `iter`/`next`, `yield`, generator pipelines, lazy reading; a simulated **token stream** assembled as it arrives (how LLM streaming works) |
 | 5 | ★ Prefix Sums | 🟢 range-sum queries · 🟡 count subarrays summing to k (prefix plus hash map) |
@@ -201,12 +242,12 @@ Shortest paths are left for Year 4's breadth-first search, so the Trial asks onl
 | 8 | ★ Intervals | 🟢 merge overlapping class times · 🟡 insert a new one · 🔴 how many classrooms are needed (with a heap) |
 | 9 | ★ Sorting That Matters | 🟢 merge sort · 🟡 quickselect for the k-th smallest · 🔴 count inversions |
 | 10 | ★ Backtracking | 🟢 subsets · 🟡 permutations · 🔴 combination sum, and word search on a grid |
-| 11 | ★ Trees I | 🟢 depth and traversals (recursive and iterative) · 🟡 level order with a `deque` · 🔴 the tree's diameter |
+| 11 | ★ Trees I | 🟢 depth and traversals (recursive and iterative) · 🟢 invert, same and symmetric trees · 🟡 level order with a `deque` · 🔴 the tree's diameter |
 | R3 | Library Revision III | |
 | 12 | ★ Trees II: Binary Search Trees | 🟢 insert and search · 🟡 validate a BST · 🔴 lowest common ancestor |
 | 13 | 🛠 Testing Like a Professional | pytest-style tests, parametrised cases, fixtures in spirit, mocking `owl_post` and the clock |
 | 14 | ★ Complexity, Formally | time and space complexity of your own earlier solutions; trading space for time |
-| 🏁 | **The O.W.L. Exams** | Timed, graded O to T, one paper per subject: Charms (strings), Potions (debugging), Arithmancy (numbers), Divination (tracing), Transfiguration (refactoring), Defence (errors and HTTP), and Ancient Runes (algorithms). |
+| 🏁 | **The O.W.L. Exams** | Timed, graded O to T, one paper per subject: Charms (strings), Potions (debugging), Arithmancy (numbers), Divination (tracing), Transfiguration (refactoring), Defence (errors and HTTP), and Ancient Runes (algorithms). A final timed **Easy set** mixes problems from the LeetCode Easy table. |
 
 ## Year 6: The Half-Blood Pythonista
 
@@ -249,10 +290,10 @@ Shortest paths are left for Year 4's breadth-first search, so the Trial asks onl
 | R2 | Library Revision II | |
 | 8 | 🛠 Agents | an agent loop with tools, stopping conditions (base cases, again!), step and cost budgets, recovering from tool errors |
 | 9 | 🛠 Retrieval Basics | chunking text, keyword and embedding search (ranking with a heap), grounding answers in sources |
-| 10 | ★ Bit Manipulation | flags, the single-number trick, subsets as bitmasks |
+| 10 | ★ Bit Manipulation | flags, the single-number trick, the missing number (sum or XOR), counting bits, subsets as bitmasks |
 | 11 | 🛠 Evaluating LLM Output | test sets, graders, regression checks for prompts |
 | R3 | Library Revision III | |
-| 12 | ★ Mock Interviews I | timed mixed sets, talking through your approach, complexity on demand |
+| 12 | ★ Mock Interviews I | timed mixed sets (starting from the LeetCode Easy table), talking through your approach, complexity on demand |
 | 13 | ★ Mock Interviews II | harder timed sets mixing every pattern |
 | 🎓 | **Capstone** 🖥 | your own agent backend: FastAPI plus Claude with tools, tests and a README, reviewed by the Professor |
 | 🏁 | **N.E.W.T.s and the Battle of Hogwarts** | Seven Horcruxes, each a hard problem mixing patterns from every year, followed by the final multi-stage battle. |

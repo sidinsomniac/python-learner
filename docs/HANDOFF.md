@@ -292,9 +292,10 @@ location.reload();
    - ✅ y2-l03b gains a pointer to `Counter`;
    - ✅ y2-l10 now teaches `Counter`, `defaultdict` and `json`, and its ⭐ is the Owl Post manifest.
    - All the 🔄 swaps are done.
-4. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 6), and add the `owl_post` mock HTTP module to the harness.
-5. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
-6. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
+4. **Story polish for Years 2–3 (2026-10-03, in progress).** Richer scenes, character arcs and post-clue `outro` reactions. Same plots and clues. See the "Character arcs" sections of `docs/story.md`.
+5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 7), and add the `owl_post` mock HTTP module to the harness.
+6. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
+7. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
 
 ## 12. Commit conventions
 
@@ -308,6 +309,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-03 | Claude Code desktop session | **Interview coverage.** `curriculum.md` gains a *recursion thread* table and a *LeetCode Easy coverage* table, mapping each classic Easy problem to its lesson. The gaps (buy and sell stock, Kadane, majority element, roman to integer, move zeroes, merge sorted array, invert, same and symmetric trees, missing number, happy number) were slotted into the unbuilt Years 4, 5 and 7. The O.W.L.s gained a timed Easy set (§11). |
 | 2026-10-02 | Claude Code desktop session | **Background music**, with no visible player. Files in `music/` (git-ignored apart from its README) are found at build time. They play quietly, shuffled and looping, fading in after the first click and fading out when the tab is hidden or the music is switched off. 🎵 in the header switches it on and off; Settings has the volume. Save field `music: { enabled, volume }` (default on, 25), filled in by `merge` for older saves. The owner's style change was also kept (dimmed tier dots). Tests: 89 unit, 23 e2e (§1, §3, §5, §9). |
 | 2026-10-02 | Claude Code desktop session | Patronus: the smoke trail was removed at the owner's request, and replaced with a denser **sparkle trail**. Twinkling sparks stream from the antler tips, back, rump and belly; they drift, slow, settle and fade, and the larger ones flash four-pointed glints. The hoofprints are bursts of the same sparkles (`stepSparkles` in `magic.ts`). The motion blur stays. |
 | 2026-10-02 | Claude Code desktop session | Patronus: a slimmer rump and hind thighs; motion blur (blurred smears of the silhouette); a wispy smoke trail. The smoke is ribbons from the back, rump and belly that drift, curl, spread and fade in, drawn at half resolution and blurred once per frame. Glittering sparks fall from the antler tips. `drawStag` now returns `{ hooves, emitters }`. |
