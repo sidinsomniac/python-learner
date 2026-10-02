@@ -8,11 +8,20 @@ concepts: ["*args", "**kwargs", keyword-only parameters, "unpacking with * and *
 exercises: [warmup, core, outstanding]
 scene:
   - who: twins
-    line: (pressing a blank, folded parchment into your hands) We've decided you need this more than we do. Tap it with your wand and say "I solemnly swear that I am up to no good".
+    line: "(pressing a blank, folded parchment into your hands) We've decided you need this more than we do. Tap it with your wand and say \"I solemnly swear that I am up to no good\"."
   - who: narrator
-    line: Ink spreads across the parchment like a spider's web - corridors, staircases, and hundreds of tiny labelled dots, moving.
+    line: "Ink spreads across the parchment like a spider's web - corridors, staircases, and hundreds of tiny labelled dots, moving."
   - who: twins
-    line: The Marauder's Map. Shows everyone, everywhere. Trouble is, the third floor is busy, and nobody's got time to write every sighting down.
+    line: "The Marauder's Map. Shows everyone, everywhere. (Fred, unusually serious) Only, there's a name on the third floor we've never been able to explain. We stopped looking at it in first year. It was a bit sad."
+  - who: hermione
+    line: "Who made this? It's extraordinary."
+  - who: twins
+    line: "Four very clever, very naughty wizards. (George, grinning again) Don't ask Lupin about it. He goes all funny."
   - who: ashwood
-    line: Then we need a spell that can take *any* number of sightings - one, five, or none at all. Python has a way to say "and the rest".
+    line: "Then we need a spell that can take *any* number of sightings: one, five, or none at all. How would you write a spell that doesn't know how many arguments it will get, {name}?"
 clue: The Map's log shows a dot labelled **Tobias Wren** walking the same twelve squares, at the same minute, every single day.
+outro:
+  - who: ron
+    line: "Twelve squares. Every day. For a hundred years."
+  - who: hermione
+    line: "(quietly, her hand on the Time-Turner chain) Same steps, same minute, over and over... I know how that feels. A bit."

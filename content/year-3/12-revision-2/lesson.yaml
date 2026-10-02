@@ -9,11 +9,18 @@ concepts: ["*args and **kwargs", recursion, the call stack, Big-O, binary search
 exercises: [r1, r2, r3]
 scene:
   - who: ron
-    line: (dropping into a chair) I don't get it. If he knows he's stuck, why doesn't he just... *stop*?
+    line: "(dropping into a chair) I don't get it. If he knows he's stuck, why doesn't he just... *stop*?"
   - who: hermione
-    line: Because the charm doesn't know how. It was never told when to stop. It just keeps calling itself.
+    line: "(sharper than she means to be) Because the charm doesn't know how, Ron. It was never told when to stop. It just keeps calling itself. Some of us *understand* that."
+  - who: ron
+    line: "(blinking) ...Are we still talking about him?"
   - who: lupin
-    line: (arriving with a stack of books, and looking grave) I'm afraid I have news. The Ministry has decided the third-floor corridor is "an anomaly". On the last day of term, they'll seal it - with him inside.
+    line: "(arriving with a stack of books, greyer than last week, and looking grave) I'm afraid I have news. The Ministry has decided the third-floor corridor is \"an anomaly\". On the last day of term, they'll seal it - with him inside."
   - who: ashwood
-    line: Then we have until the end of term. Revision first - recursion, speed and searching - because we'll need every one of them.
+    line: "Then we have until the end of term. Revision first: recursion, speed and searching. Which of them do you trust least, {name}? Start there."
 clue: A deadline. The Ministry will **seal the corridor on the last day of term** - so the boy must be freed before then.
+outro:
+  - who: hermione
+    line: "(after Lupin leaves, very small) Ron. I'm sorry. I'm so tired I can't think straight."
+  - who: ron
+    line: "(awkward, kind) Then give the thing back after we've saved him. You don't need extra classes. You're already the cleverest witch in the year."

@@ -9,11 +9,18 @@ concepts: [the call stack, RecursionError, recursion on lists, nested lists, "is
 exercises: [warmup, core, outstanding]
 scene:
   - who: hermione
-    line: (whispering, the prototype glittering on the desk between you) If every turn calls the next turn... where does it keep them all?
+    line: "(whispering, the prototype glittering on the desk between you) If every turn calls the next turn... where does it keep them all?"
   - who: ashwood
-    line: On a stack. Each call waits on top of the one before, like books piled higher and higher. Open the Pensieve and watch one grow.
+    line: "On a stack. Each call waits on top of the one before, like books piled higher and higher. Open the Pensieve, {name}, and watch one grow."
+  - who: grimwald
+    line: "(from his frame above the Pensieve, delighted to have visitors) Ah, my favourite room in action! Two hundred years I kept a ledger, and never once did it call itself. Show me."
   - who: ron
-    line: And if it never stops? Does the pile just... keep going?
+    line: "And if it never stops? Does the pile just... keep going?"
   - who: ashwood
-    line: Not forever. Python allows about a thousand. After that the pile topples - and you get a `RecursionError`. Let's see what a hundred years of turning would do.
+    line: "Not forever. Python allows about a thousand. After that the pile topples, and you get a `RecursionError`. What would a hundred years of turning do to that pile, {name}?"
 clue: A century of hourly turns is about **876,000** calls deep. The boy is fading because **his stack is overflowing** - and Dementors are drawn to the overflow.
+outro:
+  - who: grimwald
+    line: "(softly) Eight hundred thousand frames. And every one of them waiting for the one above to finish. Poor lad. I know a little about being forgotten."
+  - who: ron
+    line: "So the Dementors aren't after a prisoner. They're after the mess."

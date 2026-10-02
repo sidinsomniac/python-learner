@@ -8,11 +8,18 @@ concepts: [two pointers from both ends, pointers moving the same way, fixed-size
 exercises: [warmup, core, outstanding]
 scene:
   - who: narrator
-    line: Under the diary's back cover is a fat bundle of loose pages - hundreds of them, numbered, each blotted with ink of a different colour. Hermione has already put them in order with a quick `sorted()`.
+    line: "Under the diary's back cover is a fat bundle of loose pages - hundreds of them, numbered, each blotted with ink of a different colour. Hermione has already put them in order with a quick `sorted()`."
   - who: hermione
-    line: Look at the inks. In some stretches no colour repeats. Then one does - and that's where his hour starts over. If we could find the longest clean stretch...
+    line: "Look at the inks. In some stretches no colour repeats. Then one does - and that's where his hour starts over. If we could find the longest clean stretch..."
   - who: ron
-    line: Check every stretch? There are thousands of them. We'd still be here at Christmas.
+    line: "Check every stretch? There are thousands of them. We'd still be here at Christmas."
+  - who: neville
+    line: "(shyly, from the next table) My gran says don't start every row of weeding from the beginning. You just move along."
   - who: ashwood
-    line: "Not if you keep two fingers on the pages and slide them along. Two pointers and a sliding window turn \"check every stretch\" into a single pass. Interviewers adore them - and so, today, will you."
+    line: "Mr Longbottom's gran is a wise woman. Two pointers and a sliding window turn \"check every stretch\" into a single pass. When should your window grow, {name}, and when must it shrink?"
 clue: Back in order, the loose pages draw a **maze** - the corridors of the same hour, over and over, that Tobias keeps falling through.
+outro:
+  - who: ron
+    line: "It's a maze. He's been walking a maze for a hundred years."
+  - who: neville
+    line: "(very quietly) Like a dream where you can't find the classroom and the exam's already started."

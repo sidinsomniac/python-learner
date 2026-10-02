@@ -1,3 +1,4 @@
+import { readdirSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 const SAVE_KEY = "parseltongue-save-v1";
@@ -392,11 +393,19 @@ test("Year 3 lays files on the desk, and the Pensieve shows a spell calling itse
   await expect(pensieve).toContainText("countdown() hands back 0");
 });
 
-test("with no tracks in music/, Settings explains where music goes and the header shows no music switch", async ({ page }) => {
+/** Whether the local, git-ignored music/ folder has any tracks in it (it's empty on a fresh clone). */
+const hasTracks = readdirSync("music").some((f) => /\.(mp3|m4a|ogg|opus|wav|aac|flac)$/i.test(f));
+
+test("the music settings match what's in music/: a switch and volume with tracks, an explanation without", async ({ page }) => {
   await seed(page);
   await page.goto("/#/settings");
-  await expect(page.getByTestId("music-none")).toContainText("music/");
-  await expect(page.getByTestId("music-toggle")).toHaveCount(0);
+  if (hasTracks) {
+    await expect(page.getByTestId("music-setting")).toBeVisible();
+    await expect(page.getByTestId("music-toggle")).toHaveCount(1);
+  } else {
+    await expect(page.getByTestId("music-none")).toContainText("music/");
+    await expect(page.getByTestId("music-toggle")).toHaveCount(0);
+  }
 });
 
 test("arrows move between unlocked lessons, and stop at a locked one", async ({ page }) => {

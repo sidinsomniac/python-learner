@@ -8,11 +8,18 @@ concepts: [simulation, Conway's Game of Life, eight neighbours, building a new b
 exercises: [warmup, core, outstanding]
 scene:
   - who: narrator
-    line: Behind Sir Cadogan's portrait - he protests loudly - is not a wall but a door. Its surface is a board of tiny stone tiles, some raised, some sunken, and every hour they shift, as if breathing.
+    line: "Behind Sir Cadogan's portrait - he protests loudly - is not a wall but a door. Its surface is a board of tiny stone tiles, some raised, some sunken, and every hour they shift, as if breathing."
   - who: hermione
-    line: It's a rule-board! Each tile looks at its eight neighbours and decides whether to rise or sink. Live with two or three, rise from exactly three...
+    line: "It's a rule-board! Each tile looks at its eight neighbours and decides whether to rise or sink. Live with two or three, rise from exactly three..."
   - who: neville
-    line: (going pale) Like the plant-growth rules in Herbology. Too crowded, they die. Too lonely, they die.
+    line: "(going pale, then steadier) Like the plant-growth rules in Herbology. Too crowded, they die. Too lonely, they die. (a breath) I know this one. I actually know this one."
+  - who: trelawney
+    line: "(appearing at the end of the corridor, quite by accident) The door opens at three minutes past. I did say. Nobody ever listens."
   - who: ashwood
-    line: It's called the Game of Life. Simulate it correctly and we'll know when the door will open. But beware - the oldest trap from First Year is waiting for anyone who changes the board while they're still reading it.
+    line: "It's the Game of Life. Simulate it correctly and we'll know when the door opens. But the oldest trap from First Year waits for anyone who changes the board while they're still reading it. How will you avoid it, {name}?"
 clue: Simulated correctly, the board settles into a pattern that opens a path through the door at **exactly 3:03**.
+outro:
+  - who: ron
+    line: "(to Hermione, staring after Trelawney) She was *right*."
+  - who: hermione
+    line: "Don't. Don't ever tell her."

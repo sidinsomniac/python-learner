@@ -9,11 +9,22 @@ concepts: [binary search, sorted data, lo and hi, the middle, off-by-one errors,
 exercises: [warmup, core, outstanding]
 scene:
   - who: pince
-    line: The Sightings Register. Every report of the fading boy since 1926 - thirty-six thousand of them, in date order. Do *not* read them one at a time. I close at six.
+    line: "The Sightings Register. Every report of the fading boy since 1926 - thirty-six thousand of them, in date order. Do *not* read them one at a time. I close at six."
   - who: ron
-    line: Thirty-six thousand? We'll be here till we're the ones fading.
+    line: "Thirty-six thousand? We'll be here till we're the ones fading."
   - who: hermione
-    line: They're in order, Ron. That changes everything. Open it in the middle - if the date's too late, the answer is in the first half. Throw the other half away.
+    line: "They're in order, Ron. That changes everything. Open it in the middle - if the date's too late, the answer is in the first half. Throw the other half away."
+  - who: ron
+    line: "(grudgingly) That's actually clever. When did you think of that?"
+  - who: hermione
+    line: "(yawning) About four hours ago. Twice."
   - who: ashwood
-    line: Halve, and halve again. Thirty-six thousand pages take only sixteen looks. The idea is simple. Getting every edge exactly right is the art.
+    line: "Halve, and halve again. The idea is simple; getting every edge exactly right is the art. How will you know when to stop halving, {name}?"
 clue: The first sighting of the fading boy ever recorded was on **3 June 1926** - in the middle of **exam week**.
+outro:
+  - who: hermione
+    line: "Exam week. He sat his exams the same week we sit ours."
+  - who: ron
+    line: "(quiet, for Ron) Poor sod. Imagine failing something and getting stuck in it forever."
+  - who: hermione
+    line: "(not answering, holding the Time-Turner chain)"

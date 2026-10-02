@@ -19,11 +19,22 @@ files:
     Pigwidgeon,Ron,7
 scene:
   - who: pince
-    line: (unlocking a cage of iron bars) The Hall of Records. Every student who ever set foot in this castle is written down here. Touch nothing. Breathe quietly.
+    line: "(unlocking a cage of iron bars) The Hall of Records. Every student who ever set foot in this castle is written down here. Touch nothing. Breathe quietly."
   - who: hermione
-    line: If the boy is a former student, he's in here somewhere. But there are thousands of scrolls...
+    line: "If the boy is a former student, he's in here somewhere. But there are thousands of scrolls..."
   - who: pince
-    line: Scrolls? We keep them as *files* now. Plain text, one student to a line, fields split by commas. Some of them, I'm sorry to say, are... smudged.
+    line: "Scrolls? We keep them as *files* now. Plain text, one student to a line, fields split by commas. Some of them, I'm sorry to say, are... smudged. (a pause) Some of them were smudged by tears. People were sad when he went missing."
+  - who: ron
+    line: "(quietly) You knew about him?"
+  - who: pince
+    line: "Before my time. But the Hufflepuffs used to leave a candle out on exam week. For years."
   - who: ashwood
-    line: A spell that can read a file can search a whole century in a heartbeat. Let's learn to open one - and to close it again properly.
+    line: "A spell that can read a file can search a whole century in a heartbeat. What should happen when it opens a file, {name} - and, just as important, when it's finished?"
 clue: The 1926 ledger has one record with a start year and **no leaving date**. Tobias Wren, Hufflepuff, started 1923. He never left.
+outro:
+  - who: hermione
+    line: "Started 1923. No leaving date. He'd be... over a hundred."
+  - who: ron
+    line: "But he looks *thirteen*."
+  - who: narrator
+    line: "Somewhere above you, a clock chimes three. Then three minutes more."

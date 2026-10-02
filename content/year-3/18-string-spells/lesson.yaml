@@ -8,11 +8,18 @@ concepts: [two pointers on strings, building strings with join, run-length encod
 exercises: [warmup, core, outstanding]
 scene:
   - who: narrator
-    line: 3:03 pm. The fading boy walks past Sir Cadogan's portrait, and this time his words don't fade with him. They echo, and go on echoing, folding over each other until the corridor hums.
+    line: "3:03 pm. The fading boy walks past Sir Cadogan's portrait, and this time his words don't fade with him. They echo, and go on echoing, folding over each other until the corridor hums."
   - who: tobias
-    line: One more turn... one more turn... one more turn...
+    line: "One more turn... one more turn... (he falters, and for the first time looks at you) ...is someone there?"
   - who: luna
-    line: (holding up an Echo-Catcher made from a teapot) I caught some! It squashes long echoes to save space. "12W1R3E1N"... that sort of thing.
+    line: "(holding up an Echo-Catcher made from a teapot) I caught some! It squashes long echoes to save space. \"12W1R3E1N\"... that sort of thing."
+  - who: hermione
+    line: "(staring) He *saw* us. Just for a second."
   - who: ashwood
-    line: It's run-length encoding - one of the oldest ways to squash text. Let's learn to squash and unsquash, and to find the part of an echo that reads the same in both directions.
+    line: "It's run-length encoding, one of the oldest ways to squash text. How would you unsquash it, {name}, when a count has more than one digit?"
 clue: "Unsquashed, the echo hides a message: **\"WREN WAS HERE\"** - and, reading the same forwards and backwards in the middle of it, the sealed room's password."
+outro:
+  - who: tobias
+    line: "(already fading) Wren... Tobias Wren... I was here. Tell them I was here."
+  - who: luna
+    line: "(to the empty corridor, kindly) We know. We're coming."

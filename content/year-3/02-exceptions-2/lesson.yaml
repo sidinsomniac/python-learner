@@ -9,11 +9,20 @@ concepts: [raise, error messages, ValueError vs TypeError, isinstance, validatio
 exercises: [warmup, core, outstanding]
 scene:
   - who: mcgonagall
-    line: Hogsmeade permission slips. Three hundred of them - and this year the Ministry insists every one is checked before a single student passes the Dementors.
+    line: "Hogsmeade permission slips. Three hundred of them - and this year the Ministry insists every one is checked before a single student passes the Dementors."
   - who: mcgonagall
-    line: Some are forged, some are smudged, and one, I'm told, is signed by "a Mr Padfoot". I want a spell that refuses a bad slip *loudly*.
+    line: "Some are forged, some are smudged, and one, I'm told, is signed by \"a Mr Padfoot\". (the faintest twitch of her mouth) I want a spell that refuses a bad slip *loudly*."
   - who: ron
-    line: Refuses loudly? So it... causes an error? On purpose?
+    line: "Refuses loudly? So it... causes an error? On purpose?"
+  - who: hermione
+    line: "(not looking up from three textbooks at once) Obviously, Ron. Keep up."
+  - who: ron
+    line: "(stung) Bit sharp. You all right?"
   - who: ashwood
-    line: Exactly, Mr Weasley. Last lesson we caught errors. Today we **raise** them - so a bad value can never slip quietly through.
+    line: "Last lesson we caught errors. Today we **raise** them, so a bad value can never slip quietly through. Which is kinder to the next wizard, {name}: a wrong answer, or a clear refusal?"
 clue: One slip passes every check. It's perfectly valid - but it's dated **1926** and signed by **T. Wren**. Nobody has used it in a hundred years.
+outro:
+  - who: mcgonagall
+    line: "(holding the slip up to the light) T. Wren. I know that name. (she doesn't say from where)"
+  - who: hermione
+    line: "(rubbing her eyes) Sorry, Ron. I didn't sleep. Or I slept twice. It's... complicated."

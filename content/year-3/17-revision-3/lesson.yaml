@@ -9,11 +9,18 @@ concepts: [two pointers, sliding windows, stable sorting, grids, flood fill, tes
 exercises: [r1, r2, r3]
 scene:
   - who: draco
-    line: (sliding into the seat opposite, and keeping his voice low) My father dines with the Minister on Thursdays. I heard them. They're not planning to *rescue* anyone. They're planning to "contain the anomaly".
+    line: "(sliding into the seat opposite, and keeping his voice low) My father dines with the Minister on Thursdays. I heard them. They're not planning to *rescue* anyone. They're planning to \"contain the anomaly\"."
   - who: ron
-    line: Why are you telling us this, Malfoy?
+    line: "Why are you telling us this, Malfoy?"
   - who: draco
-    line: (looking at the table) Because a hundred years is a long time to be stuck. And because the Dementors are drawn to errors - so on the night, I'll give them some. A great many. On the far side of the castle.
+    line: "(looking at the table) Because a hundred years is a long time to be stuck. Last year a Cabinet nearly ate my badge, and nobody came for *that* in a hundred years either."
+  - who: draco
+    line: "The Dementors are drawn to errors. So on the night, I'll give them some. A great many. On the far side of the castle. (a beat) If my father asks, I was in the library."
   - who: ashwood
-    line: That is either very brave or very Slytherin, Mr Malfoy. Possibly both. Revision, everyone - windows, sorting, grids and testing - and then we go in.
+    line: "That is either very brave or very Slytherin, Mr Malfoy. Possibly both. Revision, everyone - windows, sorting, grids and testing - and then we go in. Which mistake would cost Tobias the most, {name}?"
 clue: Draco is now an ally. On the night he'll **draw the Dementors away** with the noisiest stream of errors the castle has ever seen.
+outro:
+  - who: ron
+    line: "(after Draco's gone) I hate that I like him a bit."
+  - who: hermione
+    line: "Me too."

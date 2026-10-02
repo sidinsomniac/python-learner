@@ -8,11 +8,20 @@ concepts: [counting steps, "O(1)", "O(n)", "O(n²)", "O(log n)", list vs set mem
 exercises: [warmup, core, outstanding]
 scene:
   - who: draco
-    line: (leaning on a perch, a roll of parchment as long as his arm) The Owlery's had a record of every delivery since 1926. A million owls, give or take. Bet my spell searches it before yours does.
+    line: "(leaning on a perch, a roll of parchment as long as his arm) The Owlery's had a record of every delivery since 1926. A million owls, give or take. Bet my spell searches it before yours does."
   - who: ron
-    line: It's a *search*, Malfoy. They all look at every owl. They'll take the same time.
+    line: "It's a *search*, Malfoy. They all look at every owl. They'll take the same time."
   - who: draco
-    line: (smirking) Will they, Weasley?
+    line: "(smirking) Will they, Weasley? (then, almost to himself) My father says only fools count steps. Clever people just *know*."
+  - who: hermione
+    line: "Your father's wrong. Clever people count. That's how they know."
   - who: ashwood
-    line: Mr Malfoy has raised an excellent question - entirely by accident. Some spells slow down gently as the data grows, and some fall off a cliff. Today we learn to tell which, *before* we run them.
+    line: "Some spells slow down gently as the data grows, and some fall off a cliff. How could you tell which kind a spell is, {name}, *before* you run it?"
 clue: Searching a century of records one by one would take until Christmas. A spell that **halves** what's left at every step would need about **20 steps**.
+outro:
+  - who: draco
+    line: "(staring at the numbers) Twenty steps. Against a million. (he rolls the parchment up carefully, and keeps it)"
+  - who: ron
+    line: "Did Malfoy just learn something?"
+  - who: draco
+    line: "Shut up, Weasley."

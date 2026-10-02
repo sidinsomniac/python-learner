@@ -9,11 +9,18 @@ concepts: [binary search on a condition, the boundary between False and True, se
 exercises: [warmup, core, outstanding]
 scene:
   - who: narrator
-    line: Behind a barrel in the Hufflepuff basement, Crookshanks is sitting on an old school trunk, and refuses to move. Its lid is stamped "T. W. 1926".
-  - who: hermione
-    line: (lifting out a fat, battered diary) His diary! A million pages - it's charmed to never run out. But look... the ink fades. From one page onward, everything is blank.
+    line: "Behind a barrel in the Hufflepuff basement, Crookshanks is sitting on an old school trunk, and refuses to move. Its lid is stamped \"T. W. 1926\"."
   - who: ron
-    line: So we find the last page he wrote before it faded. Page by page?
+    line: "(grudging) Fine. Good cat. Don't tell Scabbers I said that."
+  - who: hermione
+    line: "(lifting out a fat, battered diary) His diary! A million pages - it's charmed to never run out. But look... the ink fades. From one page onward, everything is blank."
+  - who: ron
+    line: "So we find the last page he wrote before it faded. Page by page?"
   - who: ashwood
-    line: Every page is either still clear or already faded, and once the ink fades it never comes back. That's all binary search needs - not a sorted list, just a line between "no" and "yes".
+    line: "Every page is either still clear or already faded, and once the ink fades it never comes back. Does binary search need a sorted list, {name}, or just a line between \"no\" and \"yes\"?"
 clue: "The last clear entry: \"Failed Arithmancy. Borrowed the prototype from the Ministry exhibit. **One more turn and I'll get it right.**\""
+outro:
+  - who: hermione
+    line: "(reading the page twice, then closing the diary very carefully) He was just scared of failing. That's all. That's all it was."
+  - who: tobias
+    line: "(faint, from somewhere above the ceiling) ...one more turn... I'll get it right, I *have* to..."

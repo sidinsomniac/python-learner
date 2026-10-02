@@ -8,11 +8,20 @@ concepts: [stability, tuple keys, custom orderings, ranking with a dictionary, "
 exercises: [warmup, core, outstanding]
 scene:
   - who: narrator
-    line: The carriages rumble up from Hogsmeade, pulled by nothing at all - or by something only some of you can see. Luna strokes the empty air in front of hers.
+    line: "The carriages rumble up from Hogsmeade, pulled by nothing at all - or by something only some of you can see. Luna strokes the empty air in front of hers."
   - who: luna
-    line: They're Thestrals. They're very gentle. The Ministry gave them a hundred years of sighting reports to carry up to the castle - all filed by different rules, of course.
+    line: "They're Thestrals. They're very gentle. You can only see them once you've seen someone die. (she says it as lightly as the weather) The Ministry gave them a hundred years of sighting reports to carry up to the castle - all filed by different rules, of course."
+  - who: neville
+    line: "(staring at the space between the shafts, quietly) I can see them."
   - who: hermione
-    line: The Ministry wants them newest first, then by place, then by witness - but the witnesses *backwards*. Who files things backwards?
+    line: "The Ministry wants them newest first, then by place, then by witness - but the witnesses *backwards*. Who files things backwards?"
   - who: ashwood
-    line: Someone who has never heard of tuple keys. Sorting by several rules at once - some forwards, some backwards, some in an order of your own - is a skill worth having. Let's acquire it.
+    line: "Someone who has never heard of tuple keys. How would you sort by several rules at once, {name}, when some go forwards and some go backwards?"
 clue: Sorted properly, every single sighting **begins in the same place** - behind **Sir Cadogan's portrait** on the third floor.
+outro:
+  - who: luna
+    line: "Behind a portrait. People always hide things behind portraits. We had a whole family of Nargles behind Grandmother."
+  - who: neville
+    line: "(to Luna, softly) Who was it? That you saw."
+  - who: luna
+    line: "My mum. It's all right. The Thestrals are very kind about it."

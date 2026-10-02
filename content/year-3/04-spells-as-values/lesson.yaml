@@ -8,11 +8,20 @@ concepts: [functions as values, passing functions, "sorted(key=)", lambda, "min/
 exercises: [warmup, core, outstanding]
 scene:
   - who: trelawney
-    line: (drifting out of the incense) Ah, {name}. I have been expecting you. I *Saw* the fading boy, you know - long before he came. It is all in my prophecies.
+    line: "(drifting out of the incense) Ah, {name}. I have been expecting you. I *Saw* the fading boy, you know - long before he came. It is all in my prophecies."
   - who: hermione
-    line: (very quietly) She's got four hundred prophecies in there, all out of order. She could have "seen" anything.
+    line: "(very quietly) She's got four hundred prophecies in there, all out of order. She could have \"seen\" anything."
   - who: trelawney
-    line: Sort them, then, if you must. By the date I wrote them - and then by how *certain* the Inner Eye was. The most certain first, naturally.
+    line: "(without turning round) The Inner Eye sees doubt as well, my dear. It is very tiresome. Sort them, then, if you must. By the date I wrote them - and then by how *certain* I was. The most certain first, naturally."
+  - who: ron
+    line: "(whispering) How did she hear that?"
   - who: ashwood
-    line: To sort by your own rule, you hand `sorted` a spell that says what matters. Today, spells become things you can pass around - like any other value.
+    line: "To sort by your own rule, you hand `sorted` a spell that says what matters. Spells are values too, {name}. What does a key spell receive, and what must it return?"
 clue: Sorted properly, Trelawney's prophecy of "a boy who walks in circles" was written **the day after** the first sighting. **Trelawney is cleared** - and rather embarrassed.
+outro:
+  - who: trelawney
+    line: "(very pink) The Inner Eye does not always see in... chronological order."
+  - who: hermione
+    line: "(a little ashamed) I shouldn't have said she'd made it up. She just wanted it to be true."
+  - who: trelawney
+    line: "(as you leave, in a quite different voice) Mind the door at three minutes past. It opens both ways. (then, brightly) Tea leaves, anyone?"

@@ -9,11 +9,20 @@ concepts: [try and except, raise, files, sorting with key, lambda]
 exercises: [r1, r2, r3]
 scene:
   - who: ron
-    line: Hermione, you were in Arithmancy *and* Muggle Studies this morning. At the same time. I saw you in both!
+    line: "Hermione, you were in Arithmancy *and* Muggle Studies this morning. At the same time. I saw you in both!"
   - who: hermione
-    line: (going pink, and pulling a tiny golden hourglass out of her robes) Fine. It's a Time-Turner. McGonagall got it for me so I can take extra classes. Each turn sends you back one hour.
+    line: "(going pink, and pulling a tiny golden hourglass out of her robes) Fine. It's a Time-Turner. McGonagall got it for me so I can take extra classes. Each turn sends you back one hour."
   - who: hermione
-    line: There's one rule, and she made me promise it a hundred times. *Never turn it twice without stopping.*
+    line: "There's one rule, and she made me promise it a hundred times. *Never turn it twice without stopping.*"
+  - who: ron
+    line: "(looking at the shadows under her eyes) How many times have you turned it today?"
+  - who: hermione
+    line: "(a long pause) ...Enough."
   - who: ashwood
-    line: A sound rule. Hold on to it. Now, revision - errors, files and sorting - and let's lay out what we know about our fading boy.
+    line: "A sound rule. Hold on to it, Miss Granger - and to sleep. Now, revision: errors, files and sorting. What do we actually *know* about our fading boy, {name}, and what are we only guessing?"
 clue: "Recap: a boy from 1926, who appears at exactly 3:03, with **no leaving date**. And a Time-Turner rule: *never turn twice without stopping*."
+outro:
+  - who: crookshanks
+    line: "(sits squarely on the Time-Turner, and refuses to get off)"
+  - who: ron
+    line: "First sensible thing that cat's ever done."

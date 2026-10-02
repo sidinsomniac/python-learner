@@ -9,13 +9,18 @@ concepts: [recursion, base case, recursive case, trusting the smaller call, recu
 exercises: [warmup, core, outstanding]
 scene:
   - who: mcgonagall
-    line: (unlocking a glass cabinet full of tarnished hourglasses) Prototypes. The Ministry tried a dozen designs before they got Time-Turners right. This one is the model that went on public display in 1926.
+    line: "(unlocking a glass cabinet full of tarnished hourglasses) Prototypes. The Ministry tried a dozen designs before they got Time-Turners right. This one is the model that went on public display in 1926."
   - who: mcgonagall
-    line: Its charm is engraved on the frame. "TURN - go back one hour - then TURN."
+    line: "Its charm is engraved on the frame. \"TURN - go back one hour - then TURN.\""
   - who: hermione
-    line: Then turn again? But when does it *stop*?
+    line: "Then turn again? But when does it *stop*?"
   - who: mcgonagall
-    line: (very quietly) That, Miss Granger, is exactly why it was withdrawn.
+    line: "(very quietly) That, Miss Granger, is exactly why it was withdrawn. (she looks at Hermione's chain) And why I gave you a rule."
   - who: ashwood
-    line: A spell that casts itself is called **recursive**. It's one of the most powerful ideas in Parseltongue - as long as it knows when to stop.
+    line: "A spell that casts itself is called **recursive**. It's one of the most powerful ideas in Parseltongue - as long as it knows when to stop. What two things must every recursive spell have, {name}?"
 clue: The prototype's charm **calls itself**, and it has no rule for when to stop. Once started, **it never stops**.
+outro:
+  - who: hermione
+    line: "(very pale) It isn't a prisoner. It's a *spell*. He did it to himself, and he can't stop."
+  - who: mcgonagall
+    line: "(closing the cabinet, very gently) Which is why we teach the rule, Miss Granger. Not to scare you. To keep you."

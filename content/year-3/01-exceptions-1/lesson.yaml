@@ -9,13 +9,18 @@ concepts: [errors, try, except, specific exceptions, else, finally, "except ... 
 exercises: [warmup, core, outstanding]
 scene:
   - who: lupin
-    line: Good afternoon! Books away - you won't need them. Today we face a Boggart. It takes the shape of whatever you fear most.
+    line: "(shabby robes, a tired, kind face) Good afternoon! Books away - you won't need them. Today we face a Boggart. It takes the shape of whatever you fear most."
   - who: narrator
-    line: The wardrobe rattles. When it bursts open, the Boggart becomes... a red error message. For Neville it reads ValueError. For Ron, KeyError. For Hermione, a ZeroDivisionError that won't stop flashing.
-  - who: ron
-    line: (backing away) Why's it different for everyone?
+    line: "The wardrobe rattles. When it bursts open, the Boggart becomes... a red error message. For Ron, KeyError. For Hermione, a ZeroDivisionError that won't stop flashing."
+  - who: neville
+    line: "(at the front, shaking) Mine's a `ValueError`. Professor, every time I see one of those I just... freeze. Snape reads them out loud to the class."
   - who: lupin
-    line: Because errors come in many shapes, and a good defence names the shape it's facing. In Parseltongue the defence is called `try` and `except`.
+    line: "(gently) Then let's make it smaller, Neville. Errors come in many shapes, and a good defence names the shape it's facing. In Parseltongue, that defence is `try` and `except`."
   - who: ashwood
-    line: Until now, one error stopped your whole spell dead. Today you learn to **catch** them - and to catch only the ones you mean to.
+    line: "Until now, one error stopped your whole spell dead. Today you learn to **catch** them. Why might catching *every* error be as dangerous as catching none, {name}?"
 clue: Cleaned up, the castle's error log shows something odd. **Every error this week was raised at exactly 3:03 pm** - the minute the fading boy walks.
+outro:
+  - who: neville
+    line: "(staring as the Boggart shrinks into a polite grey message) I handled it. I actually handled it."
+  - who: lupin
+    line: "(smiling, and looking very tired) Ten points to Gryffindor. (lower, to himself) Three-oh-three. Again."

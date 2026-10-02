@@ -17,6 +17,10 @@ intro:
     line: A tall, hooded shape glides past in the corridor. Every warm thought you've ever had seems to drain out through your shoes.
   - who: lupin
     line: (snapping a bar of chocolate into pieces) Eat. It helps. That was a Dementor - one of the Ministry's guards. They're looking for a prisoner, apparently, though nobody will say who.
+  - who: hermione
+    line: (already asleep against the window, a thin gold chain glinting at her neck, a timetable with eleven subjects on her lap)
+  - who: ron
+    line: (picking up the timetable) Eleven? There aren't enough *hours* for eleven. (Hermione, without opening her eyes, takes it back.)
   - who: dumbledore
     line: (at the Welcome Feast) The Dementors will stand at every entrance to the grounds this year. They are not known for forgiveness - so do not give them a reason.
   - who: narrator

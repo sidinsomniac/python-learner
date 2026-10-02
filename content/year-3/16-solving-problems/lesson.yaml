@@ -8,11 +8,20 @@ concepts: [understanding a problem, examples and edge cases, planning with pseud
 exercises: [warmup, core, outstanding]
 scene:
   - who: lupin
-    line: (pouring tea, with a Grindylow pulling faces in a tank behind him) Sit down, all of you. Before anyone goes near that sealed room, we're going to plan this properly.
+    line: "(pouring tea with a slightly shaking hand, a Grindylow pulling faces in a tank behind him) Sit down, all of you. Before anyone goes near that sealed room, we're going to plan this properly."
   - who: ron
-    line: Can't we just... try things until it works?
+    line: "Can't we just... try things until it works?"
   - who: lupin
-    line: With a Time-Turner? Mr Weasley, "trying things until it works" is precisely how Tobias Wren got stuck.
+    line: "With a Time-Turner? Mr Weasley, \"trying things until it works\" is precisely how Tobias Wren got stuck."
+  - who: neville
+    line: "(going red, then saying it anyway) Couldn't we... write down how we'd check it worked? Before we try anything? Like testing a potion on a leaf first."
+  - who: lupin
+    line: "(a real smile) That, Neville, is exactly what I was about to say. Ten points."
   - who: ashwood
-    line: Good wizards have a method. Understand the problem. Collect examples - especially the awkward ones. Write down how you'll *check* a spell before you write it. Only then, write it. Let's practise.
+    line: "Understand the problem. Collect examples, especially the awkward ones. Write how you'll *check* a spell before you write it. What is the most awkward example you can think of, {name}?"
 clue: The rescue plan has its missing piece. The charm needs a base case - **stop when you're back at the hour you started from**.
+outro:
+  - who: hermione
+    line: "Stop when you're back where you started. That's all he ever needed."
+  - who: hermione
+    line: "(quietly, unclasping the Time-Turner chain and putting it in her pocket) I'm going to give mine back. After."
