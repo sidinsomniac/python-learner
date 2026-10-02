@@ -20,6 +20,7 @@ Before starting work, `git pull` the branch and read the change log (§13) to se
 - **Difficulty is medium.** The owner playtested it and called it "perfect". Beginner-friendly at the start, climbing steadily.
 - **Build one Year at a time:** script the year in `docs/story.md` first, then write its content, then validate, test, commit and push.
 - **API keys** (Claude, DeepSeek) stay in localStorage and are never exported.
+- **Background music** comes only from the `music/` folder, which is git-ignored apart from its README. It plays quietly with no visible player. Never extract or bundle audio from YouTube or other services.
 - The living backgrounds are 18 presets picked at random, **not** tied to years. They're hand-drawn Canvas 2D with no library (see `src/ui/backdrop/`); keep it that way, because the bundle is already large.
 
 ## Before every push

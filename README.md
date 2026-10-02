@@ -47,6 +47,7 @@ Every exercise gets an O.W.L. grade (**O**utstanding, **E**xceeds Expectations, 
 - **⭐ Levels 1–20.** Every level gives something: the Time-Turner, the Dueling Club, Ollivanders, familiars, themes and more.
 - **⏳ The Time-Turner.** A few review cards a day from lessons you've finished, spaced out so you remember them.
 - **⚔️ The Dueling Club.** Quick-fire duels against Neville, Draco, Hermione and Snape.
+- **🎵 Background music.** Drop audio files into `music/` and they play quietly behind the game, shuffled, fading in after your first click. Switch them with 🎵 in the header. The folder is git-ignored, so personal copies never get published.
 - **The living castle.** Each year has its own colours; eighteen living backgrounds drift behind the lessons (from snow and storms to a galloping silver Patronus, the Golden Snitch and the Hogwarts Express) (switch them off in Settings); and the story pops up as scenes you click through.
 
 **Third Year: The Prisoner of Recursion.** 16 lessons, 3 revisions and a Trial - 61 exercises on catching and raising errors, reading and writing files (and JSON), functions as values, `*args` and `**kwargs`, recursion (watch the call stack grow in the Pensieve), Big-O, binary search, two pointers and sliding windows, sorting by several rules, flood fill on grids, testing your own spells, string algorithms and the Game of Life. The mystery is **The Prisoner of the Loop**: Dementors at the gates, and a fading boy who walks the third floor at 3:03 every afternoon.

@@ -6,3 +6,6 @@ playwright-report/
 *.tsbuildinfo
 .DS_Store
 *.log
+# Background music: personal copies stay local. Only the README is tracked.
+music/*
+!music/README.md

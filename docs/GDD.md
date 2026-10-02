@@ -126,6 +126,12 @@ A level-up pop-up shows the reward; the Trophy Room shows the whole track.
 ### Living castle ✅ built
 - **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2, Time-Turner dusk (silver and indigo) for Year 3.
 - **Story pop-ups.** Prologues, lesson scenes and outros open as a modal the first time - click through line by line, or Skip. Afterwards they stay on the page as a "📜 Story" card that can be read again.
+- **Background music** (`src/ui/BackgroundMusic.tsx`). Tracks in the project's `music/` folder play quietly behind the game, with no visible player:
+  - shuffled and looping;
+  - fading in after the first click (browsers block sound before that), and fading out when the tab is hidden or the 🎵 switch in the header turns it off;
+  - volume set in Settings.
+
+  The folder is git-ignored apart from its README, so personal copies of music stay local. Original tracks made for the game will be un-ignored to ship with it.
 - **Living backgrounds** (`src/ui/Ambience.tsx`, drawn by `src/ui/backdrop/`). Eighteen presets, picked at random for each screen and never the same twice in a row:
   - **the originals:** Enchanted Ceiling (floating candles), First Snow, Storm over the Lake, Goblet Embers, Dementor Mist, Forbidden Forest fireflies, Autumn Grounds, Aurora, Astronomy Tower shooting stars and Owl Post;
   - **added 2026-10-02:** Expecto Patronum (a silver stag), the Golden Snitch, the Floo Network, Fawkes, the Black Lake, the Hogwarts Express, the Pensieve and the Time-Turner.

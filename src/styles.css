@@ -1700,3 +1700,16 @@ body::before {
 .felix-btn {
   margin-top: 6px;
 }
+
+/* Background music switch in the header. */
+.music-toggle {
+  padding: 2px 8px;
+  font-size: 1rem;
+  line-height: 1;
+}
+.music-toggle.off {
+  opacity: 0.55;
+}
+.music-settings input[type="range"] {
+  width: 160px;
+}

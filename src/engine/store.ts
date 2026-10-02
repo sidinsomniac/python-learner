@@ -4,6 +4,7 @@ import { rewardsBetween } from "../lore/levels";
 import type { HouseId } from "../lore/lore";
 import { aidById, itemById, type AidId, type ItemKind } from "../lore/shop";
 import { DEFAULT_MENTOR_SETTINGS, type MentorSettings } from "../mentor/llm";
+import { DEFAULT_MUSIC, type MusicSettings } from "./music";
 import { LESSONS, YEARS } from "./content";
 import type { DuelOutcome } from "./duel";
 import {
@@ -72,6 +73,7 @@ export interface GameState {
   duels: Record<string, { wins: number; losses: number; draws: number }>;
   theme: "dark" | "light";
   ambience: boolean;
+  music: MusicSettings;
   marauderMap: boolean;
   mentor: MentorSettings;
 
@@ -96,6 +98,7 @@ export interface GameState {
   markSceneSeen: (id: string) => void;
   setTheme: (theme: "dark" | "light") => void;
   setAmbience: (on: boolean) => void;
+  setMusic: (patch: Partial<MusicSettings>) => void;
   setMarauderMap: (open: boolean) => void;
   setMentor: (patch: Partial<MentorSettings>) => void;
   resetProgress: () => void;
@@ -131,6 +134,7 @@ const initialData = {
   duels: {},
   theme: "dark" as const,
   ambience: true,
+  music: DEFAULT_MUSIC,
   marauderMap: false,
   mentor: DEFAULT_MENTOR_SETTINGS,
 };
@@ -523,9 +527,10 @@ export const useGame = create<GameState>()(
       markSceneSeen: (id) => set((s) => ({ scenesSeen: { ...s.scenesSeen, [id]: true } })),
       setTheme: (theme) => set({ theme }),
       setAmbience: (ambience) => set({ ambience }),
+      setMusic: (patch) => set((s) => ({ music: { ...s.music, ...patch } })),
       setMarauderMap: (marauderMap) => set({ marauderMap }),
       setMentor: (patch) => set((s) => ({ mentor: { ...s.mentor, ...patch } })),
-      resetProgress: () => set({ ...initialData, mentor: get().mentor }),
+      resetProgress: () => set({ ...initialData, mentor: get().mentor, music: get().music }),
 
       importSave: (json) => {
         backupRawSave();
@@ -551,6 +556,7 @@ export const useGame = create<GameState>()(
           owned: { ...current.owned, ...(p.owned ?? {}) },
           aids: { ...current.aids, ...(p.aids ?? {}) },
           mentor: { ...DEFAULT_MENTOR_SETTINGS, ...(p.mentor ?? {}) },
+          music: { ...DEFAULT_MUSIC, ...(p.music ?? {}) },
         };
       },
     },

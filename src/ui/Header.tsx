@@ -5,6 +5,7 @@ import { hasFeature } from "../lore/levels";
 import { HOUSES, LOADING_LINES, levelTitle } from "../lore/lore";
 import { itemById } from "../lore/shop";
 import { python, type RunnerStatus } from "../runtime/pythonRunner";
+import { MusicToggle } from "./BackgroundMusic";
 import { useDueCount } from "./TimeTurner";
 
 export function Header() {
@@ -69,6 +70,7 @@ export function Header() {
         <a href="#/trophies">Trophies</a>
         {marauderMap && <a href="#/marauders-map">🗺️ Map</a>}
         <a href="#/settings">Settings</a>
+        <MusicToggle />
         <PythonChip status={status} />
       </nav>
     </header>

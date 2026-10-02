@@ -6,6 +6,7 @@ import { grantBadge } from "../lore/applyEggs";
 import { KONAMI } from "../lore/easterEggs";
 import { python } from "../runtime/pythonRunner";
 import { Ambience } from "./Ambience";
+import { BackgroundMusic } from "./BackgroundMusic";
 import { CaseFile } from "./CaseFile";
 import { SceneHost } from "./Cutscene";
 import { DuelingClub } from "./DuelingClub";
@@ -104,6 +105,7 @@ export default function App() {
   return (
     <>
       <Ambience sceneKey={sceneKey} />
+      <BackgroundMusic />
       {name && house && <Header />}
       <main className="main">{body}</main>
       <Effects />

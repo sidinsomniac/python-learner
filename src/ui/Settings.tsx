@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { TRACKS } from "../engine/music";
 import { exportSave, readBackups, unwrapSave, useGame } from "../engine/store";
 import { levelFromXp } from "../engine/progress";
 import { HOUSES } from "../lore/lore";
@@ -97,6 +98,7 @@ export function Settings() {
           />
           Castle ambience (moving weather in the background)
         </label>
+        <MusicSettingsRow />
       </section>
 
       <section className="card">
@@ -243,6 +245,31 @@ export function Settings() {
           </p>
         )}
       </section>
+    </div>
+  );
+}
+
+/** Background music: on/off and volume. The tracks come from the project's `music/` folder. */
+function MusicSettingsRow() {
+  const music = useGame((s) => s.music);
+  const setMusic = useGame((s) => s.setMusic);
+  if (TRACKS.length === 0) {
+    return (
+      <p className="small muted" data-testid="music-none">
+        🎵 Background music: no tracks yet. Put audio files in the project's <code>music/</code> folder and rebuild.
+      </p>
+    );
+  }
+  return (
+    <div className="music-settings">
+      <label className="row">
+        <input type="checkbox" checked={music.enabled} onChange={(e) => setMusic({ enabled: e.target.checked })} data-testid="music-setting" />
+        Background music ({TRACKS.length} track{TRACKS.length === 1 ? "" : "s"}, shuffled)
+      </label>
+      <label className="row small">
+        Volume
+        <input type="range" min={0} max={100} value={music.volume} onChange={(e) => setMusic({ volume: Number(e.target.value) })} aria-label="Music volume" />
+      </label>
     </div>
   );
 }

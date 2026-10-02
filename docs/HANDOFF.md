@@ -38,6 +38,7 @@ This is everything you need to carry on building the game somewhere else: on you
 | Goals (2026-10-02) | The owner is an experienced **front-end (JS/TS) developer**. From Year 4, give **equal weight** to **★ interview prep** (patterns, data structures) and **🛠 practical Python** for **backend APIs** (JSON, HTTP, FastAPI, async) and **AI/LLM apps and agents**. Don't spend lessons on what a TS developer already knows, and don't drop tuples or sets: they're interview-core. See `docs/curriculum.md`, "Who this is for". |
 | Story | Harry Potter flavour: an original mystery each year with the canon cast, plenty of easter eggs, and rich immersion. |
 | AI professor | Claude **and** DeepSeek API keys, both optional. Keys stay in the browser and are never exported. |
+| Background music (2026-10-02) | Music should play **subtly in the background, with no visible player**. Tracks come from the project's `music/` folder. Everything in it except its README is git-ignored, so personal copies stay local. The owner will make original tracks later, and they'll be un-ignored there to ship with the build. **Never extract audio from YouTube or other services into the project.** |
 | Living backgrounds | **18 random presets** (10 at first, plus 8 more on 2026-10-02 at the owner's request: richer and higher quality), deliberately **not** tied to particular years. Subtle mouse parallax and a cross-fade between presets. No animation library. |
 | Story scenes | A modal you click through or skip, which then stays on the page as a "📜 Story" card. |
 | Delivery | One Year at a time: write the year's script in `docs/story.md` first, then its content, then commit and push. |
@@ -66,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **85** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **89** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **22** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **23** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -99,6 +100,10 @@ src/engine/
   pensieve.ts   stackFrames: how the Pensieve folds a deep call stack
 src/lore/       shop.ts (items, learning aids), levels.ts (LEVEL_REWARDS, feature unlocks),
                 badges.ts, lore.ts (titles, YEAR_NAMES), easterEggs.ts
+src/ui/BackgroundMusic.tsx  quiet background music from music/ (fade in after the first click,
+                shuffled loop, fade out when hidden or muted) and the 🎵 header switch
+src/engine/music.ts  TRACKS (an import.meta.glob of music/*), trackTitle, shuffleOrder, DEFAULT_MUSIC
+music/          drop audio files here (git-ignored except README.md)
 src/ui/backdrop/  the living backgrounds, as hand-written Canvas 2D:
                 engine.ts (cached glow sprites, additive light, parallax, quality scaling),
                 classic.ts (the first 10 presets), magic.ts (8 more),
@@ -239,6 +244,7 @@ Tests run in order and stop at the first failure.
   - `clues`: `{lessonId: timestamp}`
   - `scenesSeen`: `{lessonId: true, "<lessonId>:outro": true, "year-N": true}`
   - `skipped`, `owned`, `equipped`, `aids`, `cards`, `duels`, `badges`, `drafts`, `hintsUnlocked`
+  - `music`: `{ enabled, volume }`. Older saves get the defaults through the store's `merge`, so no migration step is needed.
 - **Restoring, in Settings:**
   - **Download backup / Restore backup** for a save file.
   - **Paste a save** accepts a downloaded backup, the raw localStorage value (`{"state": ..., "version": n}`), or a bare state object. All three go through `unwrapSave`.
@@ -302,6 +308,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | **Background music**, with no visible player. Files in `music/` (git-ignored apart from its README) are found at build time. They play quietly, shuffled and looping, fading in after the first click and fading out when the tab is hidden or the music is switched off. 🎵 in the header switches it on and off; Settings has the volume. Save field `music: { enabled, volume }` (default on, 25), filled in by `merge` for older saves. The owner's style change was also kept (dimmed tier dots). Tests: 89 unit, 23 e2e (§1, §3, §5, §9). |
 | 2026-10-02 | Claude Code desktop session | Patronus: the smoke trail was removed at the owner's request, and replaced with a denser **sparkle trail**. Twinkling sparks stream from the antler tips, back, rump and belly; they drift, slow, settle and fade, and the larger ones flash four-pointed glints. The hoofprints are bursts of the same sparkles (`stepSparkles` in `magic.ts`). The motion blur stays. |
 | 2026-10-02 | Claude Code desktop session | Patronus: a slimmer rump and hind thighs; motion blur (blurred smears of the silhouette); a wispy smoke trail. The smoke is ribbons from the back, rump and belly that drift, curl, spread and fade in, drawn at half resolution and blurred once per frame. Glittering sparks fall from the antler tips. `drawStag` now returns `{ hooves, emitters }`. |
 | 2026-10-02 | Claude Code desktop session | **Patronus and owls rebuilt** (`src/ui/backdrop/creatures.ts`).

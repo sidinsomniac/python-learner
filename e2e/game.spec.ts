@@ -392,6 +392,13 @@ test("Year 3 lays files on the desk, and the Pensieve shows a spell calling itse
   await expect(pensieve).toContainText("countdown() hands back 0");
 });
 
+test("with no tracks in music/, Settings explains where music goes and the header shows no music switch", async ({ page }) => {
+  await seed(page);
+  await page.goto("/#/settings");
+  await expect(page.getByTestId("music-none")).toContainText("music/");
+  await expect(page.getByTestId("music-toggle")).toHaveCount(0);
+});
+
 test("arrows move between unlocked lessons, and stop at a locked one", async ({ page }) => {
   await seed(page, { exercises: completed(["y1-l01"]) });
   await page.goto("/#/lesson/y1-l02");
