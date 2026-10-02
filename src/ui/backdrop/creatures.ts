@@ -13,13 +13,13 @@ const frac = (v: number) => v - Math.floor(v);
 /** Barrel, rump and chest. */
 const TORSO = new Path2D(
   [
-    "M -58 -6",
-    "C -61 -18 -51 -25 -38 -23", // rump
-    "C -18 -20 6 -27 28 -25", // back to withers
+    "M -51 -8",
+    "C -53 -17 -46 -23 -35 -22", // rump
+    "C -16 -20 6 -27 28 -25", // back to withers
     "C 36 -25 44 -18 50 -8", // base of the neck
     "C 53 2 46 14 28 20", // chest
-    "C 10 23 -20 23 -36 17", // belly
-    "C -48 12 -57 5 -58 -6 Z", // haunch
+    "C 10 23 -16 22 -30 16", // belly
+    "C -41 11 -50 4 -51 -8 Z", // haunch
   ].join(" "),
 );
 
@@ -42,8 +42,8 @@ const NECK_PIVOT = { x: 38, y: -14 };
 const EAR = new Path2D("M 58 -66 C 54 -76 50 -82 47 -84 C 50 -78 52 -71 55 -63 Z");
 
 /** The tail, a short upturned flick, pivoting at its root. */
-const TAIL = new Path2D("M -55 -14 C -62 -20 -64 -26 -60 -30 C -59 -24 -56 -20 -52 -17 Z");
-const TAIL_PIVOT = { x: -55, y: -14 };
+const TAIL = new Path2D("M -49 -15 C -56 -21 -58 -27 -54 -31 C -53 -25 -50 -21 -46 -18 Z");
+const TAIL_PIVOT = { x: -49, y: -15 };
 
 /** Antler beams and tines as polylines; width tapers from base to tip. */
 const ANTLER: [number, number][][] = [
@@ -80,8 +80,8 @@ const ANTLER: [number, number][][] = [
  * fore. `offset` is where each leg is in the stride cycle.
  */
 const LEGS = [
-  { x: -36, y: 4, hind: true, far: true, offset: 0 },
-  { x: -30, y: 7, hind: true, far: false, offset: 0.1 },
+  { x: -32, y: 3, hind: true, far: true, offset: 0 },
+  { x: -27, y: 6, hind: true, far: false, offset: 0.1 },
   { x: 34, y: 6, hind: false, far: true, offset: 0.48 },
   { x: 40, y: 9, hind: false, far: false, offset: 0.58 },
 ];
@@ -96,7 +96,7 @@ function inside() {
   const probe = document.createElement("canvas").getContext("2d")!;
   insidePoints = [];
   for (let tries = 0; tries < 5000 && insidePoints.length < 80; tries++) {
-    const x = rand(-60, 88);
+    const x = rand(-54, 88);
     const y = rand(-72, 22);
     if (probe.isPointInPath(TORSO, x, y) || probe.isPointInPath(NECK_HEAD, x, y)) insidePoints.push({ x, y, p: rand(0, TAU), r: rand(0.8, 2.2) });
   }
@@ -168,7 +168,7 @@ function legs(phase: number): { far: Path2D[]; near: Path2D[]; hooves: Hoof[] } 
         [19, swing + fold * 0.95],
       ]);
       const pieces = leg.far ? far : near;
-      limb(pieces, pts[0][0] + 2, pts[0][1] - 6, 14, pts[1][0], pts[1][1], 6);
+      limb(pieces, pts[0][0] + 2, pts[0][1] - 5, 11, pts[1][0], pts[1][1], 5.6);
       limb(pieces, pts[1][0], pts[1][1], 5.6, pts[2][0], pts[2][1], 3.2);
       limb(pieces, pts[2][0], pts[2][1], 3, pts[3][0], pts[3][1], 2.2);
     } else {
@@ -301,6 +301,16 @@ export function drawStag(ctx: CanvasRenderingContext2D, x: number, y: number, si
   ctx.translate(x, y + bob * size);
   ctx.scale(size * dir, size);
   glow(ctx, 10, -30, 165, silver, pal.light ? 0.08 : 0.14);
+  // Motion blur: soft, blurred smears of the silhouette, stretching back along its path.
+  if (!pal.light && "filter" in ctx) {
+    ctx.filter = `blur(${Math.round(5 * size)}px)`;
+    for (let i = 1; i <= 4; i++) {
+      ctx.globalAlpha = 0.11 * (1 - i / 5);
+      ctx.drawImage(maskCanvas, -OX - i * 10, -OY + i * 0.6, BOX_W, BOX_H);
+    }
+    ctx.filter = "none";
+    ctx.globalAlpha = 1;
+  }
   if (!pal.light && "filter" in ctx) {
     ctx.filter = `blur(${Math.round(9 * size)}px)`;
     ctx.globalAlpha = 0.26;
@@ -327,15 +337,23 @@ export function drawStag(ctx: CanvasRenderingContext2D, x: number, y: number, si
   }
   ctx.restore();
 
-  // Hooves in screen coordinates.
+  // Hooves and trail emitters, in screen coordinates.
   const cos = Math.cos(pitch);
   const sin = Math.sin(pitch);
-  return hooves.map((h) => ({
-    x: x + (h.x * cos - h.y * sin) * size * dir,
-    y: y + bob * size + (h.x * sin + h.y * cos) * size,
-    u: h.u,
-    far: h.far,
-  }));
+  const toScreen = (lx: number, ly: number, onHead = false) => {
+    if (onHead) {
+      const dx = lx - NECK_PIVOT.x;
+      const dy = ly - NECK_PIVOT.y;
+      lx = NECK_PIVOT.x + dx * Math.cos(nod) - dy * Math.sin(nod);
+      ly = NECK_PIVOT.y + dx * Math.sin(nod) + dy * Math.cos(nod);
+    }
+    return { x: x + (lx * cos - ly * sin) * size * dir, y: y + bob * size + (lx * sin + ly * cos) * size };
+  };
+  return {
+    hooves: hooves.map((h) => ({ ...toScreen(h.x, h.y), u: h.u, far: h.far })),
+    /** Where the trail streams from: the antler tip (a streak of light), then the back, rump and belly (smoke). */
+    emitters: [toScreen(45, -132, true), toScreen(6, -24), toScreen(-44, -16), toScreen(-8, 18)],
+  };
 }
 
 // ===========================================================================

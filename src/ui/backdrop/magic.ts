@@ -31,6 +31,29 @@ function stepMotes(ctx: CanvasRenderingContext2D, motes: Mote[], dt: number, rgb
   }
 }
 
+/** Can canvas drawing be blurred with ctx.filter? (Not in older Safari.) */
+const canBlur = typeof CanvasRenderingContext2D !== "undefined" && "filter" in CanvasRenderingContext2D.prototype;
+
+/** A tapering, fading ribbon through a trail of points (oldest first). */
+function drawRibbon(ctx: CanvasRenderingContext2D, pts: { x: number; y: number; age: number; seed: number }[], life: number, width: number, rgb: string, alpha: number) {
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1];
+    const b = pts[i];
+    const fresh = 1 - b.age / life;
+    if (fresh <= 0) continue;
+    // Smoke spreads as it ages, fades towards the tail of the ribbon, and is patchy along its length.
+    const wisp = 0.5 + 0.5 * Math.sin(i * 0.45 + b.seed * 0.3 + b.age * 3);
+    ctx.lineWidth = Math.max(0.5, width * (0.3 + 0.7 * fresh) * (1 + (1 - fresh) * 2.2));
+    // Each strand fades in over its first moments, so it seems to emerge from behind the stag.
+    const emerge = Math.min(1, b.age / 0.22);
+    ctx.strokeStyle = `rgba(${rgb},${alpha * emerge * fresh ** 1.4 * (0.35 + 0.65 * wisp)})`;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+}
+
 // 11. Expecto Patronum: a silver stag galloping across the sky, trailing light.
 const patronus: Maker = (w, h, pal, q) => {
   const stars = starField(w, h, count(40, q));
@@ -47,6 +70,19 @@ const patronus: Maker = (w, h, pal, q) => {
   let phase = 0;
   const lastU: number[] = [0, 0, 0, 0];
   const prints: Mote[] = [];
+  const glitter: Mote[] = [];
+  // The trail: for each emitter, a ribbon of recent positions that drift, curl and fade.
+  type Wisp = { x: number; y: number; age: number; seed: number };
+  const ribbons: Wisp[][] = [[], [], [], []];
+  const LIFE = [0.9, 2.1, 2.3, 1.8];
+  const WIDTH = [1.6, 20, 24, 16];
+  /** How each strand drifts: the back's smoke rises, the belly's sinks a little. */
+  const DRIFT = [0, -16, -7, 6];
+  // Smoke is drawn at half resolution, then blurred onto the screen in one pass.
+  const smoke = document.createElement("canvas");
+  smoke.width = Math.ceil(w / 2);
+  smoke.height = Math.ceil(h / 2);
+  const sctx = smoke.getContext("2d")!;
   const enter = () => {
     dir = Math.random() < 0.7 ? 1 : -1;
     x = dir > 0 ? -230 * size : w + 230 * size;
@@ -77,7 +113,47 @@ const patronus: Maker = (w, h, pal, q) => {
         stepMotes(ctx, motes, f.dt, silver, 0.45);
         // Hoofprints of light: a burst wherever a hoof touches down, lingering in the air.
         stepMotes(ctx, prints, f.dt, silver, 0.75);
-        const hooves = drawStag(ctx, bx, by, size, dir, phase, f.t, pal);
+        // The smoky trail and the antler's streak of light, drawn behind the stag.
+        sctx.setTransform(1, 0, 0, 1, 0, 0);
+        sctx.clearRect(0, 0, smoke.width, smoke.height);
+        sctx.setTransform(0.5, 0, 0, 0.5, 0, 0);
+        sctx.lineCap = "round";
+        sctx.lineJoin = "round";
+        for (let r = 1; r < ribbons.length; r++) drawRibbon(sctx, ribbons[r], LIFE[r], WIDTH[r] * size, silver, 0.095);
+        if (canBlur) {
+          ctx.filter = `blur(${Math.round(10 * size)}px)`;
+          ctx.drawImage(smoke, 0, 0, w, h);
+          ctx.filter = `blur(${Math.round(3 * size)}px)`;
+          ctx.globalAlpha = 0.6;
+          ctx.drawImage(smoke, 0, 0, w, h);
+          ctx.globalAlpha = 1;
+          ctx.filter = "none";
+        } else {
+          ctx.drawImage(smoke, 0, 0, w, h);
+        }
+        stepMotes(ctx, glitter, f.dt, silver, 0.9);
+        const { hooves, emitters } = drawStag(ctx, bx, by, size, dir, phase, f.t, pal);
+        emitters.forEach((e, i) => {
+          // The antler tip sheds glittering sparks; the body leaves smoke.
+          if (i === 0) {
+            if (glitter.length < 90) glitter.push({ x: e.x + rand(-6, 6) * size, y: e.y + rand(-4, 10) * size, vx: -dir * rand(5, 30), vy: rand(-8, 14), age: 0, life: rand(0.5, 1.3), r: rand(0.8, 2) });
+            return;
+          }
+          ribbons[i].push({ x: e.x, y: e.y, age: 0, seed: rand(0, TAU) });
+          if (i > 0 && Math.random() < f.dt * 10 && motes.length < 160) {
+            motes.push({ x: e.x, y: e.y, vx: -dir * rand(10, 40), vy: rand(-6, 22), age: 0, life: rand(0.8, 1.6), r: rand(0.8, 2) });
+          }
+        });
+        for (const [i, ribbon] of ribbons.entries()) {
+          for (const p of ribbon) {
+            p.age += f.dt;
+            // Smoke lingers where it was left, drifting, and curling more the older it gets.
+            const k = i === 0 ? 0.35 : 1;
+            p.y += (DRIFT[i] * (0.6 + p.age) + Math.cos(p.age * 2.1 + p.seed) * (6 + p.age * 22)) * k * f.dt;
+            p.x += (Math.sin(p.age * 2.4 + p.seed) * (8 + p.age * 26) - dir * 10) * k * f.dt;
+          }
+          while (ribbon.length && ribbon[0].age > LIFE[i]) ribbon.shift();
+        }
         hooves.forEach((hoof, i) => {
           if (hoof.u < lastU[i] && prints.length < 200) {
             for (let k = 0; k < (hoof.far ? 4 : 7); k++) {

@@ -302,6 +302,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | Patronus: a slimmer rump and hind thighs; motion blur (blurred smears of the silhouette); a wispy smoke trail. The smoke is ribbons from the back, rump and belly that drift, curl, spread and fade in, drawn at half resolution and blurred once per frame. Glittering sparks fall from the antler tips. `drawStag` now returns `{ hooves, emitters }`. |
 | 2026-10-02 | Claude Code desktop session | **Patronus and owls rebuilt** (`src/ui/backdrop/creatures.ts`).
 - **Stag:** anatomically jointed legs (three-part hind legs with hocks, folding front knees); a rotary gallop with stance and swing phases, and stride tied to ground speed; a rocking spine, nodding neck and flicking tail; a light sweep; hoofprints of light. It enters from either side.
 - **Owls:** solid Hedwig-style snowy owls (tawny on the light theme) with articulated wings (primaries, secondaries, coverts), beat-then-glide flight, a steady head, depth and both directions. `makeOwl`/`stepOwl`/`drawOwl` replace the old drawing. |
