@@ -1,0 +1,86 @@
+tier: outstanding
+type: practice
+title: Enough Ink to Read
+twist: scale - the shortest window that's big enough, in one pass over 15,000 pages
+task: |
+  Each page holds some drops of ink (always 1 or more). Write
+  `shortest_run(drops, target)`: the length of the **shortest** run of
+  consecutive pages whose drops add up to **at least** `target`. If no run
+  is enough (not even the whole diary), return `0`.
+
+  ```python
+  shortest_run([2, 3, 1, 2, 4, 3], 7)   # -> 2   (4 + 3)
+  shortest_run([1, 1, 1], 5)            # -> 0
+  shortest_run([5, 1, 9], 9)            # -> 1   (9 on its own)
+  ```
+
+  The examiners use 15,000 pages, so it has to be one pass.
+starter: |
+  def shortest_run(drops, target):
+      best = 0
+      for start in range(len(drops)):
+          for end in range(start + 1, len(drops) + 1):
+              if sum(drops[start:end]) >= target and (best == 0 or end - start < best):
+                  best = end - start
+      return best
+tests: |
+  import random
+  import time
+
+  def test_examples():
+      fn = student_function("shortest_run")
+      check(call(fn, [2, 3, 1, 2, 4, 3], 7) == 2, f"shortest_run([2, 3, 1, 2, 4, 3], 7) returned {call(fn, [2, 3, 1, 2, 4, 3], 7)!r}.")
+      check(call(fn, [1, 1, 1], 5) == 0, "Even the whole diary only holds 3 drops: no run is enough.")
+      check(call(fn, [5, 1, 9], 9) == 1, "A single page can be enough on its own.")
+
+  def test_edges():
+      fn = student_function("shortest_run")
+      check(call(fn, [], 1) == 0, "An empty diary has no runs.")
+      check(call(fn, [1, 2, 3, 4], 10) == 4, "Sometimes it takes every page.")
+      check(call(fn, [1, 4, 4], 8) == 2, "Shrink as far as you can while the run is still enough.")
+
+  def test_long_diary():
+      fn = student_function("shortest_run")
+      rng = random.Random(303)
+      drops = [rng.randint(1, 20) for _ in range(15000)]
+      target = 400
+      want = 0
+      total = 0
+      lo = 0
+      for hi, d in enumerate(drops):
+          total += d
+          while total - drops[lo] >= target:
+              total -= drops[lo]
+              lo += 1
+          if total >= target and (want == 0 or hi - lo + 1 < want):
+              want = hi - lo + 1
+      start = time.perf_counter()
+      got = call(fn, drops, target)
+      took = time.perf_counter() - start
+      check(got == want, f"For 15,000 pages you returned {got!r}.")
+      check(took < 3, f"That took {took:.1f}s. Is every page added once and removed at most once?")
+hints:
+  nudge: Grow the window on the right until it has enough ink. Then shrink it from the left for as long as it still has enough, recording each length.
+  question: Once a window has enough ink, can a longer window that starts at the same page ever be the answer? Why do the drops being positive matter?
+  pseudocode: |
+    left = 0, total = 0, best = 0 (meaning "none yet")
+    for each position right:
+        add its drops to the total
+        while the total is at least the target:
+            the window from left to right is enough: keep its length if it's the shortest yet
+            take the drops at left away from the total, and move left on
+    give back best
+  flaw: If [1, 4, 4] with 8 gives 3, you recorded the length before shrinking. Record inside the shrinking loop, every time the window is still enough.
+  analogous: |
+    ```python
+    def fewest_owls(loads, weight):
+        carried, lo, fewest = 0, 0, None
+        for hi, load in enumerate(loads):
+            carried += load
+            while carried >= weight:
+                size = hi - lo + 1
+                fewest = size if fewest is None else min(fewest, size)
+                carried -= loads[lo]
+                lo += 1
+        return fewest
+    ```

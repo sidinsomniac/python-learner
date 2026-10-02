@@ -1,7 +1,7 @@
 tier: outstanding
 type: practice
-title: A Fair Copy
-twist: combination - read, clean, write a new file, and report what was lost
+title: The Ledger as JSON
+twist: combination - read a messy CSV, clean it, and hand it on as JSON an API could use
 files:
   ledger.csv: |
     name,house,started,left
@@ -12,73 +12,84 @@ files:
     Newt Scamander,Hufflepuff,19O8,1913
     Pomona Sprout,Hufflepuff,1931
 task: |
-  Madam Pince wants a clean copy of the ledger. Write
-  `clean_copy(source, target)`.
+  The Ministry's new records service only accepts **JSON**. Write
+  `ledger_to_json(source, target)`.
 
-  Read `source` using the rules from the Core challenge. Then write `target`
-  with the same header, `name,house,started,left`, followed by one line for
-  every usable student: fields stripped, separated by commas, with `left`
-  left **empty** when it's `None`. Every line ends with `\n`.
-
-  Return how many lines were **dropped**: data lines that weren't blank but
-  weren't usable. Blank lines don't count as dropped.
+  Read `source` using the rules from the Core challenge. Then write
+  `target` as a JSON **list** of objects, one for each usable student, in
+  file order, with the keys `name`, `house`, `started` and `left`.
+  `started` is a number, and `left` is a number or `null`. Return how many
+  students were written.
 
   ```python
-  clean_copy("ledger.csv", "clean.csv")
-  # -> 2
+  ledger_to_json("ledger.csv", "ledger.json")
+  # -> 3
   ```
 
-  `clean.csv` then holds:
+  `ledger.json` then holds (spacing is up to you):
 
-  ```text
-  name,house,started,left
-  Albus Dumbledore,Gryffindor,1892,1899
-  Tobias Wren,Hufflepuff,1923,
-  Pomona Sprout,Hufflepuff,1931,
+  ```json
+  [
+    {"name": "Albus Dumbledore", "house": "Gryffindor", "started": 1892, "left": 1899},
+    {"name": "Tobias Wren", "house": "Hufflepuff", "started": 1923, "left": null},
+    {"name": "Pomona Sprout", "house": "Hufflepuff", "started": 1931, "left": null}
+  ]
   ```
+
+  Use the `json` module - don't build the JSON text by hand.
 starter: |
-  def clean_copy(source, target):
+  def ledger_to_json(source, target):
       pass
 tests: |
-  EXPECTED = "name,house,started,left\nAlbus Dumbledore,Gryffindor,1892,1899\nTobias Wren,Hufflepuff,1923,\nPomona Sprout,Hufflepuff,1931,\n"
+  import json
 
-  def test_copy():
-      got = call(student_function("clean_copy"), "ledger.csv", "clean.csv")
-      written = read_file("clean.csv")
-      check(written is not None, "No clean.csv appeared on the desk. Did you open the target in write mode?")
-      check(written == EXPECTED, f"clean.csv holds:\n{written}\nCompare it line by line with the task. Is there a header? A newline after every line?")
-      check(got == 2, f"clean_copy returned {got!r}. How many non-blank lines were thrown away?")
+  EXPECTED = [
+      {"name": "Albus Dumbledore", "house": "Gryffindor", "started": 1892, "left": 1899},
+      {"name": "Tobias Wren", "house": "Hufflepuff", "started": 1923, "left": None},
+      {"name": "Pomona Sprout", "house": "Hufflepuff", "started": 1931, "left": None},
+  ]
 
-  def test_source_untouched():
-      call(student_function("clean_copy"), "ledger.csv", "clean.csv")
-      check(read_file("ledger.csv").startswith("name,house,started,left\nAlbus"), "The original ledger must not change.")
+  def test_json_written():
+      got = call(student_function("ledger_to_json"), "ledger.csv", "ledger.json")
+      text = read_file("ledger.json")
+      check(text is not None, "No ledger.json appeared on the desk. Did you open the target for writing?")
+      try:
+          data = json.loads(text)
+      except ValueError:
+          check(False, f"ledger.json isn't valid JSON:\n{text[:200]}\nCould the json module write it for you?")
+      check(data == EXPECTED, f"ledger.json holds {data!r}. Are the years numbers, and is a missing `left` written as null?")
+      check(got == 3, f"ledger_to_json returned {got!r}. How many students were written?")
 
-  def test_another():
+  def test_another_ledger():
       write_files({"in.csv": "name,house,started,left\nLuna Lovegood , Ravenclaw,1992,1999\nnot a student\n\n"})
-      got = call(student_function("clean_copy"), "in.csv", "out.csv")
-      check(read_file("out.csv") == "name,house,started,left\nLuna Lovegood,Ravenclaw,1992,1999\n", f"For another ledger, out.csv holds:\n{read_file('out.csv')}")
-      check(got == 1, f"One line was thrown away there, but you returned {got!r}.")
+      got = call(student_function("ledger_to_json"), "in.csv", "out.json")
+      check(json.loads(read_file("out.json") or "null") == [{"name": "Luna Lovegood", "house": "Ravenclaw", "started": 1992, "left": 1999}], "For another ledger, out.json isn't right.")
+      check(got == 1, f"One student was written there, but you returned {got!r}.")
+      write_files({"empty.csv": "name,house,started,left\n"})
+      call(student_function("ledger_to_json"), "empty.csv", "none.json")
+      check(json.loads(read_file("none.json") or "null") == [], "A ledger with only a header becomes an empty JSON list: [].")
+
+  def test_uses_json():
+      check(calls("dump") or calls("dumps"), "Let the json module write the JSON - json.dump or json.dumps.")
 hints:
-  nudge: Read and judge every line as before, but keep two things - the clean lines to write, and a count of the bad ones.
-  question: What should `left` look like in the file when it's None? How do you tell a dropped line from a blank one?
+  nudge: Build a list of dictionaries exactly as the Core challenge did, then hand the whole list to the json module in one go.
+  question: What does the json module write for a Python None? Which json function writes straight into an open file?
   pseudocode: |
     a helper turns text into an int, or None
     read the source's lines
-    clean lines start with the header; dropped starts at 0
     for every line after the header:
-        skip it quietly if it's blank
-        split and strip; if it's not usable, count it as dropped and move on
-        build "name,house,started,left" with left empty when it's None
-    open the target for writing and write every clean line plus a newline
-    give back the dropped count
-  flaw: If clean.csv is missing its last newline, you joined the lines with "\n" but never added one at the end.
+        split and strip; skip it unless it has a name, a house and a whole-number started year
+        keep a dictionary of name, house, started and left
+    open the target for writing, and dump the list of dictionaries into it as JSON
+    give back how many dictionaries there are
+  flaw: If `left` shows up as "None" or "", you built the JSON text by hand. Let json.dump turn None into null.
   analogous: |
     ```python
-    def shout_copy(source, target):
-        with open(source) as quiet:
-            words = quiet.read().split()
-        with open(target, "w") as loud:
-            for word in words:
-                loud.write(word.upper() + "\n")
-        return len(words)
+    import json
+
+    def save_scores(scores, path):
+        records = [{"player": p, "points": n} for p, n in scores.items()]
+        with open(path, "w") as sheet:
+            json.dump(records, sheet, indent=2)
+        return len(records)
     ```

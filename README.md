@@ -49,7 +49,7 @@ Every exercise gets an O.W.L. grade (**O**utstanding, **E**xceeds Expectations, 
 - **⚔️ The Dueling Club.** Quick-fire duels against Neville, Draco, Hermione and Snape.
 - **The living castle.** Each year has its own colours; ten kinds of moving weather drift behind the lessons (switch them off in Settings); and the story pops up as scenes you click through.
 
-**Third Year: The Prisoner of Recursion.** 16 lessons, 3 revisions and a Trial - 61 exercises on catching and raising errors, reading and writing files, functions as values, `*args` and `**kwargs`, recursion (watch the call stack grow in the Pensieve), Big-O, binary search, sorting by hand and by several rules, flood fill on grids, testing your own spells, string algorithms and the Game of Life. The mystery is **The Prisoner of the Loop**: Dementors at the gates, and a fading boy who walks the third floor at 3:03 every afternoon.
+**Third Year: The Prisoner of Recursion.** 16 lessons, 3 revisions and a Trial - 61 exercises on catching and raising errors, reading and writing files (and JSON), functions as values, `*args` and `**kwargs`, recursion (watch the call stack grow in the Pensieve), Big-O, binary search, two pointers and sliding windows, sorting by several rules, flood fill on grids, testing your own spells, string algorithms and the Game of Life. The mystery is **The Prisoner of the Loop**: Dementors at the gates, and a fading boy who walks the third floor at 3:03 every afternoon.
 
 **Coming next:** Years 4–7 (see the [curriculum](docs/curriculum.md)), one year at a time, then the mastery map and the House Cup.
 

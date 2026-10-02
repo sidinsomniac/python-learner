@@ -1,0 +1,91 @@
+tier: core
+type: practice
+title: The Longest Clean Stretch
+twist: edge case - an empty diary, a diary with one colour, and 10,000 pages that must take one pass
+task: |
+  Each diary page is blotted with one colour of ink. Write
+  `longest_clean_run(inks)`: the length of the longest run of **consecutive**
+  pages in which **no colour appears twice**.
+
+  ```python
+  longest_clean_run(["red", "blue", "red", "green", "gold", "blue"])
+  # -> 4   (red, green, gold, blue)
+  longest_clean_run(["red", "red", "red"])
+  # -> 1
+  longest_clean_run([])
+  # -> 0
+  ```
+
+  The examiners use a 10,000-page diary. Checking every stretch is far too
+  slow: slide a window instead.
+starter: |
+  def longest_clean_run(inks):
+      best = 0
+      for start in range(len(inks)):
+          for end in range(start + 1, len(inks) + 1):
+              stretch = inks[start:end]
+              if len(set(stretch)) == len(stretch):
+                  best = max(best, len(stretch))
+      return best
+tests: |
+  import random
+  import time
+
+  def test_examples():
+      fn = student_function("longest_clean_run")
+      got = call(fn, ["red", "blue", "red", "green", "gold", "blue"])
+      check(got == 4, f"longest_clean_run(...) returned {got!r}. Which stretch has no colour twice?")
+      check(call(fn, ["red", "red", "red"]) == 1, "With one colour, the longest clean stretch is a single page.")
+      check(call(fn, []) == 0, "An empty diary has no stretch at all.")
+
+  def test_tricky():
+      fn = student_function("longest_clean_run")
+      check(call(fn, ["a", "b", "c", "d"]) == 4, "When nothing repeats, the whole diary is clean.")
+      got = call(fn, ["a", "b", "b", "a"])
+      check(got == 2, f"['a', 'b', 'b', 'a'] gave {got!r}. When the second b arrives, where must the window start?")
+      got = call(fn, ["a", "b", "c", "a", "d", "b"])
+      check(got == 4, f"['a', 'b', 'c', 'a', 'd', 'b'] gave {got!r}. b, c, a, d is clean - is anything longer?")
+
+  def test_big_diary():
+      fn = student_function("longest_clean_run")
+      rng = random.Random(1926)
+      inks = [f"ink{rng.randrange(2000)}" for _ in range(10000)]
+      want = 0
+      seen_at = {}
+      left = 0
+      for right, ink in enumerate(inks):
+          if seen_at.get(ink, -1) >= left:
+              left = seen_at[ink] + 1
+          seen_at[ink] = right
+          want = max(want, right - left + 1)
+      start = time.perf_counter()
+      got = call(fn, inks)
+      took = time.perf_counter() - start
+      check(got == want, f"For the 10,000-page diary you returned {got!r}.")
+      check(took < 3, f"That took {took:.1f}s. Does every page enter and leave the window only once?")
+hints:
+  nudge: Keep a window of pages with no repeats, and a set of the colours inside it. Grow it one page at a time on the right.
+  question: When the new page's colour is already in the window, which pages must leave before the window is clean again? Do they leave from the left or the right?
+  pseudocode: |
+    left = 0; the colours in the window = an empty set; best = 0
+    for each position right, with its colour:
+        while that colour is already in the window:
+            remove the colour of the page at left from the set, and move left on
+        add the new colour to the set
+        best = the bigger of best and the window's length
+    give back best
+  flaw: If ['a', 'b', 'b', 'a'] gives 3, the window kept a repeated colour - it must shrink until the clash is gone, not just by one page.
+  analogous: |
+    ```python
+    def longest_quiet_spell(noises, limit):
+        lo = 0
+        loud = 0
+        best = 0
+        for hi, noise in enumerate(noises):
+            loud += noise > 5
+            while loud > limit:
+                loud -= noises[lo] > 5
+                lo += 1
+            best = max(best, hi - lo + 1)
+        return best
+    ```

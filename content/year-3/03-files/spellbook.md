@@ -8,3 +8,4 @@
 - Everything in a file is text - convert numbers yourself, and catch `ValueError`.
 - Write: `open(name, "w")` wipes or creates; `"a"` appends. `write` adds no newline.
 - A missing file raises `FileNotFoundError`.
+- JSON: `json.dumps(obj)` / `json.loads(text)` for strings; `json.dump(obj, f, indent=2)` / `json.load(f)` for files. `None` <-> `null`.

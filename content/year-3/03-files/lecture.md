@@ -94,6 +94,37 @@ with open("notes.txt", "a") as notes:
     notes.write("Lumos\n")
 ```
 
+## JSON: the format every API speaks
+
+**JSON** is the text format that web APIs, config files and LLM tools all
+use, and it looks almost exactly like Python's lists and dictionaries. The
+`json` module turns one into the other:
+
+```python
+import json
+
+owls = [{"owl": "Hedwig", "letters": 12}, {"owl": "Errol", "letters": None}]
+text = json.dumps(owls)          # Python -> JSON text
+print(text)
+back = json.loads(text)          # JSON text -> Python
+print(back[1]["letters"] is None)
+
+with open("owls.json", "w") as out:
+    json.dump(owls, out, indent=2)   # straight into a file
+with open("owls.json") as source:
+    print(json.load(source)[0])      # straight out of one
+```
+
+In JSON, `None` is written `null`, `True` is `true`, and keys are always
+strings. `dumps`/`loads` work with **s**trings; `dump`/`load` work with files.
+
+```checkpoint
+q: 'What does `json.dumps({"left": None})` produce?'
+options: ['{"left": None}', '{"left": null}', '{"left": ""}']
+answer: 1
+why: JSON has no None - it writes null, and json.loads turns null back into None.
+```
+
 ## A missing file
 
 Opening a file that isn't there raises `FileNotFoundError`, which you can

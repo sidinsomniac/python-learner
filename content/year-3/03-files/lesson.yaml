@@ -4,7 +4,7 @@ order: 3
 number: 2
 title: "The Restricted Section: Files"
 location: The Hall of Records
-concepts: [open, with, reading lines, strip, writing files, "modes r w a", CSV-style text]
+concepts: [open, with, reading lines, strip, writing files, "modes r w a", CSV-style text, JSON files]
 exercises: [warmup, core, outstanding]
 files:
   register.txt: |

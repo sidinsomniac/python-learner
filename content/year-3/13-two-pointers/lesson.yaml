@@ -1,0 +1,18 @@
+id: y3-l08
+year: 3
+order: 13
+number: 8
+title: "★ Two Pointers and Sliding Window"
+location: The Hufflepuff basement
+concepts: [two pointers from both ends, pointers moving the same way, fixed-size windows, windows that grow and shrink, a set inside the window]
+exercises: [warmup, core, outstanding]
+scene:
+  - who: narrator
+    line: Under the diary's back cover is a fat bundle of loose pages - hundreds of them, numbered, each blotted with ink of a different colour. Hermione has already put them in order with a quick `sorted()`.
+  - who: hermione
+    line: Look at the inks. In some stretches no colour repeats. Then one does - and that's where his hour starts over. If we could find the longest clean stretch...
+  - who: ron
+    line: Check every stretch? There are thousands of them. We'd still be here at Christmas.
+  - who: ashwood
+    line: "Not if you keep two fingers on the pages and slide them along. Two pointers and a sliding window turn \"check every stretch\" into a single pass. Interviewers adore them - and so, today, will you."
+clue: Back in order, the loose pages draw a **maze** - the corridors of the same hour, over and over, that Tobias keeps falling through.

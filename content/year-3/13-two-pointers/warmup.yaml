@@ -1,0 +1,89 @@
+tier: warmup
+type: practice
+title: Two Pages, One Total
+task: |
+  `pages` is a **sorted** list of different page numbers. Write
+  `pair_with_total(pages, target)`: return the positions `(i, j)` (with
+  `i < j`) of two pages whose numbers add up to `target`, or `None` if no
+  two pages do. If several pairs work, any one of them will do.
+
+  ```python
+  pair_with_total([2, 7, 11, 15, 19], 26)   # -> (2, 3)   11 + 15
+  pair_with_total([2, 7, 11], 100)          # -> None
+  ```
+
+  Use two pointers, one at each end - no sets or dictionaries. The
+  examiners count your looks: with 20,000 pages you may take about
+  40,000 looks: two per step, and no more.
+starter: |
+  def pair_with_total(pages, target):
+      for i in range(len(pages)):
+          for j in range(i + 1, len(pages)):
+              if pages[i] + pages[j] == target:
+                  return i, j
+      return None
+tests: |
+  class Shelf(list):
+      looks = 0
+      def __getitem__(self, i):
+          Shelf.looks += 1
+          return list.__getitem__(self, i)
+      def __iter__(self):
+          Shelf.looks += len(self)
+          return list.__iter__(self)
+      def __contains__(self, x):
+          Shelf.looks += len(self)
+          return list.__contains__(self, x)
+
+  def is_pair(pages, got, target):
+      return isinstance(got, tuple) and len(got) == 2 and 0 <= got[0] < got[1] < len(pages) and pages[got[0]] + pages[got[1]] == target
+
+  def test_small():
+      fn = student_function("pair_with_total")
+      pages = [2, 7, 11, 15, 19]
+      got = call(fn, pages, 26)
+      check(is_pair(pages, got, 26), f"pair_with_total({pages}, 26) returned {got!r}. Which two pages add up to 26?")
+      check(call(fn, [2, 7, 11], 100) is None, "No two pages make 100.")
+      check(call(fn, [5], 10) is None and call(fn, [], 3) is None, "A page can't pair with itself, and an empty list has no pairs.")
+      got = call(fn, [1, 3, 4, 6], 7)
+      check(is_pair([1, 3, 4, 6], got, 7), f"For [1, 3, 4, 6] and 7 you returned {got!r}.")
+
+  def test_ends():
+      fn = student_function("pair_with_total")
+      check(call(fn, [1, 2, 30, 40], 41) == (0, 3), "The very first and very last pages can be the pair.")
+      check(call(fn, [1, 2, 30, 40], 3) == (0, 1), "So can the first two.")
+
+  def test_looks():
+      fn = student_function("pair_with_total")
+      pages = Shelf(range(1, 40001, 2))
+      plain = list(pages)
+      for target, exists in [(4, True), (79996, True), (40000, True), (7, False)]:
+          Shelf.looks = 0
+          got = call(fn, pages, target)
+          if exists:
+              check(is_pair(plain, got, target), f"With 20,000 odd page numbers and target {target}, you returned {got!r}.")
+          else:
+              check(got is None, f"Two odd numbers never add up to {target}. You returned {got!r}.")
+          check(Shelf.looks <= 40010, f"That took {Shelf.looks} looks. Can each look rule out one page for good?")
+      check(not calls("set") and not calls("dict") and not uses(ast.Set, ast.Dict, ast.SetComp, ast.DictComp), "No sets or dictionaries this time - two pointers only.")
+hints:
+  nudge: Start with the smallest page and the biggest. Their sum tells you which one can't possibly be in a pair.
+  question: If the smallest plus the biggest is too small, can the smallest page pair with anything? If it's too big, can the biggest?
+  pseudocode: |
+    left at the first page, right at the last
+    while left is before right:
+        if the two pages add up to the target: give back both positions
+        if the sum is too small: move left one step right
+        otherwise: move right one step left
+    give back None
+  flaw: If it's too slow, the starter's nested loops are still there. If it misses pairs, check which pointer moves when the sum is too small.
+  analogous: |
+    ```python
+    def has_pair_below(prices, budget):
+        lo, hi = 0, len(prices) - 1
+        while lo < hi:
+            if prices[lo] + prices[hi] <= budget:
+                return True
+            hi -= 1
+        return False
+    ```

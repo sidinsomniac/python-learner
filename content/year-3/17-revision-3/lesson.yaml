@@ -5,7 +5,7 @@ number: R3
 kind: revision
 title: Revision III - An Unlikely Distraction
 location: The Library
-concepts: [sorting by hand, stable sorting, grids, flood fill, testing your own spells]
+concepts: [two pointers, sliding windows, stable sorting, grids, flood fill, testing your own spells]
 exercises: [r1, r2, r3]
 scene:
   - who: draco
@@ -15,5 +15,5 @@ scene:
   - who: draco
     line: (looking at the table) Because a hundred years is a long time to be stuck. And because the Dementors are drawn to errors - so on the night, I'll give them some. A great many. On the far side of the castle.
   - who: ashwood
-    line: That is either very brave or very Slytherin, Mr Malfoy. Possibly both. Revision, everyone - sorting, grids and testing - and then we go in.
+    line: That is either very brave or very Slytherin, Mr Malfoy. Possibly both. Revision, everyone - windows, sorting, grids and testing - and then we go in.
 clue: Draco is now an ally. On the night he'll **draw the Dementors away** with the noisiest stream of errors the castle has ever seen.

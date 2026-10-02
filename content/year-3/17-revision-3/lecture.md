@@ -3,10 +3,10 @@
 Three mixed challenges on Lessons 8-11.
 
 ```checkpoint
-q: Which hand-sort makes at most one swap per position?
-options: ["Insertion sort", "Selection sort", "Neither"]
+q: A grow-and-shrink window finds the longest run with no repeated colour. When a repeat arrives, what happens?
+options: ["Start a new window at the repeat", "Shrink from the left until the earlier copy has left", "Shrink from the right"]
 answer: 1
-why: Selection sort finds the smallest of the rest and swaps it in once. Insertion sort shifts items step by step.
+why: Pages leave from the left until the window is clean again. Each page enters once and leaves at most once, so it's O(n).
 ```
 
 ```checkpoint

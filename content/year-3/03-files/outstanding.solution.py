@@ -1,4 +1,4 @@
-HEADER = "name,house,started,left"
+import json
 
 
 def to_year(text):
@@ -8,23 +8,19 @@ def to_year(text):
         return None
 
 
-def clean_copy(source, target):
+def ledger_to_json(source, target):
     with open(source) as ledger:
         lines = ledger.read().splitlines()
-    kept = [HEADER]
-    dropped = 0
+    students = []
     for line in lines[1:]:
-        if not line.strip():
-            continue
         parts = [part.strip() for part in line.split(",")]
-        started = to_year(parts[2]) if len(parts) >= 3 else None
+        if len(parts) < 3:
+            continue
+        started = to_year(parts[2])
         if started is None:
-            dropped += 1
             continue
         left = to_year(parts[3]) if len(parts) > 3 else None
-        left_text = "" if left is None else str(left)
-        kept.append(f"{parts[0]},{parts[1]},{started},{left_text}")
-    with open(target, "w") as fair:
-        for line in kept:
-            fair.write(line + "\n")
-    return dropped
+        students.append({"name": parts[0], "house": parts[1], "started": started, "left": left})
+    with open(target, "w") as out:
+        json.dump(students, out, indent=2)
+    return len(students)
