@@ -8,11 +8,20 @@ concepts: [split, join, strip, partition, splitlines, turning text into data]
 exercises: [warmup, core, outstanding]
 scene:
   - who: ginny
-    line: The Owl Post found the Borgin and Burkes receipt! It's... a mess. Smudged, crooked, half of it written sideways.
+    line: "The Owl Post found the Borgin and Burkes receipt! It's... a mess. Smudged, crooked, half of it written sideways."
   - who: ron
-    line: Can't we just read it?
+    line: "Can't we just read it?"
   - who: hermione
-    line: We could read ONE receipt. But the Owl Post has four hundred of them, and we need to know which ones matter.
+    line: "We could read ONE receipt. But the Owl Post has four hundred of them, and we need to know which ones matter."
+  - who: draco
+    line: "(from the next table, not looking up) Burkes writes the dates backwards. Day last. Everyone knows that."
+  - who: ron
+    line: "...Did Malfoy just help?"
   - who: ashwood
-    line: Then we teach Python to read them for us. Turning messy text into tidy data is called *parsing* - and it's half of what real programmers do all day.
+    line: "It seems he did. Turning messy text into tidy data is called *parsing*, and it's half of what real programmers do all day. What will you do with a line you can't read, {name}?"
 clue: 'Parsed properly, the receipt reads: "One cabinet, self-filling. Charm by G. Lockhart. Deliver to: second-floor girls'' bathroom."'
+outro:
+  - who: hermione
+    line: "\"Charm by G. Lockhart.\" In his own hand. On a receipt."
+  - who: ginny
+    line: "Second-floor girls' bathroom. (she looks at Ron) Told you."

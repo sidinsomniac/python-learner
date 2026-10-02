@@ -8,11 +8,20 @@ concepts: [lists of dictionaries, dictionaries of lists, walking records, missin
 exercises: [warmup, core, outstanding]
 scene:
   - who: ginny
-    line: If the thief is an object, it had to GET here somehow. Everything that comes into Hogwarts comes by owl, or by delivery.
+    line: "If the thief is an object, it had to GET here somehow. Everything that comes into Hogwarts comes by owl, or by delivery."
   - who: hermione
-    line: The Owl Post keeps records of every delivery - who sent it, where it came from, what was inside, who signed for it.
+    line: "The Owl Post keeps records of every delivery: who sent it, where it came from, what was inside, who signed for it."
   - who: ron
-    line: Brilliant. So we just read... (the clerk drops a scroll three feet long) ...all of that.
+    line: "Brilliant. So we just read... (the clerk drops a scroll three feet long) ...all of that."
+  - who: ginny
+    line: "(already unrolling it) I'll take Diagon Alley. You take Knockturn."
   - who: ashwood
-    line: Records like these are lists of dictionaries - Python's everyday shape for real data. Learn to walk them, and no scroll is too long.
+    line: "Records like these are lists of dictionaries, often with lists inside them. How would you reach one value, three levels down, {name}?"
 clue: One delivery came from **Knockturn Alley**, from Borgin and Burkes - a **Vanishing Cabinet**, delivered to Hogwarts and signed for by **"G.L."**
+outro:
+  - who: ron
+    line: "Borgin and Burkes. That's Malfoy's dad's favourite shop."
+  - who: ginny
+    line: "But it's signed G.L. Who do we know who signs everything with a flourish?"
+  - who: hermione
+    line: "(very quietly) Don't."

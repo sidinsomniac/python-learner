@@ -9,11 +9,20 @@ concepts: [list comprehensions, filtering with if, transforming, sum over a comp
 exercises: [warmup, core, outstanding]
 scene:
   - who: lockhart
-    line: Ah, my young fans! Come in, come in. You'll be wanting to help me with my fan mail - everyone does. Four thousand letters this week alone!
+    line: "Ah, my young fans! Come in, come in. You'll be wanting to help me with my fan mail - everyone does. Four thousand letters this week alone!"
   - who: ron
-    line: We're, er, actually here about...
+    line: "We're, er, actually here about..."
   - who: lockhart
-    line: Sort them by week, would you? And only the ones with three hearts or more. I simply don't have time for the one-heart people.
+    line: "Sort them by week, would you? And only the ones with three hearts or more. (a flicker in the smile) I don't need to read the one-heart people. They're... they don't matter."
+  - who: hermione
+    line: "(clutching a signed photo) He's so busy, Ron."
   - who: ashwood
-    line: A perfect job for a list comprehension - building a whole new list in a single, readable line. (Quietly) And a good chance to look around his office.
+    line: "A good job for a list comprehension: a whole new list, in one readable line. (quietly) And a good chance to look around his office, {name}. What would you filter on?"
 clue: The fan-mail dates line up exactly - the Vanishing Cabinet arrived in **the same week** as Lockhart's biggest ever delivery of fan mail.
+outro:
+  - who: hermione
+    line: "(slowly putting the photo down) The same week. That's... a coincidence. It must be."
+  - who: ginny
+    line: "Hermione."
+  - who: hermione
+    line: "I know. I *know*."

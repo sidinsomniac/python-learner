@@ -9,9 +9,16 @@ concepts: [shallow copies, lists of lists, the grid trap]
 exercises: [warmup, core, outstanding]
 scene:
   - who: filch
-    line: I'm not a fool. I made a *copy* of my list and hid it under Mrs Norris's cushion. And the copy... is shrinking too!
+    line: "I'm not a fool. I made a *copy* of my list and hid it under Mrs Norris's cushion. (his voice cracks) And the copy is shrinking too! And Mrs Norris hasn't come home for her supper."
   - who: hermione
-    line: A copy that changes when the original changes isn't a copy at all, Mr Filch.
+    line: "A copy that changes when the original changes isn't a copy at all, Mr Filch."
+  - who: filch
+    line: "Don't you lecture me, Miss Know-It-All. I wrote it out twice. TWICE."
   - who: ashwood
-    line: Lists inside lists are where copying gets subtle. Let's find out exactly what Filch's "copy" really is.
+    line: "Did you, though? Or did you write one list, and give it two names? Lists inside lists are where copying gets subtle, {name}."
 clue: Filch's "safe copy" is really the **same list** under another name. Whoever is taking things is reading Filch's inventory *directly*.
+outro:
+  - who: hermione
+    line: "(gently, for once) It isn't your fault, Mr Filch. It's a very common mistake."
+  - who: filch
+    line: "(gruffly) ...Find my cat."

@@ -9,11 +9,20 @@ concepts: [nested dictionaries, chained lookups, safe nested access, dictionarie
 exercises: [warmup, core, outstanding]
 scene:
   - who: myrtle
-    line: Oh, NOBODY ever asks Myrtle what she's heard. Nobody cares about Myrtle... (sniff) ...but I wrote it ALL down anyway.
+    line: "Oh, NOBODY ever asks Myrtle what she's heard. Nobody cares about Myrtle... (sniff) ...but I wrote it ALL down anyway."
   - who: ginny
-    line: We care, Myrtle. Honestly. What did you hear?
+    line: "We care, Myrtle. Honestly. What did you hear?"
   - who: myrtle
-    line: Noises! Every night, every hour, every place. It's all in my report. Organised by night, then by place. I'm VERY organised when I'm miserable.
+    line: "(suspicious, then delighted) You... came to my bathroom. On purpose. (she spins in the air) Noises! Every night, every hour, every place. Organised by night, then by place. I'm VERY organised when I'm miserable."
+  - who: ron
+    line: "(whispering) She's been waiting years for someone to ask."
   - who: ashwood
-    line: A dictionary of dictionaries. Each night leads to another dictionary, of places. Let's learn to walk through it without getting lost.
+    line: "A dictionary of dictionaries: each night leads to another dictionary, of places. How would you walk through it without getting lost, {name}?"
 clue: Myrtle's report points one way - a **clank** from **Myrtle's own bathroom**, every single night at midnight.
+outro:
+  - who: myrtle
+    line: "MY bathroom. Of course it's my bathroom. Things always happen in my bathroom and nobody ever comes to see."
+  - who: ginny
+    line: "We'll come. We'll come back. I promise."
+  - who: myrtle
+    line: "(flustered, delighted) Well. Don't be late. I'll be here. I'm always here."

@@ -9,14 +9,20 @@ concepts: [functions, scope, modules, parsing, searching and counting]
 exercises: [r1, r2, r3]
 scene:
   - who: draco
-    line: (dropping a folded parchment on the table, not quite looking at you) Borgin and Burkes uses a code for its receipts. My father... has a copy of their notes.
+    line: "(dropping a folded parchment on the table, not quite looking at you) Borgin and Burkes uses a code for its receipts. My father... has a copy of their notes."
   - who: ron
-    line: Why would YOU help US?
+    line: "Why would YOU help US?"
   - who: draco
-    line: Because the Cabinet ate my Prefect-in-waiting badge, Weasley. And because... whatever. It's a shift cipher. Every letter moved along the alphabet. Don't make me regret this.
+    line: "Because everyone in this castle thinks my family put that thing here, Weasley. We sold it. We didn't *curse* it. (quieter) And it ate my Prefect-in-waiting badge."
+  - who: draco
+    line: "It's a shift cipher. Every letter moved along the alphabet. Don't make me regret this. And don't tell my father."
   - who: ashwood
-    line: Thank you, Mr Malfoy. That took courage. Now - one last revision before we crack the Cabinet's code.
+    line: "Thank you, Mr Malfoy. That took courage. One last revision before we crack the Cabinet's code, {name}. Which earlier spells will you need again?"
 clue: 'Draco''s notes explain the Borgin and Burkes code: a **shift cipher** - every letter moved the same number of places along the alphabet.'
 outro:
   - who: draco
-    line: (leaving) For the record, Potter's lot are still insufferable. You're... less insufferable. Marginally.
+    line: "(leaving) For the record, Potter's lot are still insufferable. You're... less insufferable. Marginally."
+  - who: ron
+    line: "(after a long pause) ...I said his dad sold cursed junk. I'm going to have to say sorry to *Malfoy*, aren't I."
+  - who: ginny
+    line: "Yes."

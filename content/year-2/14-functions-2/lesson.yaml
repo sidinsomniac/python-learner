@@ -9,11 +9,18 @@ concepts: [default arguments, keyword arguments, returning tuples, docstrings]
 exercises: [warmup, core, outstanding]
 scene:
   - who: lockhart
-    line: Advanced spell-crafting! A truly great wizard's spell does the right thing even when you forget to tell it what to do. Defaults, class!
+    line: "Advanced spell-crafting! A truly great wizard's spell does the right thing even when you forget to tell it what to do. Defaults, class!"
   - who: lockhart
-    line: Take my Collecting Charm - collect(item, shiny=True). Unless you say otherwise, it simply assumes you want shiny things. Everyone does!
+    line: "Take my Collecting Charm - collect(item, shiny=True). Unless you say otherwise, it simply assumes you want shiny things. Everyone does!"
   - who: hermione
-    line: (writing furiously) Professor... did you say *collecting* charm?
+    line: "(writing furiously) Professor... did you say *collecting* charm?"
+  - who: lockhart
+    line: "(a beat too long) Did I? Slip of the tongue. Page 394 - the Charm of Charming. Everyone, page 394!"
   - who: ashwood
-    line: Default and keyword arguments make functions friendly to use. Let's learn them properly - and keep an ear on what Lockhart lets slip.
+    line: "Default and keyword arguments make spells friendlier to use. Which arguments would you give defaults, {name}, and which must the caller always choose?"
 clue: Lockhart's Collecting Charm has a default - `shiny=True`. Unless told otherwise, **it goes for shiny things**. Just like the Cabinet.
+outro:
+  - who: hermione
+    line: "He lied. He looked straight at me and lied."
+  - who: ron
+    line: "(awkwardly patting her shoulder) Welcome to the club. Membership's huge."

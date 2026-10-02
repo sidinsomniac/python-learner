@@ -9,18 +9,20 @@ concepts: [dict comprehensions, set comprehensions, conditional expressions, any
 exercises: [warmup, core, outstanding]
 scene:
   - who: ginny
-    line: (whispering) Look - on his desk, under the signed photographs. A page of notes. "My Finest Spell", it says.
+    line: "(whispering) Look - on his desk, under the signed photographs. A page of notes. \"My Finest Spell\", it says."
   - who: hermione
-    line: It's written in one line. Curly brackets, a `for`, an `if`... it's a comprehension! But not a list one.
+    line: "It's written in one line. Curly brackets, a `for`, an `if`... it's a comprehension! But not a list one."
   - who: lockhart
-    line: (from the next room) Don't touch the photographs! Well - you may touch ONE.
+    line: "(from the next room) Don't touch the photographs! Well - you may touch ONE."
+  - who: ron
+    line: "(holding the page up to the light) There's crossings-out under it. Loads. He tried this about fifty times."
   - who: ashwood
-    line: Comprehensions can build dictionaries and sets, too - and choose between two values as they go. Let's learn to read Lockhart's spell.
+    line: "Comprehensions can build dictionaries and sets too, and choose between two values as they go. Can you read what Lockhart's spell keeps, {name}, and what it throws away?"
 clue: Lockhart's "finest spell" is a comprehension that collects every item **if it shines** - the Cabinet's hunger, written by his own hand.
 outro:
   - who: hermione
-    line: '"{item: owner for item, owner in castle.items() if shines(item)}" - it takes everything shiny, and remembers who it belonged to.'
+    line: "\"{item: owner for item, owner in castle.items() if shines(item)}\" - it takes everything shiny, and remembers who it belonged to."
   - who: ginny
-    line: So he wrote the spell. But Lockhart couldn't hoard a whole castle by himself...
+    line: "So he wrote the spell. But Lockhart couldn't hoard a whole castle by himself..."
   - who: ashwood
-    line: No. But a spell can run inside something else. Something that sits very still, and collects.
+    line: "No. But a spell can run inside something else. Something that sits very still, and collects."

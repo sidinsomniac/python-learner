@@ -9,11 +9,18 @@ concepts: [sets, nested data, comprehensions, functions]
 exercises: [r1, r2, r3]
 scene:
   - who: hermione
-    line: (spreading parchment over three tables) Right. Everything we know. Every clue, in order.
+    line: "(spreading parchment over three tables) Right. Everything we know. Every clue, in order."
   - who: pince
-    line: Three tables, Miss Granger. THREE.
+    line: "Three tables, Miss Granger. THREE."
+  - who: ron
+    line: "(to Ginny) Go on. You've been dying to say it all week."
   - who: ginny
-    line: Look at them together - it's not a person, it's on the second floor, and it loves shiny things. And it arrived with Lockhart's fan mail.
+    line: "(taking a breath) It's not a person, it's on the second floor, and it loves shiny things. And it came here with Lockhart's post. (pause) I've been saying the second floor since September."
   - who: ashwood
-    line: Revision, then - sets, nested data, comprehensions and functions. Let's make sure every clue is solid before we go any further.
+    line: "You have, Miss Weasley. And you were right. Revision first: sets, nested data, comprehensions and functions. Is every clue solid, {name}, or just convincing?"
 clue: "Laid out together, the clues agree: **an object, on the second floor, that loves shiny things** - and it came to Hogwarts with Lockhart's post."
+outro:
+  - who: ron
+    line: "(grinning at his sister) Fine. You're cleverer than me."
+  - who: ginny
+    line: "(not looking up, smiling anyway) I know."

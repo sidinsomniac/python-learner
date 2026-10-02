@@ -17,6 +17,10 @@ intro:
     line: Second year, {name}. Reckon it'll be quieter than last year? No haunted Ledgers, no grumpy portraits...
   - who: hermione
     line: "I've read ahead. This year we learn about **collections** - lists, dictionaries, sets - and how to write our own spells, called *functions*."
+  - who: ron
+    line: (jerking a thumb at the small red-haired girl pressed against the window) That's Ginny, by the way. My sister. First year. She doesn't really talk.
+  - who: ginny
+    line: (still watching the rain) I talk. You just never stop long enough to hear it.
   - who: narrator
     line: That night at the Welcome Feast, as the pudding appears, red letters bleed across the wall of the Great Hall. Nobody can read them.
   - who: narrator

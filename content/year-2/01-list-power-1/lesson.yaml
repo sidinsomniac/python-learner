@@ -9,9 +9,20 @@ concepts: [insert, pop, remove, index, sort vs sorted]
 exercises: [warmup, core, outstanding]
 scene:
   - who: filch
-    line: Look at it! My list of confiscated items - shrinking all by itself! Fanged Frisbees, Nose-Biting Teacups... gone!
+    line: "(slamming a ledger onto the desk) Look at it! My list of confiscated items, shrinking all by itself! Fanged Frisbees, Nose-Biting Teacups... gone! Forty years I've kept this list."
+  - who: ron
+    line: "(muttering) Maybe someone finally confiscated it back."
   - who: ginny
-    line: Things don't just vanish off a list, Mr Filch. Something is *taking* them.
+    line: "(quietly, from behind Ron) Things don't just vanish off a list, Mr Filch. Something is *taking* them."
+  - who: filch
+    line: "(squinting at her) And who are you? Another Weasley. Wonderful. They breed."
   - who: ashwood
-    line: Then let's learn what a list can really do - adding, removing, reordering - so we can see exactly *how* they're being taken.
+    line: "Miss Weasley asked the right question, Argus. Before we ask *who* is taking them, {name}: do you know every way a list can change?"
 clue: Every vanished item was taken from the **end** of a list, one at a time - exactly as if something kept calling `.pop()`.
+outro:
+  - who: ginny
+    line: "(writing it down in a small notebook) Always the last one. Every time."
+  - who: ron
+    line: "Since when do you keep notes?"
+  - who: ginny
+    line: "(closing the notebook) Since nobody listens when I don't."

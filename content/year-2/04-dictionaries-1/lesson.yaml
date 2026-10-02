@@ -9,11 +9,20 @@ concepts: [dict, keys and values, get, in, items, del]
 exercises: [warmup, core, outstanding]
 scene:
   - who: nick
-    line: My HEAD, {name}! Five hundred years I've carried it about - well, mostly carried it - and this morning it was simply... gone.
+    line: "My HEAD, {name}! Five hundred years I've carried it about - well, mostly carried it - and this morning it was simply... gone. (a brave little laugh) One does feel rather undressed."
   - who: filch
-    line: And my Trophy Room's in chaos. Half the trophies gone, the other half back in the wrong places.
+    line: "And my Trophy Room's in chaos. Half the trophies gone, the other half back in the wrong places."
   - who: ginny
-    line: We need a ledger that goes straight from a trophy's name to its owner. No hunting through lists.
+    line: "We need a ledger that goes straight from a trophy's name to its owner. No hunting through lists."
+  - who: nick
+    line: "(drifting close to the empty pedestal where the Headless Hunt's shield used to hang) Do hurry. It's terribly hard to look dignified without something to hold up."
   - who: ashwood
-    line: Then you need a dictionary - Python's most useful collection. Ask it a question with a key, and it answers instantly.
+    line: "Then you need a dictionary: ask it a question with a key, and it answers. What would you use as the key here, {name}?"
 clue: The ledger reveals something odd - the only trophies that came back belong to **Gilderoy Lockhart**, and they've been freshly polished.
+outro:
+  - who: ron
+    line: "Lockhart's? Why would a thief put LOCKHART's trophies back?"
+  - who: hermione
+    line: "(defensively) Maybe because they're the best ones."
+  - who: ginny
+    line: "Or because whoever's doing this loves Lockhart."

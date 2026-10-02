@@ -25,10 +25,17 @@
 | **Dumbledore** | The end of each year, and the lesson behind the lesson | Short, warm, wise. Never long speeches. |
 
 ### Rules for writing scenes
-- **2–6 lines per story beat.** Players come here to code. The story is seasoning.
+- **2–6 lines per story beat in Year 1** (3–7 from Year 2, plus an outro). Players come here to code. The story is seasoning.
 - **Every beat ends with a reason to code:** a clue, a problem, or a dare.
 - **No canon quote longer than a few words.** Characters speak in their own *style*, in new lines.
 - **Clues are found in program output.** The learner's correct solution *prints* the clue. They literally decode the mystery.
+
+**From Year 2 on, the writing grows up with the player.** Year 1 is deliberately simple. Later years keep the same plots but give the cast more depth:
+- **3–7 lines per scene.** Use stage directions in parentheses for subtext, and let people talk to *each other*, not just to the player.
+- **Every named character has an arc** (see each year's *Character arcs*): something they want, something that gets in their way, and a small turn by the end of the year. Each line should move that arc a step, or at least show it.
+- **An `outro` after the clue** (1–3 lines): someone reacts to what your code just revealed. A clue lands harder when a person feels it.
+- **Callbacks.** Grimwald keeps the Pensieve, Draco remembers being framed, Hagrid still forgets things. Earlier years stay true.
+- **Ashwood still only asks questions about code.** She can be warm, dry or worried about people, but she never hands over an answer.
 
 ---
 
@@ -100,6 +107,17 @@ Everything taken is *shiny*. Everything is taken in order, counted and catalogue
 | **Professor Lockhart** | Vain, cheerful, and author of the worst spells in the castle. His buggy code drives the debugging lessons |
 | **Filch** | A suspect, and furious about it |
 
+### Character arcs (Year 2)
+| Character | Wants | In the way | The turn |
+|---|---|---|---|
+| **Ginny** | to be taken seriously, not as "Ron's little sister" | first-year shyness, and Ron talking over her | she keeps the vanishings map nobody asked for, spots the pattern in R2, and reads the Cabinet's spell aloud in L9 |
+| **Lockhart** | to be adored | he is terrified of being found out as ordinary; his buggy spells are the symptom | cornered in L14, he admits, for one sentence, that he can't do the magic he writes about. Then he slips back into the smile |
+| **Myrtle** | company | everyone avoids her bathroom | the Cabinet brings visitors; she is the investigation's most useful witness, and is sad when it ends |
+| **Filch** | respect, and his cat back | everyone assumes he's the thief | cleared in R1; when Mrs Norris is found (L12) he forgets to be horrible for a moment |
+| **Nick** | his head, and his dignity | gallows humour he uses to hide how shaken he is | he goes into the Cabinet's inventory himself, for Mrs Norris, before his own head |
+| **Draco** | to stop his family's shop being blamed | pride, and his father | he hands over the cipher notes in R3, ashamed and pretending not to be |
+| **Ron** | to solve it first | jumping to conclusions (Filch, then Draco) | learns to say "check the data" before he accuses anyone |
+
 ### Scene-by-scene
 
 | Lesson | Where | Story beat | The clue your code reveals |
@@ -167,6 +185,17 @@ Everything taken is *shiny*. Everything is taken in order, counted and catalogue
 | **Dementors** | Atmosphere, never dialogue. They gather wherever errors go unhandled |
 | **Crookshanks** | An easter egg. He keeps sitting exactly where the next clue is |
 
+### Character arcs (Year 3)
+| Character | Wants | In the way | The turn |
+|---|---|---|---|
+| **Lupin** | to teach fear away, and to keep his own secret | he is tired and ill around the full moon (hinted, never named) | he trusts the students with the rescue, and is absent one night, which nobody explains |
+| **Hermione** | to do everything | the Time-Turner: she is overloaded, sharp-tempered and fraying | seeing Tobias trapped by his own spell, she recognises herself, and gives the Turner back at the end |
+| **Tobias** | one more turn, to get it right | the spell has no base case | his one line changes, a word at a time, as the clues land; at the Trial he finally says something new |
+| **Trelawney** | to be believed | she embellishes everything | cleared in L3, she gets one prophecy genuinely right (the 3:03 door) and is the only one who doesn't notice |
+| **Neville** | to stop being afraid | his Boggart is Snape, and also the error messages | in L1 he faces a `KeyError` and handles it; later he is the one who suggests writing the tests first |
+| **Ron** | for Scabbers to be left alone by Crookshanks | the cat, and his own temper | ends the year grudgingly sharing a sofa with Crookshanks |
+| **Draco** | his father's approval *and* to do the right thing | the two pull opposite ways | he warns you about the Ministry's plan (R3) and keeps the Dementors busy in the Trial |
+
 ### Scene-by-scene
 
 | Lesson | Where | Story beat | The clue your code reveals |
@@ -219,10 +248,14 @@ You learn the interview toolkit (hashing, stacks, queues, heaps) alongside typed
 
 **Trial:** the three Triwizard tasks, run against the service.
 
+**Arcs to develop:** Ron's jealousy of the champions (stacks of grudges he has to pop); Hermione campaigning for the house-elves who run the Owl Post servers; Draco under pressure as his father judges; a foreign champion as a friendly rival coder.
+
 ### Year 5: The Order of Algorithms
 A Ministry inspector bans all "unapproved spells", and every spell must now pass her inspection decorators. In secret, in the Room of Requirement, you train with a revived Dumbledore's Army, whose members each master one pattern (two pointers, sliding window, prefix sums, intervals, trees...). The Ministry's own machinery (decorators, generators, async owl queues) becomes the thing you learn to read, and to turn against her.
 
 **Finale:** the O.W.L. exams, taken under the inspector's watchful eye.
+
+**Arcs to develop:** Neville growing into a DA leader; Luna teaching an unexpected pattern; Ashwood quietly risking her job to protect the DA; Fred & George's exit as the ultimate refactor.
 
 ### Year 6: The Half-Blood Pythonista
 You find an old Parseltongue textbook covered in brilliant margin notes signed "the Half-Blood Pythonista". The notes are the craft of real services: project layout, clean APIs, tests, graphs of connected systems.
@@ -230,6 +263,8 @@ You find an old Parseltongue textbook covered in brilliant margin notes signed "
 Apparition lessons are **Leaving Hogwarts**: working outside the castle, on your own machine, and building a real FastAPI service. Who wrote the notes? The reveal: **Professor Ashwood**, as a student.
 
 **Trial:** the Prince's Puzzle, a tested API on your own machine.
+
+**Arcs to develop:** Ashwood's younger self, glimpsed through the notes (gifted, lonely, a little arrogant); Draco's secret assignment and his choice; Snape's grudging respect for the notes' author.
 
 ### Year 7: The Deathly Algorithms
 **The Unraveller**, a dark coder who wants all spells to become tangled, unreadable spaghetti, has corrupted the castle's new **enchanted assistants**. They are LLM-powered agents, and he has bent their tools. He has also hidden **seven Hollow Loops** (Horcrux-like) inside the castle's magic, each a hard algorithmic problem.
@@ -239,6 +274,8 @@ You learn dynamic programming to break the Hollow Loops. You learn to build trus
 **Finale:** the Battle of Hogwarts, a multi-stage final boss mixing every skill from every year.
 
 **Epilogue:** nineteen lines later... your capstone agent backend, presented at the Great Hall.
+
+**Arcs to develop:** Ashwood finally gives you a straight answer, once; Grimwald and Tobias, the keepers from Years 1 and 3, return to help; Draco fights on your side.
 
 ---
 

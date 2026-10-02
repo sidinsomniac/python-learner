@@ -9,11 +9,18 @@ concepts: [def, parameters, return, None, print vs return, calling functions]
 exercises: [warmup, core, outstanding]
 scene:
   - who: lockhart
-    line: Today, class, you will write your OWN spells! Reusable magic, named by YOU. Just like my famous "Charm of Charming".
+    line: "Today, class, you will write your OWN spells! Reusable magic, named by YOU. Just like my famous \"Charm of Charming\"."
   - who: ron
-    line: (under his breath) His last spell turned Neville's hair into bees.
+    line: "(under his breath) His last spell turned Neville's hair into bees."
+  - who: neville
+    line: "(touching his hair) They were quite friendly bees."
   - who: lockhart
-    line: Observe my spell for counting admirers! It says the number beautifully... (the blackboard shows "42") ...and now I shall use it to... to... why is it None?
+    line: "Observe my spell for counting admirers! It says the number beautifully... (the blackboard shows \"42\") ...and now I shall use it to... to... (the smile tightens) Why is it None?"
   - who: ashwood
-    line: Because a spell that only *prints* its answer never *gives it back*. Today is about the difference - and it's one of the most important lessons in Parseltongue.
+    line: "Because a spell that only *prints* its answer never *gives it back*. What's the difference between showing a value and handing it over, {name}?"
 clue: Lockhart's own spellbook contains `collect_admirers()` - a spell that **takes and takes, and never gives anything back**.
+outro:
+  - who: ginny
+    line: "Takes and takes, and never gives back. That's not just his spell. That's him."
+  - who: hermione
+    line: "(not arguing, for once)"

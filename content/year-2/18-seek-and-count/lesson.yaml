@@ -8,12 +8,18 @@ concepts: [linear search, finding every match, counting steps, two pointers, gro
 exercises: [warmup, core, outstanding]
 scene:
   - who: nick
-    line: I have been inside the Cabinet's inventory - being a ghost has its advantages. Two thousand items, {name}. All catalogued. All in rows.
+    line: "I have been inside the Cabinet's inventory - being a ghost has its advantages. Two thousand items, {name}. All catalogued. All in rows."
   - who: filch
-    line: (hoarsely) Is she... is Mrs Norris in there?
+    line: "(hoarsely) Is she... is Mrs Norris in there?"
+  - who: nick
+    line: "(gently) I looked for her first, Argus. Before my head. I thought you'd want to know."
+  - who: filch
+    line: "(staring at him, lost for words for the first time in the year)"
   - who: ashwood
-    line: Two thousand items is too many to search by eye. Today we search properly - and we start counting how many *steps* our spells take, because soon that will matter a great deal.
+    line: "Two thousand items is too many to search by eye. Today we search properly, and we start counting how many *steps* a spell takes. Why might that matter soon, {name}?"
 clue: The search finds her - **Mrs Norris is in the Cabinet, alive**, catalogued at index **1337**, between a polished doorknob and Lockhart's spare hairbrush.
 outro:
   - who: filch
-    line: (dabbing his eyes with a filthy handkerchief) She's alive. My sweet... (sees you watching) ...What are YOU looking at? Detention! No - wait - thank you. Thank you.
+    line: "(dabbing his eyes with a filthy handkerchief) She's alive. My sweet... (sees you watching) ...What are YOU looking at? Detention! No - wait - thank you. Thank you."
+  - who: nick
+    line: "(with a small bow) And my head is at index 1338. Right next to her. I always did like cats."

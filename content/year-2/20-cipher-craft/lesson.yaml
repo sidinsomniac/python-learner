@@ -8,16 +8,20 @@ concepts: [ord and chr, wrapping with %, building strings, Caesar ciphers, frequ
 exercises: [warmup, core, outstanding]
 scene:
   - who: myrtle
-    line: The writing's back! On MY mirror this time, in steam. Nobody asks if Myrtle MINDS her mirror being written on.
+    line: "The writing's back! On MY mirror this time, in steam. Nobody asks if Myrtle MINDS her mirror being written on."
   - who: ginny
-    line: '"AOL JHIPULA OBUNLYZ." Draco''s notes say every letter was moved along the alphabet by the same amount...'
+    line: "\"AOL JHIPULA OBUNLYZ.\" Draco's notes say every letter was moved along the alphabet by the same amount..."
   - who: hermione
-    line: Then we move them back. But by how many? And the wall message from the feast used a different shift...
+    line: "Then we move them back. But by how many? And the wall message from the feast used a different shift..."
+  - who: myrtle
+    line: "(peering over Ginny's shoulder, interested despite herself) Is it about me? It's never about me."
   - who: ashwood
-    line: Letters are numbers in disguise. Today you learn to shift them - and then, how to crack a shift you don't know.
+    line: "Letters are numbers in disguise. Today you learn to shift them, and then to crack a shift you don't know. If you couldn't try every shift, {name}, what would you look for?"
 clue: 'The messages crack open. They were written by the Cabinet itself: "THE CABINET HUNGERS. FEED IT SHINY THINGS."'
 outro:
   - who: myrtle
-    line: (shrieking with delight) It's been talking to ME all along! Well - to my mirror. That's practically the same.
+    line: "(shrieking with delight) It's been talking to ME all along! Well - to my mirror. That's practically the same."
+  - who: ginny
+    line: "\"Feed it.\" It's not just a box, it's hungry. And it's been growing."
   - who: ashwood
-    line: One more lesson, {name}. Lockhart has a counter-spell - and, knowing Lockhart, it will be full of bugs.
+    line: "One more lesson, {name}. Lockhart has a counter-spell - and, knowing Lockhart, it will be full of bugs."

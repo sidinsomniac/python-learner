@@ -8,7 +8,7 @@ This is how every lesson and exercise in Parseltongue Academy is built. It exist
 
 Every lesson follows the same shape, so the learner always knows where they are:
 
-1. **Story beat.** A short cutscene (2–6 lines of dialogue with character portraits) that advances the year's mystery and gives the lesson a reason to exist ("Hagrid's dragon eggs need counting...").
+1. **Story beat.** A short cutscene (2–6 lines in Year 1, 3–7 from Year 2, with character portraits, plus a short outro reacting to the clue) that advances the year's mystery and gives the lesson a reason to exist ("Hagrid's dragon eggs need counting...").
 2. **Lecture**, with **inline checkpoints**:
    - The explanation is short, with runnable examples ("Try it") and a sandbox.
    - About every 2–3 screens there is a checkpoint: a 10-second question in the middle of the reading (predict the output, fill in a blank, spot the bug).

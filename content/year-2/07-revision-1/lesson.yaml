@@ -9,11 +9,20 @@ concepts: [lists, copies, tuples, dictionaries, counting]
 exercises: [r1, r2, r3]
 scene:
   - who: ron
-    line: It's obvious. Filch collects confiscated things. Things are vanishing. Filch did it!
+    line: "It's obvious. Filch collects confiscated things. Things are vanishing. Filch did it!"
   - who: filch
-    line: I *CONFISCATE*, Weasley. I don't *STEAL*. There's a difference, and it's written down - in triplicate!
+    line: "I *CONFISCATE*, Weasley. I don't *STEAL*. There's a difference, and it's written down - in triplicate!"
   - who: hermione
-    line: Then let's check his records properly. If they clear him, they clear him.
+    line: "Then let's check his records properly. If they clear him, they clear him."
+  - who: ginny
+    line: "(to Ron, low) You said Draco did it last week. And Peeves the week before."
   - who: ashwood
-    line: Revision time. Everything from lists to dictionaries - and a chance to prove Mr Filch innocent.
+    line: "Revision, then: lists, tuples and dictionaries. And a fair test, before anyone is accused. What would count as proof, {name}?"
 clue: Filch's own records give him an alibi for every single vanishing. **Filch is cleared** - and he's never been so pleased to be boring.
+outro:
+  - who: ron
+    line: "(red to the ears) Sorry, Mr Filch."
+  - who: filch
+    line: "(stiffly) Apology... noted. In triplicate."
+  - who: ron
+    line: "(later, to you) Next time, I'm checking the data first. Don't tell Hermione I said that."

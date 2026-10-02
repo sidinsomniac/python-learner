@@ -8,11 +8,20 @@ concepts: [reading tracebacks, error types, print debugging, assert, changing a 
 exercises: [warmup, core, outstanding]
 scene:
   - who: lockhart
-    line: (pale, cornered, still smiling) All right, ALL right. Yes, the Cabinet is mine. A tiny bit of harmless decoration. And yes, I wrote a counter-spell. It's... nearly perfect.
+    line: "(pale, cornered, still smiling) All right, ALL right. Yes, the Cabinet is mine. A tiny bit of harmless decoration. And yes, I wrote a counter-spell. It's... nearly perfect."
   - who: ginny
-    line: Nearly?
+    line: "Nearly?"
   - who: lockhart
-    line: It un-collects most things. Some things. It un-collected my eyebrows once. Temporarily!
+    line: "It un-collects most things. Some things. It un-collected my eyebrows once. Temporarily!"
+  - who: hermione
+    line: "(very quietly) Professor. Did you write the spells in your books?"
+  - who: lockhart
+    line: "(the smile goes out, just for a moment) ...I write them *down*, Miss Granger. That's not quite the same. (the smile comes back on) Now! Debugging!"
   - who: ashwood
-    line: Then we debug it. Calmly, one clue at a time - read the error, form a guess, test it. Debugging isn't guessing wildly; it's detective work, and you're rather good at that now.
+    line: "Then we debug it, calmly, one clue at a time: read the error, form a guess, test it. Where would you start, {name}?"
 clue: With its bugs fixed, Lockhart's counter-spell really works - it can **empty the Cabinet**. If only you knew the password to open it.
+outro:
+  - who: lockhart
+    line: "(watching the fixed spell run) Oh. Oh, that's... that's rather good. Better than mine. (softly) Most things are."
+  - who: ginny
+    line: "(to you, surprised) I think that's the first true thing he's said all year."

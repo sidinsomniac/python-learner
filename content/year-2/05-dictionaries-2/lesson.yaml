@@ -9,11 +9,16 @@ concepts: [counting with get, grouping into lists, sorted over a dict, setdefaul
 exercises: [warmup, core, outstanding]
 scene:
   - who: filch
-    line: Three hundred and twelve items gone from this castle! I've written every one down. Do you think anyone's *read* my list?
+    line: "Three hundred and twelve items gone from this castle! I've written every one down. (to nobody) Do you think anyone's ever *read* my lists?"
   - who: hermione
-    line: A list that long hides its own pattern. We need to tally it - how many of each kind of thing went missing.
+    line: "A list that long hides its own pattern. We need to tally it: how many of each kind of thing went missing."
   - who: ron
-    line: Tally? Like counting sheep, but with... stolen sheep?
+    line: "Tally? Like counting sheep, but with... stolen sheep?"
+  - who: ginny
+    line: "(already ruling columns in her notebook) Like counting sheep by colour."
   - who: ashwood
-    line: Exactly like that, Ron. A dictionary can keep a running count for every kind of thing at once. It's one of the most useful patterns in all of Parseltongue.
+    line: "Exactly like that. One dictionary can keep a running count for every kind of thing at once. What should happen the first time you meet a kind you've never seen, {name}?"
 clue: The tally speaks for itself - almost everything that vanished is **shiny**. Mirrors, trophies, badges, silver cups.
+outro:
+  - who: filch
+    line: "Shiny. Everything shiny. (looking down at his dull brass keys) Well. At least they don't want *me*."

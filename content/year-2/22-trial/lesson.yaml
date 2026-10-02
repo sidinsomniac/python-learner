@@ -9,27 +9,33 @@ concepts: [everything from Second Year]
 exercises: [stage1, stage2, stage3, stage4]
 scene:
   - who: narrator
-    line: Midnight. The bathroom taps drip in the moonlight. The Cabinet has grown - it fills the whole last cubicle now, and it hums like a hive.
+    line: "Midnight. The bathroom taps drip in the moonlight. The Cabinet has grown - it fills the whole last cubicle now, and it hums like a hive."
   - who: cabinet
-    line: (words form in the steam on every mirror at once) XLI GEFMRIX MW WIEPIH. WTIEO XLI TEWWASVH.
+    line: "(words form in the steam on every mirror at once) XLI GEFMRIX MW WIEPIH. WTIEO XLI TEWWASVH."
   - who: myrtle
-    line: It's sealed itself! It wants a password. It's been writing little coded notes all over my pipes - six of them - each one in a different shift!
+    line: "It's sealed itself! It wants a password. It's been writing little coded notes all over my pipes - six of them - each one in a different shift!"
   - who: lockhart
-    line: (hiding behind Ginny) I - I never gave it a password. It must have... collected one.
+    line: "(hiding behind Ginny) I - I never gave it a password. It must have... collected one."
+  - who: draco
+    line: "(appearing in the doorway, wand out, pretending he just happened to be passing) Filch is watching the corridor. You've got until he gets bored. So, about four minutes."
   - who: ashwood
-    line: Then we build a proper cipher toolkit, {name} - four spells, each one built on the last. Crack all six messages, and the Cabinet will have to open.
+    line: "Then we build a proper cipher toolkit, {name} - four spells, each one built on the last. Crack all six messages, and the Cabinet will have to open."
 outro:
   - who: narrator
-    line: You speak the word. The Cabinet shudders, groans - and throws open its doors. Out pour two hundred shiny objects, a very cross Mrs Norris, and a head in a ruff.
+    line: "You speak the word. The Cabinet shudders, groans - and throws open its doors. Out pour two hundred shiny objects, a very cross Mrs Norris, and a head in a ruff."
   - who: nick
-    line: (reattaching his head, with enormous dignity) Thank you, {name}. Five hundred years, and I have never been so glad to be Nearly Headless.
+    line: "(reattaching his head, with enormous dignity) Thank you, {name}. Five hundred years, and I have never been so glad to be Nearly Headless."
+  - who: filch
+    line: "(on his knees, Mrs Norris in his arms, saying nothing at all)"
   - who: lockhart
-    line: Well! All exactly as I planned. A test, you see - of your abilities. You passed! I'll be mentioning this in my next book -
+    line: "Well! All exactly as I planned. A test, you see - of your abilities. You passed! I'll be mentioning this in my next book -"
   - who: mcgonagall
-    line: You will be mentioning it to the Headmaster, Gilderoy. Tonight.
+    line: "You will be mentioning it to the Headmaster, Gilderoy. Tonight."
   - who: myrtle
-    line: (sobbing happily) My bathroom! My lovely, empty, horrible bathroom!
+    line: "(sobbing happily) My bathroom! My lovely, empty, horrible bathroom! (smaller) ...You'll still visit. Won't you?"
+  - who: ginny
+    line: "Every week. (she means it)"
   - who: dumbledore
-    line: Collections are wonderful things, {name} - as long as we remember to give back what we borrow. Your code gave everything back. Well done.
+    line: "Collections are wonderful things, {name} - as long as we remember to give back what we borrow. Your code gave everything back. Well done."
   - who: ashwood
-    line: Case closed. Second Year complete - and you write real functions now, {name}. Next year... well. Next year, time itself starts behaving strangely.
+    line: "Case closed. Second Year complete - and you write real functions now, {name}. Next year... well. Next year, time itself starts behaving strangely."
