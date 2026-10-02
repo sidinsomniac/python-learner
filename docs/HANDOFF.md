@@ -35,6 +35,7 @@ This is everything you need to carry on building the game somewhere else: on you
 |---|---|
 | Difficulty | **Medium**: challenging, never blocking. The owner playtested this and called it "perfect". |
 | Pace | Start from zero ("I'm a noob"), then climb steadily to expert. Data structures and algorithms come later, with walkthroughs. |
+| Goals (2026-10-02) | The owner is an experienced **front-end (JS/TS) developer**. From Year 4, give **equal weight** to **★ interview prep** (patterns, data structures) and **🛠 practical Python** for **backend APIs** (JSON, HTTP, FastAPI, async) and **AI/LLM apps and agents**. Don't spend lessons on what a TS developer already knows, and don't drop tuples or sets: they're interview-core. See `docs/curriculum.md`, "Who this is for". |
 | Story | Harry Potter flavour: an original mystery each year with the canon cast, plenty of easter eggs, and rich immersion. |
 | AI professor | Claude **and** DeepSeek API keys, both optional. Keys stay in the browser and are never exported. |
 | Living backgrounds | **10 random presets**, deliberately **not** tied to particular years. |
@@ -274,9 +275,14 @@ location.reload();
    - Let `importSave` accept the `{state, version}` form, with a "Paste a save" box in Settings, and rebuild clues and scenes seen after an import.
    - Keep a rolling automatic backup in `parseltongue-save-backup` (last 3 copies), written before any upgrade runs.
 2. **Playtest Year 3.** The owner should play it and judge the difficulty against the Year 1 and 2 "perfect" bar. Then adjust the content in place: the validator keeps every change honest.
-3. **Then Year 4, The Goblet of Objects.** Script it in `docs/story.md` first (the outline is there), then build it. Split the content bundle first (see item 5 below).
-4. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
-5. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
+3. **Curriculum redesign (2026-10-02).** Years 4–7 were re-sequenced for the even split; read `docs/curriculum.md` first. The targeted swaps in the built years are listed there with 🔄:
+   - y3-l08 becomes Two Pointers and Sliding Window;
+   - y3-l02's ⭐ becomes the ledger as JSON;
+   - y2-l03b gains `Counter`;
+   - y2-l10 gains `json` and `defaultdict`.
+4. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 6), and add the `owl_post` mock HTTP module to the harness.
+5. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
+6. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
 
 ## 12. Commit conventions
 
@@ -290,6 +296,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | **Curriculum redesign** for the owner's goals: an even split between interviews and practical Python (backend APIs, LLM apps). Rewrote the Year 4–7 plan in `curriculum.md`, adding a practical ladder and the planned swaps in Years 2–3. Re-aimed the Year 4–7 outlines in `story.md`. Added the audience, goals and in-browser mocks (`owl_post`, `Oracle`) to the GDD roadmap. Added the owner's goals to §1 and the plan to §11. |
 | 2026-10-02 | Claude Code desktop session | Merged the web session's save safety and lesson arrows (`c076186`) with Year 3 (`207ec70`). Kept both sides' e2e tests and `.gitignore` lines. Counts after the merge: 66 lessons, 201 exercises, 85 unit, 22 e2e (§3, §13). |
 | 2026-10-02 | Claude Code web session `session_01QRDafNtZXxe5n2GotwYapD` | **Save safety**: version judged from contents, Paste a save, rebuild after import, 3 automatic backups (§9). **Lesson arrows** ←/→ in the lesson header (`LessonArrow` in `LessonView.tsx`). Corrected §9: a save with no version is loaded as it is, not wiped. Tests: 69 unit, 20 browser (§3). |
 | 2026-10-01 | Claude Code desktop session | **Year 3 complete.** Batch D: y3-l12 (string spells: RLE, longest palindrome), y3-l13 (Game of Life and the copying trap) and the Trial (a maze of hours: `load_maze`, `find`, `reachable`, `escape_report`). e2e test that Year 3 opens after the Year 2 Trial. Counts: 66 lessons, 201 exercises, 79 unit, 20 e2e. Docs: README, GDD, curriculum (§2, §3, §10, §11). |

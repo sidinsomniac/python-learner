@@ -9,7 +9,8 @@ The defining rule: **the game never hands over the answer.** A Socratic mentor g
 
 ### Constraints
 - **Platform**: web app. Python runs in the browser through Pyodide (WebAssembly), so no server is needed.
-- **Audience**: a single personal learner. There are no accounts, and progress is stored locally.
+- **Audience**: a single personal learner, an experienced front-end (JS/TS) developer. There are no accounts, and progress is stored locally.
+- **Goals** (from Year 4, weighted equally): **★ interview readiness** (data structures and patterns) and **🛠 practical Python** for **backend APIs** and **AI/LLM apps and agents**. See [curriculum.md](curriculum.md#who-this-is-for-redesigned-2026-10-02).
 - **Theme**: a Harry Potter fan setting. Python is *Parseltongue*, taught at Hogwarts. It has the real houses, spells and characters, used as cameos and easter eggs. This is a personal, non-commercial project, and all franchise references live in `src/lore/` so they can be swapped out in one place if it's ever shared.
 
 ### Design documents
@@ -48,8 +49,13 @@ Full detail is in [exercise-design.md](exercise-design.md).
   4. A recap.
 - **Parts:** complex topics, or topics with gotchas, split into Part 1 / Part 2 (/ Part 3).
 - **No copy-paste:** the validator runs every lecture code block against each core challenge's tests, and they must fail. Core challenges always hide edge-case tests.
-- **The algorithms ladder:** small puzzles from Year 1, formal DSA from Year 3, and Easy → Medium → Hard problems up to dynamic programming and graphs in Year 7.
-- **Leaving Hogwarts** (Year 6–7 lessons): install Python, VS Code, venv, pip, git and pytest, then build a real project on your own machine.
+- **Two ladders, side by side:**
+  - **The algorithms ladder (★):** small puzzles from Year 1, formal DSA from Year 3, the interview toolkit in Year 4, patterns and trees in Year 5, graphs in Year 6, and dynamic programming in Year 7.
+  - **The practical ladder (🛠):** robust code in Year 3; types, JSON and HTTP in Year 4; decorators, generators and async in Year 5; FastAPI in Year 6; LLM apps and agents in Year 7.
+- **Mocks in the browser, real things locally:**
+  - In-browser HTTP lessons use a deterministic fake client, `owl_post`, and LLM lessons a deterministic fake model, `Oracle`. Every exercise stays gradable with no keys.
+  - **Leaving Hogwarts** (Years 6–7, 🖥 local lessons) moves to your own machine: `uv`/`venv`, pip, git, pytest, FastAPI, `httpx` and the Anthropic SDK. These lessons are verified by pasting terminal output.
+  - API keys never appear in exercises.
 
 ### Exercise formats
 | Format | What it is |
@@ -258,8 +264,12 @@ scripts/validate-content.ts
 4. ✅ **Economy and immersion**: story pop-ups, year themes, living backgrounds, Diagon Alley, Peeves' Bargain, level rewards, the Time-Turner and the Dueling Club. *Still to come:* the mastery map, the House Cup, Chocolate Frog cards.
    ✅ **Year 2: The Chamber of Collections**: 22 lesson units and 67 exercises. From Lesson 7, tests call the student's functions.
    ✅ **Year 3: The Prisoner of Recursion**: 20 lesson units and 61 exercises. Adds files on the desk, the Pensieve's call stack, and four more Snape rules.
-5. **Years 2–7, one year at a time.** Each year's script is written first, then its content, then a playtest.
-6. **Leaving Hogwarts** (Years 6–7): guided local setup, verified by pasting terminal output.
+5. 🔄 **Curriculum redesign (2026-10-02)** for an even split between interviews and practical Python (backend APIs, LLM apps). Years 4–7 were re-sequenced, with small swaps in Years 2–3 (see `curriculum.md`).
+6. **Years 4–7, one year at a time.** Each year's script is written first, then its content, then a playtest. Engine work comes with each year:
+   - Year 4: an `owl_post` mock HTTP module, and checks for type hints.
+   - Year 5: `asyncio` in Pyodide, and a simulated token stream.
+   - Year 6: the 🖥 local-lesson type, verified by pasted output.
+   - Year 7: an `Oracle` mock LLM client with tool calls.
 7. **Auror Academy**: daily challenges and interview sets after the game.
 
 ## 8. Verification

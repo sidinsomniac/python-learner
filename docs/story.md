@@ -208,16 +208,37 @@ Everything taken is *shiny*. Everything is taken in order, counted and catalogue
 *Each year's full scene-by-scene script is written when that year is built.*
 
 ### Year 4: The Goblet of Objects
-The Triwizard Tournament returns. Beauxbatons and Durmstrang bring their own enchanted objects, and someone is sabotaging the champions' equipment by subclassing it with hidden flaws. You design, inspect and build objects and data structures. **Trial:** the three Triwizard tasks.
+The Triwizard Tournament returns. Beauxbatons and Durmstrang arrive, and the scores, the task feeds and the judges all run through a new **Owl Post service** that answers in JSON (it's the in-browser `owl_post` mock).
+
+Someone is sabotaging the champions:
+- scores arrive corrupted;
+- requests fail at the worst moments;
+- one judge's records hide duplicate entries.
+
+You learn the interview toolkit (hashing, stacks, queues, heaps) alongside typed objects, JSON payloads and HTTP, tracing the sabotage through the service's data.
+
+**Trial:** the three Triwizard tasks, run against the service.
 
 ### Year 5: The Order of Algorithms
-A Ministry inspector bans all "unapproved spells", and your patterns count. In secret, in the Room of Requirement, you train with a revived Dumbledore's Army, whose members each master one pattern (two pointers, sliding window...). **Finale:** the O.W.L. exams, taken under the inspector's watchful eye.
+A Ministry inspector bans all "unapproved spells", and every spell must now pass her inspection decorators. In secret, in the Room of Requirement, you train with a revived Dumbledore's Army, whose members each master one pattern (two pointers, sliding window, prefix sums, intervals, trees...). The Ministry's own machinery (decorators, generators, async owl queues) becomes the thing you learn to read, and to turn against her.
+
+**Finale:** the O.W.L. exams, taken under the inspector's watchful eye.
 
 ### Year 6: The Half-Blood Pythonista
-You find an old Parseltongue textbook covered in brilliant margin notes signed "the Half-Blood Pythonista". The notes are Pythonic idioms and tricks. Who wrote them? The reveal: **Professor Ashwood**, as a student. Apparition lessons are **Leaving Hogwarts**: learning to work outside the castle, on your own machine. **Trial:** the Prince's Puzzle.
+You find an old Parseltongue textbook covered in brilliant margin notes signed "the Half-Blood Pythonista". The notes are the craft of real services: project layout, clean APIs, tests, graphs of connected systems.
+
+Apparition lessons are **Leaving Hogwarts**: working outside the castle, on your own machine, and building a real FastAPI service. Who wrote the notes? The reveal: **Professor Ashwood**, as a student.
+
+**Trial:** the Prince's Puzzle, a tested API on your own machine.
 
 ### Year 7: The Deathly Algorithms
-**The Unraveller**, a dark coder who wants all spells to become tangled, unreadable spaghetti, has hidden **seven Hollow Loops** (Horcrux-like) inside the castle's magic. Each is a hard algorithmic problem. Destroy all seven, then face the Unraveller in the Battle of Hogwarts, a multi-stage final boss mixing every skill from every year. **Epilogue:** nineteen lines later... your capstone project, presented at the Great Hall.
+**The Unraveller**, a dark coder who wants all spells to become tangled, unreadable spaghetti, has corrupted the castle's new **enchanted assistants**. They are LLM-powered agents, and he has bent their tools. He has also hidden **seven Hollow Loops** (Horcrux-like) inside the castle's magic, each a hard algorithmic problem.
+
+You learn dynamic programming to break the Hollow Loops. You learn to build trustworthy agents (clear tools, stopping rules, evaluations) to win the assistants back.
+
+**Finale:** the Battle of Hogwarts, a multi-stage final boss mixing every skill from every year.
+
+**Epilogue:** nineteen lines later... your capstone agent backend, presented at the Great Hall.
 
 ---
 

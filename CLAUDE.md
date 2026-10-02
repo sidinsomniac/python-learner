@@ -16,6 +16,7 @@ Before starting work, `git pull` the branch and read the change log (§13) to se
 
 ## Rules that always apply
 - **The mentor never gives answers.** Feedback, hints and AI replies are guiding questions, pseudocode, flaw pointers or similar-but-different examples.
+- **Who it's for:** an experienced front-end (JS/TS) developer. From Year 4, give equal weight to ★ interview prep and 🛠 practical Python (backend APIs, AI/LLM apps). In-browser HTTP and LLM lessons use deterministic mocks (`owl_post`, `Oracle`); real calls happen only in 🖥 local lessons. See `docs/curriculum.md`.
 - **Difficulty is medium.** The owner playtested it and called it "perfect". Beginner-friendly at the start, climbing steadily.
 - **Build one Year at a time:** script the year in `docs/story.md` first, then write its content, then validate, test, commit and push.
 - **API keys** (Claude, DeepSeek) stay in localStorage and are never exported.
