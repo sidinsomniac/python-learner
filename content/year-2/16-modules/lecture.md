@@ -94,3 +94,51 @@ options: ["Always", "Not necessarily - they're the 1st and 2nd numbers of the se
 answer: 1
 why: Seeding fixes the whole sequence, but each call moves one step along it.
 ```
+
+## `collections`: ready-made shortcuts for counting and grouping
+
+You've counted with `counts.get(x, 0) + 1` and grouped with
+`setdefault(key, [])`. Now that you know how they work, here are the
+shortcuts every Python programmer uses:
+
+```python
+from collections import Counter, defaultdict
+
+votes = Counter(["Lockhart", "Snape", "Lockhart", "Lupin", "Lockhart"])
+print(votes["Lockhart"], votes["Dumbledore"])   # a missing key counts as 0
+print(votes.most_common(2))
+
+by_floor = defaultdict(list)                    # missing keys start as []
+for item, floor in [("mirror", 2), ("cup", 1), ("badge", 2)]:
+    by_floor[floor].append(item)
+print(dict(by_floor))
+```
+
+- `Counter(items)` counts everything in one go; `.most_common(k)` gives the
+  top k as `(item, count)` pairs, biggest first.
+- `defaultdict(list)` creates an empty list the first time a key is used.
+  (`defaultdict(int)` starts at 0.)
+
+## `json`: the language of the internet
+
+Nearly every web service sends and receives **JSON**, text that looks just
+like Python's lists and dictionaries:
+
+```python
+import json
+
+text = '{"to": "Lockhart", "items": ["mirror", "cup"], "paid": true}'
+order = json.loads(text)                   # JSON text -> Python
+print(order["items"][0], order["paid"])
+print(json.dumps({"b": 1, "a": None}, sort_keys=True))   # Python -> JSON text
+```
+
+In JSON, `True` is `true`, `None` is `null`, and keys are always strings.
+
+```checkpoint
+q: 'What does `Counter("hoot")["o"]` give?'
+options: ["1", "2", "A KeyError"]
+answer: 1
+why: Counter counts every letter of the string - and a missing key would give 0, not an error.
+```
+

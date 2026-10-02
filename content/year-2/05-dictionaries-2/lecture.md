@@ -68,3 +68,11 @@ why: Sorting a dictionary sorts its keys.
 Calling it once for every item means walking the list again and again: for
 100,000 items that's 10,000,000,000 steps. The dictionary pattern walks the
 list **once**. Keep that in mind for this lesson's ⭐ challenge.
+
+## Coming soon: a shortcut
+
+Counting and grouping are so common that Python has ready-made tools for
+them, `Counter` and `defaultdict`. You'll meet them in Lesson 10, once you
+know how to `import`. Learn the pattern by hand first: interviewers love to
+ask how such tools work inside.
+

@@ -111,7 +111,7 @@ The story is [The Jinxed Ledger](story.md#year-1-the-jinxed-ledger); each lesson
 |---|---|---|---|
 | 1 | List Power **Pt1/Pt2** | `insert/pop/remove/index`, `sort` vs `sorted`, copies, grids and the shallow-copy trap | the Top Three spell (`sort()` returns None) · Filch's safe copy of a nested list · ⭐ a rotating shelf (pop/insert only, huge k) · ⭐ noughts and crosses |
 | 2 | Tuples and Unpacking | tuples, unpacking, swapping, `enumerate`, tuple comparison, `divmod` | Ginny's map, with no manual counter · ⭐ order events with tuple sorting and no `key=` |
-| 3 | Dictionaries **Pt1/Pt2/Pt3** | `get`, `in`, `items`, `del`; counting and grouping, then the `Counter` shortcut (🔄 added 2026-10); nested dicts | what came back (KeyError repair) · ⭐ reverse lookup with clashes · the tally of the missing (messy keys) · ⭐ most wanted at 50,000 items · the loudest place · ⭐ merge two nested reports without changing either |
+| 3 | Dictionaries **Pt1/Pt2/Pt3** | `get`, `in`, `items`, `del`; counting and grouping (with a pointer to `Counter`, taught in Lesson 10; 🔄 2026-10); nested dicts | what came back (KeyError repair) · ⭐ reverse lookup with clashes · the tally of the missing (messy keys) · ⭐ most wanted at 50,000 items · the loudest place · ⭐ merge two nested reports without changing either |
 | R1 | Revision I: Filch Objects | | aliasing, a duplicate detector, Filch's alibi |
 | 4 | Sets | uniqueness, `& \| - ^`, fast membership | present at every vanishing · ⭐ 20,000-name registry, fast and in order |
 | 5 | Nested Data | lists of dicts, missing fields, building an index | the delivery ledger (unsigned deliveries) · ⭐ items sent by two shops |
@@ -120,7 +120,7 @@ The story is [The Jinxed Ledger](story.md#year-1-the-jinxed-ledger); each lesson
 | R2 | Revision II: The Clues So Far | | print-inside-a-call trap, `common_floor` repair, a case file |
 | 8 | Functions **Pt2** | defaults, keyword arguments, returning tuples, docstrings, `None` as "not given" | `find_items(items, shiny=True, limit=None)` where limit=0 matters · ⭐ one-pass bounds and rescaling |
 | 9 | Scope and Mutability | local vs global, shared list arguments, the mutable default | repair `collect(item, bag=[])` · ⭐ un-collect without touching the evidence |
-| 10 | Modules | `math`, `random`, seeds, import styles, `json` and `collections.defaultdict` (🔄 added 2026-10) | predict the Cabinet from its seed · ⭐ an owl-post message in and out of JSON (🔄 replaces the farthest pair) |
+| 10 | Modules | `math`, `random`, seeds, import styles, `collections` (`Counter`, `defaultdict`) and `json` (🔄 added 2026-10) | predict the Cabinet from its seed · ⭐ the Owl Post manifest: JSON in, group and count with `collections`, JSON out (🔄 replaces the farthest pair) |
 | 11 | Parsing Scrolls | `split`, `join`, `partition`, `splitlines`, `zip`, `ljust` | the Borgin and Burkes receipt (repeats, numbers, smudges) · ⭐ parse and pretty-print a table |
 | 12 | ★ Seek and Count | linear search, counting steps (O(n), O(n²)), two pointers, signatures | 🟢 find every index · 🟡 merge two sorted lists, fast · 🔴 group 20,000 anagrams |
 | R3 | Revision III: An Unexpected Ally | | a None-default tally, Lockhart's search charm, the first repeat (fast) |

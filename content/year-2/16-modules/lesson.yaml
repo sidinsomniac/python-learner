@@ -4,7 +4,7 @@ order: 16
 number: 10
 title: Modules
 location: The Divination Tower
-concepts: [import, from ... import, math, random, seeds, the standard library]
+concepts: [import, from ... import, math, random, seeds, the standard library, "collections: Counter and defaultdict", json]
 exercises: [warmup, core, outstanding]
 scene:
   - who: luna

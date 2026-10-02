@@ -278,8 +278,9 @@ location.reload();
 3. **Curriculum redesign (2026-10-02).** Years 4–7 were re-sequenced for the even split; read `docs/curriculum.md` first. The targeted swaps in the built years are listed there with 🔄:
    - ✅ y3-l08 becomes Two Pointers and Sliding Window;
    - ✅ y3-l02's ⭐ becomes the ledger as JSON;
-   - y2-l03b gains `Counter`;
-   - y2-l10 gains `json` and `defaultdict`.
+   - ✅ y2-l03b gains a pointer to `Counter`;
+   - ✅ y2-l10 now teaches `Counter`, `defaultdict` and `json`, and its ⭐ is the Owl Post manifest.
+   - All the 🔄 swaps are done.
 4. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 6), and add the `owl_post` mock HTTP module to the harness.
 5. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
 6. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
@@ -296,6 +297,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | Year 2 swaps from the redesign. y2-l10 (Modules) teaches `collections.Counter`, `defaultdict` and `json`, and its ⭐ "The Farthest Vanishings" was replaced by **The Owl Post Manifest** (JSON in, group and count, JSON out). y2-l03b's lecture points ahead to `Counter`. The swap went in Lesson 10, not 3b as planned, because `import` is taught there. Counts unchanged: 66 lessons, 201 exercises (§11). |
 | 2026-10-02 | Claude Code desktop session | Year 3 swaps from the redesign. y3-l08 is now **Two Pointers and Sliding Window** (folder `13-two-pointers`; same id, order and clue, so saves are safe). y3-l02 gained a JSON section, and its ⭐ is now **The Ledger as JSON**. Revision III and the story table were updated to match. Counts unchanged: 66 lessons, 201 exercises (§11). |
 | 2026-10-02 | Claude Code desktop session | **Curriculum redesign** for the owner's goals: an even split between interviews and practical Python (backend APIs, LLM apps). Rewrote the Year 4–7 plan in `curriculum.md`, adding a practical ladder and the planned swaps in Years 2–3. Re-aimed the Year 4–7 outlines in `story.md`. Added the audience, goals and in-browser mocks (`owl_post`, `Oracle`) to the GDD roadmap. Added the owner's goals to §1 and the plan to §11. |
 | 2026-10-02 | Claude Code desktop session | Merged the web session's save safety and lesson arrows (`c076186`) with Year 3 (`207ec70`). Kept both sides' e2e tests and `.gitignore` lines. Counts after the merge: 66 lessons, 201 exercises, 85 unit, 22 e2e (§3, §13). |
