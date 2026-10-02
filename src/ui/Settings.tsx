@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { exportSave, useGame } from "../engine/store";
+import { exportSave, readBackups, unwrapSave, useGame } from "../engine/store";
+import { levelFromXp } from "../engine/progress";
 import { HOUSES } from "../lore/lore";
 import { askMentor, MentorError, PROVIDER_LABEL, type Provider } from "../mentor/llm";
 
@@ -9,6 +10,9 @@ export function Settings() {
   const [test, setTest] = useState<{ ok: boolean; text: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [pasted, setPasted] = useState("");
+  const [restoreMsg, setRestoreMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [backups] = useState(() => readBackups());
 
   const testOwl = async () => {
     setTesting(true);
@@ -35,11 +39,26 @@ export function Settings() {
   };
 
   const upload = async (file: File) => {
+    restoreText(await file.text(), "Backup file");
+  };
+
+  const restoreText = (text: string, what: string) => {
     try {
-      game.importSave(await file.text());
-      alert("Save restored!");
+      game.importSave(text);
+      const s = useGame.getState();
+      setRestoreMsg({ ok: true, text: `${what} restored: ${s.xp} XP, ${s.galleons} Galleons, ${Object.keys(s.exercises).length} exercises.` });
     } catch (err) {
-      alert(`Couldn't restore that save: ${String(err)}`);
+      setRestoreMsg({ ok: false, text: `Couldn't restore that save: ${err instanceof Error ? err.message : String(err)}` });
+    }
+  };
+
+  const describeBackup = (raw: string) => {
+    try {
+      const { state } = unwrapSave(JSON.parse(raw));
+      const xp = Number(state.xp ?? 0);
+      return `${state.name || "Unnamed"} - level ${levelFromXp(xp)}, ${xp} XP, ${Object.keys(state.exercises ?? {}).length} exercises`;
+    } catch {
+      return "unreadable";
     }
   };
 
@@ -177,6 +196,52 @@ export function Settings() {
             Obliviate (reset progress)
           </button>
         </div>
+        <p className="small muted">
+          Download a backup now and then - your progress lives only in this browser, at this address.
+        </p>
+
+        <label>
+          Paste a save
+          <textarea
+            rows={5}
+            value={pasted}
+            onChange={(e) => setPasted(e.target.value)}
+            placeholder='A downloaded backup, or the value of "parseltongue-save-v1" from localStorage'
+            spellCheck={false}
+            data-testid="paste-save"
+          />
+        </label>
+        <button className="btn" disabled={!pasted.trim()} onClick={() => restoreText(pasted, "Save")} data-testid="paste-save-restore">
+          Restore pasted save
+        </button>
+
+        <h3>Automatic backups</h3>
+        {backups.length === 0 ? (
+          <p className="small muted">None yet. The castle copies your save aside each time it opens.</p>
+        ) : (
+          <ul className="backups" data-testid="backups">
+            {backups.map((b) => (
+              <li key={b.at} className="row">
+                <span className="small">
+                  {new Date(b.at).toLocaleString()} - {describeBackup(b.raw)}
+                </span>
+                <button
+                  className="btn small"
+                  onClick={() => {
+                    if (confirm("Replace your current progress with this backup?")) restoreText(b.raw, "Backup");
+                  }}
+                >
+                  Restore
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {restoreMsg && (
+          <p className={`fb ${restoreMsg.ok ? "success" : "error"} small`} data-testid="restore-msg">
+            {restoreMsg.text}
+          </p>
+        )}
       </section>
     </div>
   );

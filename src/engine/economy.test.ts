@@ -6,7 +6,7 @@ import { lessonById, REVIEW_CARDS, YEARS } from "./content";
 import { duelOutcome, mulberry32, opponentRound, OPPONENTS, scoreAnswer } from "./duel";
 import { canSkip, currentYear, isLessonUnlocked, levelFromXp, MAX_LEVEL, skipCost, xpForLevel } from "./progress";
 import { addDays, answerCard, dueCards, INTERVALS, nextStreak } from "./review";
-import { migrateSave, useGame } from "./store";
+import { BACKUP_KEY, backupRawSave, detectSaveVersion, migrateSave, readBackups, rebuildDerived, SAVE_KEY, unwrapSave, useGame } from "./store";
 import { isRequired, type ExerciseRecord } from "./types";
 
 const rec: ExerciseRecord = { completedAt: "x", attempts: 1, hintsUsed: 0, xpEarned: 1, grade: "E" };
@@ -215,6 +215,73 @@ describe("years and saves", () => {
     expect(v3.bestLevel).toBe(5);
     expect((v3.owned as Record<string, string>)["fam-owl"]).toBeDefined();
     expect(v3.galleons).toBe(12 + 10 + 20);
+  });
+});
+
+describe("save safety", () => {
+  const rec = { completedAt: "2026-09-30T10:00:00.000Z", attempts: 1, hintsUsed: 0, xpEarned: 25, grade: "O" };
+  const exercises = { "y1-l01.warmup": rec, "y1-l01.core": rec, "y1-l02.warmup": rec, "y1-l02.core": rec };
+  const owners = { name: "Siddhartha", house: "ravenclaw", xp: 1959, bestLevel: 6, galleons: 370, housePoints: 395, exercises };
+
+  it("judges a save's version by what it holds, so a wrong number never wipes it", () => {
+    expect(detectSaveVersion(owners, 0)).toBe(3);
+    expect(detectSaveVersion({ xp: 5, exercises: {} }, 1)).toBe(2);
+    expect(detectSaveVersion({ xp: 5, completed: {} }, 0)).toBe(1);
+    const migrated = migrateSave(owners, detectSaveVersion(owners, 1));
+    expect(Object.keys(migrated.exercises as object)).toHaveLength(4);
+  });
+
+  it("keeps owned items and doesn't pay level rewards twice when a v3 save is mislabelled v2", () => {
+    const save = { ...owners, owned: { "wand-elder": "bought" } };
+    const migrated = migrateSave(save, 2);
+    expect((migrated.owned as Record<string, string>)["wand-elder"]).toBe("bought");
+    expect(migrated.galleons).toBe(370);
+  });
+
+  it("reads every save format", () => {
+    expect(unwrapSave({ state: owners }).state.xp).toBe(1959);
+    expect(unwrapSave({ state: owners, version: 3 }).version).toBe(3);
+    expect(unwrapSave({ ...owners, saveVersion: 3 }).state).not.toHaveProperty("saveVersion");
+    expect(unwrapSave(owners).version).toBe(3);
+    expect(() => unwrapSave({ hello: "world" })).toThrow();
+  });
+
+  it("rebuilds clues, seen scenes and level rewards from finished exercises", () => {
+    const rebuilt = rebuildDerived({ ...owners, bestLevel: 1 });
+    expect(Object.keys(rebuilt.clues as object)).toEqual(expect.arrayContaining(["y1-l01", "y1-l02"]));
+    expect((rebuilt.scenesSeen as Record<string, boolean>)["y1-l01"]).toBe(true);
+    expect((rebuilt.scenesSeen as Record<string, boolean>)["year-1"]).toBe(true);
+    expect(rebuilt.bestLevel).toBe(6);
+    expect((rebuilt.owned as Record<string, string>)["fam-owl"]).toBeDefined();
+  });
+
+  it("imports the raw localStorage value pasted in Settings", () => {
+    reset();
+    useGame.getState().importSave(JSON.stringify({ state: owners }));
+    const s = useGame.getState();
+    expect(s.xp).toBe(1959);
+    expect(s.galleons).toBe(370);
+    expect(s.bestLevel).toBe(6);
+    expect(Object.keys(s.exercises)).toHaveLength(4);
+    expect(s.clues["y1-l01"]).toBeDefined();
+  });
+
+  it("copies the stored save aside before loading, keeping the last three", () => {
+    const mem = new Map<string, string>();
+    const fake = { getItem: (k: string) => mem.get(k) ?? null, setItem: (k: string, v: string) => void mem.set(k, v) };
+    (globalThis as { localStorage?: unknown }).localStorage = fake;
+    try {
+      for (let i = 1; i <= 4; i++) {
+        mem.set(SAVE_KEY, JSON.stringify({ state: { ...owners, xp: i }, version: 3 }));
+        backupRawSave(`2026-10-0${i}`);
+      }
+      backupRawSave("2026-10-09");
+      const backups = readBackups();
+      expect(backups.map((b) => b.at)).toEqual(["2026-10-04", "2026-10-03", "2026-10-02"]);
+      expect(JSON.parse(mem.get(BACKUP_KEY)!)).toHaveLength(3);
+    } finally {
+      delete (globalThis as { localStorage?: unknown }).localStorage;
+    }
   });
 });
 

@@ -172,6 +172,13 @@ label.row input { width: auto; }
 
 /* Quest */
 .quest-top h1 { margin-bottom: 0; }
+.lesson-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.lesson-arrows { display: flex; gap: 6px; min-width: 0; }
+.lesson-arrow { max-width: 260px; display: inline-flex; align-items: center; gap: 2px; }
+.lesson-arrow-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.backups { list-style: none; padding: 0; margin: 4px 0; display: grid; gap: 6px; }
+.backups li { justify-content: space-between; }
+@media (max-width: 640px) { .lesson-arrow-label { display: none; } }
 .intro { font-style: italic; border-left: 3px solid var(--house-1); padding-left: 12px; }
 .tabs { display: flex; gap: 4px; margin: 12px 0; }
 .tabs button {

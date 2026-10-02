@@ -4,7 +4,7 @@ import { rewardsBetween } from "../lore/levels";
 import type { HouseId } from "../lore/lore";
 import { aidById, itemById, type AidId, type ItemKind } from "../lore/shop";
 import { DEFAULT_MENTOR_SETTINGS, type MentorSettings } from "../mentor/llm";
-import { YEARS } from "./content";
+import { LESSONS, YEARS } from "./content";
 import type { DuelOutcome } from "./duel";
 import {
   bestGrade,
@@ -22,6 +22,9 @@ import type { Exercise, ExerciseRecord, Grade, Lesson, SceneLine } from "./types
 
 export const SAVE_KEY = "parseltongue-save-v1";
 export const SAVE_VERSION = 3;
+/** The last few raw saves, copied before any upgrade runs (see backupRawSave). */
+export const BACKUP_KEY = "parseltongue-save-backup";
+const MAX_BACKUPS = 3;
 
 export interface Reward {
   firstTime: boolean;
@@ -178,18 +181,112 @@ export function migrateSave(old: Record<string, unknown>, version: number): Reco
   }
   if (version < 3) {
     // Version 3 adds the economy. New fields get their defaults, and the
-    // rewards for levels already reached are handed out straight away.
-    const level = levelFromXp(Number(save.xp ?? 0));
-    const owned: Record<string, string> = { ...initialData.owned };
+    // rewards for levels not yet rewarded are handed out straight away.
+    // Anything a mislabelled save already holds is kept.
+    const previousBest = Number(save.bestLevel ?? 1);
+    const level = Math.max(previousBest, levelFromXp(Number(save.xp ?? 0)));
+    const owned: Record<string, string> = { ...initialData.owned, ...((save.owned ?? {}) as Record<string, string>) };
     let galleons = Number(save.galleons ?? 0);
-    for (const r of rewardsBetween(1, level)) {
-      if (r.item) owned[r.item] = "level reward";
-      galleons += r.galleons ?? 0;
-    }
+    for (const r of rewardsBetween(1, level)) if (r.item && !owned[r.item]) owned[r.item] = "level reward";
+    for (const r of rewardsBetween(previousBest, level)) galleons += r.galleons ?? 0;
     save = { ...save, bestLevel: level, owned, galleons };
   }
   return save;
 }
+
+/**
+ * A save's real version, judged by what it holds. A missing or too-low version
+ * number must never send a newer save through an older upgrade - the version 1
+ * upgrade, for one, rebuilds `exercises` from scratch.
+ */
+export function detectSaveVersion(save: Record<string, unknown>, claimed: number): number {
+  const v = Number.isFinite(claimed) ? claimed : 0;
+  if ("bestLevel" in save || "owned" in save) return Math.max(v, 3);
+  if ("exercises" in save) return Math.max(v, 2);
+  if ("completed" in save) return 1;
+  return v;
+}
+
+/**
+ * Turn any save the player might have into plain state plus its version:
+ * a downloaded backup ({...state, saveVersion}), the raw localStorage value
+ * ({state, version}), or a bare state object.
+ */
+export function unwrapSave(parsed: unknown): { state: Record<string, unknown>; version: number } {
+  if (typeof parsed !== "object" || parsed === null) throw new Error("That doesn't look like a Parseltongue save.");
+  const obj = parsed as Record<string, unknown>;
+  const inner = typeof obj.state === "object" && obj.state !== null ? (obj.state as Record<string, unknown>) : obj;
+  if (!("xp" in inner) && !("exercises" in inner) && !("completed" in inner)) {
+    throw new Error("That doesn't look like a Parseltongue save.");
+  }
+  const { saveVersion, ...state } = inner;
+  const claimed = Number(obj.state ? obj.version : saveVersion);
+  return { state, version: detectSaveVersion(state, Number.isFinite(claimed) ? claimed : 0) };
+}
+
+/**
+ * Fill in what can be worked out from the finished exercises: clues, seen
+ * story scenes, and level rewards. Used after an import, since hand-made or
+ * partial saves often carry only the exercises and totals.
+ */
+export function rebuildDerived(save: Record<string, unknown>): Record<string, unknown> {
+  const exercises = (save.exercises ?? {}) as Record<string, ExerciseRecord>;
+  const clues = { ...((save.clues ?? {}) as Record<string, string>) };
+  const scenesSeen = { ...((save.scenesSeen ?? {}) as Record<string, boolean>) };
+  for (const lesson of LESSONS) {
+    if (!isLessonComplete(lesson, exercises)) continue;
+    const finished = lesson.exercises.map((e) => exercises[e.id]?.completedAt).filter(Boolean).sort();
+    if (lesson.clue && !clues[lesson.id]) clues[lesson.id] = finished.at(-1) ?? now();
+    scenesSeen[lesson.id] = true;
+    scenesSeen[`${lesson.id}:outro`] = true;
+    scenesSeen[`year-${lesson.year}`] = true;
+  }
+  const previousBest = Number(save.bestLevel ?? 1);
+  const level = Math.max(previousBest, levelFromXp(Number(save.xp ?? 0)));
+  const owned: Record<string, string> = { ...initialData.owned, ...((save.owned ?? {}) as Record<string, string>) };
+  let galleons = Number(save.galleons ?? 0);
+  for (const r of rewardsBetween(1, level)) if (r.item && !owned[r.item]) owned[r.item] = "level reward";
+  for (const r of rewardsBetween(previousBest, level)) galleons += r.galleons ?? 0;
+  return { ...save, clues, scenesSeen, bestLevel: level, owned, galleons };
+}
+
+export interface SaveBackup {
+  at: string;
+  raw: string;
+}
+
+const storage = (): Storage | null => {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
+};
+
+export function readBackups(): SaveBackup[] {
+  try {
+    const list = JSON.parse(storage()?.getItem(BACKUP_KEY) ?? "[]");
+    return Array.isArray(list) ? list.filter((b) => typeof b?.raw === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Copy the stored save aside before the game loads (and possibly upgrades) it. */
+export function backupRawSave(at = now()): void {
+  const store = storage();
+  const raw = store?.getItem(SAVE_KEY);
+  if (!store || !raw) return;
+  const backups = readBackups();
+  if (backups[0]?.raw === raw) return;
+  try {
+    store.setItem(BACKUP_KEY, JSON.stringify([{ at, raw }, ...backups].slice(0, MAX_BACKUPS)));
+  } catch {
+    // Storage full: the game still works, just without this safety copy.
+  }
+}
+
+backupRawSave();
 
 export const useGame = create<GameState>()(
   persist(
@@ -430,19 +527,21 @@ export const useGame = create<GameState>()(
       resetProgress: () => set({ ...initialData, mentor: get().mentor }),
 
       importSave: (json) => {
-        const parsed = JSON.parse(json);
-        if (typeof parsed !== "object" || parsed === null || !("xp" in parsed)) {
-          throw new Error("That doesn't look like a Parseltongue save file.");
-        }
-        const version = "exercises" in parsed ? Number(parsed.saveVersion ?? 2) : 1;
-        set({ ...initialData, ...migrateSave(parsed, version), mentor: get().mentor });
+        backupRawSave();
+        const { state, version } = unwrapSave(JSON.parse(json));
+        const { mentor: _ignored, ...save } = rebuildDerived(migrateSave(state, version));
+        void _ignored;
+        set({ ...initialData, ...save, mentor: get().mentor });
       },
     }),
     {
       name: SAVE_KEY,
       version: SAVE_VERSION,
       storage: createJSONStorage(() => localStorage),
-      migrate: (persisted, version) => migrateSave(persisted as Record<string, unknown>, version) as unknown as GameState,
+      migrate: (persisted, version) => {
+        const save = persisted as Record<string, unknown>;
+        return migrateSave(save, detectSaveVersion(save, version)) as unknown as GameState;
+      },
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<GameState>;
         return {

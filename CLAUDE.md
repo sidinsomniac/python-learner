@@ -36,4 +36,6 @@ npm run validate-content && npm test && npm run build && CHROMIUM_PATH=/path/to/
 - Reference solutions must pass Snape's review rules active at that lesson (`content/review-rules.yaml`).
 
 ## Saves
-localStorage key `parseltongue-save-v1`, stored as `{state, version: 3}`. A save written without `version` loses its exercises when it's upgraded. Fixing that is the next task, in HANDOFF §11.
+localStorage key `parseltongue-save-v1`, stored as `{state, version: 3}`. Any new save field needs a default in `initialData`, and a step in `migrateSave` if old saves need converting. Bump `SAVE_VERSION` only together with a migration step.
+
+`detectSaveVersion` judges a save's version from its contents, so a mislabelled save is never wiped. Settings can paste a save in any form, and keeps 3 automatic backups. Details are in HANDOFF §9.
