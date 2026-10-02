@@ -102,7 +102,8 @@ src/lore/       shop.ts (items, learning aids), levels.ts (LEVEL_REWARDS, featur
 src/ui/backdrop/  the living backgrounds, as hand-written Canvas 2D:
                 engine.ts (cached glow sprites, additive light, parallax, quality scaling),
                 classic.ts (the first 10 presets), magic.ts (8 more),
-                creatures.ts (the Patronus stag and the owls, drawn as detailed silhouettes)
+                creatures.ts (the Patronus stag with a jointed gallop, and snowy owls with
+                articulated wings and beat-and-glide flight)
 src/runtime/
   harness.py    the Python grader (section 7), the desk of files, the Pensieve tracer
   harness.test.ts  runs harness.py in Pyodide: desk files, call stack, Snape's rules
@@ -301,6 +302,9 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-02 | Claude Code desktop session | **Patronus and owls rebuilt** (`src/ui/backdrop/creatures.ts`).
+- **Stag:** anatomically jointed legs (three-part hind legs with hocks, folding front knees); a rotary gallop with stance and swing phases, and stride tied to ground speed; a rocking spine, nodding neck and flicking tail; a light sweep; hoofprints of light. It enters from either side.
+- **Owls:** solid Hedwig-style snowy owls (tawny on the light theme) with articulated wings (primaries, secondaries, coverts), beat-then-glide flight, a steady head, depth and both directions. `makeOwl`/`stepOwl`/`drawOwl` replace the old drawing. |
 | 2026-10-02 | Claude Code desktop session | **Living backgrounds rebuilt** (no library: hand-written Canvas 2D in `src/ui/backdrop/`):
 - cached glow sprites, additive light, depth layers, gentle mouse parallax, a cross-fade between presets, and particle counts that scale down automatically on slow machines;
 - the 10 presets redrawn;

@@ -38,34 +38,55 @@ const patronus: Maker = (w, h, pal, q) => {
   const motes: Mote[] = [];
   const ambient = Array.from({ length: count(30, q) }, () => ({ x: rand(0, w), y: rand(0, h), p: rand(0, TAU), v: rand(4, 12) }));
   const size = clamp(h / 700, 0.75, 1.35) * 1.15;
-  let x = -200 * size;
-  let y = rand(h * 0.35, h * 0.62);
-  const speed = Math.max(90, w / 11);
+  /** Local units the stag covers in one stride: ties leg speed to ground speed, so hooves never slide. */
+  const stride = 150;
+  const speed = Math.max(95, w / 11);
+  let dir = 1;
+  let x = 0;
+  let baseY = 0;
+  let phase = 0;
+  const lastU: number[] = [0, 0, 0, 0];
+  const prints: Mote[] = [];
+  const enter = () => {
+    dir = Math.random() < 0.7 ? 1 : -1;
+    x = dir > 0 ? -230 * size : w + 230 * size;
+    baseY = rand(h * 0.36, h * 0.62);
+  };
+  enter();
   return {
     step(ctx, f) {
       drawStars(ctx, stars, f, pal);
-      x += speed * f.dt;
-      if (x > w + 220 * size) {
-        x = -220 * size;
-        y = rand(h * 0.32, h * 0.65);
-      }
-      const gait = f.t * 7.5;
+      x += speed * dir * f.dt;
+      if ((dir > 0 && x > w + 240 * size) || (dir < 0 && x < -240 * size)) enter();
+      phase += (speed * f.dt) / (stride * size);
       const o = parallax(f, 0.6);
+      // A gentle rise and fall along the way, like running over rolling ground.
       const bx = x + o.x;
-      const by = y + o.y;
+      const by = baseY + Math.sin(x * 0.0045) * 22 + o.y;
       additive(ctx, pal, () => {
         for (const a of ambient) {
           a.y = wrap(a.y - a.v * f.dt, -10, h + 10);
           glow(ctx, a.x, a.y, 3, silver, 0.25 + 0.25 * Math.sin(f.t + a.p), true);
         }
-        // Wisps of light shed from the body and hooves, drifting behind.
-        if (motes.length < 220) {
-          for (let i = 0; i < 4; i++) {
-            motes.push({ x: bx + rand(-60, 40) * size, y: by + rand(-30, 60) * size, vx: rand(-60, -15), vy: rand(-12, 12), age: 0, life: rand(0.9, 2), r: rand(1.2, 3.2) });
+        // Wisps of light shed from the body, drifting behind.
+        if (motes.length < 160) {
+          for (let i = 0; i < 2; i++) {
+            motes.push({ x: bx - dir * rand(10, 70) * size, y: by + rand(-35, 25) * size, vx: -dir * rand(15, 55), vy: rand(-14, 8), age: 0, life: rand(0.9, 2), r: rand(1.2, 3) });
           }
         }
-        stepMotes(ctx, motes, f.dt, silver, 0.5);
-        drawStag(ctx, bx, by, size, gait, f.t, pal);
+        stepMotes(ctx, motes, f.dt, silver, 0.45);
+        // Hoofprints of light: a burst wherever a hoof touches down, lingering in the air.
+        stepMotes(ctx, prints, f.dt, silver, 0.75);
+        const hooves = drawStag(ctx, bx, by, size, dir, phase, f.t, pal);
+        hooves.forEach((hoof, i) => {
+          if (hoof.u < lastU[i] && prints.length < 200) {
+            for (let k = 0; k < (hoof.far ? 4 : 7); k++) {
+              prints.push({ x: hoof.x + rand(-4, 4) * size, y: hoof.y + rand(-2, 2), vx: rand(-14, 14), vy: rand(-26, -6), age: 0, life: rand(0.8, 1.7), r: rand(1.2, 2.8) });
+            }
+            glow(ctx, hoof.x, hoof.y, 16 * size, silver, 0.45, false);
+          }
+          lastU[i] = hoof.u;
+        });
       });
     },
   };

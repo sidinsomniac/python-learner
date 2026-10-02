@@ -1,6 +1,6 @@
 // The original ten weather presets, redrawn with depth layers, glowing light
 // and finer shapes.
-import { drawOwl } from "./creatures";
+import { drawOwl, makeOwl, stepOwl } from "./creatures";
 import type { Maker } from "./engine";
 import { TAU, additive, count, drawStars, glow, parallax, pick, rand, starField, wrap } from "./engine";
 
@@ -423,18 +423,15 @@ const shootingStars: Maker = (w, h, pal, q) => {
 // 10. Owl Post: owls flapping across with letters, envelopes fluttering, feathers drifting.
 const owlPost: Maker = (w, h, pal, q) => {
   const ink = pal.light ? "rgba(70,55,35," : "rgba(235,225,200,";
-  const owls = Array.from({ length: count(5, q) }, () => ({ x: rand(-w, w), y: rand(h * 0.1, h * 0.55), v: rand(55, 95), p: rand(0, TAU), s: rand(0.9, 1.4) }));
+  // Far owls first, so nearer ones pass in front.
+  const owls = Array.from({ length: count(5, q) }, () => makeOwl(w, h)).sort((a, b) => a.depth - b.depth);
   const letters = Array.from({ length: count(9, q) }, () => ({ x: rand(0, w), y: rand(-h, h), v: rand(14, 30), p: rand(0, TAU), s: rand(7, 12) }));
   const feathers = Array.from({ length: count(14, q) }, () => ({ x: rand(0, w), y: rand(-h, h), v: rand(10, 24), p: rand(0, TAU), s: rand(7, 13) }));
   return {
     step(ctx, f) {
       for (const o of owls) {
-        o.x += o.v * f.dt;
-        if (o.x > w + 60) {
-          o.x = -60;
-          o.y = rand(h * 0.1, h * 0.55);
-        }
-        drawOwl(ctx, o.x, o.y + Math.sin(f.t * 1.1 + o.p) * 14, o.s, f.t * 4.5 + o.p, ink, pal.light ? "rgba(235,225,200,0.8)" : "rgba(250,240,215,0.75)");
+        stepOwl(o, f.dt, w, h);
+        drawOwl(ctx, o, pal);
       }
       for (const l of letters) {
         l.y += l.v * f.dt;
