@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { rewardsBetween } from "../lore/levels";
+import { LEVEL_REWARDS, rewardsBetween } from "../lore/levels";
 import type { HouseId } from "../lore/lore";
 import { aidById, itemById, type AidId, type ItemKind } from "../lore/shop";
 import { DEFAULT_MENTOR_SETTINGS, type MentorSettings } from "../mentor/llm";
@@ -614,7 +614,7 @@ export const useGame = create<GameState>()(
         return {
           ...current,
           ...p,
-          owned: { ...current.owned, ...(p.owned ?? {}) },
+          owned: withLevelGifts({ ...current.owned, ...(p.owned ?? {}) }, p.bestLevel ?? 1),
           aids: { ...current.aids, ...(p.aids ?? {}) },
           mentor: { ...DEFAULT_MENTOR_SETTINGS, ...(p.mentor ?? {}) },
           music: { ...DEFAULT_MUSIC, ...(p.music ?? {}) },
@@ -624,6 +624,13 @@ export const useGame = create<GameState>()(
     },
   ),
 );
+
+/** Level-reward items added after a player passed that level still reach their trunk. */
+function withLevelGifts(owned: Record<string, string>, bestLevel: number): Record<string, string> {
+  const out = { ...owned };
+  for (const r of LEVEL_REWARDS) if (r.item && r.level <= bestLevel && !out[r.item]) out[r.item] = new Date().toISOString();
+  return out;
+}
 
 /** Everything worth backing up (API keys are deliberately excluded). */
 export function exportSave(): string {

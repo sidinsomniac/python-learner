@@ -1754,3 +1754,141 @@ body::before {
   padding: 8px 12px;
   margin: 10px 0;
 }
+
+/* Flourish & Blotts' coded editor themes (src/ui/editorThemes.ts). The
+   background is on the wrapper; ::before holds an optional moving layer. */
+.editor-coded {
+  position: relative;
+}
+.editor-coded::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.editor-coded .cm-editor {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+.editor-map::before {
+  opacity: 0.22;
+  background-image:
+    radial-gradient(ellipse 3px 5px at 20px 20px, #4a2f17 60%, transparent 70%),
+    radial-gradient(ellipse 3px 5px at 30px 32px, #4a2f17 60%, transparent 70%);
+  background-size: 140px 110px;
+  animation: map-walk 40s linear infinite;
+}
+@keyframes map-walk {
+  to {
+    background-position: 560px -440px;
+  }
+}
+.editor-pensieve {
+  overflow: hidden;
+}
+.editor-pensieve::before {
+  inset: -60%;
+  opacity: 0.22;
+  filter: blur(18px);
+  background: conic-gradient(from 0deg, transparent 0 12%, #b8cdf0 18%, transparent 26% 46%, #e6eeff 52%, transparent 60% 80%, #9ab4e0 86%, transparent 94%);
+  animation: pensieve-swirl 48s linear infinite;
+}
+@keyframes pensieve-swirl {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.editor-lake::before {
+  opacity: 0.18;
+  background:
+    radial-gradient(ellipse 120px 26px at 30% 30%, #7fe8d8, transparent 70%),
+    radial-gradient(ellipse 160px 30px at 70% 60%, #5fd1c0, transparent 70%),
+    radial-gradient(ellipse 90px 20px at 45% 85%, #a8f0e0, transparent 70%);
+  background-size: 420px 260px;
+  animation: lake-caustics 16s ease-in-out infinite alternate;
+}
+@keyframes lake-caustics {
+  to {
+    background-position: 120px 40px;
+  }
+}
+.editor-forest::before {
+  background:
+    radial-gradient(circle 3px at 12% 30%, #e8f59a, transparent 70%),
+    radial-gradient(circle 2px at 38% 70%, #d8f08a, transparent 70%),
+    radial-gradient(circle 3px at 64% 22%, #f0f8a8, transparent 70%),
+    radial-gradient(circle 2px at 82% 58%, #e8f59a, transparent 70%),
+    radial-gradient(circle 2px at 92% 18%, #d8f08a, transparent 70%);
+  filter: drop-shadow(0 0 4px #e8f59a);
+  animation: fireflies 7s ease-in-out infinite;
+}
+@keyframes fireflies {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(8px, -6px);
+  }
+}
+.editor-house::before {
+  background: linear-gradient(115deg, transparent 40%, #ffffff10 50%, transparent 60%);
+  background-size: 300% 100%;
+  animation: house-sheen 9s ease-in-out infinite;
+}
+@keyframes house-sheen {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+.editor-wheezes::before {
+  background:
+    radial-gradient(circle 2px at 15% 25%, #ff8a2a, transparent 70%),
+    radial-gradient(circle 2px at 75% 15%, #ff5fa2, transparent 70%),
+    radial-gradient(circle 2px at 55% 75%, #ffd23f, transparent 70%),
+    radial-gradient(circle 2px at 90% 65%, #7cf0ff, transparent 70%);
+  animation: wheezes-pop 3.2s steps(1) infinite;
+}
+@keyframes wheezes-pop {
+  0% {
+    opacity: 0.9;
+    background-position: 0 0;
+  }
+  33% {
+    opacity: 0.5;
+    background-position: 60px 30px;
+  }
+  66% {
+    opacity: 0.8;
+    background-position: -40px 50px;
+  }
+}
+.editor-ministry::before {
+  opacity: 0.12;
+  background:
+    repeating-linear-gradient(0deg, #e6c25a 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, #e6c25a 0 1px, transparent 1px 48px);
+}
+.editor-honeydukes .cm-gutters {
+  background: repeating-linear-gradient(45deg, #ffd0e0 0 8px, #fff6fa 8px 16px) !important;
+}
+.editor-honeydukes::before {
+  opacity: 0.35;
+  background:
+    radial-gradient(circle 1.5px at 20% 30%, #ff8ab8, transparent 70%),
+    radial-gradient(circle 1.5px at 60% 70%, #8ad0ff, transparent 70%),
+    radial-gradient(circle 1.5px at 85% 25%, #b88aff, transparent 70%);
+  background-size: 90px 70px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .editor-coded::before {
+    animation: none;
+  }
+}

@@ -18,6 +18,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
     "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/language": "^6.12.4",
+    "@lezer/highlight": "^1.2.5",
     "@uiw/react-codemirror": "^4.25.12",
     "js-yaml": "^5.4.2",
     "marked": "^18.0.14",

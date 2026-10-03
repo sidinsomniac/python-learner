@@ -14,6 +14,9 @@ export function Shop() {
   /** The wand being tried in Ollivanders' test parchment (any wand can be tried before buying). */
   const [trying, setTrying] = useState(equipped.wand ?? "wand-holly");
   const [testCode, setTestCode] = useState("# Try a wand: point at it, then type here\n");
+  /** The editor theme being previewed (point at a theme to see it). */
+  const [tryingTheme, setTryingTheme] = useState(equipped.editor ?? "ed-map");
+  const [themeCode, setThemeCode] = useState('# Flourish & Blotts sample page\ndef cast(spell, power=3):\n    # Return the spell, louder.\n    return spell.upper() + "!" * power\n\nprint(cast("lumos"))  # LUMOS!!!\n');
   const year = currentYear(YEARS, exercises, skipped);
 
   const buyAid = (id: (typeof AIDS)[number]["id"]) => {
@@ -70,9 +73,22 @@ export function Shop() {
               <CodeEditor value={testCode} onChange={setTestCode} minHeight="64px" label="Ollivanders test parchment" wandOverride={trying} />
             </div>
           )}
+          {kind === "editor" && (
+            <div className="wand-trial">
+              <p className="small muted">
+                Point at a theme to see it on a sample page. Previewing: <strong data-testid="trying-theme">{itemById(tryingTheme)?.name}</strong>
+              </p>
+              <CodeEditor value={themeCode} onChange={setThemeCode} minHeight="120px" label="Flourish & Blotts sample page" themeOverride={itemById(tryingTheme)?.value} />
+            </div>
+          )}
           <div className="shop-grid">
             {ITEMS.filter((i) => i.kind === kind).map((item) => (
-              <ItemCard key={item.id} item={item} onTry={kind === "wand" ? () => setTrying(item.id) : undefined} trying={trying === item.id} />
+              <ItemCard
+                key={item.id}
+                item={item}
+                onTry={kind === "wand" ? () => setTrying(item.id) : kind === "editor" ? () => setTryingTheme(item.id) : undefined}
+                trying={kind === "wand" ? trying === item.id : kind === "editor" ? tryingTheme === item.id : false}
+              />
             ))}
           </div>
         </section>

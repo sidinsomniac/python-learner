@@ -16,7 +16,7 @@ export const LEVEL_REWARDS: LevelReward[] = [
   { level: 5, text: "Ollivanders' premium wands appear in the shop", unlock: "ollivanders", galleons: 20 },
   { level: 6, text: "The Ember editor theme", item: "ed-ember" },
   { level: 7, text: 'The title "the Curious"', item: "title-curious", galleons: 25 },
-  { level: 8, text: "Duel the masters: Hermione and Professor Snape", unlock: "duel-masters" },
+  { level: 8, text: "Duel the masters: Hermione and Professor Snape, and the Honeydukes editor theme", unlock: "duel-masters", item: "ed-honeydukes" },
   { level: 9, text: "A half-Kneazle cat familiar", item: "fam-cat" },
   { level: 10, text: "The Hogwarts crest banner", item: "banner-crest", galleons: 50 },
   { level: 11, text: "Midnight robes", item: "robe-midnight", galleons: 30 },

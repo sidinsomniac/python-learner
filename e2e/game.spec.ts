@@ -467,3 +467,25 @@ test("Ollivanders shows what each wand casts, and lets you try one before buying
   await expect(page.getByTestId("trying")).toHaveText("Vine & dragon heartstring");
   await expect(page.getByLabel("Ollivanders test parchment").locator("..").getByTestId("wand-overlay")).toHaveCount(1);
 });
+
+test("Flourish & Blotts previews a theme on a sample page, and an equipped theme colours the quest editor", async ({ page }) => {
+  await seed(page, { owned: { "wand-holly": "start", "ed-lake": "x" }, equipped: { wand: "wand-holly", editor: "ed-lake" } });
+  await page.goto("/#/shop");
+  await page.locator(".shop-item strong", { hasText: "The Pensieve" }).click();
+  await expect(page.getByTestId("trying-theme")).toHaveText("The Pensieve");
+  await expect(page.getByLabel("Flourish & Blotts sample page")).toHaveAttribute("data-editor-theme", "pensieve");
+  await page.goto("/#/lesson/y1-l01");
+  await page.getByTestId("tab-warmup").click();
+  await expect(page.getByLabel("Quest code editor")).toHaveAttribute("data-editor-theme", "lake");
+});
+
+test("the half-Kneazle sits on the line where a run failed", async ({ page }) => {
+  await seed(page, { owned: { "wand-holly": "start", "fam-cat": "x" }, equipped: { wand: "wand-holly", familiar: "fam-cat" } });
+  await page.goto("/#/lesson/y1-l01");
+  await waitForPython(page);
+  await page.getByTestId("tab-warmup").click();
+  await setCode(page, 'print("fine")\nprint(undefined_name)');
+  await page.getByTestId("run").click();
+  await expect(page.locator(".cm-kneazle-line")).toHaveCount(1);
+  await expect(page.locator(".cm-kneazle-line")).toContainText("undefined_name");
+});

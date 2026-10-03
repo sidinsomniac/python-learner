@@ -12,6 +12,7 @@ import { renderInline, renderMarkdown } from "./md";
 import { Pensieve } from "./Pensieve";
 import { usePrefersReducedMotion } from "./Ambience";
 import { useWandFx } from "./wand/WandOverlay";
+import { editorBackground, editorTheme as buildEditorTheme, isLightEditor } from "./editorThemes";
 
 const extensions = [pythonLang()];
 
@@ -22,6 +23,7 @@ export function CodeEditor({
   minHeight = "220px",
   label,
   wandOverride,
+  themeOverride,
   errorLine,
 }: {
   value: string;
@@ -31,17 +33,23 @@ export function CodeEditor({
   label: string;
   /** Use this wand's effect instead of the equipped one (Ollivanders' try-out). */
   wandOverride?: string;
+  /** Use this editor theme instead of the equipped one (the shop's preview). */
+  themeOverride?: string;
   /** The line the last run failed on. With the half-Kneazle equipped, it sits on that line. */
   errorLine?: number | null;
 }) {
   const theme = useGame((s) => s.theme);
-  const editorTheme = useGame((s) => (s.equipped.editor ? itemById(s.equipped.editor)?.value : undefined));
+  const equippedTheme = useGame((s) => (s.equipped.editor ? itemById(s.equipped.editor)?.value : undefined));
+  const editorTheme = themeOverride ?? equippedTheme;
+  const house = useGame((s) => s.house);
+  const coded = useMemo(() => buildEditorTheme(editorTheme, house), [editorTheme, house]);
+  const lightInk = theme === "light" || isLightEditor(editorTheme);
   const wandEffect = useGame((s) => {
     const id = wandOverride ?? s.equipped.wand;
     return s.wandFx && id ? itemById(id)?.effect : undefined;
   });
   const reducedMotion = usePrefersReducedMotion();
-  const wand = useWandFx(!readOnly && !reducedMotion && wandEffect ? wandEffect : null, theme === "light");
+  const wand = useWandFx(!readOnly && !reducedMotion && wandEffect ? wandEffect : null, lightInk);
   const kneazle = useGame((s) => s.equipped.familiar === "fam-cat");
   const kneazleLine = kneazle && errorLine ? errorLine : null;
   const allExtensions = useMemo(
@@ -50,14 +58,19 @@ export function CodeEditor({
   );
   return (
     <div className="editor-wrap">
-      <div className={`editor ${editorTheme ? `editor-${editorTheme}` : ""}`} aria-label={label}>
+      <div
+        className={`editor ${editorTheme ? `editor-${editorTheme}` : ""} ${coded ? "editor-coded" : ""}`}
+        style={coded ? { background: editorBackground(editorTheme, house) } : undefined}
+        aria-label={label}
+        data-editor-theme={editorTheme ?? "default"}
+      >
         <CodeMirror
           value={value}
           onChange={onChange}
           readOnly={readOnly}
           editable={!readOnly}
           extensions={allExtensions}
-          theme={theme === "light" ? "light" : "dark"}
+          theme={coded ?? (theme === "light" ? "light" : "dark")}
           minHeight={minHeight}
           basicSetup={{ foldGutter: false, highlightActiveLine: !readOnly }}
         />
