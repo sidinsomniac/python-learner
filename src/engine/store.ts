@@ -5,6 +5,7 @@ import type { HouseId } from "../lore/lore";
 import { aidById, itemById, type AidId, type ItemKind } from "../lore/shop";
 import { DEFAULT_MENTOR_SETTINGS, type MentorSettings } from "../mentor/llm";
 import { DEFAULT_MUSIC, type MusicSettings } from "./music";
+import * as perks from "./perks";
 import { LESSONS, YEARS } from "./content";
 import type { DuelOutcome } from "./duel";
 import {
@@ -38,7 +39,19 @@ export interface Reward {
   levelUp: number | null;
   lessonCompleted: boolean;
   clue?: string;
+  /** Things your familiar did this time ("The Niffler pocketed a Galleon"). */
+  perkNotes: string[];
 }
+
+/** Day-stamps for perks that work once a day, week or year. */
+export interface PerkState {
+  ratSavedOn: string | null;
+  nifflerOn: string | null;
+  /** School years in which the phoenix has already been reborn. */
+  phoenixYears: Record<string, string>;
+}
+
+const DEFAULT_PERK_STATE: PerkState = { ratSavedOn: null, nifflerOn: null, phoenixYears: {} };
 
 export type Result = { ok: true } | { ok: false; reason: string };
 
@@ -71,6 +84,9 @@ export interface GameState {
   reviewLastDay: string | null;
   reviewStreak: number;
   duels: Record<string, { wins: number; losses: number; draws: number }>;
+  /** The day each duel opponent last paid in full (later wins that day pay 1 Galleon). */
+  duelPaidOn: Record<string, string>;
+  perkState: PerkState;
   theme: "dark" | "light";
   ambience: boolean;
   /** The equipped wand's effects while typing in the editor. */
@@ -94,7 +110,7 @@ export interface GameState {
   pourSand: (exerciseId: string) => Result;
   answerReviewCard: (cardId: string, correct: boolean) => void;
   finishReviewSession: (correctCount: number) => { xp: number; galleons: number; streak: number };
-  recordDuel: (opponentId: string, outcome: DuelOutcome, galleons: number) => string[];
+  recordDuel: (opponentId: string, outcome: DuelOutcome, galleons: number) => { badges: string[]; galleons: number; housePoints: number };
   awardBadge: (id: string) => boolean;
   foundEgg: (id: string) => void;
   markSceneSeen: (id: string) => void;
@@ -109,6 +125,7 @@ export interface GameState {
 }
 
 const now = () => new Date().toISOString();
+const daysBetween = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)) / 86_400_000);
 
 const initialData = {
   name: "",
@@ -135,6 +152,8 @@ const initialData = {
   reviewLastDay: null,
   reviewStreak: 0,
   duels: {},
+  duelPaidOn: {},
+  perkState: DEFAULT_PERK_STATE,
   theme: "dark" as const,
   ambience: true,
   wandFx: true,
@@ -313,7 +332,11 @@ export const useGame = create<GameState>()(
       },
 
       unlockHint: (id) =>
-        set((s) => ({ hintsUnlocked: { ...s.hintsUnlocked, [id]: Math.min(5, (s.hintsUnlocked[id] ?? 0) + 1) } })),
+        set((s) => {
+          const first = (s.hintsUnlocked[id] ?? 0) === 0;
+          const freeHints = first && perks.freeFirstHint(s.equipped) ? { ...s.freeHints, [id]: (s.freeHints[id] ?? 0) + 1 } : s.freeHints;
+          return { hintsUnlocked: { ...s.hintsUnlocked, [id]: Math.min(5, (s.hintsUnlocked[id] ?? 0) + 1) }, freeHints };
+        }),
 
       gainXp: (amount) => {
         const s = get();
@@ -351,15 +374,30 @@ export const useGame = create<GameState>()(
           newBadges: [],
           levelUp: null,
           lessonCompleted: false,
+          perkNotes: [],
         };
+        const eq = s.equipped;
 
         if (previous) {
           // Replays can raise a grade, but never farm XP.
           if (reward.gradeImproved) set({ exercises: { ...s.exercises, [exercise.id]: { ...previous, grade } } });
         } else {
-          reward.xp = xpForCompletion(exercise.xp, hintsUsed, attempts);
-          reward.galleons = exercise.galleons;
-          reward.housePoints = 5;
+          reward.xp = perks.exerciseXp(eq, xpForCompletion(exercise.xp, hintsUsed, perks.countedAttempts(eq, attempts)));
+          reward.galleons = perks.exerciseGalleons(eq, exercise.galleons, exercise.type);
+          reward.housePoints = perks.exerciseHousePoints(eq, 5);
+          const today = dayKey(new Date());
+          const perkState = { ...s.perkState, phoenixYears: { ...s.perkState.phoenixYears } };
+          let aids = s.aids;
+          if (perks.nifflerPockets(eq, s.perkState.nifflerOn, today)) {
+            reward.galleons -= 1;
+            perkState.nifflerOn = today;
+            reward.perkNotes.push("🦫 Your Niffler pocketed a shiny Galleon for itself. It looks very pleased.");
+          }
+          if (perks.phoenixRebirth(eq, lesson.year, s.perkState.phoenixYears)) {
+            perkState.phoenixYears[lesson.year] = now();
+            aids = { ...aids, sand: (aids.sand ?? 0) + 1 };
+            reward.perkNotes.push("🐦‍🔥 Your phoenix burst into flame and was reborn - leaving a pinch of Time-Turner sand in your trunk.");
+          }
           const exercises = {
             ...s.exercises,
             [exercise.id]: { completedAt: now(), attempts, hintsUsed, xpEarned: reward.xp, grade },
@@ -377,6 +415,8 @@ export const useGame = create<GameState>()(
           set({
             exercises,
             clues,
+            aids,
+            perkState,
             galleons: s.galleons + reward.galleons,
             housePoints: s.housePoints + reward.housePoints,
           });
@@ -489,9 +529,16 @@ export const useGame = create<GameState>()(
         const s = get();
         const today = dayKey(new Date());
         const firstToday = s.reviewLastDay !== today;
-        const streak = nextStreak(s.reviewLastDay, s.reviewStreak, today);
-        const bonus = firstToday ? { xp: 10, galleons: 3 } : { xp: 0, galleons: 0 };
-        set({ reviewLastDay: today, reviewStreak: streak, galleons: s.galleons + bonus.galleons });
+        let streak = nextStreak(s.reviewLastDay, s.reviewStreak, today);
+        let perkState = s.perkState;
+        const missed = s.reviewLastDay ? daysBetween(s.reviewLastDay, today) - 1 : 0;
+        if (streak === 1 && s.reviewStreak > 0 && perks.ratSavesStreak(s.equipped, s.perkState.ratSavedOn, today, missed)) {
+          // The rat "napped" through the missed day for you.
+          streak = s.reviewStreak + 1;
+          perkState = { ...perkState, ratSavedOn: today };
+        }
+        const bonus = firstToday ? { xp: 10, galleons: perks.reviewGalleons(s.equipped) } : { xp: 0, galleons: 0 };
+        set({ reviewLastDay: today, reviewStreak: streak, perkState, galleons: s.galleons + bonus.galleons });
         if (bonus.xp) get().gainXp(bonus.xp);
         get().awardBadge("time-turner");
         if (streak >= 3) get().awardBadge("streak-3");
@@ -510,12 +557,21 @@ export const useGame = create<GameState>()(
         };
         set({ duels: { ...s.duels, [opponentId]: next } });
         const earned: string[] = [];
+        let paid = 0;
+        let points = 0;
         if (outcome === "win") {
-          set((st) => ({ galleons: st.galleons + galleons, housePoints: st.housePoints + 10 }));
+          const today = dayKey(new Date());
+          paid = perks.duelGalleons(s.equipped, galleons, s.duelPaidOn[opponentId] !== today);
+          points = perks.duelHousePoints(s.equipped);
+          set((st) => ({
+            galleons: st.galleons + paid,
+            housePoints: st.housePoints + points,
+            duelPaidOn: { ...st.duelPaidOn, [opponentId]: today },
+          }));
           if (get().awardBadge(`duel-${opponentId}`)) earned.push(`duel-${opponentId}`);
           if (opponentId === "draco" && next.wins >= 3 && get().awardBadge("rivalry")) earned.push("rivalry");
         }
-        return earned;
+        return { badges: earned, galleons: paid, housePoints: points };
       },
 
       awardBadge: (id) => {
@@ -562,6 +618,7 @@ export const useGame = create<GameState>()(
           aids: { ...current.aids, ...(p.aids ?? {}) },
           mentor: { ...DEFAULT_MENTOR_SETTINGS, ...(p.mentor ?? {}) },
           music: { ...DEFAULT_MUSIC, ...(p.music ?? {}) },
+          perkState: { ...DEFAULT_PERK_STATE, ...(p.perkState ?? {}) },
         };
       },
     },

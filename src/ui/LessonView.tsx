@@ -26,7 +26,17 @@ import { Pensieve } from "./Pensieve";
 import { SkipDialog } from "./SkipDialog";
 import { go } from "./router";
 
-const FAMILIAR_CHEERS = ["Hoo-hoo! Well cast!", "*happy squeak*", "Purrfect spell!", "Nicely done!", "*excited flapping*", "Brilliant!"];
+/** What each familiar says (or does) when your spell passes. */
+const FAMILIAR_CHEERS: Record<string, string[]> = {
+  "fam-toad": ["*ribbit* (it has wandered onto your keyboard)", "*a proud, damp croak*", "*blinks slowly, approvingly*"],
+  "fam-rat": ["*snores contentedly*", "*twitches whiskers in its sleep*", "*wakes up, squeaks once, sleeps again*"],
+  "fam-puff": ["*happy squeak!*", "*rolls around in delight*", "*squeak squeak SQUEAK*"],
+  "fam-cat": ["Purrfect spell.", "*slow, satisfied blink*", "*kneads your robes approvingly*"],
+  "fam-owl": ["Hoo-hoo! Well cast!", "*ruffles feathers with dignity*", "*a soft, approving hoot*"],
+  "fam-niffler": ["*eyes your Galleons hungrily*", "*sniffs for anything shiny*", "*pats its pouch, which jingles*"],
+  "fam-phoenix": ["*a bright, warm trill*", "*glows a little brighter*", "*sings one golden note*"],
+};
+const DEFAULT_CHEERS = ["Nicely done!", "Brilliant!"];
 
 export function LessonView({ lessonId }: { lessonId: string }) {
   const lesson = lessonById(lessonId);
@@ -259,7 +269,11 @@ function ExerciseScreen({
     if (r.lessonCompleted && lesson.kind === "trial") fx.play("dawn");
     else if (r.grade === "O" && (r.firstTime || r.gradeImproved)) fx.play("golden");
     else if (!r.levelUp) fx.play("sparkle");
-    fx.cheer(FAMILIAR_CHEERS[Math.floor(Math.random() * FAMILIAR_CHEERS.length)]);
+    const familiar = useGame.getState().equipped.familiar;
+    const cheers = (familiar && FAMILIAR_CHEERS[familiar]) || DEFAULT_CHEERS;
+    if (familiar === "fam-phoenix" && r.grade === "O" && (r.firstTime || r.gradeImproved)) {
+      fx.cheer("🔥 *bursts into glorious flame - and is reborn, glowing*");
+    } else fx.cheer(cheers[Math.floor(Math.random() * cheers.length)]);
     setReward({ ...r, remarks });
   };
 
@@ -374,7 +388,7 @@ function CodeBoard(props: BoardProps & { code: string; setCode: (c: string) => v
         </button>
       </div>
       <DeskFilesPanel files={exercise.files} />
-      <CodeEditor value={code} onChange={change} label="Quest code editor" />
+      <CodeEditor value={code} onChange={change} label="Quest code editor" errorLine={runner.outcome?.error?.line} />
       <InputsBox value={inputs} onChange={setInputs} />
       <div className="row">
         <button className="btn" onClick={() => runner.run(code, splitInputs(inputs), exercise.files)} disabled={busy} data-testid="run">
@@ -523,6 +537,9 @@ function RewardModal({
 }) {
   const house = useGame((s) => HOUSES[s.house!]);
   const records = useGame((s) => s.exercises);
+  const equipped = useGame((s) => s.equipped);
+  const owl = equipped.familiar === "fam-owl";
+  const prince = equipped.title === "title-prince";
   // Once the reward is dismissed (however that happens), tell the rest of the story.
   useEffect(() => {
     return () => {
@@ -562,6 +579,11 @@ function RewardModal({
                 </li>
               );
             })}
+            {reward.perkNotes.map((note) => (
+              <li key={note} className="perk-note">
+                {note}
+              </li>
+            ))}
           </ul>
         ) : (
           <p className="muted">
@@ -569,9 +591,25 @@ function RewardModal({
           </p>
         )}
 
+        {owl && reward.lessonCompleted && (
+          <div className="owl-letter" data-testid="owl-letter">
+            <strong>🦉 An owl drops a letter on your desk:</strong>
+            <p className="small">
+              <em>{lesson.title}</em> - complete. You practised {lesson.concepts.slice(0, 4).join(", ")}.{" "}
+              Grades:{" "}
+              {lesson.exercises
+                .filter((e) => records[e.id])
+                .map((e) => `${e.title} ${records[e.id].grade}`)
+                .join(" · ")}
+              . Ink on your fingers, and a lesson in your head. Well done.
+            </p>
+          </div>
+        )}
         {reward.remarks.length > 0 && (
           <div className="snape" data-testid="snape-review">
-            <strong>🦇 Professor Snape glances at your spell...</strong>
+            <strong>
+              🦇 {prince ? "Professor Snape glances at your spell... and, for once, nods slightly before he speaks." : "Professor Snape glances at your spell..."}
+            </strong>
             <ul>
               {reward.remarks.map((r) => (
                 <li key={r.id} dangerouslySetInnerHTML={{ __html: renderMarkdown(r.remark) }} />

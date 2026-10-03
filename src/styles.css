@@ -1733,3 +1733,24 @@ body::before {
 .shop-item.trying {
   outline: 1px dashed var(--gold);
 }
+
+/* The half-Kneazle sits on the line where the last run failed. */
+.cm-kneazle-line {
+  background: rgba(255, 170, 60, 0.12);
+  box-shadow: inset 3px 0 0 #f0a040;
+}
+.cm-kneazle-line::after {
+  content: "🐈";
+  float: right;
+  padding-right: 6px;
+  opacity: 0.9;
+}
+.perk-note {
+  font-style: italic;
+}
+.owl-letter {
+  background: color-mix(in srgb, var(--card2) 70%, #f3e2b5 30%);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 10px 0;
+}

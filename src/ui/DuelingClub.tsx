@@ -11,6 +11,7 @@ import {
   type DuelOutcome,
   type Opponent,
 } from "../engine/duel";
+import { duelPerks } from "../engine/perks";
 import { useFx, useGame } from "../engine/store";
 import type { ReviewCard } from "../engine/types";
 import { badgeById } from "../lore/badges";
@@ -103,16 +104,22 @@ function Duel({ opponent, pool, onExit }: { opponent: Opponent; pool: ReviewCard
   const [round, setRound] = useState(0);
   const [results, setResults] = useState<RoundResult[]>([]);
   const [answered, setAnswered] = useState<boolean | null>(null);
-  const [left, setLeft] = useState(ROUND_SECONDS);
+  const equipped = useGame((s) => s.equipped);
+  const robes = duelPerks(equipped);
+  const roundSeconds = ROUND_SECONDS + robes.extraSeconds;
+  const [left, setLeft] = useState(roundSeconds);
   const started = useRef(performance.now());
-  const [finished, setFinished] = useState<{ outcome: DuelOutcome; badges: string[] } | null>(null);
+  const [finished, setFinished] = useState<{ outcome: DuelOutcome; badges: string[]; galleons: number; housePoints: number } | null>(null);
+  /** Midnight robes block the first wrong answer of the duel: the card resets and you answer again. */
+  const [shieldUsed, setShieldUsed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (answered !== null || finished) return;
     started.current = performance.now();
-    setLeft(ROUND_SECONDS);
+    setLeft(roundSeconds);
     const timer = setInterval(() => {
-      const remaining = ROUND_SECONDS - (performance.now() - started.current) / 1000;
+      const remaining = roundSeconds - (performance.now() - started.current) / 1000;
       setLeft(Math.max(0, remaining));
       if (remaining <= 0) {
         clearInterval(timer);
@@ -124,6 +131,12 @@ function Duel({ opponent, pool, onExit }: { opponent: Opponent; pool: ReviewCard
 
   const finishRound = (correct: boolean) => {
     const seconds = (performance.now() - started.current) / 1000;
+    if (!correct && robes.shield && !shieldUsed && seconds < roundSeconds) {
+      setShieldUsed(true);
+      setAttempt((a) => a + 1);
+      useFx.getState().toast("🛡️ Your midnight robes absorbed that hex. Try again - the clock is still running!", "info");
+      return;
+    }
     const them = theirs[round];
     setResults((r) => [...r, { mine: scoreAnswer(correct, seconds), theirs: them.points, correct, theirCorrect: them.correct, theirSeconds: them.seconds }]);
     setAnswered(correct);
@@ -134,13 +147,13 @@ function Duel({ opponent, pool, onExit }: { opponent: Opponent; pool: ReviewCard
       const mine = results.reduce((a, r) => a + r.mine, 0);
       const their = results.reduce((a, r) => a + r.theirs, 0);
       const outcome = duelOutcome(mine, their);
-      const badges = useGame.getState().recordDuel(opponent.id, outcome, opponent.galleons);
+      const { badges, galleons, housePoints } = useGame.getState().recordDuel(opponent.id, outcome, opponent.galleons);
       for (const id of badges) {
         const b = badgeById(id);
         if (b) useFx.getState().toast(`${b.icon} Badge earned: ${b.name}!`, "badge");
       }
       if (outcome === "win") useFx.getState().play("sparkle");
-      setFinished({ outcome, badges });
+      setFinished({ outcome, badges, galleons, housePoints });
     } else {
       setRound(round + 1);
       setAnswered(null);
@@ -162,7 +175,14 @@ function Duel({ opponent, pool, onExit }: { opponent: Opponent; pool: ReviewCard
         <p>
           You {myTotal} - {theirTotal} {opponent.name}
         </p>
-        {finished.outcome === "win" && <p>🪙 +{opponent.galleons} Galleons · +10 house points</p>}
+        {finished.outcome === "win" && (
+          <p data-testid="duel-prize">
+            🪙 +{finished.galleons} Galleons · +{finished.housePoints} house points
+            {finished.galleons < opponent.galleons && (
+              <span className="small muted"> ({opponent.name.split(" ")[0]} already paid you in full today. Rematches are for glory.)</span>
+            )}
+          </p>
+        )}
         <button className="btn primary" onClick={onExit}>
           Back to the Club
         </button>
@@ -185,10 +205,10 @@ function Duel({ opponent, pool, onExit }: { opponent: Opponent; pool: ReviewCard
         </span>
       </div>
       <div className="timer" aria-label="Time left">
-        <div style={{ width: `${(left / ROUND_SECONDS) * 100}%` }} />
+        <div style={{ width: `${(left / roundSeconds) * 100}%` }} />
       </div>
       <div className="card review-card" data-testid="duel-round">
-        <CardFace key={cards[round].id} card={cards[round]} result={answered} onAnswer={finishRound} />
+        <CardFace key={`${cards[round].id}:${attempt}`} card={cards[round]} result={answered} onAnswer={finishRound} />
         {answered !== null && last && (
           <div className={`fb ${answered ? "success" : "error"}`}>
             <p>

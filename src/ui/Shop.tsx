@@ -131,6 +131,11 @@ function ItemCard({ item, onTry, trying }: { item: ShopItem; onTry?: () => void;
       </div>
       <strong>{item.name}</strong>
       <p className="small muted">{item.description}</p>
+      {item.perk && (
+        <p className="small wand-casts" data-testid={`perk-${item.id}`}>
+          ✨ Does: {item.perk}
+        </p>
+      )}
       {item.effect && (
         <p className="small wand-casts" data-testid={`casts-${item.id}`}>
           ✨ Casts: {LOOKS[item.effect].casts}

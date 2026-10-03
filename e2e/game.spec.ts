@@ -253,8 +253,9 @@ test("Diagon Alley sells a familiar that appears in the header", async ({ page }
   await seed(page, { galleons: 100 });
   await page.goto("/#/shop");
   await expect(page.getByTestId("purse")).toContainText("100");
+  await expect(page.getByTestId("perk-fam-toad")).toContainText("Does:");
   await page.getByTestId("buy-fam-toad").click();
-  await expect(page.getByTestId("purse")).toContainText("80");
+  await expect(page.getByTestId("purse")).toContainText("40");
   await expect(page.locator(".header")).toContainText("🐸");
 });
 

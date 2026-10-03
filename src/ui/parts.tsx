@@ -1,5 +1,5 @@
 import { python as pythonLang } from "@codemirror/lang-python";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { Decoration, EditorView } from "@uiw/react-codemirror";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useGame } from "../engine/store";
 import { itemById } from "../lore/shop";
@@ -22,6 +22,7 @@ export function CodeEditor({
   minHeight = "220px",
   label,
   wandOverride,
+  errorLine,
 }: {
   value: string;
   onChange?: (v: string) => void;
@@ -30,6 +31,8 @@ export function CodeEditor({
   label: string;
   /** Use this wand's effect instead of the equipped one (Ollivanders' try-out). */
   wandOverride?: string;
+  /** The line the last run failed on. With the half-Kneazle equipped, it sits on that line. */
+  errorLine?: number | null;
 }) {
   const theme = useGame((s) => s.theme);
   const editorTheme = useGame((s) => (s.equipped.editor ? itemById(s.equipped.editor)?.value : undefined));
@@ -39,7 +42,12 @@ export function CodeEditor({
   });
   const reducedMotion = usePrefersReducedMotion();
   const wand = useWandFx(!readOnly && !reducedMotion && wandEffect ? wandEffect : null, theme === "light");
-  const allExtensions = useMemo(() => [...extensions, wand.extension], [wand.extension]);
+  const kneazle = useGame((s) => s.equipped.familiar === "fam-cat");
+  const kneazleLine = kneazle && errorLine ? errorLine : null;
+  const allExtensions = useMemo(
+    () => [...extensions, wand.extension, ...(kneazleLine ? [kneazleMarker(kneazleLine)] : [])],
+    [wand.extension, kneazleLine],
+  );
   return (
     <div className="editor-wrap">
       <div className={`editor ${editorTheme ? `editor-${editorTheme}` : ""}`} aria-label={label}>
@@ -57,6 +65,14 @@ export function CodeEditor({
       {wand.overlay}
     </div>
   );
+}
+
+/** The half-Kneazle's perk: a cat sitting on the line where the last run failed. Where, never what. */
+function kneazleMarker(line: number) {
+  return EditorView.decorations.of((view) => {
+    if (line < 1 || line > view.state.doc.lines) return Decoration.none;
+    return Decoration.set([Decoration.line({ class: "cm-kneazle-line" }).range(view.state.doc.line(line).from)]);
+  });
 }
 
 /** Output of a spell, like a terminal. */

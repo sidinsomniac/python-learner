@@ -95,7 +95,7 @@ describe("Diagon Alley", () => {
     reset({ galleons: 100 });
     expect(useGame.getState().buyItem("fam-toad").ok).toBe(true);
     expect(useGame.getState().equipped.familiar).toBe("fam-toad");
-    expect(useGame.getState().galleons).toBe(80);
+    expect(useGame.getState().galleons).toBe(40);
     expect(useGame.getState().buyItem("wand-elder").ok).toBe(false); // level 5 needed
     expect(useGame.getState().buyItem("ed-ember").ok).toBe(false); // gift only
   });
@@ -181,11 +181,11 @@ describe("the Dueling Club", () => {
     expect(duelOutcome(200, 200)).toBe("draw");
   });
 
-  it("pays out and awards badges on a win", () => {
-    reset({ galleons: 0 });
+  it("pays out in full for the first win each day, then 1 Galleon, and awards badges", () => {
+    reset({ galleons: 0, duelPaidOn: {} });
     for (let i = 0; i < 3; i++) useGame.getState().recordDuel("draco", "win", 15);
     const s = useGame.getState();
-    expect(s.galleons).toBe(45);
+    expect(s.galleons).toBe(15 + 1 + 1);
     expect(s.duels.draco.wins).toBe(3);
     expect(s.badges["duel-draco"]).toBeDefined();
     expect(s.badges.rivalry).toBeDefined();

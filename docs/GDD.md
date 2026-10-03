@@ -99,15 +99,23 @@ Full detail is in [exercise-design.md](exercise-design.md).
 | Kind | Examples | Shows up |
 |---|---|---|
 | Wands | holly (starting wand), yew, vine... elder (level 5+, Ollivanders) | header icon; **while you type**, the wand hovers at the cursor and casts its effect at each letter (holly: gold sparks · oak: silver seed-motes · willow: raindrops and ripples · vine: curling tendrils · ebony: ink splashes · yew: phoenix embers · Elder: Patronus sparkles and lightning). Try any wand on Ollivanders' test parchment before buying |
-| Familiars | toad, cat, owl, phoenix | header; cheers in the corner when you pass an exercise |
-| Robes | house-neutral colours | header accent |
+| Familiars | toad, rat, Pygmy Puff, half-Kneazle, owl, Niffler, phoenix | header; each cheers in its own way when you pass. **Perks:** toad +2 on the daily review · rat saves a streak once a week · Puff +2 house points per exercise · Kneazle sits on the line your run failed on · owl sends a lesson recap letter and pays 5 for the daily review · Niffler +15% Galleons (pockets 1 a day) · phoenix: one free Time-Turner sand per year |
+| Robes | maroon, midnight, dragon-hide, silver | header accent. **Dueling Club perks:** maroon +3 s per question · midnight shields your first wrong answer · dragon-hide +25% duel Galleons · silver double duel house points |
 | Editor themes | parchment, dungeon, starlight | the code editor |
-| Titles | "the Unflappable"... | under your name |
+| Titles | the Unflappable, the Bug-Tamer, the Curious, the Half-Blood Pythonista | under your name. **Perks:** first failed attempt forgiven for XP · +50% Galleons on repair exercises · first hint free · +10% XP (and Snape's grudging respect) |
 | Common-room banners | | the Great Hall map |
 
+**Prices** come in tiers, so practice pays for the best things. A full Year 1 earns about 445 Galleons, under 30% of the catalogue:
+- **starter**, 60–150: 1–2 can be bought in Year 1 (toad, oak wand, maroon robes);
+- **mid**, 200–500: goals for Years 2–3;
+- **high stakes**, 800–1,200: Niffler, yew wand, the Half-Blood Pythonista;
+- **premium**, level-locked, 1,500–2,000: Elder Wand, phoenix.
+
+Duels pay in full for the first win against each opponent each day, then 1 Galleon (house points still count).
+
 **Learning aids** (rare; 3 of each per year; they never reveal answers):
-- **Felix Felicis** (60 Galleons): your next hint costs no XP and doesn't lower your grade.
-- **Time-Turner Sand** (80 Galleons): resets a finished exercise's hints and attempts, so you can replay it for a better grade.
+- **Felix Felicis** (90 Galleons): your next hint costs no XP and doesn't lower your grade.
+- **Time-Turner Sand** (120 Galleons): resets a finished exercise's hints and attempts, so you can replay it for a better grade.
 
 **Peeves' Bargain (skipping).** Only the next unfinished lesson can be skipped, never a Trial. The price rises by half with each skip that year: 75 Galleons and 60 XP, then 113 and 90, then 150 and 120... XP can't go below zero, and levels already reached (and their rewards) are kept. A skipped lesson opens the next one but gives no clue, grade or Spellbook page. Finishing it later removes the "skipped" mark.
 
