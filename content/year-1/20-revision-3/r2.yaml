@@ -22,7 +22,7 @@ starter: |
 tests: |
   def _run(n):
       r = run_student([str(n)])
-      return [l for l in r.lines if not l.startswith("How many")]
+      return r.lines[-(n + 1):]
 
   def test_four():
       got = _run(4)

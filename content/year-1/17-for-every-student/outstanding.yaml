@@ -18,7 +18,7 @@ starter: |
 tests: |
   def _game(n):
       r = run_student([str(n)])
-      return [l for l in r.lines if not l.startswith("How")][-n:] if n else []
+      return r.lines[-n:] if n else []
 
   def test_first_five():
       got = _game(5)

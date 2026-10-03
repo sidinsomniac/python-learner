@@ -48,7 +48,7 @@ tests: |
       check(got and got[0].startswith("Most wanted: k0, k1, k10"), f"For the huge record you printed {got[:1]}.")
 
   def test_no_shortcuts():
-      check(not calls("count") and not calls("Counter") and "key=" not in source().replace(" ", ""), "Build the tally yourself this time.")
+      check(not calls("count") and not calls("Counter") and not any(isinstance(k, ast.keyword) and k.arg == "key" for k in ast.walk(tree())), "Build the tally yourself this time.")
 hints:
   nudge: Two passes - one to tally everything, one to find the biggest count. Then pick out every kind that has it.
   question: Once you know the highest count, how do you collect ALL the kinds that reach it, in alphabetical order? How will you choose between "(3)" and "(3 each)"?

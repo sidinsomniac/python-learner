@@ -1,7 +1,11 @@
 // The grader itself, run in real Python (Pyodide in Node): the desk of files,
 // the Pensieve's call stack, and Snape's Year 3 review rules.
+import { load as loadYaml } from "js-yaml";
 import { loadPyodide, type PyodideInterface } from "pyodide";
 import { beforeAll, describe, expect, it } from "vitest";
+import chessGridYaml from "../../content/year-1/23-wizard-chess/outstanding.yaml?raw";
+import stairsYaml from "../../content/year-1/20-revision-3/r2.yaml?raw";
+import tableYaml from "../../content/year-1/17-for-every-student/warmup.yaml?raw";
 import { stackFrames } from "../engine/pensieve";
 import harnessSource from "./harness.py?raw";
 import type { GradeOutcome, RunOutcome, TraceOutcome } from "./types";
@@ -146,5 +150,50 @@ describe("Snape's Year 3 rules", () => {
     expect(review("print(sorted(['bb', 'a'], key=lambda w: len(w)))\n", "needless-lambda")).toEqual(["needless-lambda"]);
     expect(review("print(sorted(['bb', 'a'], key=len))\n", "needless-lambda")).toEqual([]);
     expect(review("print(sorted(['bb', 'a'], key=lambda w: (len(w), w)))\n", "needless-lambda")).toEqual([]);
+  });
+});
+
+// The tests grade what a spell DOES, not how it words its question. input() echoes the prompt and the
+// answer into the output, so a test that assumes a particular prompt wrongly fails correct spells.
+describe("exercise tests don't depend on the prompt wording", () => {
+  const testsOf = (yaml: string) => (loadYaml(yaml) as { tests: string }).tests;
+  const gradeWith = (code: string, tests: string, inputs: string[]): GradeOutcome =>
+    JSON.parse(py.globals.get("grade_json")(code, tests, JSON.stringify(inputs), "[]", "{}"));
+  const passes = (code: string, yaml: string, inputs: string[]) => {
+    const result = gradeWith(code, testsOf(yaml), inputs);
+    expect(result.failure).toBeNull();
+    expect(result.passed).toBe(result.total);
+  };
+
+  const grid = (ask: string) =>
+    `n = int(input(${ask}))\nfor row in range(1, n + 1):\n    line = ""\n    for col in range(1, n + 1):\n        line += f"{row * col:4}"\n    print(line)\n`;
+
+  it("The Arithmancy Grid accepts any prompt, or none at all", () => {
+    passes(grid('"Number: "'), chessGridYaml, ["4"]);
+    passes(grid(""), chessGridYaml, ["4"]);
+    passes(grid('"Size? "'), chessGridYaml, ["4"]);
+    passes(grid('"Number? 4 x 4 grid? "'), chessGridYaml, ["4"]);
+  });
+
+  it("The Arithmancy Grid still rejects a wrong grid", () => {
+    const narrow = grid('"Number: "').replace(":4}", ":3}");
+    expect(gradeWith(narrow, testsOf(chessGridYaml), ["4"]).failure).not.toBeNull();
+  });
+
+  it("the stairs repair accepts a reworded question", () => {
+    const fixed = (ask: string) => `stairs = int(input(${ask}))\nwhile stairs > 0:\n    print(stairs)\n    stairs -= 1\nprint("Top of the tower!")\n`;
+    passes(fixed('"How many stairs? "'), stairsYaml, ["4"]);
+    passes(fixed('"Height of the tower: "'), stairsYaml, ["4"]);
+    passes(fixed(""), stairsYaml, ["4"]);
+    // The original bug (it prints 0 as well) is still caught.
+    const prints0 = `stairs = int(input("Height: "))\nwhile stairs >= 0:\n    print(stairs)\n    stairs -= 1\nprint("Top of the tower!")\n`;
+    expect(gradeWith(prints0, testsOf(stairsYaml), ["4"]).failure).not.toBeNull();
+  });
+
+  it("the times table finds its rows even when the question contains ' x '", () => {
+    const table = (ask: string) => `n = int(input(${ask}))\nfor i in range(1, 11):\n    print(f"{n} x {i} = {n * i}")\n`;
+    passes(table('"Which table? "'), tableYaml, ["7"]);
+    passes(table('"Which x table? "'), tableYaml, ["7"]);
+    passes(table('"Pick a number x 1: "'), tableYaml, ["7"]);
   });
 });

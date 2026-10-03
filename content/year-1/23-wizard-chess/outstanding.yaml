@@ -18,7 +18,7 @@ starter: |
 tests: |
   def _grid(n):
       r = run_student([str(n)])
-      return [l for l in r.stdout.split("\n") if l.strip() and not l.startswith("Size")]
+      return [l for l in r.stdout.split("\n") if l.strip()][-n:]
 
   def test_four():
       got = _grid(4)

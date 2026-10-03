@@ -41,7 +41,7 @@ tests: |
       check(got == ["Day 1, 23:00 - late", "Day 2, 01:00 - early"], f"Day 1 at 23:00 still comes before day 2. You printed {got}.")
 
   def test_no_key():
-      check(not uses(ast.Lambda) and "key=" not in source().replace(" ", ""), "No key= or lambda this time - reshape the tuples instead.")
+      check(not uses(ast.Lambda) and not any(isinstance(k, ast.keyword) and k.arg == "key" for k in ast.walk(tree())), "No key= or lambda this time - reshape the tuples instead.")
 
   def test_empty():
       check(_run([]) == [], "No events, no output.")

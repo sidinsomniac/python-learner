@@ -14,9 +14,11 @@ task: |
 starter: |
   # A times table with a for loop
 tests: |
+  import re
+
   def _table(n):
       r = run_student([str(n)])
-      return [l for l in r.lines if " x " in l]
+      return [l for l in r.lines if re.fullmatch(r"\d+ x \d+ = \d+", l)]
 
   def test_seven():
       got = _table(7)
