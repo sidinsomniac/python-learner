@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CAST } from "../engine/content";
 import { useFx, useGame } from "../engine/store";
 import type { SceneLine } from "../engine/types";
@@ -75,7 +75,13 @@ export function SceneHost() {
   const finishScene = useFx((s) => s.finishScene);
   const [shown, setShown] = useState(1);
 
+  const dialogue = useRef<HTMLDivElement>(null);
   useEffect(() => setShown(1), [scene?.id]);
+  // Long scenes scroll inside the pop-up; keep the newest line in view.
+  useEffect(() => {
+    const el = dialogue.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [shown, scene?.id]);
   if (!scene) return null;
   const finished = shown >= scene.lines.length;
   const next = () => (finished ? finishScene() : setShown(shown + 1));
@@ -84,7 +90,7 @@ export function SceneHost() {
     <div className="modal-backdrop scene-backdrop" role="dialog" aria-modal="true" aria-label={scene.title ?? "Story"}>
       <div className="card modal scene-modal" data-testid="cutscene">
         {scene.title && <h2 className="cutscene-title">{scene.title}</h2>}
-        <div className="dialogue big">
+        <div className="dialogue big" ref={dialogue} data-testid="scene-dialogue">
           {scene.lines.slice(0, shown).map((l, i) => (
             <Line key={i} line={l} fresh={i === shown - 1} />
           ))}

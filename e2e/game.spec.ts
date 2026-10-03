@@ -496,3 +496,23 @@ test("the Snitch banner sends the Snitch across the header, and banner cards say
   await expect(page.getByTestId("header-snitch")).toHaveCount(1);
   await expect(page.getByTestId("perk-banner-snitch")).toContainText("Quidditch Pitch");
 });
+
+test("a long story pop-up scrolls inside the screen, keeping Next reachable", async ({ page }) => {
+  await page.setViewportSize({ width: 800, height: 500 });
+  // No auto-dismiss here: this test reads the pop-up itself.
+  await page.addInitScript(
+    ([key, s]) => localStorage.setItem(key, JSON.stringify({ state: { name: "Tester", house: "ravenclaw", ...s }, version: 3 })),
+    [SAVE_KEY, { exercises: completed([...YEAR1, "y1-trial"]) }] as const,
+  );
+  await page.goto("/#/");
+  const next = page.getByTestId("scene-next");
+  await expect(page.getByTestId("cutscene")).toBeVisible();
+  // Reveal every line of the Year 2 opening (9 lines); the pop-up must stay on screen throughout.
+  for (let i = 0; i < 8; i++) {
+    const box = (await page.getByTestId("cutscene").boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(500 + 1);
+    await expect(next).toBeInViewport();
+    await next.click();
+  }
+  await expect(next).toBeInViewport();
+});
