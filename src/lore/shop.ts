@@ -2,6 +2,8 @@
 
 export type ItemKind = "wand" | "familiar" | "robe" | "editor" | "title" | "banner";
 export type AidId = "felix" | "sand";
+/** What a wand casts while you type (drawn in `src/ui/wand/`). */
+export type WandEffect = "sparks" | "motes" | "ripples" | "tendrils" | "ink" | "embers" | "patronus";
 
 export interface ShopItem {
   id: string;
@@ -16,6 +18,8 @@ export interface ShopItem {
   giftOnly?: boolean;
   /** Colour (robes, banners), CSS class suffix (editor themes) or title text. */
   value?: string;
+  /** Wands only: the effect it casts at each letter you type. */
+  effect?: WandEffect;
 }
 
 export interface Aid {
@@ -37,13 +41,13 @@ export const KIND_LABEL: Record<ItemKind, string> = {
 };
 
 export const ITEMS: ShopItem[] = [
-  { id: "wand-holly", kind: "wand", name: "Holly & phoenix feather", icon: "🪄", price: 0, description: "Your first wand. Reliable and brave." },
-  { id: "wand-oak", kind: "wand", name: "English oak & unicorn hair", icon: "🪄", price: 30, description: "Steady, loyal - never drops a variable." },
-  { id: "wand-willow", kind: "wand", name: "Willow & dragon heartstring", icon: "🪄", price: 45, description: "Good for healing broken spells." },
-  { id: "wand-vine", kind: "wand", name: "Vine & dragon heartstring", icon: "🪄", price: 60, description: "Seeks a wizard with hidden depths." },
-  { id: "wand-ebony", kind: "wand", name: "Ebony & unicorn hair", icon: "🪄", price: 90, description: "For those who stick to their convictions (and their tests)." },
-  { id: "wand-yew", kind: "wand", name: "Yew & phoenix feather", icon: "✨", price: 200, minLevel: 5, description: "Premium Ollivanders stock. Powerful and rare." },
-  { id: "wand-elder", kind: "wand", name: "The Elder Wand (replica)", icon: "⚡", price: 300, minLevel: 5, description: "An excellent replica. The shopkeeper swears it's only a replica." },
+  { id: "wand-holly", kind: "wand", effect: "sparks", name: "Holly & phoenix feather", icon: "🪄", price: 0, description: "Your first wand. Reliable and brave." },
+  { id: "wand-oak", kind: "wand", effect: "motes", name: "English oak & unicorn hair", icon: "🪄", price: 30, description: "Steady, loyal - never drops a variable." },
+  { id: "wand-willow", kind: "wand", effect: "ripples", name: "Willow & dragon heartstring", icon: "🪄", price: 45, description: "Good for healing broken spells." },
+  { id: "wand-vine", kind: "wand", effect: "tendrils", name: "Vine & dragon heartstring", icon: "🪄", price: 60, description: "Seeks a wizard with hidden depths." },
+  { id: "wand-ebony", kind: "wand", effect: "ink", name: "Ebony & unicorn hair", icon: "🪄", price: 90, description: "For those who stick to their convictions (and their tests)." },
+  { id: "wand-yew", kind: "wand", effect: "embers", name: "Yew & phoenix feather", icon: "✨", price: 200, minLevel: 5, description: "Premium Ollivanders stock. Powerful and rare." },
+  { id: "wand-elder", kind: "wand", effect: "patronus", name: "The Elder Wand (replica)", icon: "⚡", price: 300, minLevel: 5, description: "An excellent replica. The shopkeeper swears it's only a replica." },
 
   { id: "fam-toad", kind: "familiar", name: "Toad", icon: "🐸", price: 20, description: "Prone to wandering off. Very loyal when found." },
   { id: "fam-rat", kind: "familiar", name: "Rat", icon: "🐀", price: 25, description: "Sleeps a lot. Nothing suspicious about that." },

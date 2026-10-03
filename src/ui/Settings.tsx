@@ -98,6 +98,15 @@ export function Settings() {
           />
           Castle ambience (moving weather in the background)
         </label>
+        <label className="row">
+          <input
+            type="checkbox"
+            checked={game.wandFx}
+            onChange={(e) => game.setWandFx(e.target.checked)}
+            data-testid="wandfx-toggle"
+          />
+          Wand effects while typing (your wand casts at each letter)
+        </label>
         <MusicSettingsRow />
       </section>
 

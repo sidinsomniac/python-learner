@@ -1,13 +1,19 @@
 import { YEARS } from "../engine/content";
 import { currentYear } from "../engine/progress";
+import { useState } from "react";
 import { useFx, useGame } from "../engine/store";
-import { AIDS, ITEMS, KIND_LABEL, type ItemKind, type ShopItem } from "../lore/shop";
+import { AIDS, ITEMS, KIND_LABEL, itemById, type ItemKind, type ShopItem } from "../lore/shop";
+import { CodeEditor } from "./parts";
+import { LOOKS } from "./wand/effects";
 
 const KINDS: ItemKind[] = ["wand", "familiar", "robe", "editor", "title", "banner"];
 
 /** Diagon Alley: spend Galleons on cosmetics and a few rare learning aids. */
 export function Shop() {
-  const { galleons, aids, aidBought, exercises, skipped } = useGame();
+  const { galleons, aids, aidBought, exercises, skipped, equipped } = useGame();
+  /** The wand being tried in Ollivanders' test parchment (any wand can be tried before buying). */
+  const [trying, setTrying] = useState(equipped.wand ?? "wand-holly");
+  const [testCode, setTestCode] = useState("# Try a wand: point at it, then type here\n");
   const year = currentYear(YEARS, exercises, skipped);
 
   const buyAid = (id: (typeof AIDS)[number]["id"]) => {
@@ -55,9 +61,18 @@ export function Shop() {
       {KINDS.map((kind) => (
         <section key={kind} className="card">
           <h2>{KIND_LABEL[kind]}</h2>
+          {kind === "wand" && (
+            <div className="wand-trial">
+              <p className="small muted">
+                Every wand casts its own magic at each letter you type. Mr Ollivander lets you try before you buy: point at a
+                wand, then write on the test parchment. Trying: <strong data-testid="trying">{itemById(trying)?.name}</strong>
+              </p>
+              <CodeEditor value={testCode} onChange={setTestCode} minHeight="64px" label="Ollivanders test parchment" wandOverride={trying} />
+            </div>
+          )}
           <div className="shop-grid">
             {ITEMS.filter((i) => i.kind === kind).map((item) => (
-              <ItemCard key={item.id} item={item} />
+              <ItemCard key={item.id} item={item} onTry={kind === "wand" ? () => setTrying(item.id) : undefined} trying={trying === item.id} />
             ))}
           </div>
         </section>
@@ -66,7 +81,7 @@ export function Shop() {
   );
 }
 
-function ItemCard({ item }: { item: ShopItem }) {
+function ItemCard({ item, onTry, trying }: { item: ShopItem; onTry?: () => void; trying?: boolean }) {
   const { galleons, owned, equipped, bestLevel } = useGame();
   const has = Boolean(owned[item.id]);
   const isOn = equipped[item.kind] === item.id;
@@ -105,12 +120,22 @@ function ItemCard({ item }: { item: ShopItem }) {
   }
 
   return (
-    <div className={`shop-item ${isOn ? "equipped" : ""} ${locked && !has ? "locked-item" : ""}`}>
+    <div
+      className={`shop-item ${isOn ? "equipped" : ""} ${locked && !has ? "locked-item" : ""} ${trying ? "trying" : ""}`}
+      onMouseEnter={onTry}
+      onFocus={onTry}
+      onClick={onTry}
+    >
       <div className="shop-icon" aria-hidden style={item.kind === "robe" && item.value ? { color: item.value } : undefined}>
         {item.icon}
       </div>
       <strong>{item.name}</strong>
       <p className="small muted">{item.description}</p>
+      {item.effect && (
+        <p className="small wand-casts" data-testid={`casts-${item.id}`}>
+          ✨ Casts: {LOOKS[item.effect].casts}
+        </p>
+      )}
       {action}
     </div>
   );

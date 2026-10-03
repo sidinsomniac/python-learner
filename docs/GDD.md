@@ -98,7 +98,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 
 | Kind | Examples | Shows up |
 |---|---|---|
-| Wands | holly (starting wand), yew, vine... elder (level 5+, Ollivanders) | header icon |
+| Wands | holly (starting wand), yew, vine... elder (level 5+, Ollivanders) | header icon; **while you type**, the wand hovers at the cursor and casts its effect at each letter (holly: gold sparks · oak: silver seed-motes · willow: raindrops and ripples · vine: curling tendrils · ebony: ink splashes · yew: phoenix embers · Elder: Patronus sparkles and lightning). Try any wand on Ollivanders' test parchment before buying |
 | Familiars | toad, cat, owl, phoenix | header; cheers in the corner when you pass an exercise |
 | Robes | house-neutral colours | header accent |
 | Editor themes | parchment, dungeon, starlight | the code editor |

@@ -56,7 +56,8 @@ export function Ambience({ sceneKey }: { sceneKey: string }) {
   );
 }
 
-function usePrefersReducedMotion() {
+/** True when the player has asked their system for less motion. */
+export function usePrefersReducedMotion() {
   const query = "(prefers-reduced-motion: reduce)";
   const [reduced, setReduced] = useState(() => typeof matchMedia !== "undefined" && matchMedia(query).matches);
   useEffect(() => {

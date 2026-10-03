@@ -1713,3 +1713,23 @@ body::before {
 .music-settings input[type="range"] {
   width: 160px;
 }
+
+/* Wand effects while typing: the canvas leans out past the editor's edges. */
+.editor-wrap {
+  position: relative;
+}
+.wand-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+}
+.wand-casts {
+  color: var(--gold-2);
+  margin: 2px 0 6px;
+}
+.wand-trial {
+  margin-bottom: 12px;
+}
+.shop-item.trying {
+  outline: 1px dashed var(--gold);
+}

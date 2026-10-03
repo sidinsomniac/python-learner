@@ -73,6 +73,8 @@ export interface GameState {
   duels: Record<string, { wins: number; losses: number; draws: number }>;
   theme: "dark" | "light";
   ambience: boolean;
+  /** The equipped wand's effects while typing in the editor. */
+  wandFx: boolean;
   music: MusicSettings;
   marauderMap: boolean;
   mentor: MentorSettings;
@@ -98,6 +100,7 @@ export interface GameState {
   markSceneSeen: (id: string) => void;
   setTheme: (theme: "dark" | "light") => void;
   setAmbience: (on: boolean) => void;
+  setWandFx: (on: boolean) => void;
   setMusic: (patch: Partial<MusicSettings>) => void;
   setMarauderMap: (open: boolean) => void;
   setMentor: (patch: Partial<MentorSettings>) => void;
@@ -134,6 +137,7 @@ const initialData = {
   duels: {},
   theme: "dark" as const,
   ambience: true,
+  wandFx: true,
   music: DEFAULT_MUSIC,
   marauderMap: false,
   mentor: DEFAULT_MENTOR_SETTINGS,
@@ -527,6 +531,7 @@ export const useGame = create<GameState>()(
       markSceneSeen: (id) => set((s) => ({ scenesSeen: { ...s.scenesSeen, [id]: true } })),
       setTheme: (theme) => set({ theme }),
       setAmbience: (ambience) => set({ ambience }),
+      setWandFx: (wandFx) => set({ wandFx }),
       setMusic: (patch) => set((s) => ({ music: { ...s.music, ...patch } })),
       setMarauderMap: (marauderMap) => set({ marauderMap }),
       setMentor: (patch) => set((s) => ({ mentor: { ...s.mentor, ...patch } })),

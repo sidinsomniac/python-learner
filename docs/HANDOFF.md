@@ -67,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **89** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **94** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **23** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **25** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -104,6 +104,10 @@ src/ui/BackgroundMusic.tsx  quiet background music from music/ (fade in after th
                 shuffled loop, fade out when hidden or muted) and the 🎵 header switch
 src/engine/music.ts  TRACKS (an import.meta.glob of music/*), trackTitle, shuffleOrder, DEFAULT_MUSIC
 music/          drop audio files here (git-ignored except README.md)
+src/ui/wand/     wand effects while typing (Canvas 2D, no library): effects.ts (the 7 effects:
+                spawn/advance are pure and tested, drawFx draws), drawWand.ts (the wand at the
+                cursor), WandOverlay.tsx (useWandFx: a CodeMirror updateListener plus an overlay
+                canvas; the loop sleeps when idle). Wired into CodeEditor in parts.tsx
 src/ui/backdrop/  the living backgrounds, as hand-written Canvas 2D:
                 engine.ts (cached glow sprites, additive light, parallax, quality scaling),
                 classic.ts (the first 10 presets), magic.ts (8 more),
@@ -244,6 +248,7 @@ Tests run in order and stop at the first failure.
   - `clues`: `{lessonId: timestamp}`
   - `scenesSeen`: `{lessonId: true, "<lessonId>:outro": true, "year-N": true}`
   - `skipped`, `owned`, `equipped`, `aids`, `cards`, `duels`, `badges`, `drafts`, `hintsUnlocked`
+  - `wandFx`: boolean, default `true` (wand effects while typing; off under reduced motion anyway). Filled in by `merge`.
   - `music`: `{ enabled, volume }`. Older saves get the defaults through the store's `merge`, so no migration step is needed.
 - **Restoring, in Settings:**
   - **Download backup / Restore backup** for a save file.
@@ -293,9 +298,10 @@ location.reload();
    - ✅ y2-l10 now teaches `Counter`, `defaultdict` and `json`, and its ⭐ is the Owl Post manifest.
    - All the 🔄 swaps are done.
 4. ✅ **Story polish for Years 2–3 (2026-10-03).** Richer scenes, character arcs and post-clue `outro` reactions. Same plots and clues. See the "Character arcs" sections of `docs/story.md`.
-5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 7), and add the `owl_post` mock HTTP module to the harness.
-6. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
-7. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
+5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 8), and add the `owl_post` mock HTTP module to the harness.
+6. **Give every other shop item a purpose** (the owner's rule: everything bought in Diagon Alley must *do* something). Wands are done (2026-10-03). Next: familiars, robes, titles and banners.
+7. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
+8. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
 
 ## 12. Commit conventions
 
@@ -309,6 +315,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-03 | Claude Code desktop session | **Wands now do something.** While you type, the equipped wand hovers at the cursor, points at each new letter and casts its own effect there: holly, golden sparks; oak, silver seed-motes; willow, raindrops and ripples; vine, curling tendrils; ebony, ink splashes; yew, phoenix embers; Elder, Patronus sparkles with lightning every 5th key. Deleting makes a small puff. The wand fades after 2 s idle. Ollivanders shows what each wand casts, and has a test parchment for trying any wand before buying. New save field `wandFx` (Settings toggle; also off under reduced motion). Patronus sparkles moved to `backdrop/sparkles.ts`, shared with the Elder Wand. The music e2e test was made to match the `music/` folder earlier. Tests: 94 unit, 25 e2e (§3, §5, §9, §11). |
 | 2026-10-03 | Claude Code desktop session | **Story polish, Years 2–3.** Every Year 2 and 3 scene was rewritten for depth: 3–7 lines, stage directions, characters talking to each other, an `outro` reaction after each clue, and callbacks (Grimwald in the Pensieve). The arcs are in `story.md` under *Character arcs*: Ginny finds her voice, Lockhart's fear of being a fraud, Myrtle's loneliness, Filch and Mrs Norris, Draco's family shame, Ron learning to check before he accuses; Lupin's hidden illness, Hermione's Time-Turner overload mirroring Tobias, Tobias's line changing as he's freed, Trelawney's one true prophecy, Neville facing fear. New writing rules for Year 2 on are in `story.md`. Plots, clues and ids are unchanged, so saves are unaffected (§11). |
 | 2026-10-03 | Claude Code desktop session | **Interview coverage.** `curriculum.md` gains a *recursion thread* table and a *LeetCode Easy coverage* table, mapping each classic Easy problem to its lesson. The gaps (buy and sell stock, Kadane, majority element, roman to integer, move zeroes, merge sorted array, invert, same and symmetric trees, missing number, happy number) were slotted into the unbuilt Years 4, 5 and 7. The O.W.L.s gained a timed Easy set (§11). |
 | 2026-10-02 | Claude Code desktop session | **Background music**, with no visible player. Files in `music/` (git-ignored apart from its README) are found at build time. They play quietly, shuffled and looping, fading in after the first click and fading out when the tab is hidden or the music is switched off. 🎵 in the header switches it on and off; Settings has the volume. Save field `music: { enabled, volume }` (default on, 25), filled in by `merge` for older saves. The owner's style change was also kept (dimmed tier dots). Tests: 89 unit, 23 e2e (§1, §3, §5, §9). |

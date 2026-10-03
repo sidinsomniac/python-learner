@@ -432,3 +432,37 @@ test("a save pasted in Settings brings the progress back", async ({ page }) => {
   await page.goto("/#/settings");
   await expect(page.getByTestId("backups")).toBeVisible();
 });
+
+test("the equipped wand casts its effect while you type, and Settings can switch it off", async ({ page }) => {
+  await seed(page, { owned: { "wand-holly": "start", "wand-yew": "x" }, equipped: { wand: "wand-yew" } });
+  await page.goto("/#/lesson/y1-l01");
+  await page.getByTestId("tab-warmup").click();
+  const editor = page.getByLabel("Quest code editor").locator(".cm-content");
+  await editor.click();
+  await page.keyboard.type("Lumos", { delay: 40 });
+  const overlay = page.getByTestId("wand-overlay");
+  await expect(overlay).toHaveCount(1);
+  // Something has been drawn: the canvas holds non-transparent pixels.
+  const painted = await overlay.evaluate((c: HTMLCanvasElement) => {
+    const d = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
+    for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return true;
+    return false;
+  });
+  expect(painted).toBe(true);
+
+  await page.goto("/#/settings");
+  await page.getByTestId("wandfx-toggle").uncheck();
+  await page.goto("/#/lesson/y1-l01");
+  await page.getByTestId("tab-warmup").click();
+  await expect(page.getByLabel("Quest code editor")).toBeVisible();
+  await expect(page.getByTestId("wand-overlay")).toHaveCount(0);
+});
+
+test("Ollivanders shows what each wand casts, and lets you try one before buying", async ({ page }) => {
+  await seed(page);
+  await page.goto("/#/shop");
+  await expect(page.getByTestId("casts-wand-elder")).toContainText("Patronus sparkles");
+  await page.getByTestId("casts-wand-vine").hover();
+  await expect(page.getByTestId("trying")).toHaveText("Vine & dragon heartstring");
+  await expect(page.getByLabel("Ollivanders test parchment").locator("..").getByTestId("wand-overlay")).toHaveCount(1);
+});

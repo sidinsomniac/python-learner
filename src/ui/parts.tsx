@@ -10,6 +10,8 @@ import type { DeskFiles, RunOutcome } from "../runtime/types";
 import { splitLecture, type CheckpointSpec } from "../engine/lecture";
 import { renderInline, renderMarkdown } from "./md";
 import { Pensieve } from "./Pensieve";
+import { usePrefersReducedMotion } from "./Ambience";
+import { useWandFx } from "./wand/WandOverlay";
 
 const extensions = [pythonLang()];
 
@@ -19,27 +21,40 @@ export function CodeEditor({
   readOnly = false,
   minHeight = "220px",
   label,
+  wandOverride,
 }: {
   value: string;
   onChange?: (v: string) => void;
   readOnly?: boolean;
   minHeight?: string;
   label: string;
+  /** Use this wand's effect instead of the equipped one (Ollivanders' try-out). */
+  wandOverride?: string;
 }) {
   const theme = useGame((s) => s.theme);
   const editorTheme = useGame((s) => (s.equipped.editor ? itemById(s.equipped.editor)?.value : undefined));
+  const wandEffect = useGame((s) => {
+    const id = wandOverride ?? s.equipped.wand;
+    return s.wandFx && id ? itemById(id)?.effect : undefined;
+  });
+  const reducedMotion = usePrefersReducedMotion();
+  const wand = useWandFx(!readOnly && !reducedMotion && wandEffect ? wandEffect : null, theme === "light");
+  const allExtensions = useMemo(() => [...extensions, wand.extension], [wand.extension]);
   return (
-    <div className={`editor ${editorTheme ? `editor-${editorTheme}` : ""}`} aria-label={label}>
-      <CodeMirror
-        value={value}
-        onChange={onChange}
-        readOnly={readOnly}
-        editable={!readOnly}
-        extensions={extensions}
-        theme={theme === "light" ? "light" : "dark"}
-        minHeight={minHeight}
-        basicSetup={{ foldGutter: false, highlightActiveLine: !readOnly }}
-      />
+    <div className="editor-wrap">
+      <div className={`editor ${editorTheme ? `editor-${editorTheme}` : ""}`} aria-label={label}>
+        <CodeMirror
+          value={value}
+          onChange={onChange}
+          readOnly={readOnly}
+          editable={!readOnly}
+          extensions={allExtensions}
+          theme={theme === "light" ? "light" : "dark"}
+          minHeight={minHeight}
+          basicSetup={{ foldGutter: false, highlightActiveLine: !readOnly }}
+        />
+      </div>
+      {wand.overlay}
     </div>
   );
 }

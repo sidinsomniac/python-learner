@@ -22,6 +22,7 @@ Before starting work, `git pull` the branch and read the change log (§13) to se
 - **Build one Year at a time:** script the year in `docs/story.md` first, then write its content, then validate, test, commit and push.
 - **API keys** (Claude, DeepSeek) stay in localStorage and are never exported.
 - **Background music** comes only from the `music/` folder, which is git-ignored apart from its README. It plays quietly with no visible player. Never extract or bundle audio from YouTube or other services.
+- **Every Diagon Alley item must visibly do something**, not just sit in a list. Wands cast typing effects in the editor (`src/ui/wand/`). Familiars, robes, titles and banners are next (HANDOFF §11).
 - The living backgrounds are 18 presets picked at random, **not** tied to years. They're hand-drawn Canvas 2D with no library (see `src/ui/backdrop/`); keep it that way, because the bundle is already large.
 
 ## Before every push

@@ -4,6 +4,7 @@ import { drawFeather } from "./classic";
 import { drawStag } from "./creatures";
 import type { Maker } from "./engine";
 import { TAU, additive, clamp, count, drawStars, glow, parallax, rand, starField, wrap } from "./engine";
+import { stepSparkles, type Sparkle } from "./sparkles";
 
 interface Mote {
   x: number;
@@ -28,49 +29,6 @@ function stepMotes(ctx: CanvasRenderingContext2D, motes: Mote[], dt: number, rgb
     m.y += m.vy * dt;
     const a = 1 - m.age / m.life;
     glow(ctx, m.x, m.y, m.r * (1 + a), rgb, alpha * a, true);
-  }
-}
-
-interface Sparkle extends Mote {
-  /** Twinkle speed and offset. */
-  rate: number;
-  seed: number;
-}
-
-/**
- * Update and draw twinkling sparkles: they slow down as they drift, twinkle as
- * they fade, and the larger ones flash a four-pointed star.
- */
-function stepSparkles(ctx: CanvasRenderingContext2D, list: Sparkle[], dt: number, rgb: string) {
-  const drag = Math.exp(-dt * 1.6);
-  for (let i = list.length - 1; i >= 0; i--) {
-    const p = list[i];
-    p.age += dt;
-    if (p.age >= p.life) {
-      list.splice(i, 1);
-      continue;
-    }
-    p.vx *= drag;
-    p.vy = p.vy * drag + 4 * dt; // a gentle settling, like falling dust
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    const k = p.age / p.life;
-    const fade = Math.min(1, p.age / 0.08) * (1 - k) ** 1.2;
-    const twinkle = 0.45 + 0.55 * Math.abs(Math.sin(p.age * p.rate + p.seed));
-    const a = fade * twinkle;
-    glow(ctx, p.x, p.y, p.r * 4.5, rgb, 0.22 * a);
-    glow(ctx, p.x, p.y, p.r * 1.6, "255,255,255", 0.95 * a, true);
-    if (p.r > 1.7 && twinkle > 0.8) {
-      const len = p.r * 5 * twinkle;
-      ctx.strokeStyle = `rgba(255,255,255,${0.55 * a})`;
-      ctx.lineWidth = 0.7;
-      ctx.beginPath();
-      ctx.moveTo(p.x - len, p.y);
-      ctx.lineTo(p.x + len, p.y);
-      ctx.moveTo(p.x, p.y - len);
-      ctx.lineTo(p.x, p.y + len);
-      ctx.stroke();
-    }
   }
 }
 
