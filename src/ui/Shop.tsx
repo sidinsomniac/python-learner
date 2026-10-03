@@ -32,7 +32,7 @@ export function Shop() {
           Cobbled streets, crooked shopfronts, and the smell of fresh parchment. Your purse holds{" "}
           <strong data-testid="purse">🪙 {galleons} Galleons</strong>.
         </p>
-        <p className="muted small">Earn Galleons from exercises, Time-Turner reviews and duels. Level rewards put free items in your trunk.</p>
+        <p className="muted small">Earn Galleons from exercises, Time-Turner reviews and duels. Level rewards put free items in your trunk, and every level above 1 adds 3% to the Galleons and house points you earn.</p>
       </section>
 
       <section className="card">

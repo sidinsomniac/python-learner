@@ -107,6 +107,25 @@ describe("Diagon Alley", () => {
     expect(useGame.getState().buyAid("felix", 2).ok).toBe(true);
   });
 
+  it("pays more Galleons and house points at higher levels, but the same XP", () => {
+    const lesson = lessonById("y1-l01")!;
+    const core = lesson.exercises.find((e) => e.tier === "core")!;
+    reset({ bestLevel: 1 });
+    const low = useGame.getState().completeExercise(core, lesson, true);
+    reset({ bestLevel: 10, xp: 4500 });
+    const high = useGame.getState().completeExercise(core, lesson, true);
+    expect(high.galleons).toBe(Math.ceil(core.galleons * 1.27));
+    expect(high.housePoints).toBeGreaterThan(low.housePoints);
+    expect(high.xp).toBe(low.xp);
+    expect(high.levelBonus).toBeCloseTo(1.27);
+  });
+
+  it("still pays only 1 Galleon for a repeat duel win, whatever the level", () => {
+    reset({ bestLevel: 15, duelPaidOn: {} });
+    expect(useGame.getState().recordDuel("neville", "win", 8).galleons).toBe(Math.ceil(8 * 1.42));
+    expect(useGame.getState().recordDuel("neville", "win", 8).galleons).toBe(1);
+  });
+
   it("Felix Felicis makes a hint free for XP and grade", () => {
     reset({ aids: { felix: 1, sand: 0 } });
     const lesson = lessonById("y1-l01")!;

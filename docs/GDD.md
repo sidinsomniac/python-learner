@@ -111,6 +111,8 @@ Full detail is in [exercise-design.md](exercise-design.md).
 - **high stakes**, 800–1,200: Niffler, yew wand, the Half-Blood Pythonista;
 - **premium**, level-locked, 1,500–2,000: Elder Wand, phoenix.
 
+**Level bonus:** every level above 1 adds 3% to the Galleons and house points you earn (x1.57 at level 20); XP doesn't scale.
+
 Duels pay in full for the first win against each opponent each day, then 1 Galleon (house points still count).
 
 **Learning aids** (rare; 3 of each per year; they never reveal answers):

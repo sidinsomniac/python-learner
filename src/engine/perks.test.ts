@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ITEMS } from "../lore/shop";
 import { TIER_REWARD } from "./types";
 import * as perks from "./perks";
+import { levelBonus, scaled } from "./progress";
 
 describe("Diagon Alley prices and purposes", () => {
   it("gives every item something it does: a wand effect, a perk, or an editor theme", () => {
@@ -14,12 +15,23 @@ describe("Diagon Alley prices and purposes", () => {
   it("keeps the catalogue out of reach of a single year's earnings", () => {
     // A full Year 1: 20 lessons x (warm-up, core, outstanding), 9 review cards, 4 Trial stages, plus level rewards.
     const t = TIER_REWARD;
-    const year1 = 20 * (t.warmup.galleons + t.core.galleons + t.outstanding.galleons) + 9 * t.review.galleons + 4 * t.stage.galleons + 55;
+    // Year 1 ends around level 7, so count its level bonus too (generously, as if it applied all year).
+    const year1 = Math.ceil((20 * (t.warmup.galleons + t.core.galleons + t.outstanding.galleons) + 9 * t.review.galleons + 4 * t.stage.galleons) * levelBonus(7)) + 55;
     const total = ITEMS.filter((i) => !i.giftOnly).reduce((a, i) => a + i.price, 0);
     expect(year1 / total).toBeLessThan(0.3);
     // ...while every starter item can be bought in Year 1.
     const cheapest = ITEMS.filter((i) => i.price > 0 && !i.minLevel).sort((a, b) => a.price - b.price)[0];
     expect(cheapest.price).toBeLessThan(year1 / 4);
+  });
+});
+
+describe("level bonus", () => {
+  it("adds 3% per level to Galleons and house points, rounding up", () => {
+    expect(levelBonus(1)).toBe(1);
+    expect(levelBonus(20)).toBeCloseTo(1.57);
+    expect(scaled(5, 1)).toBe(5);
+    expect(scaled(5, 10)).toBe(7);
+    expect(scaled(100, 20)).toBe(157);
   });
 });
 

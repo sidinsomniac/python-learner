@@ -562,7 +562,10 @@ function RewardModal({
         {reward.firstTime ? (
           <ul className="rewards">
             <li>✨ +{reward.xp} XP</li>
-            <li>🪙 +{reward.galleons} Galleons</li>
+            <li>
+              🪙 +{reward.galleons} Galleons
+              {reward.levelBonus > 1 && <span className="small muted"> (+{Math.round((reward.levelBonus - 1) * 100)}% level bonus)</span>}
+            </li>
             <li>
               {house.crest} +{reward.housePoints} points to {house.name}!
             </li>

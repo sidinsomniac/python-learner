@@ -15,6 +15,8 @@ import {
   isLessonComplete,
   isYearComplete,
   levelFromXp,
+  scaled,
+  levelBonus,
   skipCost,
   skipsInYear,
   xpForCompletion,
@@ -39,6 +41,8 @@ export interface Reward {
   levelUp: number | null;
   lessonCompleted: boolean;
   clue?: string;
+  /** The level bonus applied to Galleons and house points (1 = none). */
+  levelBonus: number;
   /** Things your familiar did this time ("The Niffler pocketed a Galleon"). */
   perkNotes: string[];
 }
@@ -375,6 +379,7 @@ export const useGame = create<GameState>()(
           levelUp: null,
           lessonCompleted: false,
           perkNotes: [],
+          levelBonus: levelBonus(s.bestLevel),
         };
         const eq = s.equipped;
 
@@ -383,8 +388,8 @@ export const useGame = create<GameState>()(
           if (reward.gradeImproved) set({ exercises: { ...s.exercises, [exercise.id]: { ...previous, grade } } });
         } else {
           reward.xp = perks.exerciseXp(eq, xpForCompletion(exercise.xp, hintsUsed, perks.countedAttempts(eq, attempts)));
-          reward.galleons = perks.exerciseGalleons(eq, exercise.galleons, exercise.type);
-          reward.housePoints = perks.exerciseHousePoints(eq, 5);
+          reward.galleons = perks.exerciseGalleons(eq, scaled(exercise.galleons, s.bestLevel), exercise.type);
+          reward.housePoints = perks.exerciseHousePoints(eq, scaled(5, s.bestLevel));
           const today = dayKey(new Date());
           const perkState = { ...s.perkState, phoenixYears: { ...s.perkState.phoenixYears } };
           let aids = s.aids;
@@ -537,7 +542,7 @@ export const useGame = create<GameState>()(
           streak = s.reviewStreak + 1;
           perkState = { ...perkState, ratSavedOn: today };
         }
-        const bonus = firstToday ? { xp: 10, galleons: perks.reviewGalleons(s.equipped) } : { xp: 0, galleons: 0 };
+        const bonus = firstToday ? { xp: 10, galleons: scaled(perks.reviewGalleons(s.equipped), s.bestLevel) } : { xp: 0, galleons: 0 };
         set({ reviewLastDay: today, reviewStreak: streak, perkState, galleons: s.galleons + bonus.galleons });
         if (bonus.xp) get().gainXp(bonus.xp);
         get().awardBadge("time-turner");
@@ -561,8 +566,8 @@ export const useGame = create<GameState>()(
         let points = 0;
         if (outcome === "win") {
           const today = dayKey(new Date());
-          paid = perks.duelGalleons(s.equipped, galleons, s.duelPaidOn[opponentId] !== today);
-          points = perks.duelHousePoints(s.equipped);
+          paid = perks.duelGalleons(s.equipped, scaled(galleons, s.bestLevel), s.duelPaidOn[opponentId] !== today);
+          points = scaled(perks.duelHousePoints(s.equipped), s.bestLevel);
           set((st) => ({
             galleons: st.galleons + paid,
             housePoints: st.housePoints + points,

@@ -10,6 +10,11 @@ export const xpForLevel = (level: number) => 50 * (level - 1) * level;
 
 export const MAX_LEVEL = 20;
 
+/** Galleons and house points grow 3% per level above 1 (x1.57 at level 20). XP doesn't scale. */
+export const levelBonus = (level: number) => 1 + 0.03 * (Math.max(1, level) - 1);
+/** Scale a Galleon or house-point reward by the level bonus, rounding up. */
+export const scaled = (amount: number, level: number) => Math.ceil(amount * levelBonus(level) - 1e-9);
+
 export function levelFromXp(xp: number): number {
   let level = 1;
   while (level < MAX_LEVEL && xp >= xpForLevel(level + 1)) level++;
