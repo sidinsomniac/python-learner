@@ -1892,3 +1892,94 @@ body::before {
     animation: none;
   }
 }
+
+/* The Snitch banner: now and then the Snitch darts across the header (the
+   header is sticky, so it already positions the Snitch). */
+.header:has(.header-snitch) {
+  overflow-x: clip;
+}
+.header-snitch {
+  position: absolute;
+  top: 10px;
+  left: -30px;
+  width: 26px;
+  height: 10px;
+  pointer-events: none;
+  animation: snitch-dart 26s ease-in-out infinite;
+  z-index: 3;
+}
+.header-snitch::before,
+.header-snitch::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 5px;
+  border-radius: 50%;
+  background: #eef2ffaa;
+  animation: snitch-wings 0.06s linear infinite alternate;
+}
+.header-snitch::before {
+  left: 0;
+}
+.header-snitch::after {
+  right: 0;
+}
+.header-snitch span {
+  position: absolute;
+  left: 9px;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6c8, #f2c14e 50%, #a8761c);
+  box-shadow: 0 0 10px #f2c14e;
+}
+@keyframes snitch-dart {
+  0%,
+  78% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+  }
+  86% {
+    transform: translate(45vw, 22px);
+  }
+  89% {
+    transform: translate(40vw, 4px);
+  }
+  98% {
+    transform: translate(105vw, 18px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(105vw, 18px);
+    opacity: 0;
+  }
+}
+@keyframes snitch-wings {
+  to {
+    transform: scaleY(0.3);
+  }
+}
+/* Robes you can see: midnight stars and a silver shimmer along the header. */
+.header.wearing-robe-midnight {
+  background-image: radial-gradient(circle 1px at 12% 30%, #fff8, transparent), radial-gradient(circle 1px at 47% 70%, #fff6, transparent),
+    radial-gradient(circle 1px at 78% 25%, #fff8, transparent), radial-gradient(circle 1px at 91% 65%, #fff5, transparent);
+}
+.header.wearing-robe-silver {
+  background-image: linear-gradient(110deg, transparent 40%, #ffffff12 50%, transparent 60%);
+  background-size: 300% 100%;
+  animation: house-sheen 10s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-snitch,
+  .header.wearing-robe-silver {
+    animation: none;
+  }
+  .header-snitch {
+    display: none;
+  }
+}

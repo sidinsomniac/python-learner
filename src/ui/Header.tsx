@@ -20,7 +20,12 @@ export function Header() {
   const robe = equipped.robe ? itemById(equipped.robe)?.value : undefined;
 
   return (
-    <header className="header" style={robe ? { borderBottomColor: robe } : undefined}>
+    <header className={`header ${equipped.robe ? `wearing-${equipped.robe}` : ""}`} style={robe ? { borderBottomColor: robe } : undefined}>
+      {equipped.banner === "banner-snitch" && (
+        <span className="header-snitch" aria-hidden data-testid="header-snitch">
+          <span />
+        </span>
+      )}
       <a href="#/" className="brand" title="The Great Hall">
         <span aria-hidden>🏰</span> Parseltongue Academy
       </a>

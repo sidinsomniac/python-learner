@@ -103,7 +103,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 | Robes | maroon, midnight, dragon-hide, silver | header accent. **Dueling Club perks:** maroon +3 s per question · midnight shields your first wrong answer · dragon-hide +25% duel Galleons · silver double duel house points |
 | Editor themes | 12: dungeon, starlight, parchment, ember (gift), Marauder's Map (footprints wander), the Pensieve (slow silver swirl), the Black Lake (rippling light), Forbidden Forest (fireflies), House Pride (your house's colours), Weasleys' Wizard Wheezes (fireworks), Ministry of Magic (gold tiles), Honeydukes (level 8 gift) | the code editor, each newer one with its own syntax colours. Preview any theme on the shop's sample page |
 | Titles | the Unflappable, the Bug-Tamer, the Curious, the Half-Blood Pythonista | under your name. **Perks:** first failed attempt forgiven for XP · +50% Galleons on repair exercises · first hint free · +10% XP (and Snape's grudging respect) |
-| Common-room banners | | the Great Hall map |
+| Common-room banners | house, enchanted ceiling, Snitch, crest (gift) | the Great Hall map, and each adds its own living background to the random pool while equipped: House Colours (embers and ribbons in your house's colours), Constellations (star charts drawing themselves), the Quidditch Pitch (hoops, flyers, the Snitch; the Snitch also darts across the header), the Four Houses (four house lights circling a crest) |
 
 **Prices** come in tiers, so practice pays for the best things. A full Year 1 earns about 445 Galleons, under 30% of the catalogue:
 - **starter**, 60–150: 1–2 can be bought in Year 1 (toad, oak wand, maroon robes);

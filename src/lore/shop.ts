@@ -83,7 +83,7 @@ export const ITEMS: ShopItem[] = [
   { id: "title-prince", kind: "title", name: "the Half-Blood Pythonista", icon: "🎖️", price: 1200, minLevel: 10, value: "the Half-Blood Pythonista", description: "Margin notes optional.", perk: "+10% XP on every exercise. Snape's reviews greet you with grudging respect." },
 
   { id: "banner-house", kind: "banner", name: "House banner", icon: "🏳️", price: 100, value: "house", description: "Your house colours over the Great Hall.", perk: "Adds the House Colours background: embers in your house's colours." },
-  { id: "banner-stars", kind: "banner", name: "Enchanted-ceiling banner", icon: "✨", price: 250, value: "stars", description: "A strip of the Great Hall's ceiling, just for you.", perk: "Adds the Floating Candles background: the Great Hall's enchanted ceiling." },
+  { id: "banner-stars", kind: "banner", name: "Enchanted-ceiling banner", icon: "✨", price: 250, value: "stars", description: "A strip of the Great Hall's ceiling, just for you.", perk: "Adds the Constellations background: Astronomy star charts drawing themselves across the sky." },
   { id: "banner-snitch", kind: "banner", name: "Golden Snitch banner", icon: "🟡", price: 500, value: "snitch", description: "It flutters. It's a little distracting. It's wonderful.", perk: "Adds the Quidditch Pitch background, and the Snitch now and then darts across your lessons." },
   { id: "banner-crest", kind: "banner", name: "Hogwarts crest", icon: "🛡️", price: 0, giftOnly: true, value: "crest", description: "A level reward: all four houses together.", perk: "Adds the Four Houses background: the house sigils glowing in turn." },
 ];

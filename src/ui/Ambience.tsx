@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { pickPreset, type Preset } from "../engine/ambience";
+import { BANNER_PRESETS, pickPreset, type Preset } from "../engine/ambience";
+import { itemById } from "../lore/shop";
 import { useGame } from "../engine/store";
 import { MAKERS } from "./backdrop";
 import { initialQuality, type Frame, type Palette, type Scene } from "./backdrop/engine";
@@ -18,6 +19,9 @@ interface Pointer {
  */
 export function Ambience({ sceneKey }: { sceneKey: string }) {
   const enabled = useGame((s) => s.ambience);
+  const banner = useGame((s) => (s.equipped.banner ? itemById(s.equipped.banner)?.value : undefined));
+  const extra = useRef<Preset[]>([]);
+  extra.current = banner && BANNER_PRESETS[banner] ? [BANNER_PRESETS[banner].id] : [];
   const reducedMotion = usePrefersReducedMotion();
   const [layers, setLayers] = useState<{ id: number; preset: Preset; leaving: boolean }[]>([]);
   const pointer = useRef<Pointer>({ x: 0, y: 0 });
@@ -25,7 +29,7 @@ export function Ambience({ sceneKey }: { sceneKey: string }) {
   useEffect(() => {
     setLayers((prev) => {
       const current = prev.find((l) => !l.leaving);
-      const next = { id: (current?.id ?? 0) + 1, preset: pickPreset(current?.preset ?? null), leaving: false };
+      const next = { id: (current?.id ?? 0) + 1, preset: pickPreset(current?.preset ?? null, Math.random, extra.current), leaving: false };
       return [...prev.filter((l) => !l.leaving).map((l) => ({ ...l, leaving: true })), next];
     });
   }, [sceneKey]);
@@ -82,6 +86,7 @@ function AmbienceCanvas({ preset, leaving, pointer }: { preset: Preset; leaving:
       gold: css.getPropertyValue("--gold").trim() || "#d9b45a",
       gold2: css.getPropertyValue("--gold-2").trim() || "#f3d58a",
       light: document.documentElement.dataset.theme === "light",
+      house: useGame.getState().house ?? undefined,
     };
     let w = 0;
     let h = 0;

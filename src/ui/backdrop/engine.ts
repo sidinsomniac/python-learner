@@ -7,6 +7,8 @@ export interface Palette {
   gold2: string;
   /** The light (Lumos) theme: draw darker, without additive blending. */
   light: boolean;
+  /** The player's house, for presets drawn in house colours. */
+  house?: string;
 }
 
 export interface Frame {

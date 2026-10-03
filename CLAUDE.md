@@ -22,8 +22,8 @@ Before starting work, `git pull` the branch and read the change log (§13) to se
 - **Build one Year at a time:** script the year in `docs/story.md` first, then write its content, then validate, test, commit and push.
 - **API keys** (Claude, DeepSeek) stay in localStorage and are never exported.
 - **Background music** comes only from the `music/` folder, which is git-ignored apart from its README. It plays quietly with no visible player. Never extract or bundle audio from YouTube or other services.
-- **Every Diagon Alley item must visibly do something**, not just sit in a list. Wands cast typing effects in the editor (`src/ui/wand/`). Familiars, robes and titles have perks (`src/engine/perks.ts`); banners are next (HANDOFF §11). Perks are small and **never reveal answers**. Prices follow the tiers in `docs/GDD.md` (a full Year 1 must not buy more than about 30% of the shop).
-- The living backgrounds are 18 presets picked at random, **not** tied to years. They're hand-drawn Canvas 2D with no library (see `src/ui/backdrop/`); keep it that way, because the bundle is already large.
+- **Every Diagon Alley item must visibly do something**, not just sit in a list. Wands cast typing effects in the editor (`src/ui/wand/`). Familiars, robes and titles have perks (`src/engine/perks.ts`); editor themes have their own syntax colours (`src/ui/editorThemes.ts`); banners add their own living background (`BANNER_PRESETS`). Perks are small and **never reveal answers**. Prices follow the tiers in `docs/GDD.md` (a full Year 1 must not buy more than about 30% of the shop).
+- The living backgrounds are 18 presets (plus 4 banner-only ones) picked at random, **not** tied to years. They're hand-drawn Canvas 2D with no library (see `src/ui/backdrop/`); keep it that way, because the bundle is already large.
 
 ## Before every push
 ```bash

@@ -18,7 +18,12 @@ export type Preset =
   | "lake"
   | "express"
   | "pensieve"
-  | "time-turner";
+  | "time-turner"
+  // Only while the matching banner is equipped:
+  | "house-colours"
+  | "constellations"
+  | "quidditch"
+  | "four-houses";
 
 export const PRESETS: { id: Preset; name: string }[] = [
   { id: "candles", name: "Enchanted Ceiling" },
@@ -41,8 +46,19 @@ export const PRESETS: { id: Preset; name: string }[] = [
   { id: "time-turner", name: "The Time-Turner" },
 ];
 
-/** A random preset - never the same as the one before. */
-export function pickPreset(previous: Preset | null, rng: () => number = Math.random): Preset {
-  const choices = PRESETS.map((p) => p.id).filter((id) => id !== previous);
+/** Backgrounds a common-room banner adds to the pool while it's equipped (by the banner's value). */
+export const BANNER_PRESETS: Record<string, { id: Preset; name: string }> = {
+  house: { id: "house-colours", name: "House Colours" },
+  stars: { id: "constellations", name: "Constellations" },
+  snitch: { id: "quidditch", name: "The Quidditch Pitch" },
+  crest: { id: "four-houses", name: "The Four Houses" },
+};
+
+/**
+ * A random preset - never the same as the one before. `extra` adds a banner's
+ * own background, which counts twice so it turns up a little more often.
+ */
+export function pickPreset(previous: Preset | null, rng: () => number = Math.random, extra: Preset[] = []): Preset {
+  const choices = [...PRESETS.map((p) => p.id), ...extra, ...extra].filter((id) => id !== previous);
   return choices[Math.floor(rng() * choices.length) % choices.length];
 }

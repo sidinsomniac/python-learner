@@ -489,3 +489,10 @@ test("the half-Kneazle sits on the line where a run failed", async ({ page }) =>
   await expect(page.locator(".cm-kneazle-line")).toHaveCount(1);
   await expect(page.locator(".cm-kneazle-line")).toContainText("undefined_name");
 });
+
+test("the Snitch banner sends the Snitch across the header, and banner cards say what they add", async ({ page }) => {
+  await seed(page, { owned: { "wand-holly": "start", "banner-snitch": "x" }, equipped: { wand: "wand-holly", banner: "banner-snitch" } });
+  await page.goto("/#/shop");
+  await expect(page.getByTestId("header-snitch")).toHaveCount(1);
+  await expect(page.getByTestId("perk-banner-snitch")).toContainText("Quidditch Pitch");
+});

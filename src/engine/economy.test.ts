@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { FEATURE_LEVEL, hasFeature, LEVEL_REWARDS, rewardsBetween } from "../lore/levels";
 import { AIDS, ITEMS, itemById } from "../lore/shop";
-import { pickPreset, PRESETS } from "./ambience";
+import { BANNER_PRESETS, pickPreset, PRESETS } from "./ambience";
 import { lessonById, REVIEW_CARDS, YEARS } from "./content";
 import { duelOutcome, mulberry32, opponentRound, OPPONENTS, scoreAnswer } from "./duel";
 import { canSkip, currentYear, isLessonUnlocked, levelFromXp, MAX_LEVEL, skipCost, xpForLevel } from "./progress";
@@ -203,6 +203,14 @@ describe("living backgrounds", () => {
       expect(PRESETS.map((p) => p.id)).toContain(next);
       prev = next;
     }
+  });
+
+  it("adds a banner's own background to the pool only while it's equipped", () => {
+    const quidditch = BANNER_PRESETS.snitch.id;
+    const seen = new Set(Array.from({ length: 400 }, (_, i) => pickPreset(null, () => (i % 40) / 40, [quidditch])));
+    expect(seen.has(quidditch)).toBe(true);
+    const without = new Set(Array.from({ length: 400 }, (_, i) => pickPreset(null, () => (i % 40) / 40)));
+    expect(without.has(quidditch)).toBe(false);
   });
 });
 

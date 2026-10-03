@@ -67,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **106** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **107** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **27** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **28** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -98,7 +98,8 @@ src/engine/
                 migrateSave, exportSave
   review.ts     Time-Turner spaced repetition (intervals 1/3/7/16/35 days)
   duel.ts       Dueling Club opponents and scoring (seeded random number generator)
-  ambience.ts   the 18 background presets; pickPreset never repeats one back to back
+  ambience.ts   the 18 background presets, plus BANNER_PRESETS (4 more, only while that banner is
+                equipped); pickPreset never repeats one back to back
   pensieve.ts   stackFrames: how the Pensieve folds a deep call stack
 src/lore/       shop.ts (items, learning aids), levels.ts (LEVEL_REWARDS, feature unlocks),
                 badges.ts, lore.ts (titles, YEAR_NAMES), easterEggs.ts
@@ -114,7 +115,8 @@ src/ui/wand/     wand effects while typing (Canvas 2D, no library): effects.ts (
                 canvas; the loop sleeps when idle). Wired into CodeEditor in parts.tsx
 src/ui/backdrop/  the living backgrounds, as hand-written Canvas 2D:
                 engine.ts (cached glow sprites, additive light, parallax, quality scaling),
-                classic.ts (the first 10 presets), magic.ts (8 more),
+                classic.ts (the first 10 presets), magic.ts (8 more), banners.ts (the 4 banner presets),
+                sparkles.ts (twinkling sparkles shared with the Elder Wand),
                 creatures.ts (the Patronus stag with a jointed gallop, and snowy owls with
                 articulated wings and beat-and-glide flight)
 src/runtime/
@@ -305,7 +307,7 @@ location.reload();
    - All the 🔄 swaps are done.
 4. ✅ **Story polish for Years 2–3 (2026-10-03).** Richer scenes, character arcs and post-clue `outro` reactions. Same plots and clues. See the "Character arcs" sections of `docs/story.md`.
 5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 8), and add the `owl_post` mock HTTP module to the harness.
-6. **Give every other shop item a purpose** (the owner's rule: everything bought in Diagon Alley must *do* something). Wands, familiars, robes and titles are done (2026-10-03). The 8 new editor themes are done. Next: banner backgrounds.
+6. **Give every other shop item a purpose** (the owner's rule: everything bought in Diagon Alley must *do* something). Wands, familiars, robes and titles are done (2026-10-03). The 8 new editor themes and the banner backgrounds are done: every item in Diagon Alley now does something.
 7. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
 8. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
 
@@ -322,6 +324,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 | Date | Where | What changed |
 |---|---|---|
 | 2026-10-03 | Claude Code desktop session | **Test-bug sweep: tests no longer depend on a prompt's wording.** `input()` echoes the prompt and answer into the output, so a test that filtered on a prompt word failed correct spells. Fixed `y1-l15` outstanding (The Arithmancy Grid took any prompt but `Size`; now the last `n` rows) and the same family: `y1-r3` r2 (reworded repair prompt), `y1-l12` outstanding, `y1-l12` warmup (rows matched by shape, not `" x "`). Also `y2-l02` and `y2-l03b` outstanding: a `"key=" not in source()` check also tripped on names like `monkey=`; it is now an AST check for a real `key=` argument. New tests in `harness.test.ts` run the real exercise files with `input("Number: ")`, plain `input()` and other prompts, and fail on the old files. Counts: 66 lessons, 201 exercises (§3, §8, §13). |
+| 2026-10-03 | Claude Code desktop session | **Banners do something.** Each adds its own living background to the random pool while equipped (`src/ui/backdrop/banners.ts`, `BANNER_PRESETS`): House Colours, Constellations, the Quidditch Pitch and the Four Houses. The Snitch banner also sends the Snitch darting across the header now and then. Midnight and silver robes show on the header too. Every Diagon Alley item now has a purpose. Tests: 107 unit, 28 e2e (§3, §5, §11). |
 | 2026-10-03 | Claude Code desktop session | **8 new editor themes** (12 in all): Marauder's Map, the Pensieve, the Black Lake, Forbidden Forest, House Pride (follows your house), Weasleys' Wizard Wheezes, Ministry of Magic, and Honeydukes (a level 8 gift). Each has its own syntax colours (`src/ui/editorThemes.ts`) and a gentle CSS layer that stops under reduced motion. The shop has a sample page to preview any theme. Level-reward items added later now reach players already past that level (`withLevelGifts` in the store's `merge`). Added `@codemirror/language` and `@lezer/highlight` to package.json (they were already installed). Tests: 102 unit, 27 e2e (§3, §5, §11). |
 | 2026-10-03 | Claude Code desktop session | **Diagon Alley economy.** Prices raised into tiers (starter 60–150, mid 200–500, high stakes 800–1,200, premium 1,500–2,000; a full Year 1 buys under 30%). Duels pay in full once per opponent per day, then 1 Galleon. Familiars, robes and titles now have perks (`src/engine/perks.ts`, shown as "Does:" on each card), including the Kneazle's failed-line marker, the owl's recap letter and the midnight robes' duel shield. Each familiar cheers in its own voice. Save fields `duelPaidOn` and `perkState`. Tests: 102 unit, 25 e2e (§3, §5, §9, §11). |
 | 2026-10-03 | Claude Code desktop session | **Wands now do something.** While you type, the equipped wand hovers at the cursor, points at each new letter and casts its own effect there: holly, golden sparks; oak, silver seed-motes; willow, raindrops and ripples; vine, curling tendrils; ebony, ink splashes; yew, phoenix embers; Elder, Patronus sparkles with lightning every 5th key. Deleting makes a small puff. The wand fades after 2 s idle. Ollivanders shows what each wand casts, and has a test parchment for trying any wand before buying. New save field `wandFx` (Settings toggle; also off under reduced motion). Patronus sparkles moved to `backdrop/sparkles.ts`, shared with the Elder Wand. The music e2e test was made to match the `music/` folder earlier. Tests: 94 unit, 25 e2e (§3, §5, §9, §11). |
