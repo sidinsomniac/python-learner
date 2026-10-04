@@ -188,14 +188,38 @@ Each lesson contributes small cards that come back on a spaced schedule: 1, 3, 7
     a, b = b, a
     print(a, b)
   why: The right side is built first, then unpacked.
+- id: print-not-return
+  type: bug                  # spot the bug: the student clicks the faulty line
+  code: |
+    def count(letters):
+        total = len(letters)
+        print(total)
+    print(count("abc") + 1)
+  buggyLine: 3               # 1-based
+  fix: "    return total"    # replaces that line (keep its indentation)
+  expected: "4"              # what the fixed code prints
+  why: It prints the count but never returns it.
+- id: fill-accumulator
+  type: complete             # complete the spell: pick the missing line
+  code: |
+    total = 0
+    for w in [3, 5, 4]:
+        ____                 # a line that is just ____ (indented as needed)
+    print(total)
+  options: ["total = w", "total += w", "total + w"]
+  answer: 1
+  expected: "12"
+  why: "`+=` keeps a running total."
 ```
 
 Rules (checked by the validator):
 - every ordinary lesson has **2–4 cards**, at least one of them `choice`;
 - a `predict` card's code must run cleanly and print something - and must print the **same thing every time** (sort sets before printing them);
-- distractors in `choice` cards are real misconceptions, not jokes;
+- a `bug` card's code must go wrong as written (an error, or output other than `expected`), and print `expected` once `fix` replaces `buggyLine`;
+- in a `complete` card, **exactly one** option (the `answer`) prints `expected` when put in place of `____`;
+- distractors in `choice` and `complete` cards are real misconceptions, not jokes;
 - YAML tip: quote any `q`, `why` or option containing `: `.
 
-Up to 5 cards a day, missed cards first.
+Up to 5 cards a day, missed cards first. The Dueling Club uses every type except `predict`.
 
 A **Revision in the Library** lesson appears about every 4 lessons. It mixes earlier concepts with no new material, using interleaved practice for retention.

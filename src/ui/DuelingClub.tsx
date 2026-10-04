@@ -29,7 +29,8 @@ export function DuelingClub() {
   const bestLevel = useGame((s) => s.bestLevel);
   const duels = useGame((s) => s.duels);
   const deck = useDeck();
-  const pool = useMemo(() => deck.filter((c) => c.type === "choice"), [deck]);
+  // Quick-answer cards only: predicting output takes too long for a timed round.
+  const pool = useMemo(() => deck.filter((c) => c.type !== "predict"), [deck]);
   const [opponent, setOpponent] = useState<Opponent | null>(null);
 
   if (!hasFeature(bestLevel, "dueling-club")) {

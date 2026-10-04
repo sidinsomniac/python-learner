@@ -26,3 +26,19 @@
 
     print(grade(95), grade(70), grade(3))
   why: Each call stops at the first return it reaches.
+- id: print-not-return
+  type: bug
+  q: Lockhart's spell should make the last line print 4. Which line is the bug?
+  code: |
+    def count_admirers(letters):
+        total = 0
+        for letter in letters:
+            total += 1
+        print(total)
+
+    result = count_admirers(["a", "b", "c"])
+    print(result + 1)
+  buggyLine: 5
+  fix: "    return total"
+  expected: "4"
+  why: "The spell *prints* its count but never *returns* it, so `result` is None. `return total` hands the value back."

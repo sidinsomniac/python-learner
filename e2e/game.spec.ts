@@ -528,3 +528,19 @@ test("Settings lets you keep a favourite year's castle colours", async ({ page }
   await page.getByTestId("colours-follow").click();
   await expect.poll(bg).toBe(year2);
 });
+
+test("the Time-Turner asks you to spot the bug in a spell", async ({ page }) => {
+  const later = { box: 2, due: "2999-01-01", misses: 0 };
+  await seed(page, {
+    bestLevel: 2,
+    exercises: completed(["y2-l07"]),
+    cards: { "y2-l07#print-none": later, "y2-l07#print-vs-return": later, "y2-l07#early-return": later },
+  });
+  await page.goto("/#/time-turner");
+  await page.getByTestId("review-start").click();
+  const lines = page.getByTestId("bug-lines");
+  await expect(lines).toContainText("print(total)");
+  await lines.getByRole("button").nth(4).click();
+  await expect(page.getByTestId("review-card")).toContainText("Remembered");
+  await expect(page.getByTestId("review-card")).toContainText("return total");
+});

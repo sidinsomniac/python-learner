@@ -2064,3 +2064,47 @@ body::before {
   align-items: center;
   font-size: 18px;
 }
+
+/* Time-Turner: spot-the-bug and complete-the-spell cards. */
+.bug-lines {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  font-family: var(--mono, ui-monospace, monospace);
+}
+.bug-line {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: var(--card2, rgba(0, 0, 0, 0.2));
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: inherit;
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: pre;
+}
+.bug-line:hover:not(:disabled) {
+  border-color: var(--gold);
+}
+.bug-line:disabled {
+  cursor: default;
+}
+.bug-n {
+  opacity: 0.5;
+  min-width: 1.5em;
+  text-align: right;
+}
+.bug-line.picked-right {
+  border-color: #4caf72;
+  background: rgba(76, 175, 114, 0.18);
+}
+.bug-line.picked-wrong {
+  border-color: #d9534f;
+  background: rgba(217, 83, 79, 0.18);
+}
+.blank-line {
+  background: rgba(240, 192, 64, 0.2);
+  border-radius: 3px;
+}

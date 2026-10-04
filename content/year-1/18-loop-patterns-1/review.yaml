@@ -16,3 +16,16 @@
   - None is required by Python
   answer: 1
   why: If every reading is below zero, a starting 0 would wrongly win.
+- id: fill-accumulator
+  type: complete
+  q: Which line completes the spell, so it prints the total weight of Hagrid's eggs?
+  code: |
+    weights = [3, 5, 4]
+    total = 0
+    for w in weights:
+        ____
+    print(total)
+  options: ["total = w", "total += w", "total + w", "w += total"]
+  answer: 1
+  expected: "12"
+  why: "`total += w` adds each weight to the running total. `total = w` keeps only the last one, and `total + w` works it out but throws it away."

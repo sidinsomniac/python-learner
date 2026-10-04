@@ -46,6 +46,8 @@ py.runPython(read(root, "src", "runtime", "harness.py"));
 py.runPython("STEP_LIMIT = 200_000");
 const grade = (code, tests, inputs, review = [], files = {}) =>
   JSON.parse(py.globals.get("grade_json")(code, tests, JSON.stringify(inputs), JSON.stringify(review), JSON.stringify(files)));
+/** Outputs match when they agree line by line, ignoring trailing spaces and blank edges. */
+const same = (a, b) => String(a).trim().split("\n").map((l) => l.trimEnd()).join("\n") === String(b).trim().split("\n").map((l) => l.trimEnd()).join("\n");
 const run = (code, inputs, files = {}) => JSON.parse(py.globals.get("run_json")(code, JSON.stringify(inputs), JSON.stringify(files)));
 // Desk files must be a map of file name -> text.
 function checkFiles(where, files) {
@@ -171,6 +173,32 @@ for (const { meta, dir, where, year } of lessons) {
           const out = card.code ? run(card.code, []) : null;
           if (!out || out.error) fail(at, `the predict card's code must run cleanly${out?.error ? ` (${out.error.type})` : ""}`);
           else if (!out.stdout.trim()) fail(at, "the predict card's code prints nothing");
+        } else if (card?.type === "bug") {
+          // The snippet must go wrong as written, and the fix must make it print what it should.
+          const lines = String(card.code ?? "").replace(/\n$/, "").split("\n");
+          if (!Number.isInteger(card.buggyLine) || card.buggyLine < 1 || card.buggyLine > lines.length) fail(at, "buggyLine must be a line of the code");
+          else if (typeof card.fix !== "string" || typeof card.expected !== "string") fail(at, "a bug card needs fix and expected");
+          else {
+            const broken = run(card.code, []);
+            if (!broken.error && same(broken.stdout, card.expected)) fail(at, "the buggy code already prints the expected output");
+            const fixed = lines.map((l, i) => (i === card.buggyLine - 1 ? card.fix : l)).join("\n");
+            const out = run(fixed, []);
+            if (out.error || !same(out.stdout, card.expected)) fail(at, `with the fix, the code should print ${JSON.stringify(card.expected)}`);
+          }
+        } else if (card?.type === "complete") {
+          // Exactly one option, put in place of ____, must print the expected output - and it must be the answer.
+          const lines = String(card.code ?? "").split("\n");
+          const blank = lines.findIndex((l) => l.trim() === "____");
+          if (blank < 0) fail(at, "a complete card's code needs a line that is just ____");
+          else if (!Array.isArray(card.options) || card.options.length < 2 || !Number.isInteger(card.answer)) fail(at, "a complete card needs options and an answer");
+          else {
+            const indent = lines[blank].match(/^\s*/)[0];
+            const works = card.options.map((o) => {
+              const out = run(lines.map((l, i) => (i === blank ? indent + o : l)).join("\n"), []);
+              return !out.error && same(out.stdout, card.expected);
+            });
+            if (works.filter(Boolean).length !== 1 || !works[card.answer]) fail(at, `exactly one option (the answer) must print ${JSON.stringify(card.expected)}; working options: ${works.map((w, i) => (w ? i : null)).filter((i) => i !== null).join(",") || "none"}`);
+          }
         } else {
           fail(at, `unknown card type "${card?.type}"`);
         }

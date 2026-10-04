@@ -182,6 +182,85 @@ export function CardFace({
     );
   }
 
+  if (card.type === "bug") {
+    const lines = card.code.replace(/\n$/, "").split("\n");
+    return (
+      <div>
+        <p className="review-q">
+          {card.q ? <span dangerouslySetInnerHTML={{ __html: renderInline(card.q) }} /> : "One line of this spell is wrong. Which?"}
+        </p>
+        <p className="small muted">
+          It should print: <code>{card.expected}</code>
+        </p>
+        <ol className="bug-lines" data-testid="bug-lines">
+          {lines.map((line, i) => {
+            const n = i + 1;
+            const state = result === null ? "" : n === card.buggyLine ? "picked-right" : picked === n ? "picked-wrong" : "";
+            return (
+              <li key={i}>
+                <button
+                  className={`bug-line ${state}`}
+                  disabled={result !== null || !line.trim()}
+                  onClick={() => {
+                    setPicked(n);
+                    onAnswer(n === card.buggyLine);
+                  }}
+                >
+                  <span className="bug-n">{n}</span>
+                  <code>{line || " "}</code>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+        {result !== null && (
+          <p className="small">
+            The fix for line {card.buggyLine}: <code>{card.fix.trim()}</code>
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (card.type === "complete") {
+    return (
+      <div>
+        <p className="review-q">
+          {card.q ? <span dangerouslySetInnerHTML={{ __html: renderInline(card.q) }} /> : "Which line completes the spell?"}
+        </p>
+        <pre className="console review-code">
+          {card.code
+            .replace(/\n$/, "")
+            .split("\n")
+            .map((line, i) => (
+              <span key={i} className={line.trim() === "____" ? "blank-line" : undefined}>
+                {line}
+                {"\n"}
+              </span>
+            ))}
+        </pre>
+        <p className="small muted">
+          It should print: <code>{card.expected}</code>
+        </p>
+        <div className="answers">
+          {card.options.map((option, i) => (
+            <button
+              key={i}
+              className={`btn answer ${picked === i ? (i === card.answer ? "picked-right" : "picked-wrong") : ""} ${result !== null && i === card.answer ? "picked-right" : ""}`}
+              disabled={result !== null}
+              onClick={() => {
+                setPicked(i);
+                onAnswer(i === card.answer);
+              }}
+            >
+              <code>{option}</code>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const check = async () => {
     setBusy(true);
     try {

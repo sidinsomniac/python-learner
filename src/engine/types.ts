@@ -75,9 +75,14 @@ export interface Lesson {
 }
 
 /** A Time-Turner / Dueling Club card. */
-export type ReviewCard =
-  | { id: string; lessonId: string; type: "choice"; q: string; options: string[]; answer: number; why: string }
-  | { id: string; lessonId: string; type: "predict"; q?: string; code: string; why: string };
+export type ReviewCard = { id: string; lessonId: string; why: string; /** Written by the AI Professor (see src/mentor/cardsmith.ts). */ source?: "ai" } & (
+  | { type: "choice"; q: string; options: string[]; answer: number }
+  | { type: "predict"; q?: string; code: string }
+  /** Spot the bug: click the faulty line. `fix` replaces it, and then the code prints `expected`. */
+  | { type: "bug"; q?: string; code: string; buggyLine: number; fix: string; expected: string }
+  /** Complete the spell: exactly one option, in place of the `____` line, prints `expected`. */
+  | { type: "complete"; q?: string; code: string; options: string[]; answer: number; expected: string }
+);
 
 export interface YearTheme {
   mood: string;
