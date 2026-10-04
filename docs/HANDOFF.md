@@ -67,7 +67,7 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **111** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **122** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
 | `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **31** pass at the moment. |
 
@@ -108,6 +108,9 @@ src/ui/BackgroundMusic.tsx  quiet background music from music/ (fade in after th
                 shuffled loop, fade out when hidden or muted) and the 🎵 header switch
 src/engine/music.ts  TRACKS (an import.meta.glob of music/*), trackTitle, shuffleOrder, DEFAULT_MUSIC
 music/          drop audio files here (git-ignored except README.md)
+src/mentor/cardCheck.ts  quality gates for AI-written Time-Turner cards: FEATURES (which lesson teaches
+                each piece of syntax), forbidden things, parseCard, runCheck (Python decides),
+                notUseful, fingerprint
 src/ui/editorThemes.ts  the coded editor themes (palette -> CodeMirror theme + HighlightStyle at
                 Prec.highest); their moving layers are CSS under .editor-<value>
 src/ui/wand/     wand effects while typing (Canvas 2D, no library): effects.ts (the 7 effects:
@@ -326,6 +329,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | **Card quality gates** (`src/mentor/cardCheck.ts`), ready for AI-written cards: schema, scope (a feature table mapping syntax to the lesson that teaches it; every built-in card passes at its own lesson), forbidden things (input, files, eval, unsafe modules, unseeded random), running the card in Python (predict must be stable, bug fixes must work, exactly one complete option), usefulness and fingerprints. Tests: 122 unit (§3, §5). |
 | 2026-10-04 | Claude Code desktop session | **Two new Time-Turner card types**: `bug` (click the faulty line; the validator checks the code goes wrong and the `fix` makes it print `expected`) and `complete` (pick the missing line; exactly one option must print `expected`). Examples: y2-l07 `print-not-return`, y1-l13a `fill-accumulator`. Duels now use every type except `predict`. Tests: 111 unit, 31 e2e (§3, §6). |
 | 2026-10-04 | Claude Code desktop session | **Castle colours picker.** Settings has swatches for each year's palette you've reached, plus "Follow the year" (the default). The pick applies on every screen (`paletteYear` in `progress.ts`, used in `App.tsx`). Save field `castleColours`. Tests: 111 unit, 30 e2e (§3, §9). |
 | 2026-10-03 | Claude Code desktop session | **Test-bug sweep: tests no longer depend on a prompt's wording.** `input()` echoes the prompt and answer into the output, so a test that filtered on a prompt word failed correct spells. Fixed `y1-l15` outstanding (The Arithmancy Grid took any prompt but `Size`; now the last `n` rows) and the same family: `y1-r3` r2 (reworded repair prompt), `y1-l12` outstanding, `y1-l12` warmup (rows matched by shape, not `" x "`). Also `y2-l02` and `y2-l03b` outstanding: a `"key=" not in source()` check also tripped on names like `monkey=`; it is now an AST check for a real `key=` argument. New tests in `harness.test.ts` run the real exercise files with `input("Number: ")`, plain `input()` and other prompts, and fail on the old files. Counts: 66 lessons, 201 exercises (§3, §8, §13). |
