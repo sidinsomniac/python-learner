@@ -10,6 +10,8 @@ export type Route =
   | { page: "spellbook" }
   | { page: "trophies" }
   | { page: "progress" }
+  | { page: "auror" }
+  | { page: "auror-case"; id: string }
   | { page: "settings" }
   | { page: "platform" }
   | { page: "marauder" }
@@ -34,6 +36,8 @@ export function parseHash(hash: string): Route {
       return { page: "trophies" };
     case "progress":
       return { page: "progress" };
+    case "auror":
+      return parts[1] ? { page: "auror-case", id: decodeURIComponent(parts[1]) } : { page: "auror" };
     case "settings":
       return { page: "settings" };
     case "platform-nine-and-three-quarters":

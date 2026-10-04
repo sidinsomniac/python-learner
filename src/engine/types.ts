@@ -70,6 +70,8 @@ export interface Lesson {
   files: Record<string, string>;
   /** The lecture and Spellbook text load on demand: see loadLessonText in content.ts. */
   hasSpellbook: boolean;
+  /** Snape's review rules come from this lesson instead of the lesson's own place (Auror Academy cases). */
+  rulesFrom?: string;
   exercises: Exercise[];
   review: ReviewCard[];
 }

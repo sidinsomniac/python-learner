@@ -1,0 +1,64 @@
+title: The Cancelling Runes
+leetcodeLike: Remove All Adjacent Duplicates In String
+requires: y3-l05b
+order: 3
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Each rune is pushed once and popped at most once. Scanning the string again after every removal is O(n²).
+task: |
+  When two **identical runes touch**, they cancel out and vanish - and that
+  can make two new neighbours touch. Write `settle(runes)`: return the text
+  left once nothing more can cancel.
+
+  ```python
+  settle("abbaca")
+  # -> 'ca'    (bb cancels, then aa, leaving "ca")
+  settle("aab")
+  # -> 'b'
+  ```
+
+  Inscriptions can be 20,000 runes long.
+starter: |
+  def settle(runes):
+      # Your spell here
+      return runes
+tests: |
+  def test_examples():
+      fn = student_function("settle")
+      got = call(fn, "abbaca")
+      check(got == "ca", f"settle('abbaca') gave {got!r}. After bb vanishes, which two runes touch?")
+      check(call(fn, "aab") == "b", "aa cancels, leaving b.")
+
+  def test_edges():
+      fn = student_function("settle")
+      check(call(fn, "") == "", "Nothing in, nothing out.")
+      check(call(fn, "abc") == "abc", "Nothing touches its twin, so nothing cancels.")
+      check(call(fn, "aaa") == "a", "Runes cancel in pairs: aaa leaves one a.")
+      check(call(fn, "abba") == "", "abba cancels completely.")
+
+  def test_long_inscription():
+      fn = student_function("settle")
+      runes = "xy" * 5000 + "yx" * 5000 + "q"
+      got = timed(fn, runes, limit=1.5, question="Correct, but slow on 20,000 runes. Could you decide each rune once, looking only at the last one kept?")
+      check(got == "q", f"For the long inscription you gave {got[:30]!r}.")
+hints:
+  nudge: Keep the runes that have survived so far on a stack. Each new rune only needs to look at the top.
+  question: When the new rune matches the top of the stack, what happens to both of them?
+  pseudocode: |
+    kept = an empty list
+    for each rune:
+        if kept isn't empty and its top is the same rune: pop
+        otherwise push the rune
+    join kept back into text
+  flaw: If "abbaca" gives "aaca", you removed bb but never compared the runes that became neighbours. The stack's top is always the rune's new neighbour.
+  analogous: |
+    ```python
+    def squash_echoes(words):
+        out = []
+        for word in words:
+            if out and out[-1] == word:
+                continue
+            out.append(word)
+        return out
+    ```

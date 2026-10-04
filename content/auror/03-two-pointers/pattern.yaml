@@ -1,0 +1,4 @@
+title: Two Pointers
+icon: "👉👈"
+order: 3
+blurb: Two positions walking through a list - from both ends, or one chasing the other - so one pass does the work of two loops.

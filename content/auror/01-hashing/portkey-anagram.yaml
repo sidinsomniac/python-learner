@@ -1,0 +1,65 @@
+title: The Portkey Password
+leetcodeLike: Valid Anagram
+requires: y2-l10
+order: 3
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Counting the letters of each word is one pass each, and comparing two dicts of counts is linear too. Sorting both words would be O(n log n), still fine, just not the best.
+task: |
+  A Portkey only activates if you say a word made of **exactly the same
+  letters** as its password, in any order. Write `same_letters(spoken,
+  password)`: return `True` if one is a rearrangement of the other.
+
+  ```python
+  same_letters("listen", "silent")
+  # -> True
+  same_letters("aab", "abb")
+  # -> False   (the letters match, the counts don't)
+  ```
+
+  Capital letters count as different letters. Passwords can be 20,000
+  letters long.
+starter: |
+  def same_letters(spoken, password):
+      # Your spell here
+      return False
+tests: |
+  def test_examples():
+      fn = student_function("same_letters")
+      check(call(fn, "listen", "silent") is True, "listen and silent use the same six letters.")
+      check(call(fn, "aab", "abb") is False, "aab has two a's but abb has only one. Are you counting, or just checking which letters appear?")
+
+  def test_edges():
+      fn = student_function("same_letters")
+      check(call(fn, "", "") is True, "Two empty words are rearrangements of each other.")
+      check(call(fn, "ab", "abc") is False, "Different lengths can never match.")
+      check(call(fn, "Tom", "mot") is False, "Capital T and small t are different letters here.")
+      check(call(fn, "rat", "car") is False, "Same length, different letters.")
+
+  def test_long_password():
+      fn = student_function("same_letters")
+      word = "accio" * 4000
+      shuffled = "oicca" * 4000
+      got = timed(fn, word, shuffled, limit=1.5, question="Correct, but slow on 20,000 letters. Can you count every letter in one pass instead of searching again and again?")
+      check(got is True, "Both long words have the same letters.")
+      check(call(fn, word, shuffled[:-1] + "x") is False, "One letter differs at the very end.")
+hints:
+  nudge: Two words match when every letter appears the same number of times in both.
+  question: How could a dict (or `collections.Counter`) of letter counts for each word let you compare them in one go?
+  pseudocode: |
+    if the lengths differ: they can't match
+    count each letter of the first word
+    count each letter of the second word
+    they match when the two sets of counts are equal
+  flaw: If "aab" and "abb" match, you compared which letters appear, not how many times each one does.
+  analogous: |
+    ```python
+    def same_ingredients(potion, recipe):
+        need = {}
+        for herb in recipe:
+            need[herb] = need.get(herb, 0) + 1
+        for herb in potion:
+            need[herb] = need.get(herb, 0) - 1
+        return all(n == 0 for n in need.values())
+    ```

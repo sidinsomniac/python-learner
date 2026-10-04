@@ -1,0 +1,78 @@
+title: The Owl Pair
+leetcodeLike: Two Sum
+requires: y2-l07
+order: 1
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Each owl is looked at once, and asking a dict "have I seen this weight?" takes constant time on average. Checking every pair would be O(n²).
+task: |
+  A parcel must go out with **two** owls whose carrying strengths add up to
+  exactly the parcel's weight. Write `owl_pair(strengths, weight)`: return the
+  positions `(i, j)` of the two owls, with `i < j`, or `None` if no pair works.
+  Each owl can only be used once. If several pairs work, return the one whose
+  second owl comes **earliest**.
+
+  ```python
+  owl_pair([4, 9, 2, 7], 9)
+  # -> (2, 3)   (2 + 7)
+  owl_pair([5, 5], 10)
+  # -> (0, 1)
+  owl_pair([1, 2, 3], 100)
+  # -> None
+  ```
+
+  The Owlery has 20,000 owls. Trying every pair is far too slow.
+starter: |
+  def owl_pair(strengths, weight):
+      # Your spell here
+      return None
+tests: |
+  import random
+
+  def test_examples():
+      fn = student_function("owl_pair")
+      got = call(fn, [4, 9, 2, 7], 9)
+      check(got == (2, 3), f"owl_pair([4, 9, 2, 7], 9) gave {got!r}. Which two strengths add up to 9?")
+      got = call(fn, [5, 5], 10)
+      check(got == (0, 1), f"owl_pair([5, 5], 10) gave {got!r}. Can two different owls have the same strength?")
+      check(call(fn, [1, 2, 3], 100) is None, "When no pair works, give back None.")
+
+  def test_tricky():
+      fn = student_function("owl_pair")
+      got = call(fn, [3, 2, 4], 6)
+      check(got == (1, 2), f"owl_pair([3, 2, 4], 6) gave {got!r}. Can one owl of strength 3 carry half twice?")
+      got = call(fn, [1, 8, 2, 7, 3, 6], 9)
+      check(got == (0, 1), f"owl_pair([1, 8, 2, 7, 3, 6], 9) gave {got!r}. Several pairs make 9 - whose second owl comes first?")
+      check(call(fn, [], 4) is None, "An empty Owlery has no pair.")
+      check(call(fn, [-3, 10, 5], 7) == (0, 1), "Strengths can be negative too: -3 + 10 is 7.")
+
+  def test_big_owlery():
+      fn = student_function("owl_pair")
+      rng = random.Random(7)
+      strengths = [rng.randrange(1, 10**9) * 2 for _ in range(20000)]
+      strengths[19998] = 1
+      strengths[19999] = 4
+      got = timed(fn, strengths, 5, limit=1.5, question="Correct, but slow on 20,000 owls. For each owl, what could tell you instantly whether its partner has already flown past?")
+      check(got == (19998, 19999), f"For the big Owlery you gave {got!r}.")
+hints:
+  nudge: For each owl, you know exactly what strength its partner needs. The question is whether you've already met that partner.
+  question: If you remember every owl you've passed in a dict (strength to position), what one question do you ask the dict for each new owl - and when do you add the new owl to it?
+  pseudocode: |
+    seen = an empty dict of strength to position
+    for each position and strength:
+        the partner needed is the weight take away this strength
+        if the partner needed is in seen: give back (its position, this position)
+        remember this strength at this position
+    give back None
+  flaw: If [3, 2, 4] with weight 6 gives (0, 0), one owl was paired with itself. Check for the partner **before** remembering the current owl.
+  analogous: |
+    ```python
+    def first_repeat_gap(rooms):
+        last_at = {}
+        for i, room in enumerate(rooms):
+            if room in last_at:
+                return i - last_at[room]
+            last_at[room] = i
+        return None
+    ```

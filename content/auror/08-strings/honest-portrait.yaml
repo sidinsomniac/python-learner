@@ -1,0 +1,63 @@
+title: The Honest Portrait
+leetcodeLike: Valid Palindrome
+requires: y3-l12
+order: 2
+complexity:
+  q: How much extra memory does a two-pointer solution need?
+  options: ["O(n)", "O(log n)", "O(1)", "O(n²)"]
+  answer: 2
+  why: Two positions moving inwards, skipping what doesn't count. Building a cleaned copy also works, but uses O(n) extra memory.
+task: |
+  The Fat Lady only accepts a password that reads the same forwards and
+  backwards **once you ignore case, spaces and punctuation** (only letters
+  and digits count). Write `reads_both_ways(text)`.
+
+  ```python
+  reads_both_ways("A man, a plan, a canal: Panama")
+  # -> True
+  reads_both_ways("Caput Draconis")
+  # -> False
+  ```
+
+  Passwords can be 20,000 characters long.
+starter: |
+  def reads_both_ways(text):
+      # Your spell here
+      return False
+tests: |
+  def test_examples():
+      fn = student_function("reads_both_ways")
+      check(call(fn, "A man, a plan, a canal: Panama") is True, "Ignoring case, spaces and punctuation, it's amanaplanacanalpanama - the same both ways.")
+      check(call(fn, "Caput Draconis") is False, "caputdraconis backwards is sinocardtupac.")
+
+  def test_edges():
+      fn = student_function("reads_both_ways")
+      check(call(fn, "") is True, "An empty password reads the same both ways.")
+      check(call(fn, ".,!") is True, "With nothing that counts, it reads the same both ways.")
+      check(call(fn, "0P") is False, "Digits count: 0 and p differ.")
+      check(call(fn, "No 'x' in Nixon") is True, "noxinnixon reads the same both ways.")
+      check(call(fn, "ab2a") is False, "ab2a backwards is a2ba.")
+
+  def test_long_password():
+      fn = student_function("reads_both_ways")
+      half = "Tom, Riddle! " * 800
+      text = half + half[::-1]
+      check(timed(fn, text, limit=1.5, question="Correct, but slow. Do you look at each character only once?") is True, "The long password reads the same both ways.")
+hints:
+  nudge: Only letters and digits matter, and capitals don't. Compare the characters that count from both ends inwards.
+  question: Which string method tells you whether a character is a letter or a digit, and which makes the comparison ignore case?
+  pseudocode: |
+    left = the start, right = the end
+    while left is before right:
+        move left on past anything that isn't a letter or digit; likewise move right back
+        if the two characters differ (ignoring case): it doesn't read both ways
+        move both inwards
+    it reads both ways
+  flaw: If "0P" says True, you may be lower-casing and comparing only letters - digits count as well, and "0" isn't "p".
+  analogous: |
+    ```python
+    def same_tune(a, b):
+        notes_a = [ch.lower() for ch in a if ch.isalpha()]
+        notes_b = [ch.lower() for ch in b if ch.isalpha()]
+        return notes_a == notes_b
+    ```

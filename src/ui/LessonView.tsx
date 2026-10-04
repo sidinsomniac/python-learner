@@ -258,7 +258,7 @@ function LessonComplete({ lesson, next }: { lesson: Lesson; next?: Lesson }) {
   );
 }
 
-interface Solved {
+export interface Solved {
   reviewClean: boolean;
   remarks: ReviewRemark[];
 }
@@ -352,7 +352,7 @@ function ExerciseScreen({
   );
 }
 
-interface BoardProps {
+export interface BoardProps {
   lesson: Lesson;
   exercise: Exercise;
   onFeedback: (f: FeedbackItem[]) => void;
@@ -368,7 +368,7 @@ function useCaster({ lesson, exercise, onFeedback, onSolved }: BoardProps) {
     setCasting(true);
     useGame.getState().recordAttempt(exercise.id);
     try {
-      const result = await python.grade(code, exercise.tests, inputs, reviewRulesFor(lesson.id), exercise.files);
+      const result = await python.grade(code, exercise.tests, inputs, reviewRulesFor(lesson.rulesFrom ?? lesson.id), exercise.files);
       runner.setOutcome({ stdout: result.stdout, error: result.error, timedOut: result.timedOut });
       onFeedback(buildFeedback(result));
       applyEggs(result.stdout, code);
@@ -384,7 +384,7 @@ function useCaster({ lesson, exercise, onFeedback, onSolved }: BoardProps) {
   return { runner, casting, cast };
 }
 
-function CodeBoard(props: BoardProps & { code: string; setCode: (c: string) => void }) {
+export function CodeBoard(props: BoardProps & { code: string; setCode: (c: string) => void }) {
   const { exercise, code, setCode } = props;
   const [inputs, setInputs] = useState(exercise.inputs.join("\n"));
   const [pensieve, setPensieve] = useState<{ code: string; inputs: string[] } | null>(null);

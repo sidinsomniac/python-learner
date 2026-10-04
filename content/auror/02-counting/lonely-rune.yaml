@@ -1,0 +1,66 @@
+title: The Lonely Rune
+leetcodeLike: First Unique Character in a String
+requires: y2-l10
+order: 2
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Two passes over the runes - one to count, one to find the first with a count of 1. Counting each rune again for every position would be O(n²).
+task: |
+  An ancient inscription is a string of runes. Hermione wants the **position
+  of the first rune that appears only once**. Write `first_lonely(runes)`:
+  return that index, or `-1` if every rune repeats.
+
+  ```python
+  first_lonely("hogwarts")
+  # -> 0   ('h')
+  first_lonely("ababc")
+  # -> 4   ('c')
+  first_lonely("aabb")
+  # -> -1
+  ```
+
+  Some inscriptions are 20,000 runes long.
+starter: |
+  def first_lonely(runes):
+      # Your spell here
+      return -1
+tests: |
+  def test_examples():
+      fn = student_function("first_lonely")
+      check(call(fn, "hogwarts") == 0, "Every letter of hogwarts is unique, so the first one, at 0, is lonely.")
+      got = call(fn, "ababc")
+      check(got == 4, f"first_lonely('ababc') gave {got!r}. a and b both appear twice - which rune is alone?")
+      check(call(fn, "aabb") == -1, "When every rune repeats, give back -1.")
+
+  def test_edges():
+      fn = student_function("first_lonely")
+      check(call(fn, "") == -1, "An empty inscription has no lonely rune.")
+      got = call(fn, "zxyzx")
+      check(got == 2, f"first_lonely('zxyzx') gave {got!r}. Lonely means it appears once in the WHOLE inscription.")
+
+  def test_long_inscription():
+      fn = student_function("first_lonely")
+      runes = "ab" * 10000 + "c"
+      got = timed(fn, runes, limit=1.5, question="Correct, but slow on 20,000 runes. Could you count every rune once, up front?")
+      check(got == 20000, f"For the long inscription you gave {got!r}.")
+hints:
+  nudge: First find out how often each rune appears in the whole inscription. Only then go looking for the first lonely one.
+  question: After counting, in what order do you walk the runes so that the first lonely one you meet is the right answer?
+  pseudocode: |
+    counts = how many times each rune appears
+    for each position and rune, left to right:
+        if that rune's count is 1: give back the position
+    give back -1
+  flaw: If "zxyzx" gives 0, you checked whether a rune repeats before it, not anywhere in the inscription. Count the whole thing first.
+  analogous: |
+    ```python
+    def first_solo_guest(guests):
+        visits = {}
+        for name in guests:
+            visits[name] = visits.get(name, 0) + 1
+        for name in guests:
+            if visits[name] == 1:
+                return name
+        return None
+    ```

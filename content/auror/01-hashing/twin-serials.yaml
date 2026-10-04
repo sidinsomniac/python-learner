@@ -1,0 +1,65 @@
+title: The Twin Serials
+leetcodeLike: Contains Duplicate
+requires: y2-l07
+order: 2
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(log n)"]
+  answer: 2
+  why: One pass, with a set answering "seen it?" in constant time. Sorting first would be O(n log n), and comparing every pair O(n²).
+task: |
+  Every wand Ollivander sells has a serial number, and no two should match.
+  Write `has_twin(serials)`: return `True` if any serial appears more than
+  once, otherwise `False`.
+
+  ```python
+  has_twin([1101, 2302, 1101])
+  # -> True
+  has_twin([7, 8, 9])
+  # -> False
+  ```
+
+  The shop's ledger holds 20,000 serials, so stop as soon as you find a twin.
+starter: |
+  def has_twin(serials):
+      # Your spell here
+      return False
+tests: |
+  def test_examples():
+      fn = student_function("has_twin")
+      check(call(fn, [1101, 2302, 1101]) is True, "1101 appears twice, so the answer is True.")
+      check(call(fn, [7, 8, 9]) is False, "No serial repeats here, so the answer is False.")
+
+  def test_edges():
+      fn = student_function("has_twin")
+      check(call(fn, []) is False, "An empty ledger has no twins.")
+      check(call(fn, [42]) is False, "One serial can't be a twin of itself.")
+      check(call(fn, [5, 1, 2, 3, 4, 5]) is True, "The twins can be far apart: the first and the last.")
+      check(call(fn, ["a", "b", "A"]) is False, "Serials are compared exactly: 'a' and 'A' differ.")
+
+  def test_big_ledger():
+      fn = student_function("has_twin")
+      serials = list(range(20000))
+      got = timed(fn, serials, limit=1.5, question="Correct, but slow on 20,000 serials. What remembers what you've seen and answers in one step?")
+      check(got is False, "All 20,000 serials are different.")
+      serials.append(19999)
+      check(timed(fn, serials, limit=1.5) is True, "The very last serial repeats the one before it.")
+hints:
+  nudge: Walk through the serials once, remembering the ones you've seen.
+  question: Which collection answers "have I seen this before?" in one step, without looking through everything?
+  pseudocode: |
+    seen = an empty set
+    for each serial:
+        if it's already in seen: there's a twin
+        otherwise add it to seen
+    no twin was found
+  flaw: If [42] gives True, a serial is being compared with itself. Check whether it was seen before adding it.
+  analogous: |
+    ```python
+    def first_returning_guest(guests):
+        arrived = set()
+        for guest in guests:
+            if guest in arrived:
+                return guest
+            arrived.add(guest)
+        return None
+    ```

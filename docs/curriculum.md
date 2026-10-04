@@ -97,6 +97,18 @@ Every classic LeetCode **Easy** problem an interviewer is likely to ask is taugh
 
 The Year 5 O.W.L.s and the Year 7 Mock Interviews include **timed mixed Easy sets** drawn from this table, as interview rehearsal.
 
+**Built so far, in the Auror Academy (`content/auror/`, 2026-10-04):** there are original cases, with their own stories and tests, resembling:
+- Two Sum, Contains Duplicate and Valid Anagram (hashing);
+- Majority Element, First Unique Character and Roman to Integer (counting);
+- Reverse String, Move Zeroes and Merge Sorted Array (two pointers);
+- Best Time to Buy and Sell Stock, Maximum Average Subarray and Longest Continuous Increasing Subsequence (sliding window);
+- Valid Parentheses, Backspace String Compare and Remove Adjacent Duplicates (stacks);
+- Search Insert Position, First Bad Version and Sqrt(x) (binary search);
+- flattening nested lists, Climbing Stairs and a recursive palindrome (recursion);
+- Longest Common Prefix, Valid Palindrome and Reverse Words (strings).
+
+Each opens after the lesson that teaches what it needs. As Years 4–7 are built, add their patterns here (linked lists, trees, graphs, DP, heaps, bits).
+
 ## The practical ladder (🛠)
 
 | Year | Level | Topics |

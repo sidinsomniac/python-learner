@@ -1,0 +1,66 @@
+title: The Nested Trunks
+leetcodeLike: Flatten Nested List Iterator (simplified)
+requires: y3-l05b
+order: 1
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(depth)"]
+  answer: 2
+  why: Every item and every inner trunk is visited once. (The call stack also grows as deep as the deepest trunk.)
+task: |
+  Mad-Eye Moody's trunk has trunks inside it, which have trunks inside them...
+  Write `unpack(trunk)`: return one flat list of every item, in order, at
+  any depth. Items are strings; trunks are lists.
+
+  ```python
+  unpack(["cloak", ["map", ["eye", "flask"]], "badge"])
+  # -> ['cloak', 'map', 'eye', 'flask', 'badge']
+  ```
+
+  Your function must **call itself** for the inner trunks.
+starter: |
+  def unpack(trunk):
+      # Your spell here
+      return trunk
+tests: |
+  def test_example():
+      fn = student_function("unpack")
+      got = call(fn, ["cloak", ["map", ["eye", "flask"]], "badge"])
+      check(got == ["cloak", "map", "eye", "flask", "badge"], f"You gave {got!r}. What should happen when an item is itself a trunk?")
+
+  def test_edges():
+      fn = student_function("unpack")
+      check(call(fn, []) == [], "An empty trunk holds nothing.")
+      check(call(fn, [[], [[]], "key"]) == ["key"], "Empty trunks inside add nothing.")
+      check(call(fn, ["a", "b"]) == ["a", "b"], "A trunk with no inner trunks comes back as it is.")
+      deep = "sock"
+      for _ in range(50):
+          deep = [deep]
+      check(call(fn, deep) == ["sock"], "Fifty trunks deep, there's still just one sock.")
+
+  def test_calls_itself():
+      fn = student_function("unpack")
+      check(recursive("unpack"), "unpack should call itself to open each inner trunk.")
+      original = ["x", ["y"]]
+      call(fn, original)
+      check(original == ["x", ["y"]], "Don't change the trunk you were given.")
+hints:
+  nudge: An item is either a plain thing (keep it) or another trunk - and unpacking that trunk is exactly the job you're already writing.
+  question: What should `unpack` give back for an inner trunk, and how do you add all of that to your own result, rather than adding it as one list?
+  pseudocode: |
+    items = an empty list
+    for each thing in the trunk:
+        if it's a list: add everything that unpacking it gives back
+        otherwise: add the thing itself
+    give back items
+  flaw: If you get ['cloak', ['map', ...]], an inner trunk went in as a single item. Unpack it first, and extend with what comes back.
+  analogous: |
+    ```python
+    def count_leaves(branch):
+        total = 0
+        for part in branch:
+            if isinstance(part, list):
+                total += count_leaves(part)
+            else:
+                total += 1
+        return total
+    ```

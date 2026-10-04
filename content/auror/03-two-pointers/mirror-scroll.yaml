@@ -1,0 +1,67 @@
+title: The Mirror Scroll
+leetcodeLike: Reverse String
+requires: y3-l08
+order: 1
+complexity:
+  q: How much extra memory does your solution use, for n letters?
+  options: ["O(n)", "O(log n)", "O(1)", "O(n²)"]
+  answer: 2
+  why: Only two position variables, however long the scroll is. Building a reversed copy would use O(n) extra memory.
+task: |
+  The Mirror of Erised shows everything backwards. Write
+  `mirror(letters)`: reverse a **list** of letters **in place**: change the
+  list you're given, and return nothing.
+
+  ```python
+  scroll = ["E", "r", "i", "s", "e", "d"]
+  mirror(scroll)
+  print(scroll)
+  # -> ['d', 'e', 's', 'i', 'r', 'E']
+  ```
+
+  No copies: no slicing, no `reversed()`, no `.reverse()`, and no new list.
+  Swap letters with two pointers.
+starter: |
+  def mirror(letters):
+      # Your spell here
+      pass
+tests: |
+  import ast
+
+  def test_examples():
+      fn = student_function("mirror")
+      scroll = ["E", "r", "i", "s", "e", "d"]
+      got = call(fn, scroll)
+      check(scroll == ["d", "e", "s", "i", "r", "E"], f"After mirror(scroll), scroll is {scroll!r}. Did you change the list you were given?")
+      check(got is None, "Reversing in place means returning nothing - the caller already has the list.")
+
+  def test_edges():
+      fn = student_function("mirror")
+      for scroll, want in [([], []), (["a"], ["a"]), (["a", "b"], ["b", "a"]), (list("abcde"), list("edcba"))]:
+          before = list(scroll)
+          call(fn, scroll)
+          check(scroll == want, f"mirror({before!r}) left {scroll!r}. Check odd lengths, and when the pointers meet.")
+
+  def test_no_shortcuts():
+      student_function("mirror")
+      check(not uses(ast.Slice), "No slicing - swap the letters one pair at a time.")
+      check(not calls("reversed") and not calls("reverse"), "No reversed() or .reverse() - the point is to do it yourself, with two pointers.")
+hints:
+  nudge: Swap the first letter with the last, then the second with the second-last, and keep going inwards.
+  question: Where do your two pointers start, how does each move after a swap, and when should they stop?
+  pseudocode: |
+    left = the first position, right = the last
+    while left is before right:
+        swap the letters at left and right
+        move left one step right, and right one step left
+  flaw: If "abcde" comes out unchanged, the loop ran all the way across and swapped every pair twice. Stop when the pointers meet.
+  analogous: |
+    ```python
+    def is_symmetric(row):
+        i, j = 0, len(row) - 1
+        while i < j:
+            if row[i] != row[j]:
+                return False
+            i, j = i + 1, j - 1
+        return True
+    ```

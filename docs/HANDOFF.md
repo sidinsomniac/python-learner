@@ -67,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **138** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
-| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **47** pass at the moment, 11 of them screenshot tests. Service workers are blocked in e2e (`playwright.config.ts`) except in the `offline` test, so `page.route` still sees every request. |
+| `npm test` | Unit tests (Vitest). **141** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons, 201 exercises and 24 Auror cases** pass at the moment. `-- auror` checks only the Auror Academy. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **49** pass at the moment, 12 of them screenshot tests. Service workers are blocked in e2e (`playwright.config.ts`) except in the `offline` test, so `page.route` still sees every request. |
 | `npm run e2e:update` | Refreshes the screenshot baselines in `e2e/visual.spec.ts-snapshots/` after a **deliberate** visual change. Look at the new PNGs before committing them. Baselines are per platform (`-darwin.png`): on another OS, run this once and commit the new set. The tolerance is tight (100 pixels, colour threshold 0.05), because dark-on-dark changes slip under Playwright's defaults. Backdrops are off through reduced motion; the Python chip and due badge are masked. Shared seeding helpers live in `e2e/helpers.ts`. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
@@ -183,6 +183,17 @@ content/
 
 **Story placeholders:** `{name}` in a scene line is replaced by the player's name.
 
+**Auror Academy cases** (interview problems) live in `content/auror/<NN-pattern>/`:
+- `pattern.yaml` holds `title`, `icon`, `order` and `blurb`.
+- Each case is `<slug>.yaml` plus `<slug>.solution.py`. The YAML is a function-style exercise (`title`, `task`, `starter`, `tests`, `hints`) plus:
+  - `requires`: the lesson that unlocks it, and whose Snape rules apply;
+  - `leetcodeLike`: the well-known problem it resembles. The text and tests must be original;
+  - `complexity`: `{q?, options, answer, why}`, the question asked after solving;
+  - optional `order` and `difficulty`.
+- Loaded by `src/engine/auror.ts`, only from lazy screens, into the `auror` chunk. Each case becomes a one-exercise `Lesson` with `rulesFrom: requires`, and its exercise id is `auror-<slug>.case`.
+- The validator runs the same coded checks as a core exercise (`checkCoded`).
+- `src/engine/auror.test.ts` runs every solution through the `cardCheck` `FEATURES` scope gate. **`requires` must be a lesson that has taught every piece of syntax the solution uses.** For example, `Counter` means `y2-l10` or later.
+
 ## 7. Grader helpers for `tests` (from `src/runtime/harness.py`)
 
 | Helper | What it does |
@@ -268,6 +279,7 @@ Tests run in order and stop at the first failure.
   - `aiCards`: `{ id: ReviewCard }`, AI-written cards that passed every gate (at most 120; the best-known are dropped first). They join the deck and the Leitner schedule.
   - `rejectedCards`: `{ fingerprint: description }`, cards the player flagged; the writer is told to avoid them.
   - `mentor.aiCards`: boolean consent for AI cards (default off).
+  - `aurorTimes`: `{ caseId: seconds }`, the best interview-timer finish per Auror case.
   - `activity`: `{ "YYYY-MM-DD": { exercises, cards, correct, duels } }`, a daily practice log for the Ledger, kept for 400 days (`src/engine/stats.ts`).
     - It's updated by `completeExercise` (first completions only), `answerReviewCard` and `recordDuel`.
     - Saves without it, loaded or imported, get it rebuilt from `exercises[*].completedAt`, with no version bump.
@@ -322,6 +334,10 @@ location.reload();
    - ✅ y2-l10 now teaches `Counter`, `defaultdict` and `json`, and its ⭐ is the Owl Post manifest.
    - All the 🔄 swaps are done.
 4. ✅ **Story polish for Years 2–3 (2026-10-03).** Richer scenes, character arcs and post-clue `outro` reactions. Same plots and clues. See the "Character arcs" sections of `docs/story.md`.
+5a. ✅ **Auror Academy (2026-10-04).** `#/auror`, `src/ui/AurorAcademy.tsx`. It has 24 original interview cases in 8 patterns: hashing, counting, two pointers, sliding window, stacks, binary search, recursion and strings.
+   - Each case opens when the lesson it `requires` is done, and has a 15- or 25-minute interview timer (no penalty), a complexity question once solved, and 4 badges.
+   - The header link appears after y2-l07, and the Ledger shows solved/total per pattern.
+   - **Next:** add patterns as Years 4–7 teach them (linked lists, trees, graphs, DP, heaps). The Year 5 O.W.L.s and the Year 7 Mock Interviews can draw timed mixed sets from here.
 5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, add the `owl_post` mock HTTP module to the harness.
 6. **Give every other shop item a purpose** (the owner's rule: everything bought in Diagon Alley must *do* something). Wands, familiars, robes and titles are done (2026-10-03). The 8 new editor themes and the banner backgrounds are done: every item in Diagon Alley now does something.
 7. **The Marauder's Ledger (`#/progress`, `src/ui/Progress.tsx`)** is built. It shows:
@@ -348,6 +364,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | **Auror Academy** (§3, §6, §9, §11 item 5a): 24 original interview cases in 8 patterns (`content/auror/`), validated like core exercises (`checkCoded` is now shared in the validator), scope-checked against `FEATURES` (`auror.test.ts`), with an interview timer, a complexity question, 4 badges and a Ledger section. Save field `aurorTimes`; `Lesson.rulesFrom`. Tests: 141 unit, 49 e2e. |
 | 2026-10-04 | Claude Code desktop session | The Marauder's Ledger (§9, §11 item 7): a new `activity` save field (backfilled), `src/engine/stats.ts`, `#/progress` linked from the header and the Great Hall, and a year-in-review scene after each Trial. Tests: 138 unit, 47 e2e (the Ledger, the backfill, and a Ledger screenshot; the existing baselines were refreshed for the new nav link). |
 | 2026-10-04 | Claude Code desktop session | Screenshot tests (§3): `e2e/visual.spec.ts` covers the Great Hall in each castle palette, the shop, Settings, the editor in 4 themes and a Time-Turner bug card. They were checked to catch the Year 2 grid leaking onto palette 1. `npm run e2e:update` refreshes the baselines, and `e2e/helpers.ts` is now shared. e2e: 44. |
 | 2026-10-04 | Claude Code desktop session | Speed and offline (§3, §11 item 8): lazy screens, `react` and `content` chunks, lectures and Spellbook pages per year on demand (`hasSpellbook` replaces the text fields on `Lesson`), a Pyodide download percentage, a service worker plus manifest and SVG icon. First load went from 1.8 MB to about 1.09 MB. e2e: 34 (an offline test). |

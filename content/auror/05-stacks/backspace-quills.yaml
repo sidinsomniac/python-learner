@@ -1,0 +1,69 @@
+title: The Backspacing Quills
+leetcodeLike: Backspace String Compare
+requires: y3-l05b
+order: 2
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n + m)", "O(1)"]
+  answer: 2
+  why: Each keystroke is pushed or popped once per quill. Rebuilding the string with slicing on every # copies it each time, which is O(n²).
+task: |
+  Two Quick-Quotes Quills wrote the same message, but `#` means "the quill
+  rubbed out the letter before it" (a `#` with nothing before it does
+  nothing). Write `same_message(a, b)`: return `True` if both end up as the
+  same text.
+
+  ```python
+  same_message("ab#c", "ad#c")
+  # -> True    (both are "ac")
+  same_message("a##c", "#a#c")
+  # -> True    (both are "c")
+  same_message("a#c", "b")
+  # -> False
+  ```
+
+  The quills can write 20,000 strokes.
+starter: |
+  def same_message(a, b):
+      # Your spell here
+      return False
+tests: |
+  def test_examples():
+      fn = student_function("same_message")
+      check(call(fn, "ab#c", "ad#c") is True, "ab#c and ad#c both end up as ac.")
+      check(call(fn, "a##c", "#a#c") is True, "Both end up as c. What does a # do when there's nothing to rub out?")
+      check(call(fn, "a#c", "b") is False, "a#c is c, which isn't b.")
+
+  def test_edges():
+      fn = student_function("same_message")
+      check(call(fn, "", "") is True, "Two empty messages are the same.")
+      check(call(fn, "###", "") is True, "Rubbing out nothing leaves nothing.")
+      check(call(fn, "abc", "abc#") is False, "abc# is ab.")
+      check(call(fn, "xy#z", "xz") is True, "xy#z is xz.")
+
+  def test_long_quills():
+      fn = student_function("same_message")
+      a = "ab#" * 6000 + "z"
+      b = "a" * 6000 + "z"
+      check(timed(fn, a, b, limit=1.5, question="Correct, but slow on long messages. Can each stroke be handled in one step?") is True, "Both long messages are the same.")
+hints:
+  nudge: Write each quill's message out letter by letter. A # takes back the last letter written - which sounds like a stack.
+  question: What should a # do when the stack of letters is empty?
+  pseudocode: |
+    to type out a message:
+        letters = an empty list
+        for each stroke: if it's # and letters isn't empty, pop; if it's a letter, push
+        give back the letters
+    the messages match when both typed-out versions are equal
+  flaw: If "#a#c" crashes, popping an empty list raised IndexError - only pop when there's a letter to rub out. If it gives "#c", a # was typed as a letter.
+  analogous: |
+    ```python
+    def final_floor(moves):
+        floors = []
+        for move in moves:
+            if move == "back":
+                if floors:
+                    floors.pop()
+            else:
+                floors.append(move)
+        return floors[-1] if floors else "ground"
+    ```

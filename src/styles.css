@@ -2175,3 +2175,41 @@ body::before {
 .weak-list {
   margin: 0.25rem 0 0.75rem;
 }
+
+/* Auror Academy */
+.auror-cases {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.auror-cases .grade {
+  margin-left: 0.4rem;
+}
+.interview-timer {
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.interview-timer.over {
+  color: var(--gold);
+}
+.case-closed .complexity {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+}
+.case-closed .btn.correct {
+  border-color: #3fa66b;
+  box-shadow: 0 0 0 2px #3fa66b55;
+}
+.case-closed .btn.wrong {
+  border-color: #c0392b;
+  opacity: 0.8;
+}
+.row.wrap {
+  flex-wrap: wrap;
+}

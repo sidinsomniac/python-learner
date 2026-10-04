@@ -1,0 +1,70 @@
+title: The Mirror Word
+leetcodeLike: Valid Palindrome (recursive)
+requires: y3-l05b
+order: 3
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Passing positions instead of slices means each call does constant work, and there are about n / 2 calls. Slicing word[1:-1] on every call would copy the word each time, which is O(n²).
+task: |
+  A word is a **mirror word** if it reads the same forwards and backwards.
+  Write `is_mirror(word)` **recursively**: a word is a mirror word if its
+  first and last letters match **and** the part in between is a mirror word.
+
+  ```python
+  is_mirror("level")
+  # -> True
+  is_mirror("wand")
+  # -> False
+  ```
+
+  Solve it by recursion: `is_mirror` (or a helper it uses, for example one
+  that takes two positions) must call itself.
+starter: |
+  def is_mirror(word):
+      # Your spell here
+      return False
+tests: |
+  import ast
+
+  def recursive_anywhere():
+      for node in ast.walk(tree()):
+          if isinstance(node, ast.FunctionDef) and recursive(node.name):
+              return True
+      return False
+
+  def test_examples():
+      fn = student_function("is_mirror")
+      check(call(fn, "level") is True, "level reads the same both ways.")
+      check(call(fn, "wand") is False, "wand backwards is dnaw.")
+
+  def test_edges():
+      fn = student_function("is_mirror")
+      check(call(fn, "") is True, "An empty word reads the same both ways.")
+      check(call(fn, "a") is True, "One letter is a mirror word.")
+      check(call(fn, "abca") is False, "The outside letters match, but the middle 'bc' doesn't.")
+      check(call(fn, "noon") is True, "Even lengths work too: noon.")
+      check(call(fn, "Noon") is False, "Capital N and small n are different letters here.")
+
+  def test_recursive():
+      fn = student_function("is_mirror")
+      check(recursive_anywhere(), "Solve it by calling a function from inside itself on the part in between.")
+      word = "ab" * 200 + "ba" * 200
+      check(call(fn, word) is True, "A long mirror word of 800 letters.")
+hints:
+  nudge: Compare the outside letters. If they match, the answer depends only on the smaller word inside them.
+  question: What's the smallest word you can answer without recursing - and how many letters can it have?
+  pseudocode: |
+    check(left, right):
+        if left has reached or passed right: it's a mirror word
+        if the letters at left and right differ: it isn't
+        otherwise ask check(left + 1, right - 1)
+    is_mirror asks check from the two ends of the word
+  flaw: If "abca" says True, you returned True as soon as the outside letters matched - the answer must also depend on the call for the middle.
+  analogous: |
+    ```python
+    def all_even(nums, i=0):
+        if i == len(nums):
+            return True
+        return nums[i] % 2 == 0 and all_even(nums, i + 1)
+    ```

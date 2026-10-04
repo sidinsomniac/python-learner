@@ -1,0 +1,73 @@
+title: The Brightest Stretch
+leetcodeLike: Maximum Average Subarray I
+requires: y3-l08
+order: 2
+complexity:
+  options: ["O(n·k)", "O(n log n)", "O(n)", "O(k)"]
+  answer: 2
+  why: The window's total is updated with one addition and one subtraction per step. Re-adding all k readings at every position is O(n·k).
+task: |
+  Professor Sinistra records the brightness of the sky every minute. Write
+  `brightest(readings, k)`: the largest total brightness over any **k
+  consecutive** readings.
+
+  ```python
+  brightest([1, 12, -5, -6, 50, 3], 4)
+  # -> 51   (12 - 5 - 6 + 50)
+  brightest([5, 5], 2)
+  # -> 10
+  ```
+
+  `k` is always between 1 and the number of readings. Some nights have 20,000
+  readings, and k can be 5,000.
+starter: |
+  def brightest(readings, k):
+      # Your spell here
+      return 0
+tests: |
+  import random
+
+  def test_examples():
+      fn = student_function("brightest")
+      got = call(fn, [1, 12, -5, -6, 50, 3], 4)
+      check(got == 51, f"brightest([1, 12, -5, -6, 50, 3], 4) gave {got!r}. Which four readings in a row add up to the most?")
+      check(call(fn, [5, 5], 2) == 10, "With k equal to the length, there's one window: the whole list.")
+
+  def test_edges():
+      fn = student_function("brightest")
+      check(call(fn, [-3, -1, -2], 1) == -1, "All readings can be negative: the best single reading is -1, not 0.")
+      check(call(fn, [4, 0, 4, 0, 9], 2) == 9, "The best window can be at the very end.")
+      check(call(fn, [7, 1, 1, 1], 2) == 8, "The best window can be at the very start.")
+
+  def test_long_night():
+      fn = student_function("brightest")
+      rng = random.Random(11)
+      readings = [rng.randrange(-100, 100) for _ in range(20000)]
+      readings[15000:15010] = [1000] * 10
+      got = timed(fn, readings, 5000, limit=1.5, question="Correct, but slow with k = 5,000. When the window slides one step, which reading leaves and which one joins?")
+      total = sum(readings[:5000])
+      want = total
+      for i in range(5000, 20000):
+          total += readings[i] - readings[i - 5000]
+          want = max(want, total)
+      check(got == want, f"For the long night you gave {got!r}.")
+hints:
+  nudge: Add up the first k readings. Then slide the window one step at a time, adjusting the total instead of re-adding it.
+  question: When the window moves right by one, exactly which reading leaves it and which joins it?
+  pseudocode: |
+    total = the sum of the first k readings; best = total
+    for each position from k to the end:
+        add the new reading, take away the one that just left
+        best = the bigger of best and total
+    give back best
+  flaw: If [-3, -1, -2] with k = 1 gives 0, best started at 0. Start it at the first window's total instead.
+  analogous: |
+    ```python
+    def busiest_hour(arrivals, width):
+        now = sum(arrivals[:width])
+        peak = now
+        for t in range(width, len(arrivals)):
+            now += arrivals[t] - arrivals[t - width]
+            peak = max(peak, now)
+        return peak
+    ```

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { AUROR_PATTERNS, isCaseSolved, isCaseUnlocked } from "../engine/auror";
 import { OPPONENTS } from "../engine/duel";
 import { GRADE_NAME } from "../engine/progress";
 import { dayKey, INTERVALS } from "../engine/review";
@@ -30,6 +31,7 @@ export function Progress() {
   const grades = gradeSpread(exercises);
   const maxBox = Math.max(1, memory.unseen, ...memory.boxes);
   const fought = OPPONENTS.filter((o) => duels[o.id]);
+  const aurorOpen = AUROR_PATTERNS.some((p) => p.cases.some((c) => isCaseUnlocked(c, exercises)));
 
   return (
     <div className="stack ledger">
@@ -117,6 +119,31 @@ export function Progress() {
           </>
         )}
       </section>
+
+      {aurorOpen && (
+        <section className="card" data-testid="ledger-auror">
+          <h2>🛡️ Auror Academy patterns</h2>
+          <p className="muted small">Interview cases closed per pattern. The emptiest bars are the patterns to practise next.</p>
+          <div className="boxes">
+            {AUROR_PATTERNS.map((p) => {
+              const solved = p.cases.filter((c) => isCaseSolved(c, exercises)).length;
+              return (
+                <div key={p.id} className="box-row">
+                  <a className="small" href="#/auror">
+                    {p.icon} {p.title}
+                  </a>
+                  <span className="box-bar">
+                    <span style={{ width: `${(solved / p.cases.length) * 100}%` }} />
+                  </span>
+                  <span className="small">
+                    {solved}/{p.cases.length}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {grades.length > 0 && (
         <section className="card">

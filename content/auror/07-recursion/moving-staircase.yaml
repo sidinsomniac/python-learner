@@ -1,0 +1,67 @@
+title: The Moving Staircase
+leetcodeLike: Climbing Stairs
+requires: y3-l05b
+order: 2
+complexity:
+  options: ["O(2ⁿ)", "O(n²)", "O(n)", "O(log n)"]
+  answer: 2
+  why: With a cache, each step count is worked out once. Without it, the same smaller staircases are counted again and again - about 2ⁿ calls.
+task: |
+  You climb a staircase of `n` steps taking **1 or 2 steps** at a time. Write
+  `ways(n)`: how many different ways are there to reach the top?
+
+  ```python
+  ways(3)
+  # -> 3   (1+1+1, 1+2, 2+1)
+  ways(5)
+  # -> 8
+  ```
+
+  `ways(0)` is 1 (you're already there). Your function must **call itself**,
+  and it must answer `ways(80)` instantly - so remember the answers you've
+  already worked out.
+starter: |
+  def ways(n):
+      # Your spell here
+      return 1
+tests: |
+  def test_examples():
+      fn = student_function("ways")
+      check(call(fn, 3) == 3, "3 steps: 1+1+1, 1+2 and 2+1.")
+      got = call(fn, 5)
+      check(got == 8, f"ways(5) gave {got!r}. Your first move is 1 or 2 steps - how many ways are left after each?")
+
+  def test_small():
+      fn = student_function("ways")
+      for n, want in [(0, 1), (1, 1), (2, 2), (4, 5), (10, 89)]:
+          got = call(fn, n)
+          check(got == want, f"ways({n}) gave {got!r}, but it's {want}.")
+
+  def test_tall_staircase():
+      fn = student_function("ways")
+      check(recursive("ways"), "ways should call itself for the smaller staircases.")
+      got = timed(fn, 80, limit=1.0, question="Correct, but far too slow for 80 steps. How many times is ways(40) worked out? Could you remember it?")
+      check(got == 37889062373143906, f"ways(80) gave {got!r}.")
+hints:
+  nudge: Your first move is either 1 step or 2. After that you face a smaller staircase - the same problem again.
+  question: Which smaller staircases does ways(n) depend on, and what are the smallest staircases whose answer you know without thinking?
+  pseudocode: |
+    remember = a dict of answers worked out so far
+    ways(n):
+        if n is 0 or 1: there's one way
+        if n is in remember: give that back
+        work out ways(n - 1) plus ways(n - 2), store it in remember, give it back
+  flaw: If ways(80) never finishes, the cache isn't being used - check you store each answer and look it up before recursing. (A mutable default like memo={} is a Snape-flagged trap; keep the cache outside, or pass None.)
+  analogous: |
+    ```python
+    known = {}
+
+    def tilings(width):
+        if width < 0:
+            return 0
+        if width == 0:
+            return 1
+        if width not in known:
+            known[width] = tilings(width - 1) + tilings(width - 3)
+        return known[width]
+    ```

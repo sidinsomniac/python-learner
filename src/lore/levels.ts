@@ -39,3 +39,6 @@ export const hasFeature = (bestLevel: number, feature: Feature) => bestLevel >= 
 
 export const rewardsBetween = (fromExclusive: number, toInclusive: number) =>
   LEVEL_REWARDS.filter((r) => r.level > fromExclusive && r.level <= toInclusive);
+
+/** The Auror Academy opens with its first cases, once functions are taught (kept here so the header needn't load the cases). */
+export const AUROR_FIRST_LESSON = "y2-l07";

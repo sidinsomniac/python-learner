@@ -39,6 +39,10 @@ export const BADGES: Badge[] = [
   { id: "page-394", name: "Turn to Page 394", icon: "📖", description: "Find the page Professor Snape assigned.", secret: true },
   { id: "wheezes", name: "Weasleys' Wizard Wheezes", icon: "🎆", description: "Enter the secret code of the Weasley twins.", secret: true },
   { id: "riddikulus", name: "Riddikulus!", icon: "🦆", description: "Turn a boggart-bug into a rubber duck.", secret: true },
+  { id: "auror-recruit", name: "Auror Recruit", icon: "🕵️", description: "Close your first case in the Auror Academy." },
+  { id: "auror-pattern", name: "Pattern Breaker", icon: "🧩", description: "Close every case of one pattern in the Auror Academy." },
+  { id: "auror-under-time", name: "Under Pressure", icon: "⏱️", description: "Close an Auror case before the interview timer runs out." },
+  { id: "auror-graduate", name: "Auror", icon: "🛡️", description: "Close every case in the Auror Academy. The Ministry would like a word." },
 ];
 
 export const badgeById = (id: string) => BADGES.find((b) => b.id === id);

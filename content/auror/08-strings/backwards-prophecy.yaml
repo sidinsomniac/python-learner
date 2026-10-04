@@ -1,0 +1,57 @@
+title: The Backwards Prophecy
+leetcodeLike: Reverse Words in a String
+requires: y3-l12
+order: 3
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: split(), reversing the list and join() each pass over the text once. Adding words onto a string one at a time can copy the growing string again and again.
+task: |
+  Professor Trelawney's prophecies come out with the **words in reverse
+  order** and spaces all over the place. Write `unscramble(prophecy)`:
+  return the words in reverse order, separated by **single** spaces, with no
+  spaces at either end.
+
+  ```python
+  unscramble("the dark lord  rises ")
+  # -> 'rises lord dark the'
+  ```
+starter: |
+  def unscramble(prophecy):
+      # Your spell here
+      return prophecy
+tests: |
+  def test_example():
+      fn = student_function("unscramble")
+      got = call(fn, "the dark lord  rises ")
+      check(got == "rises lord dark the", f"You gave {got!r}. Check the order, and the spaces between and around the words.")
+
+  def test_edges():
+      fn = student_function("unscramble")
+      check(call(fn, "") == "", "An empty prophecy stays empty.")
+      check(call(fn, "   ") == "", "Only spaces means no words.")
+      check(call(fn, "one") == "one", "One word stays as it is.")
+      got = call(fn, "  a   b  ")
+      check(got == "b a", f"unscramble('  a   b  ') gave {got!r}. What does split() with no argument do with runs of spaces?")
+      check(call(fn, "Neither can live") == "live can Neither", "Words keep their own letters and capitals; only their order changes.")
+
+  def test_long_prophecy():
+      fn = student_function("unscramble")
+      text = " ".join(f"w{i}" for i in range(5000))
+      got = timed(fn, text, limit=1.5, question="Correct, but slow on a long prophecy. Can you build the answer once with join()?")
+      check(got == " ".join(f"w{i}" for i in range(4999, -1, -1)), "The long prophecy isn't right.")
+hints:
+  nudge: Break the prophecy into words, put them in the opposite order, and stitch them back together.
+  question: Which form of split() ignores runs of spaces and spaces at the ends - and which string method joins a list of words with one space?
+  pseudocode: |
+    words = the prophecy split on any whitespace
+    reverse the order of words
+    join them with single spaces and give that back
+  flaw: If "  a   b  " gives extra spaces, split(" ") kept empty strings for the repeated spaces - call split() with no argument.
+  analogous: |
+    ```python
+    def last_first(line):
+        parts = line.split(",")
+        parts = [p.strip() for p in parts if p.strip()]
+        return ", ".join(parts[::-1])
+    ```

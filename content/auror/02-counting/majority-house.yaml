@@ -1,0 +1,60 @@
+title: The Majority House
+leetcodeLike: Majority Element
+requires: y2-l07
+order: 1
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: One pass to tally the votes, then a pass over at most n houses to find the winner. Calling .count() for every vote would be O(n²).
+task: |
+  Every student votes for the house that should host the feast. One house
+  always wins **more than half** the votes. Write `majority(votes)`: return
+  that house.
+
+  ```python
+  majority(["Gryffindor", "Hufflepuff", "Gryffindor"])
+  # -> 'Gryffindor'
+  majority(["Ravenclaw"])
+  # -> 'Ravenclaw'
+  ```
+
+  The whole school votes: 20,001 ballots.
+starter: |
+  def majority(votes):
+      # Your spell here
+      return None
+tests: |
+  def test_examples():
+      fn = student_function("majority")
+      got = call(fn, ["Gryffindor", "Hufflepuff", "Gryffindor"])
+      check(got == "Gryffindor", f"You chose {got!r}. Which house has more than half of the three votes?")
+      check(call(fn, ["Ravenclaw"]) == "Ravenclaw", "With one vote, that house has a majority.")
+
+  def test_tricky():
+      fn = student_function("majority")
+      votes = ["S", "H", "S", "R", "S", "G", "S"]
+      got = call(fn, votes)
+      check(got == "S", f"{votes} gave {got!r}. The winner isn't always first or last.")
+      got = call(fn, ["H", "H", "R", "R", "H"])
+      check(got == "H", f"['H', 'H', 'R', 'R', 'H'] gave {got!r}.")
+
+  def test_whole_school():
+      fn = student_function("majority")
+      votes = ["Hufflepuff"] * 10001 + ["Slytherin"] * 5000 + ["Gryffindor"] * 5000
+      got = timed(fn, votes, limit=1.5, question="Correct, but slow on 20,001 ballots. Can you tally every vote in a single pass?")
+      check(got == "Hufflepuff", f"For the whole school you chose {got!r}.")
+hints:
+  nudge: Count how many votes each house gets, then pick the one with the most.
+  question: Which tool counts every item of a list in one pass - and once you have the counts, how do you find the biggest?
+  pseudocode: |
+    tally = votes per house (one pass)
+    give back the house with the largest tally
+  flaw: If it's slow on the whole school, you may be calling votes.count(house) inside a loop over votes - that re-reads all 20,001 ballots for every one.
+  analogous: |
+    ```python
+    from collections import Counter
+
+    def busiest_day(visits):
+        per_day = Counter(visits)
+        return max(per_day, key=per_day.get)
+    ```

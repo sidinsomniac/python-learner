@@ -20,7 +20,7 @@ async function snap(page: Page, name: string) {
     animations: "disabled",
     caret: "hide",
     // The Python chip changes as Python loads, and the header's due count follows today's date.
-    mask: [page.locator(".chip"), page.locator(".due-badge")],
+    mask: [page.locator("header .chip"), page.locator(".due-badge")],
     maxDiffPixels: 100, threshold: 0.05,
   });
 }
@@ -87,4 +87,11 @@ test("the Marauder's Ledger", async ({ page }) => {
   await page.goto("/#/progress");
   await expect(page.getByTestId("heatmap")).toBeVisible();
   await snap(page, "ledger");
+});
+
+test("the Auror Academy", async ({ page }) => {
+  await seed(page, { bestLevel: 6, exercises: completed([...YEAR1, "y1-trial", ...YEAR2, "y2-trial"]) });
+  await page.goto("/#/auror");
+  await expect(page.getByTestId("pattern-01-hashing")).toBeVisible();
+  await snap(page, "auror-academy");
 });

@@ -1,0 +1,67 @@
+title: The Empty Cauldrons
+leetcodeLike: Move Zeroes
+requires: y3-l08
+order: 2
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Each cauldron is read once and written at most once. Removing zeros with .remove() and appending them again shifts the whole list each time, which is O(n²).
+task: |
+  Snape wants the empty cauldrons (`0`) pushed to the **end** of the shelf,
+  with the full ones keeping their order. Write `sink_empty(cauldrons)`:
+  rearrange the list **in place** and return nothing.
+
+  ```python
+  shelf = [0, 3, 0, 7, 1]
+  sink_empty(shelf)
+  print(shelf)
+  # -> [3, 7, 1, 0, 0]
+  ```
+
+  The dungeon shelf holds 20,000 cauldrons. Don't build a new list.
+starter: |
+  def sink_empty(cauldrons):
+      # Your spell here
+      pass
+tests: |
+  def test_examples():
+      fn = student_function("sink_empty")
+      shelf = [0, 3, 0, 7, 1]
+      got = call(fn, shelf)
+      check(shelf == [3, 7, 1, 0, 0], f"After sink_empty, the shelf is {shelf!r}. Did the full cauldrons keep their order?")
+      check(got is None, "Rearranging in place means returning nothing.")
+
+  def test_edges():
+      fn = student_function("sink_empty")
+      for shelf, want in [([], []), ([0], [0]), ([5], [5]), ([0, 0, 1], [1, 0, 0]), ([1, 2, 0], [1, 2, 0]), ([4, 0, 0, 0, 2, 9], [4, 2, 9, 0, 0, 0])]:
+          before = list(shelf)
+          call(fn, shelf)
+          check(shelf == want, f"sink_empty({before!r}) left {shelf!r}.")
+
+  def test_big_shelf():
+      fn = student_function("sink_empty")
+      shelf = [0 if i % 2 else i + 1 for i in range(20000)]
+      same_list = shelf
+      timed(fn, shelf, limit=1.5, question="Correct, but slow on 20,000 cauldrons. Could one pointer mark where the next full cauldron should go?")
+      check(shelf is same_list, "Change the list you were given.")
+      check(shelf[:10000] == list(range(1, 20000, 2)) and shelf[10000:] == [0] * 10000, "The big shelf isn't right.")
+hints:
+  nudge: Keep a pointer to the next spot where a full cauldron belongs. Walk the shelf with a second pointer.
+  question: When the walking pointer finds a full cauldron, what do you do with it - and with the slow pointer?
+  pseudocode: |
+    slot = 0
+    for each position on the shelf:
+        if the cauldron there is full:
+            swap it with the one at slot
+            move slot on by one
+  flaw: If [1, 2, 0] gets scrambled, check you swap only when the walking pointer finds a full cauldron, and that slot only moves on then.
+  analogous: |
+    ```python
+    def keep_passing(scores):
+        write = 0
+        for score in scores:
+            if score >= 50:
+                scores[write] = score
+                write += 1
+        del scores[write:]
+    ```

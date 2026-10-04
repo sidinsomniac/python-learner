@@ -98,6 +98,8 @@ export interface GameState {
   reviewStreak: number;
   /** What was done each day (exercises, cards, duels), for the Ledger. Kept for ACTIVITY_DAYS. */
   activity: Activity;
+  /** Auror Academy: the fastest interview-timer finish per case, in seconds. */
+  aurorTimes: Record<string, number>;
   duels: Record<string, { wins: number; losses: number; draws: number }>;
   /** The day each duel opponent last paid in full (later wins that day pay 1 Galleon). */
   duelPaidOn: Record<string, string>;
@@ -129,6 +131,7 @@ export interface GameState {
   finishReviewSession: (correctCount: number) => { xp: number; galleons: number; streak: number };
   recordDuel: (opponentId: string, outcome: DuelOutcome, galleons: number) => { badges: string[]; galleons: number; housePoints: number };
   awardBadge: (id: string) => boolean;
+  recordAurorTime: (caseId: string, seconds: number) => boolean;
   foundEgg: (id: string) => void;
   markSceneSeen: (id: string) => void;
   setTheme: (theme: "dark" | "light") => void;
@@ -174,6 +177,7 @@ const initialData = {
   reviewLastDay: null,
   reviewStreak: 0,
   activity: {},
+  aurorTimes: {},
   duels: {},
   duelPaidOn: {},
   perkState: DEFAULT_PERK_STATE,
@@ -601,6 +605,13 @@ export const useGame = create<GameState>()(
           if (opponentId === "draco" && next.wins >= 3 && get().awardBadge("rivalry")) earned.push("rivalry");
         }
         return { badges: earned, galleons: paid, housePoints: points };
+      },
+
+      recordAurorTime: (caseId, seconds) => {
+        const best = get().aurorTimes[caseId];
+        if (best !== undefined && best <= seconds) return false;
+        set((s) => ({ aurorTimes: { ...s.aurorTimes, [caseId]: seconds } }));
+        return true;
       },
 
       awardBadge: (id) => {

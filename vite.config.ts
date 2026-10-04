@@ -27,6 +27,7 @@ export default defineConfig({
         manualChunks(id: string) {
           const prose = id.match(/\/content\/year-(\d+)\/[^/]+\/(lecture|spellbook)\.md/);
           if (prose) return `lectures-y${prose[1]}`;
+          if (id.includes("/content/auror/")) return "auror";
           if (id.includes("/content/") || id.includes("node_modules/js-yaml")) return "content";
           if (/node_modules\/(react|react-dom|scheduler|zustand)\//.test(id)) return "react";
           return undefined;

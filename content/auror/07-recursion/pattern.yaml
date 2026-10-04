@@ -1,0 +1,4 @@
+title: Recursion
+icon: "🌀"
+order: 7
+blurb: Solve a problem by solving a smaller copy of it - with a base case that stops the descent, and a cache when the same copies come up again.

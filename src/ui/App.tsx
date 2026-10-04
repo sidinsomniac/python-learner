@@ -25,6 +25,8 @@ const CaseFile = screen(() => import("./CaseFile"), "CaseFile");
 const Spellbook = screen(() => import("./Spellbook"), "Spellbook");
 const Trophies = screen(() => import("./Trophies"), "Trophies");
 const Progress = screen(() => import("./Progress"), "Progress");
+const AurorAcademy = screen(() => import("./AurorAcademy"), "AurorAcademy");
+const AurorCaseView = screen(() => import("./AurorAcademy"), "AurorCaseView");
 const Settings = screen(() => import("./Settings"), "Settings");
 const Shop = screen(() => import("./Shop"), "Shop");
 const TimeTurner = screen(() => import("./TimeTurner"), "TimeTurner");
@@ -89,6 +91,12 @@ export default function App() {
         break;
       case "progress":
         body = <Progress />;
+        break;
+      case "auror":
+        body = <AurorAcademy />;
+        break;
+      case "auror-case":
+        body = <AurorCaseView key={route.id} caseId={route.id} />;
         break;
       case "settings":
         body = <Settings />;

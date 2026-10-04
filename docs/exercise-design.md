@@ -170,6 +170,13 @@ files:
 - `write_files({...})` hands the spell a different set of files (the file version of `run_with`, so answers can't be memorised). `read_file(name)` checks what the spell wrote, or returns None.
 - The validator fails a lecture example that opens a file the lesson doesn't provide.
 
+## 7d. Auror Academy cases (interview problems)
+- **Original problems** in the style of LeetCode Easy, one pattern per folder. `leetcodeLike` names the classic problem it resembles, as a pointer for the player; the wording, story and tests are our own.
+- **Function-style, core-sized:** at least 3 tests, including edge cases and a **scale test** (20,000-ish items, `timed()` or a counting list) so brute force fails. For binary search, count looks (trap 9 in HANDOFF §8).
+- **`requires`** is the lesson that taught everything the solution uses. `auror.test.ts` enforces this with the `cardCheck` scope table.
+- **`complexity`** asks about time (or space) after the case is closed. The `why` explains the better and worse approaches, so the question teaches as well as tests.
+- The hint ladder follows the usual rules: no solution lines of 12+ characters, and pseudocode in words.
+
 ## 8. Time-Turner review cards
 
 Each lesson contributes small cards that come back on a spaced schedule: 1, 3, 7, 16, then 35 days, reset on a miss. The same cards feed the Dueling Club. They live in the lesson's `review.yaml`:

@@ -1,0 +1,4 @@
+title: Strings
+icon: "📜"
+order: 8
+blurb: Strings are sequences too - compare positions, skip what doesn't count, and build the result once with join.

@@ -1,0 +1,4 @@
+title: Counting
+icon: "🧮"
+order: 2
+blurb: Tally things in one pass with a dict or a Counter, then read the answer off the tally.

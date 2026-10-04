@@ -7,6 +7,9 @@ import { itemById } from "../lore/shop";
 import { python, type RunnerStatus } from "../runtime/pythonRunner";
 import { MusicToggle } from "./BackgroundMusic";
 import { useDueCount } from "./deck";
+import { lessonById } from "../engine/content";
+import { isLessonComplete } from "../engine/progress";
+import { AUROR_FIRST_LESSON } from "../lore/levels";
 
 export function Header() {
   const { name, house, xp, galleons, housePoints, marauderMap, equipped, bestLevel } = useGame();
@@ -14,6 +17,7 @@ export function Header() {
   const lp = levelProgress(xp);
   const status = usePythonStatus();
   const due = useDueCount();
+  const aurorOpen = useGame((s) => isLessonComplete(lessonById(AUROR_FIRST_LESSON)!, s.exercises));
   const wand = equipped.wand ? itemById(equipped.wand) : undefined;
   const familiar = equipped.familiar ? itemById(equipped.familiar) : undefined;
   const title = equipped.title ? itemById(equipped.title)?.value : undefined;
@@ -72,6 +76,11 @@ export function Header() {
           </a>
         )}
         {hasFeature(bestLevel, "dueling-club") && <a href="#/dueling-club">Dueling Club</a>}
+        {aurorOpen && (
+          <a href="#/auror" data-testid="nav-auror">
+            Auror Academy
+          </a>
+        )}
         <a href="#/progress" data-testid="nav-progress">Ledger</a>
         <a href="#/trophies">Trophies</a>
         {marauderMap && <a href="#/marauders-map">🗺️ Map</a>}

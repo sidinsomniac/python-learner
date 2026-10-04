@@ -1,0 +1,67 @@
+title: The Runic Numerals
+leetcodeLike: Roman to Integer
+requires: y2-l07
+order: 3
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Each symbol is looked up in a dict once, and compared with its neighbour once.
+task: |
+  Old Gringotts vaults are numbered in Roman numerals. Write
+  `roman_value(numeral)`: turn a numeral into a number.
+
+  `I` 1, `V` 5, `X` 10, `L` 50, `C` 100, `D` 500, `M` 1000. Symbols are
+  added up, **except** when a smaller symbol comes right before a bigger one:
+  then it's taken away (`IV` is 4, `XC` is 90, `CM` is 900).
+
+  ```python
+  roman_value("XII")
+  # -> 12
+  roman_value("MCMXCIV")
+  # -> 1994
+  ```
+starter: |
+  def roman_value(numeral):
+      # Your spell here
+      return 0
+tests: |
+  def test_examples():
+      fn = student_function("roman_value")
+      check(call(fn, "XII") == 12, "XII is 10 + 1 + 1.")
+      got = call(fn, "MCMXCIV")
+      check(got == 1994, f"roman_value('MCMXCIV') gave {got!r}. Which symbols come right before a bigger one?")
+
+  def test_subtraction():
+      fn = student_function("roman_value")
+      for numeral, want in [("IV", 4), ("IX", 9), ("XL", 40), ("XC", 90), ("CD", 400), ("CM", 900)]:
+          got = call(fn, numeral)
+          check(got == want, f"roman_value({numeral!r}) gave {got!r}, but it's {want}. A smaller symbol before a bigger one is taken away.")
+
+  def test_more():
+      fn = student_function("roman_value")
+      check(call(fn, "III") == 3, "III is 3.")
+      check(call(fn, "LVIII") == 58, "LVIII is 50 + 5 + 3.")
+      check(call(fn, "MMXXVI") == 2026, "MMXXVI is 2026.")
+      check(call(fn, "") == 0, "An empty numeral is 0.")
+hints:
+  nudge: Keep the value of each symbol in a dict. Then decide, symbol by symbol, whether it adds or takes away.
+  question: What do you need to compare a symbol with, to know whether it should be taken away instead of added?
+  pseudocode: |
+    values = a dict from symbol to number
+    total = 0
+    for each position:
+        if the next symbol exists and is worth more: take this symbol's value away
+        otherwise add it
+    give back total
+  flaw: If "IV" gives 6, every symbol is being added. Look one step ahead to see whether a bigger symbol follows.
+  analogous: |
+    ```python
+    def score_moves(moves, points):
+        score = 0
+        for i, move in enumerate(moves):
+            bonus = points[move]
+            if i > 0 and moves[i - 1] == move:
+                bonus *= 2
+            score += bonus
+        return score
+    ```

@@ -1,0 +1,73 @@
+title: The Galleon Exchange
+leetcodeLike: Best Time to Buy and Sell Stock
+requires: y3-l08
+order: 1
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: One pass, carrying the cheapest price so far. Trying every buy day against every later sell day is O(n²).
+task: |
+  Gringotts posts the price of a dragon egg each day. You may buy **one**
+  egg on one day and sell it on a **later** day. Write `best_profit(prices)`:
+  the most you could make, or `0` if no trade makes money.
+
+  ```python
+  best_profit([7, 1, 5, 3, 6, 4])
+  # -> 5   (buy at 1, sell at 6)
+  best_profit([9, 7, 4, 1])
+  # -> 0
+  ```
+
+  The goblins have 20,000 days of prices.
+starter: |
+  def best_profit(prices):
+      # Your spell here
+      return 0
+tests: |
+  import random
+
+  def test_examples():
+      fn = student_function("best_profit")
+      got = call(fn, [7, 1, 5, 3, 6, 4])
+      check(got == 5, f"best_profit([7, 1, 5, 3, 6, 4]) gave {got!r}. What's the cheapest day before the best selling day?")
+      check(call(fn, [9, 7, 4, 1]) == 0, "When prices only fall, the best is not to trade: 0.")
+
+  def test_tricky():
+      fn = student_function("best_profit")
+      got = call(fn, [3, 8, 1, 2])
+      check(got == 5, f"best_profit([3, 8, 1, 2]) gave {got!r}. The cheapest day overall (1) comes too late to sell high.")
+      check(call(fn, []) == 0, "No days, no trade.")
+      check(call(fn, [5]) == 0, "With one day you can't buy and sell.")
+      check(call(fn, [2, 2, 2]) == 0, "Flat prices make nothing.")
+
+  def test_long_history():
+      fn = student_function("best_profit")
+      rng = random.Random(3)
+      prices = [rng.randrange(100, 10**6) for _ in range(20000)]
+      low = prices[0]
+      want = 0
+      for p in prices:
+          low = min(low, p)
+          want = max(want, p - low)
+      got = timed(fn, prices, limit=1.5, question="Correct, but slow on 20,000 days. For each day, what's the one thing you need to remember about the days before it?")
+      check(got == want, f"For the long history you gave {got!r}.")
+hints:
+  nudge: The best sale on any day is that day's price minus the cheapest price **before** it.
+  question: As you walk forward through the days, what single number can you keep updated so you never need to look back?
+  pseudocode: |
+    cheapest = the first price; best = 0
+    for each price:
+        best = the bigger of best and (price take away cheapest)
+        cheapest = the smaller of cheapest and price
+    give back best
+  flaw: If [3, 8, 1, 2] gives 7 or more, you sold before you bought. Only prices that came earlier can be the buying price.
+  analogous: |
+    ```python
+    def biggest_rise(heights):
+        lowest = float("inf")
+        rise = 0
+        for h in heights:
+            lowest = min(lowest, h)
+            rise = max(rise, h - lowest)
+        return rise
+    ```

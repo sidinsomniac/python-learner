@@ -75,6 +75,38 @@ function checkScene(where, lines) {
 const fences = (markdown, lang) =>
   [...markdown.matchAll(new RegExp("^```" + lang + "\\n([\\s\\S]*?)^```\\s*$", "gm"))].map((m) => m[1]);
 
+/**
+ * The checks every coded exercise shares: the reference solution passes with a
+ * clean review, the starter doesn't, cores have hidden tests, no lecture
+ * example solves a core, and no hint gives a solution line away.
+ */
+function checkCoded({ at, ex, tests, solution, starter, inputs, review, files, lectureCode = [] }) {
+  const solved = grade(solution, tests, inputs, review, files);
+  if (solved.total === 0) fail(at, "tests define no test_ functions");
+  if (solved.failure) fail(at, `the reference solution fails ${solved.failure.test}: ${JSON.stringify(solved.failure).slice(0, 300)}`);
+  else if (solved.review.length) fail(at, `Snape isn't happy with the reference solution: ${solved.review.map((r) => r.id).join(", ")}`);
+  if (ex.tier === "core" && solved.total < 3) fail(at, "core challenges need at least 3 tests (including hidden edge cases)");
+  if (!grade(starter, tests, inputs, [], files).failure) fail(at, "the starter code already passes every test");
+
+  // No copy-paste: no lecture example may solve a core or outstanding challenge.
+  if (ex.tier === "core" || ex.tier === "outstanding") {
+    lectureCode.forEach((block, i) => {
+      if (!grade(block, tests, inputs, [], files).failure) fail(at, `lecture code block ${i + 1} already solves this challenge`);
+    });
+  }
+
+  // Lines the learner can already see in the starter code give nothing away.
+  const norm = (line) => line.trim().replace(/\s+/g, " ");
+  const visible = new Set(starter.split("\n").map(norm));
+  const hintText = HINT_RUNGS.map((r) => ex.hints?.[r] ?? "").join("\n").replace(/\s+/g, " ");
+  for (const line of solution.split("\n")) {
+    const trimmed = norm(line);
+    if (trimmed.length >= 12 && !visible.has(trimmed) && hintText.includes(trimmed)) {
+      fail(at, `a hint contains a solution line: ${trimmed}`);
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Collect every lesson, in order, so review rules can be enabled by position.
 // ---------------------------------------------------------------------------
@@ -248,12 +280,6 @@ for (const { meta, dir, where, year } of lessons) {
       continue;
     }
 
-    const solved = grade(solution, tests, inputs, review, files);
-    if (solved.total === 0) fail(at, "tests define no test_ functions");
-    if (solved.failure) fail(at, `the reference solution fails ${solved.failure.test}: ${JSON.stringify(solved.failure).slice(0, 300)}`);
-    else if (solved.review.length) fail(at, `Snape isn't happy with the reference solution: ${solved.review.map((r) => r.id).join(", ")}`);
-    if (ex.tier === "core" && solved.total < 3) fail(at, "core challenges need at least 3 tests (including hidden edge cases)");
-
     let starter = ex.starter ?? "";
     if (ex.type === "scramble") {
       starter = (ex.lines ?? []).join("\n") + "\n";
@@ -262,24 +288,44 @@ for (const { meta, dir, where, year } of lessons) {
         fail(at, "the solution must be a reordering of the scramble lines");
       }
     }
-    if (!grade(starter, tests, inputs, [], files).failure) fail(at, "the starter code already passes every test");
+    checkCoded({ at, ex, tests, solution, starter, inputs, review, files, lectureCode });
+  }
+}
 
-    // No copy-paste: no lecture example may solve a core or outstanding challenge.
-    if (ex.tier === "core" || ex.tier === "outstanding") {
-      lectureCode.forEach((block, i) => {
-        if (!grade(block, tests, inputs, [], files).failure) fail(at, `lecture code block ${i + 1} already solves this challenge`);
-      });
-    }
-
-    // Lines the learner can already see in the starter code give nothing away.
-    const norm = (line) => line.trim().replace(/\s+/g, " ");
-    const visible = new Set(starter.split("\n").map(norm));
-    const hintText = HINT_RUNGS.map((r) => ex.hints?.[r] ?? "").join("\n").replace(/\s+/g, " ");
-    for (const line of solution.split("\n")) {
-      const trimmed = norm(line);
-      if (trimmed.length >= 12 && !visible.has(trimmed) && hintText.includes(trimmed)) {
-        fail(at, `a hint contains a solution line: ${trimmed}`);
+// ---------------------------------------------------------------------------
+// Auror Academy: interview problems by pattern (content/auror/<pattern>/).
+// ---------------------------------------------------------------------------
+let caseCount = 0;
+const aurorDir = join(contentDir, "auror");
+if (existsSync(aurorDir) && (!only || only.startsWith("auror"))) {
+  for (const patternDir of readdirSync(aurorDir, { withFileTypes: true })) {
+    if (!patternDir.isDirectory()) continue;
+    const dir = join(aurorDir, patternDir.name);
+    const where = `auror/${patternDir.name}`;
+    const patternRaw = read(dir, "pattern.yaml");
+    const pattern = patternRaw && yaml(`${where}/pattern.yaml`, patternRaw);
+    if (!patternRaw) fail(where, "missing pattern.yaml");
+    else for (const field of ["title", "icon", "blurb", "order"]) if (pattern[field] === undefined) fail(`${where}/pattern.yaml`, `missing "${field}"`);
+    for (const file of readdirSync(dir).filter((f) => f.endsWith(".yaml") && f !== "pattern.yaml").sort()) {
+      const slug = file.replace(/\.yaml$/, "");
+      const at = `${where}/${slug}`;
+      if (only && !`auror-${slug}`.startsWith(only) && only !== "auror") continue;
+      caseCount++;
+      const ex = yaml(`${at}.yaml`, read(dir, file));
+      if (!ex) continue;
+      for (const field of ["title", "requires", "task", "starter", "tests", "hints", "complexity"]) if (ex[field] === undefined) fail(at, `missing "${field}"`);
+      for (const rung of HINT_RUNGS) if (!ex.hints?.[rung]) fail(at, `the hint ladder is missing "${rung}"`);
+      if (!lessonIds.includes(ex.requires)) fail(at, `requires unknown lesson ${ex.requires}`);
+      const quiz = ex.complexity ?? {};
+      if (!Array.isArray(quiz.options) || quiz.options.length < 2 || !quiz.why) fail(at, "complexity needs options and why");
+      else if (!Number.isInteger(quiz.answer) || quiz.answer < 0 || quiz.answer >= quiz.options.length) fail(at, "complexity answer index out of range");
+      const solution = read(dir, `${slug}.solution.py`);
+      if (!solution) {
+        fail(at, `missing ${slug}.solution.py`);
+        continue;
       }
+      // Cases are core-sized, and reviewed with the rules of the lesson they require.
+      checkCoded({ at, ex: { ...ex, tier: "core" }, tests: ex.tests ?? "", solution, starter: ex.starter ?? "", inputs: [], review: rulesFor(ex.requires), files: {} });
     }
   }
 }
@@ -289,4 +335,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log(`✓ ${seenIds.size} lessons and ${exerciseCount} exercises validated`);
+console.log(`✓ ${seenIds.size} lessons, ${exerciseCount} exercises and ${caseCount} Auror cases validated`);

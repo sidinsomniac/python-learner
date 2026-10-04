@@ -1,0 +1,69 @@
+title: The Sealed Spell
+leetcodeLike: Valid Parentheses
+requires: y3-l05b
+order: 1
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: Each bracket is pushed or popped once, and list append/pop at the end are constant time. Repeatedly deleting "()" pairs with replace() is O(n²).
+task: |
+  A spell's brackets must be **sealed**: every opening `(`, `[` or `{` is
+  closed by the matching bracket, in the right order. Write
+  `sealed(spell)`: return `True` if the spell is sealed. It contains only
+  bracket characters.
+
+  ```python
+  sealed("([]{})")
+  # -> True
+  sealed("([)]")
+  # -> False   (the [ is closed by a ) )
+  sealed("((")
+  # -> False
+  ```
+
+  Some ancient spells are 20,000 brackets long.
+starter: |
+  def sealed(spell):
+      # Your spell here
+      return False
+tests: |
+  def test_examples():
+      fn = student_function("sealed")
+      check(call(fn, "([]{})") is True, "([]{}) is sealed: every bracket closes the one opened just before it.")
+      check(call(fn, "([)]") is False, "In ([)] the [ is closed by ), so it isn't sealed. Do you check WHICH bracket closes?")
+      check(call(fn, "((") is False, "(( never closes. What should be left over at the end?")
+
+  def test_edges():
+      fn = student_function("sealed")
+      check(call(fn, "") is True, "An empty spell has nothing unsealed.")
+      check(call(fn, ")(") is False, "A closing bracket with nothing open can't be sealed. Does popping an empty list crash your spell?")
+      check(call(fn, "{[()()]}") is True, "Nested and side by side: {[()()]} is sealed.")
+      check(call(fn, "(]") is False, "( can't be closed by ].")
+
+  def test_ancient_spell():
+      fn = student_function("sealed")
+      spell = "([{" * 3333 + "}])" * 3333
+      check(timed(fn, spell, limit=1.5, question="Correct, but slow on 20,000 brackets. Can you decide each bracket as you meet it, with a stack?") is True, "The ancient spell is sealed.")
+      check(call(fn, spell + "(") is False, "One extra ( at the end leaves it unsealed.")
+hints:
+  nudge: Keep a stack of brackets that are still open. A closing bracket must match the one on top.
+  question: When you meet a closing bracket, what two things can go wrong - and what must be true about the stack once the whole spell is read?
+  pseudocode: |
+    partner = a dict from each closing bracket to its opening bracket
+    stack = an empty list
+    for each bracket:
+        if it opens: push it
+        otherwise: if the stack is empty, or its top isn't the partner, it isn't sealed; else pop
+    sealed only if the stack is empty at the end
+  flaw: If ")(" crashes, you popped from an empty stack. If "((" says True, you forgot to check what's left at the end.
+  analogous: |
+    ```python
+    def tags_nest(tags):
+        open_tags = []
+        for tag in tags:
+            if not tag.startswith("/"):
+                open_tags.append(tag)
+            elif not open_tags or open_tags.pop() != tag[1:]:
+                return False
+        return not open_tags
+    ```

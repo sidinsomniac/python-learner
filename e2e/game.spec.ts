@@ -632,3 +632,32 @@ test("an old save without a practice log gets one rebuilt from its finished exer
   await expect(page.getByTestId("ledger-days")).toHaveText("1");
   await expect(page.getByTestId("heatmap").locator('rect[data-count="2"]')).toHaveCount(1);
 });
+
+test("the Auror Academy opens cases by lesson, and closing one asks about complexity", async ({ page }) => {
+  await seed(page, { bestLevel: 6, exercises: completed(["y2-l07"]) });
+  await page.goto("/#/");
+  await page.getByTestId("nav-auror").click();
+  await expect(page.getByTestId("pattern-count-01-hashing")).toHaveText("0 / 3");
+  // Counter isn't taught until Modules, so that case is still sealed.
+  await expect(page.getByTestId("case-auror-portkey-anagram")).toHaveCount(0);
+  await page.getByTestId("case-auror-owl-pair").click();
+
+  await page.getByTestId("timer-15").click();
+  await expect(page.getByTestId("timer")).toContainText("left");
+  await waitForPython(page);
+  await setCode(
+    page,
+    "def owl_pair(strengths, weight):\n    seen = {}\n    for i, strength in enumerate(strengths):\n        if weight - strength in seen:\n            return (seen[weight - strength], i)\n        seen[strength] = i\n    return None\n",
+  );
+  await page.getByTestId("cast").click();
+  const closed = page.getByTestId("case-closed");
+  await expect(closed).toBeVisible();
+  await expect(closed).toContainText("inside the time");
+  await closed.getByTestId("complexity").getByRole("button", { name: "O(n)", exact: true }).click();
+  await expect(page.getByTestId("complexity-why")).toContainText("Exactly");
+
+  await page.goto("/#/auror");
+  await expect(page.getByTestId("pattern-count-01-hashing")).toHaveText("1 / 3");
+  await page.goto("/#/progress");
+  await expect(page.getByTestId("ledger-auror")).toContainText("1/3");
+});

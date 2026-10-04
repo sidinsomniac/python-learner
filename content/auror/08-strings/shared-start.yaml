@@ -1,0 +1,62 @@
+title: The Shared Incantation
+leetcodeLike: Longest Common Prefix
+requires: y3-l12
+order: 1
+complexity:
+  q: For w words of length up to m, what's the time complexity?
+  options: ["O(w²·m)", "O(w·m)", "O(w + m)", "O(m)"]
+  answer: 1
+  why: In the worst case every letter of every word is compared once against the first word.
+task: |
+  Several spells start with the same syllables. Write `shared_start(spells)`:
+  the longest beginning that **every** spell shares, or `""` if there is
+  none (or no spells at all).
+
+  ```python
+  shared_start(["expelliarmus", "expecto", "expulso"])
+  # -> 'exp'
+  shared_start(["lumos", "nox"])
+  # -> ''
+  ```
+starter: |
+  def shared_start(spells):
+      # Your spell here
+      return ""
+tests: |
+  def test_examples():
+      fn = student_function("shared_start")
+      got = call(fn, ["expelliarmus", "expecto", "expulso"])
+      check(got == "exp", f"You gave {got!r}. Where does the first difference appear?")
+      check(call(fn, ["lumos", "nox"]) == "", "lumos and nox share nothing at the start.")
+
+  def test_edges():
+      fn = student_function("shared_start")
+      check(call(fn, []) == "", "With no spells, there's nothing shared.")
+      check(call(fn, ["accio"]) == "accio", "One spell shares all of itself.")
+      check(call(fn, ["reducto", "red"]) == "red", "A whole spell can be the shared start - don't read past the end of the shorter one.")
+      check(call(fn, ["ab", "ab", "ab"]) == "ab", "Identical spells share everything.")
+      check(call(fn, ["abc", "", "abd"]) == "", "An empty spell shares nothing.")
+  def test_many_spells():
+      fn = student_function("shared_start")
+      spells = ["wingardium" + str(i) for i in range(2000)]
+      got = timed(fn, spells, limit=1.5, question="Correct, but slow for 2,000 spells. Do you stop at the first position where they differ?")
+      check(got == "wingardium", f"2,000 spells all start with wingardium. You gave {got!r}.")
+      check(call(fn, spells + ["wing"]) == "wing", "Adding the spell wing shortens the shared start to wing.")
+hints:
+  nudge: Look at the first spell letter by letter, and check that every other spell has the same letter in the same place.
+  question: What should stop you - a different letter, or something else too?
+  pseudocode: |
+    if there are no spells: give back ""
+    for each position in the first spell:
+        if any spell is too short, or has a different letter there: give back the first spell up to that position
+    give back the whole first spell
+  flaw: If ["reducto", "red"] crashes, you read a position the shorter spell doesn't have. Check its length first.
+  analogous: |
+    ```python
+    def agreed_until(answers):
+        n = min(len(a) for a in answers)
+        for i in range(n):
+            if len({a[i] for a in answers}) > 1:
+                return i
+        return n
+    ```

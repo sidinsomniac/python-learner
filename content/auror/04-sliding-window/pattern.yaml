@@ -1,0 +1,4 @@
+title: Sliding Window
+icon: "🪟"
+order: 4
+blurb: Keep a running answer for a stretch of the list, and update it as the stretch slides, instead of re-adding everything.

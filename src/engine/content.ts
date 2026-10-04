@@ -15,7 +15,7 @@ import {
 // Only these files are bundled. `*.solution.py` files never are.
 const yearFiles = import.meta.glob("/content/*/year.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const lessonFiles = import.meta.glob("/content/*/*/lesson.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
-const exerciseFiles = import.meta.glob(["/content/*/*/*.yaml", "!**/lesson.yaml", "!**/review.yaml"], { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+const exerciseFiles = import.meta.glob(["/content/*/*/*.yaml", "!**/lesson.yaml", "!**/review.yaml", "!/content/auror/**"], { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const reviewFiles = import.meta.glob("/content/*/*/review.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 // Lectures and Spellbook pages are the bulk of the prose, and only one lesson
 // needs them at a time, so they load on demand (grouped per year by vite.config.ts).

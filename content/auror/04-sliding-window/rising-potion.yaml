@@ -1,0 +1,66 @@
+title: The Rising Potion
+leetcodeLike: Longest Continuous Increasing Subsequence
+requires: y3-l08
+order: 3
+complexity:
+  options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"]
+  answer: 2
+  why: One pass with a running length that resets whenever the rise breaks.
+task: |
+  Neville logs his potion's temperature every minute. Write
+  `longest_rise(temps)`: the length of the longest run of readings that
+  are each **strictly hotter** than the one before.
+
+  ```python
+  longest_rise([1, 3, 5, 4, 7])
+  # -> 3   (1, 3, 5)
+  longest_rise([2, 2, 2])
+  # -> 1
+  longest_rise([])
+  # -> 0
+  ```
+starter: |
+  def longest_rise(temps):
+      # Your spell here
+      return 0
+tests: |
+  def test_examples():
+      fn = student_function("longest_rise")
+      got = call(fn, [1, 3, 5, 4, 7])
+      check(got == 3, f"longest_rise([1, 3, 5, 4, 7]) gave {got!r}. Where does the rise break?")
+      check(call(fn, [2, 2, 2]) == 1, "Equal readings aren't hotter, so each run is a single reading.")
+      check(call(fn, []) == 0, "No readings, no run.")
+
+  def test_tricky():
+      fn = student_function("longest_rise")
+      got = call(fn, [5, 4, 1, 2, 3, 4])
+      check(got == 4, f"longest_rise([5, 4, 1, 2, 3, 4]) gave {got!r}. Did you check the run that's still going when the list ends?")
+      check(call(fn, [9]) == 1, "One reading is a run of 1.")
+      check(call(fn, [3, 2, 1]) == 1, "Falling readings: every run is 1.")
+
+  def test_long_log():
+      fn = student_function("longest_rise")
+      temps = list(range(10000)) + list(range(5000))
+      got = timed(fn, temps, limit=1.5, question="Correct, but slow. Can you carry the current run's length as you go?")
+      check(got == 10000, f"For the long log you gave {got!r}.")
+hints:
+  nudge: Walk the readings once, counting how long the current rise is.
+  question: What happens to the current run's length when a reading is not hotter than the one before it?
+  pseudocode: |
+    if there are no readings: the answer is 0
+    run = 1; best = 1
+    for each reading after the first:
+        if it's hotter than the one before: run grows by one
+        otherwise run starts again at 1
+        best = the bigger of best and run
+    give back best
+  flaw: If [5, 4, 1, 2, 3, 4] gives 3, the last run was never compared with best - update best inside the loop, not only when a run breaks.
+  analogous: |
+    ```python
+    def longest_dry_spell(rain):
+        streak = longest = 0
+        for mm in rain:
+            streak = streak + 1 if mm == 0 else 0
+            longest = max(longest, streak)
+        return longest
+    ```

@@ -1,0 +1,91 @@
+title: The Shelf Slot
+leetcodeLike: Search Insert Position
+requires: y3-l07b
+order: 1
+complexity:
+  options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"]
+  answer: 1
+  why: Every look halves the part of the shelf that could hold the answer, so a million books take about 20 looks.
+task: |
+  Madam Pince's shelf is sorted by catalogue number. Write
+  `slot_for(shelf, number)`: the position where `number` is, or - if it
+  isn't there - the position where it **should be put** to keep the shelf
+  sorted. The numbers on a shelf are all different.
+
+  ```python
+  slot_for([10, 20, 30, 40], 30)
+  # -> 2
+  slot_for([10, 20, 30, 40], 25)
+  # -> 2
+  slot_for([10, 20, 30, 40], 99)
+  # -> 4
+  ```
+
+  The examiners count how many books you look at on a 100,000-book shelf:
+  no more than 40.
+starter: |
+  def slot_for(shelf, number):
+      # Your spell here
+      return 0
+tests: |
+  class Shelf(list):
+      looks = 0
+      def __getitem__(self, i):
+          Shelf.looks += 1
+          return list.__getitem__(self, i)
+      def __iter__(self):
+          Shelf.looks += len(self)
+          return list.__iter__(self)
+      def __contains__(self, x):
+          Shelf.looks += len(self)
+          return list.__contains__(self, x)
+      def index(self, *args):
+          Shelf.looks += len(self)
+          return list.index(self, *args)
+
+  def test_examples():
+      fn = student_function("slot_for")
+      shelf = [10, 20, 30, 40]
+      check(call(fn, shelf, 30) == 2, "30 is at position 2.")
+      got = call(fn, shelf, 25)
+      check(got == 2, f"slot_for(shelf, 25) gave {got!r}. 25 belongs between 20 and 30.")
+      check(call(fn, shelf, 99) == 4, "99 goes after everything: position 4, one past the end.")
+
+  def test_edges():
+      fn = student_function("slot_for")
+      check(call(fn, [], 5) == 0, "On an empty shelf, everything goes at 0.")
+      check(call(fn, [10, 20], 1) == 0, "A number smaller than everything goes at 0.")
+      check(call(fn, [7], 7) == 0, "A one-book shelf holding the number: position 0.")
+      check(call(fn, [7], 8) == 1, "A one-book shelf, number bigger: position 1.")
+
+  def test_big_shelf():
+      fn = student_function("slot_for")
+      shelf = Shelf(range(0, 200000, 2))
+      for number, want in [(0, 0), (199998, 99999), (77777, 38889), (200001, 100000), (-5, 0)]:
+          Shelf.looks = 0
+          got = call(fn, shelf, number)
+          check(got == want, f"On the 100,000-book shelf, {number} belongs at {want}. You gave {got!r}.")
+          check(Shelf.looks <= 40, f"That took {Shelf.looks} looks. Are you halving the shelf each time?")
+hints:
+  nudge: Keep a range of positions where the answer could be, and halve it with each look at the middle book.
+  question: When the loop ends without finding the number, which of your two boundaries is exactly where it should go?
+  pseudocode: |
+    lo = 0, hi = the length of the shelf
+    while lo is less than hi:
+        mid = halfway between them
+        if the book at mid is smaller than the number: the answer is to the right of mid
+        otherwise: the answer is at mid or to its left
+    give back lo
+  flaw: If 99 gives 3 instead of 4, hi started at the last position - the answer can be one past the end, so start hi at the length.
+  analogous: |
+    ```python
+    def first_tall_enough(heights, need):
+        low, high = 0, len(heights)
+        while low < high:
+            middle = (low + high) // 2
+            if heights[middle] >= need:
+                high = middle
+            else:
+                low = middle + 1
+        return low
+    ```

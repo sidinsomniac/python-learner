@@ -1,0 +1,87 @@
+title: The First Cursed Page
+leetcodeLike: First Bad Version
+requires: y3-l07b
+order: 2
+complexity:
+  options: ["O(n)", "O(log n)", "O(n log n)", "O(1)"]
+  answer: 1
+  why: Each question to the oracle halves the pages that could be the first cursed one.
+task: |
+  A curse crept into a diary on some page and **every page after it** is
+  cursed too. You can't read the pages yourself: you can only ask
+  `is_cursed(page)`, which answers `True` or `False`. Write
+  `first_cursed(pages, is_cursed)`: pages are numbered `1` to `pages`, and at
+  least the last one is cursed. Return the first cursed page.
+
+  ```python
+  first_cursed(10, lambda page: page >= 4)
+  # -> 4
+  ```
+
+  The diary has a million pages, and the oracle only answers **30**
+  questions before it falls silent.
+starter: |
+  def first_cursed(pages, is_cursed):
+      # Your spell here
+      return pages
+tests: |
+  def oracle(first, limit=30):
+      asked = []
+      def is_cursed(page):
+          asked.append(page)
+          if len(asked) > limit:
+              raise RuntimeError(f"The oracle falls silent after {limit} questions.")
+          if not 1 <= page:
+              raise ValueError(f"There is no page {page}.")
+          return page >= first
+      return is_cursed, asked
+
+  def test_example():
+      fn = student_function("first_cursed")
+      ask, _ = oracle(4)
+      got = call(fn, 10, ask)
+      check(got == 4, f"first_cursed(10, ...) gave {got!r}, but the curse starts on page 4.")
+
+  def test_edges():
+      fn = student_function("first_cursed")
+      ask, _ = oracle(1)
+      check(call(fn, 10, ask) == 1, "When every page is cursed, the first is page 1.")
+      ask, _ = oracle(10)
+      check(call(fn, 10, ask) == 10, "When only the last page is cursed, it's page 10.")
+      ask, _ = oracle(1)
+      check(call(fn, 1, ask) == 1, "A one-page diary: page 1.")
+
+  def test_million_pages():
+      fn = student_function("first_cursed")
+      for first in [1, 2, 500000, 999999, 1000000, 314159]:
+          ask, asked = oracle(first)
+          got, err = None, None
+          try:
+              got = fn(1000000, ask)
+          except RuntimeError as exc:
+              err = str(exc)
+          check(err is None, f"{err} Halve the pages that could still be the first cursed one with every question.")
+          check(got == first, f"In the million-page diary the curse starts at {first}. You gave {got!r}.")
+hints:
+  nudge: The pages go False, False, ..., True, True. You're looking for the place where it flips - binary search works on that.
+  question: If the middle page is cursed, could the first cursed page be after it? Could it be the middle page itself?
+  pseudocode: |
+    lo = 1, hi = the number of pages (known to be cursed)
+    while lo is less than hi:
+        mid = halfway between them
+        if mid is cursed: the first cursed page is mid or before it
+        otherwise: it's after mid
+    give back lo
+  flaw: If it runs out of questions, check that every step shrinks the range - setting lo to mid (instead of past it) can loop forever on two pages.
+  analogous: |
+    ```python
+    def smallest_strong_enough(max_power, holds):
+        low, high = 1, max_power
+        while low < high:
+            middle = (low + high) // 2
+            if holds(middle):
+                high = middle
+            else:
+                low = middle + 1
+        return low
+    ```

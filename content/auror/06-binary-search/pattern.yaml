@@ -1,0 +1,4 @@
+title: Binary Search
+icon: "🔍"
+order: 6
+blurb: In anything sorted (or anything that flips from no to yes once), halve the search space with every look.

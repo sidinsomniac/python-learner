@@ -1,0 +1,69 @@
+title: The Arithmancer's Root
+leetcodeLike: Sqrt(x)
+requires: y3-l07b
+order: 3
+complexity:
+  options: ["O(n)", "O(√n)", "O(log n)", "O(1)"]
+  answer: 2
+  why: The range of possible roots (0 to n) is halved with each guess. Counting up from 1 would take about √n steps - a million for n = 10¹².
+task: |
+  Professor Vector wants the **whole-number square root** of `n`, rounded
+  down, without any shortcuts. Write `whole_root(n)` for any `n >= 0`.
+
+  ```python
+  whole_root(16)
+  # -> 4
+  whole_root(15)
+  # -> 3   (3 * 3 = 9 fits, 4 * 4 = 16 is too big)
+  ```
+
+  No `**`, no `pow()` and no `math`. Some numbers are as big as 10¹²: counting
+  up one guess at a time is far too slow.
+starter: |
+  def whole_root(n):
+      # Your spell here
+      return 0
+tests: |
+  import ast
+
+  def test_examples():
+      fn = student_function("whole_root")
+      check(call(fn, 16) == 4, "4 * 4 is 16.")
+      got = call(fn, 15)
+      check(got == 3, f"whole_root(15) gave {got!r}. Round DOWN: 3 * 3 fits under 15, 4 * 4 doesn't.")
+
+  def test_edges():
+      fn = student_function("whole_root")
+      for n, want in [(0, 0), (1, 1), (2, 1), (3, 1), (4, 2), (99, 9), (100, 10)]:
+          got = call(fn, n)
+          check(got == want, f"whole_root({n}) gave {got!r}, but it's {want}.")
+
+  def test_huge():
+      fn = student_function("whole_root")
+      check(not uses(ast.Pow) and not calls("pow") and not calls("sqrt") and not calls("isqrt"), "No **, pow() or math - find the root by searching for it.")
+      for n, want in [(10**12, 10**6), (10**12 - 1, 10**6 - 1), (999999999999, 999999)]:
+          got = timed(fn, n, limit=1.0, question="Correct, but slow for 10¹². Could you halve the range of possible roots with every guess?")
+          check(got == want, f"whole_root({n}) gave {got!r}, but it's {want}.")
+hints:
+  nudge: The answer is somewhere between 0 and n. Guess the middle, square it, and throw away the half that can't hold the answer.
+  question: When your guess squared is too big, which guesses can you rule out? And when it fits, why might it still be the answer?
+  pseudocode: |
+    lo = 0, hi = n
+    while lo is less than hi:
+        mid = halfway between them, rounded UP
+        if mid times mid fits under n: the answer is mid or above
+        otherwise: the answer is below mid
+    give back lo
+  flaw: If it loops forever on n = 2, the middle was rounded down while lo moved to mid - round the middle up when you keep mid on the low side.
+  analogous: |
+    ```python
+    def most_crates(budget, price):
+        low, high = 0, budget
+        while low < high:
+            middle = (low + high + 1) // 2
+            if middle * price <= budget:
+                low = middle
+            else:
+                high = middle - 1
+        return low
+    ```
