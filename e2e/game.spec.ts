@@ -601,3 +601,34 @@ test.describe("offline", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
 });
+
+test("the Ledger shows practice days, streaks, weak spots and the duelling record", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-10-04T12:00:00"));
+  await seed(page, {
+    bestLevel: 6,
+    exercises: completed(YEAR1),
+    activity: {
+      "2026-10-02": { exercises: 2, cards: 0, correct: 0, duels: 0 },
+      "2026-10-03": { exercises: 0, cards: 4, correct: 3, duels: 1 },
+      "2026-10-04": { exercises: 1, cards: 0, correct: 0, duels: 0 },
+    },
+    duels: { draco: { wins: 2, losses: 1, draws: 0 } },
+  });
+  await page.goto("/#/");
+  await page.getByTestId("nav-progress").click();
+  await expect(page.getByTestId("ledger-streak")).toHaveText("3");
+  await expect(page.getByTestId("ledger-days")).toHaveText("3");
+  await expect(page.getByTestId("ledger-hit-rate")).toHaveText("75%");
+  await expect(page.getByTestId("heatmap").locator('rect[data-count="5"]')).toHaveCount(1);
+  await expect(page.getByTestId("weak-spots").locator("li")).toHaveCount(5);
+  await expect(page.getByText("Draco Malfoy")).toBeVisible();
+});
+
+test("an old save without a practice log gets one rebuilt from its finished exercises", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-10-04T12:00:00"));
+  const rec = { completedAt: "2026-09-15T10:00:00.000Z", attempts: 1, hintsUsed: 0, xpEarned: 1, grade: "E" };
+  await seed(page, { exercises: { "y1-l01.warmup": rec, "y1-l01.core": rec } });
+  await page.goto("/#/progress");
+  await expect(page.getByTestId("ledger-days")).toHaveText("1");
+  await expect(page.getByTestId("heatmap").locator('rect[data-count="2"]')).toHaveCount(1);
+});

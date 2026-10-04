@@ -72,6 +72,7 @@ export function Header() {
           </a>
         )}
         {hasFeature(bestLevel, "dueling-club") && <a href="#/dueling-club">Dueling Club</a>}
+        <a href="#/progress" data-testid="nav-progress">Ledger</a>
         <a href="#/trophies">Trophies</a>
         {marauderMap && <a href="#/marauders-map">🗺️ Map</a>}
         <a href="#/settings">Settings</a>

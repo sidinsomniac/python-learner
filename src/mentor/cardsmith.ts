@@ -4,7 +4,8 @@
 import { LESSONS, REVIEW_CARDS } from "../engine/content";
 import { isLessonComplete } from "../engine/progress";
 import type { CardState } from "../engine/review";
-import type { ExerciseRecord, Grade, Lesson, ReviewCard } from "../engine/types";
+import { rankWeakest } from "../engine/stats";
+import type { ExerciseRecord, ReviewCard } from "../engine/types";
 import { BLIND_SYSTEM, blindRequest, CARD_SYSTEM, cardRequest, type CardBrief } from "./cardPrompt";
 import { fingerprint, forbidden, notUseful, outOfScope, parseCard, runCheck, type Runner } from "./cardCheck";
 
@@ -34,28 +35,8 @@ export interface ForgeResult {
   dropped: string[];
 }
 
-const GRADE_WEAK: Record<Grade, number> = { O: 0, E: 1, A: 2, P: 3 };
-
-/** Finished ordinary lessons, weakest first: missed cards, low grades and time since you did them. */
-export function rankWeakest(done: Lesson[], input: Pick<ForgeInput, "exercises" | "cards" | "aiCards" | "now" | "random">): Lesson[] {
-  const now = (input.now ?? new Date()).getTime();
-  const rand = input.random ?? Math.random;
-  const misses = new Map<string, number>();
-  const allCards = [...REVIEW_CARDS, ...Object.values(input.aiCards)];
-  for (const c of allCards) misses.set(c.lessonId, (misses.get(c.lessonId) ?? 0) + (input.cards[c.id]?.misses ?? 0));
-  const score = (l: Lesson) => {
-    const records = l.exercises.map((e) => input.exercises[e.id]).filter(Boolean);
-    const grade = records.length ? records.reduce((a, r) => a + GRADE_WEAK[r.grade], 0) / records.length : 0;
-    const last = Math.max(0, ...records.map((r) => Date.parse(r.completedAt) || 0));
-    const age = last ? Math.min(3, (now - last) / 86_400_000 / 10) : 1;
-    return (misses.get(l.id) ?? 0) * 3 + grade + age + rand();
-  };
-  return done
-    .filter((l) => l.kind === "lesson")
-    .map((l) => ({ l, s: score(l) }))
-    .sort((a, b) => b.s - a.s)
-    .map((x) => x.l);
-}
+// The ranking lives with the progress stats, so the Ledger shows the same weak spots the card writer aims at.
+export { rankWeakest };
 
 /** One line describing a card, for examples and "avoid" lists. */
 function brief(c: ReviewCard): string {

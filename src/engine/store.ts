@@ -1,3 +1,4 @@
+import { backfillActivity, bumpActivity, type Activity } from "./stats";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LEVEL_REWARDS, rewardsBetween } from "../lore/levels";
@@ -95,6 +96,8 @@ export interface GameState {
   rejectedCards: Record<string, string>;
   reviewLastDay: string | null;
   reviewStreak: number;
+  /** What was done each day (exercises, cards, duels), for the Ledger. Kept for ACTIVITY_DAYS. */
+  activity: Activity;
   duels: Record<string, { wins: number; losses: number; draws: number }>;
   /** The day each duel opponent last paid in full (later wins that day pay 1 Galleon). */
   duelPaidOn: Record<string, string>;
@@ -170,6 +173,7 @@ const initialData = {
   rejectedCards: {},
   reviewLastDay: null,
   reviewStreak: 0,
+  activity: {},
   duels: {},
   duelPaidOn: {},
   perkState: DEFAULT_PERK_STATE,
@@ -438,6 +442,7 @@ export const useGame = create<GameState>()(
             clues,
             aids,
             perkState,
+            activity: bumpActivity(s.activity, today, { exercises: 1 }),
             galleons: s.galleons + reward.galleons,
             housePoints: s.housePoints + reward.housePoints,
           });
@@ -539,7 +544,10 @@ export const useGame = create<GameState>()(
 
       answerReviewCard: (cardId, correct) => {
         const today = dayKey(new Date());
-        set((s) => ({ cards: { ...s.cards, [cardId]: answerCard(s.cards[cardId], correct, today) } }));
+        set((s) => ({
+          cards: { ...s.cards, [cardId]: answerCard(s.cards[cardId], correct, today) },
+          activity: bumpActivity(s.activity, today, { cards: 1, correct: correct ? 1 : 0 }),
+        }));
         if (correct) {
           set((s) => ({ galleons: s.galleons + 1 }));
           get().gainXp(5);
@@ -576,7 +584,7 @@ export const useGame = create<GameState>()(
           losses: rec.losses + (outcome === "loss" ? 1 : 0),
           draws: rec.draws + (outcome === "draw" ? 1 : 0),
         };
-        set({ duels: { ...s.duels, [opponentId]: next } });
+        set({ duels: { ...s.duels, [opponentId]: next }, activity: bumpActivity(s.activity, dayKey(new Date()), { duels: 1 }) });
         const earned: string[] = [];
         let paid = 0;
         let points = 0;
@@ -646,7 +654,8 @@ export const useGame = create<GameState>()(
         const { state, version } = unwrapSave(JSON.parse(json));
         const { mentor: _ignored, ...save } = rebuildDerived(migrateSave(state, version));
         void _ignored;
-        set({ ...initialData, ...save, mentor: get().mentor });
+        const activity = (save.activity as Activity | undefined) ?? backfillActivity((save.exercises ?? {}) as Record<string, ExerciseRecord>);
+        set({ ...initialData, ...save, activity, mentor: get().mentor });
       },
     }),
     {
@@ -667,6 +676,8 @@ export const useGame = create<GameState>()(
           mentor: { ...DEFAULT_MENTOR_SETTINGS, ...(p.mentor ?? {}) },
           music: { ...DEFAULT_MUSIC, ...(p.music ?? {}) },
           perkState: { ...DEFAULT_PERK_STATE, ...(p.perkState ?? {}) },
+          // Saves from before the Ledger: rebuild the log from when exercises were finished.
+          activity: p.activity ?? backfillActivity(p.exercises ?? {}),
         };
       },
     },

@@ -74,3 +74,17 @@ test("a Time-Turner spot-the-bug card", async ({ page }) => {
   await expect(page.getByTestId("bug-lines")).toBeVisible();
   await expect(page.getByTestId("review-card")).toHaveScreenshot("time-turner-bug.png", { animations: "disabled", maxDiffPixels: 100, threshold: 0.05 });
 });
+
+test("the Marauder's Ledger", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-10-04T12:00:00"));
+  const d = (exercises: number, cards = 0, correct = 0, duels = 0) => ({ exercises, cards, correct, duels });
+  await seed(page, {
+    bestLevel: 6,
+    exercises: completed(YEAR1),
+    activity: { "2026-09-28": d(3), "2026-09-30": d(1, 5, 4), "2026-10-01": d(0, 3, 3, 1), "2026-10-03": d(6), "2026-10-04": d(2, 5, 2) },
+    duels: { neville: { wins: 3, losses: 0, draws: 1 } },
+  });
+  await page.goto("/#/progress");
+  await expect(page.getByTestId("heatmap")).toBeVisible();
+  await snap(page, "ledger");
+});

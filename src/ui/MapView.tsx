@@ -48,7 +48,8 @@ export function MapView() {
             <>Welcome, {name}! Your first lesson is waiting below.</>
           ) : (
             <>
-              Welcome back, {name}. You've completed {lessonsDone} lesson{lessonsDone === 1 ? "" : "s"} so far.
+              Welcome back, {name}. You've completed {lessonsDone} lesson{lessonsDone === 1 ? "" : "s"} so far.{" "}
+              <a href="#/progress">📒 Open the Ledger</a> to see how it's sticking.
             </>
           )}
         </p>

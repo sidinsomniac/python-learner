@@ -2116,3 +2116,62 @@ body::before {
   font-style: italic;
   padding: 3rem 0;
 }
+
+/* The Marauder's Ledger */
+.ledger-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.ledger-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.ledger-stat strong {
+  font-size: 1.8rem;
+  color: var(--gold);
+}
+.heatmap-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.heatmap .heat {
+  fill: var(--gold);
+}
+.heatmap .heat-0 {
+  fill: var(--line);
+  opacity: 0.35;
+}
+.heatmap .heat-1 { opacity: 0.3; }
+.heatmap .heat-2 { opacity: 0.5; }
+.heatmap .heat-3 { opacity: 0.75; }
+.heatmap .heat-4 { opacity: 1; }
+.boxes {
+  display: grid;
+  gap: 0.35rem;
+}
+.box-row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+.box-bar {
+  height: 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 50%, transparent);
+  overflow: hidden;
+}
+.box-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+.weak-list {
+  margin: 0.25rem 0 0.75rem;
+}

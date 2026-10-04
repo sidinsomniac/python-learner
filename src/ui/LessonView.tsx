@@ -10,7 +10,8 @@ import {
   lessonGrade,
   reviewRulesFor,
 } from "../engine/progress";
-import { useFx, useGame, type Reward } from "../engine/store";
+import { yearRecap } from "../engine/stats";
+import { useFx, useGame, type QueuedScene, type Reward } from "../engine/store";
 import { isRequired, TIER_LABEL, TYPE_LABEL, type Exercise, type Lesson } from "../engine/types";
 import { applyEggs } from "../lore/applyEggs";
 import { badgeById } from "../lore/badges";
@@ -65,6 +66,22 @@ export function LessonView({ lessonId }: { lessonId: string }) {
 }
 
 type Tab = "lesson" | string;
+
+/** The end-of-year review, shown once when a year's Trial is passed. */
+function recapScene(year: number): QueuedScene {
+  const r = yearRecap(year, useGame.getState());
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+  return {
+    id: `recap-y${year}`,
+    title: `📒 Year ${year} in review`,
+    lines: [
+      { who: "mcgonagall", line: `${plural(r.lessons, "lesson")} finished, and ${plural(r.exercises, "exercise")} solved - ${r.outstanding} of them Outstanding.` },
+      { who: "ashwood", line: `You practised on ${plural(r.daysPractised, "day")}, and ${plural(r.cardsMastered, "Time-Turner card")} from this year ${r.cardsMastered === 1 ? "is" : "are"} firmly in your memory.` },
+      ...(r.weakest ? [{ who: "hermione", line: `If I were you, I'd look at "${r.weakest}" again over the holidays. Just saying.` }] : []),
+      { who: "dumbledore", line: "The Ledger keeps all of this, should you wish to look back. Now - the feast awaits." },
+    ],
+  };
+}
 
 function firstOpenExercise(lesson: Lesson, records: Record<string, unknown>): Exercise | undefined {
   return lesson.exercises.find((e) => isRequired(e) && !records[e.id]);
@@ -269,7 +286,10 @@ function ExerciseScreen({
       const b = badgeById(id);
       if (b) fx.toast(`${b.icon} Badge earned: ${b.name}!`, "badge");
     }
-    if (r.lessonCompleted && lesson.kind === "trial") fx.play("dawn");
+    if (r.lessonCompleted && lesson.kind === "trial") {
+      fx.play("dawn");
+      fx.queueScene(recapScene(lesson.year));
+    }
     else if (r.grade === "O" && (r.firstTime || r.gradeImproved)) fx.play("golden");
     else if (!r.levelUp) fx.play("sparkle");
     const familiar = useGame.getState().equipped.familiar;

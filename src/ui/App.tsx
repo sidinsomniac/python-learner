@@ -24,6 +24,7 @@ const LessonView = screen(() => import("./LessonView"), "LessonView");
 const CaseFile = screen(() => import("./CaseFile"), "CaseFile");
 const Spellbook = screen(() => import("./Spellbook"), "Spellbook");
 const Trophies = screen(() => import("./Trophies"), "Trophies");
+const Progress = screen(() => import("./Progress"), "Progress");
 const Settings = screen(() => import("./Settings"), "Settings");
 const Shop = screen(() => import("./Shop"), "Shop");
 const TimeTurner = screen(() => import("./TimeTurner"), "TimeTurner");
@@ -85,6 +86,9 @@ export default function App() {
         break;
       case "trophies":
         body = <Trophies />;
+        break;
+      case "progress":
+        body = <Progress />;
         break;
       case "settings":
         body = <Settings />;

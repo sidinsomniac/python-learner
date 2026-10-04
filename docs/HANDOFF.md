@@ -67,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **130** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **138** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **44** pass at the moment, 10 of them screenshot tests. Service workers are blocked in e2e (`playwright.config.ts`) except in the `offline` test, so `page.route` still sees every request. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **47** pass at the moment, 11 of them screenshot tests. Service workers are blocked in e2e (`playwright.config.ts`) except in the `offline` test, so `page.route` still sees every request. |
 | `npm run e2e:update` | Refreshes the screenshot baselines in `e2e/visual.spec.ts-snapshots/` after a **deliberate** visual change. Look at the new PNGs before committing them. Baselines are per platform (`-darwin.png`): on another OS, run this once and commit the new set. The tolerance is tight (100 pixels, colour threshold 0.05), because dark-on-dark changes slip under Playwright's defaults. Backdrops are off through reduced motion; the Python chip and due badge are masked. Shared seeding helpers live in `e2e/helpers.ts`. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
@@ -268,6 +268,9 @@ Tests run in order and stop at the first failure.
   - `aiCards`: `{ id: ReviewCard }`, AI-written cards that passed every gate (at most 120; the best-known are dropped first). They join the deck and the Leitner schedule.
   - `rejectedCards`: `{ fingerprint: description }`, cards the player flagged; the writer is told to avoid them.
   - `mentor.aiCards`: boolean consent for AI cards (default off).
+  - `activity`: `{ "YYYY-MM-DD": { exercises, cards, correct, duels } }`, a daily practice log for the Ledger, kept for 400 days (`src/engine/stats.ts`).
+    - It's updated by `completeExercise` (first completions only), `answerReviewCard` and `recordDuel`.
+    - Saves without it, loaded or imported, get it rebuilt from `exercises[*].completedAt`, with no version bump.
   - `castleColours`: a year number or `null` (default, follow the year on screen). A favourite year's palette, used everywhere once that year is reached (`paletteYear` in progress.ts).
   - `wandFx`: boolean, default `true` (wand effects while typing; off under reduced motion anyway). Filled in by `merge`.
   - `music`: `{ enabled, volume }`. Older saves get the defaults through the store's `merge`, so no migration step is needed.
@@ -321,7 +324,11 @@ location.reload();
 4. ✅ **Story polish for Years 2–3 (2026-10-03).** Richer scenes, character arcs and post-clue `outro` reactions. Same plots and clues. See the "Character arcs" sections of `docs/story.md`.
 5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, add the `owl_post` mock HTTP module to the harness.
 6. **Give every other shop item a purpose** (the owner's rule: everything bought in Diagon Alley must *do* something). Wands, familiars, robes and titles are done (2026-10-03). The 8 new editor themes and the banner backgrounds are done: every item in Diagon Alley now does something.
-7. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
+7. **The Marauder's Ledger (`#/progress`, `src/ui/Progress.tsx`)** is built. It shows:
+   - a 53-week practice heatmap, streaks, Leitner boxes with the 30-day hit rate, the 5 weakest topics, grades per year and the duel record;
+   - all worked out by pure functions in `src/engine/stats.ts` (`rankWeakest` moved there from `cardsmith`).
+   - Passing a Trial now queues a "Year N in review" scene (`recap-yN`, from `yearRecap`).
+   Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
 8. **Bundle size (done 2026-10-04).**
    - Every screen except the Great Hall, Welcome and Sorting loads lazily in `App.tsx`. The code editor (`parts`, about 500 kB) only loads with a lesson or the shop.
    - `vite.config.ts` `manualChunks` splits out `react` and `content` (lesson, exercise and review YAML plus js-yaml). Lectures and Spellbook pages load on demand, one chunk per year (`lectures-yN`, via `loadLessonText` in `content.ts` and the `useLessonTexts` hook in `src/ui/lessonText.ts`). `Lesson` now has `hasSpellbook` instead of `lecture` and `spellbook` strings.
@@ -341,6 +348,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | The Marauder's Ledger (§9, §11 item 7): a new `activity` save field (backfilled), `src/engine/stats.ts`, `#/progress` linked from the header and the Great Hall, and a year-in-review scene after each Trial. Tests: 138 unit, 47 e2e (the Ledger, the backfill, and a Ledger screenshot; the existing baselines were refreshed for the new nav link). |
 | 2026-10-04 | Claude Code desktop session | Screenshot tests (§3): `e2e/visual.spec.ts` covers the Great Hall in each castle palette, the shop, Settings, the editor in 4 themes and a Time-Turner bug card. They were checked to catch the Year 2 grid leaking onto palette 1. `npm run e2e:update` refreshes the baselines, and `e2e/helpers.ts` is now shared. e2e: 44. |
 | 2026-10-04 | Claude Code desktop session | Speed and offline (§3, §11 item 8): lazy screens, `react` and `content` chunks, lectures and Spellbook pages per year on demand (`hasSpellbook` replaces the text fields on `Lesson`), a Pyodide download percentage, a service worker plus manifest and SVG icon. First load went from 1.8 MB to about 1.09 MB. e2e: 34 (an offline test). |
 | 2026-10-04 | Claude Code desktop session | Fix: AI Time-Turner cards came back empty on `deepseek-v4-pro`. It thinks by default, and spent the whole 6,000-token budget reasoning (`finish_reason: length`, empty `content`). Card (JSON) requests now send `thinking: {type: "disabled"}`. The tutor sends `reasoning_effort: "low"` with `max_tokens` 4000 (was 800), and no temperature. A 400 retries once without these fields for older models, and a thinking-only reply gets a clear message. The fresh-card timeout went from 25 s to 60 s. Tests: 130 unit (§3). |

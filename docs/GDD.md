@@ -87,6 +87,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 - **House points and the House Cup.** Rival houses are simulated and earn points through the year. The cup is decided at each year-end ceremony.
 - **Chocolate Frog cards.** Collectible trivia about Python and computing history: Guido van Rossum, Ada Lovelace, Grace Hopper, Alan Turing, Donald Knuth, and more. Complete sets unlock easter eggs.
 - **Badges.** These include secret badges, and "Rivalry" badges for beating Draco's times.
+- **The Marauder's Ledger.** A progress page with a year-long practice heatmap, streaks, what's sticking in the Time-Turner, weak spots to revisit, grades per year and the duel record. Each year ends with a short "Year N in review" scene.
 
 **Other immersion:**
 - **Story.** A yearly original mystery with the canon cast, told in short cutscenes with character portraits. Clues are printed by *your* correct programs.

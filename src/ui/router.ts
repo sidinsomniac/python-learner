@@ -9,6 +9,7 @@ export type Route =
   | { page: "dueling-club" }
   | { page: "spellbook" }
   | { page: "trophies" }
+  | { page: "progress" }
   | { page: "settings" }
   | { page: "platform" }
   | { page: "marauder" }
@@ -31,6 +32,8 @@ export function parseHash(hash: string): Route {
       return parts[1] === "394" ? { page: "page394" } : { page: "spellbook" };
     case "trophies":
       return { page: "trophies" };
+    case "progress":
+      return { page: "progress" };
     case "settings":
       return { page: "settings" };
     case "platform-nine-and-three-quarters":
