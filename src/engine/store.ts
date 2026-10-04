@@ -95,6 +95,8 @@ export interface GameState {
   ambience: boolean;
   /** The equipped wand's effects while typing in the editor. */
   wandFx: boolean;
+  /** A favourite year's castle colours, used everywhere; null follows the year on screen. */
+  castleColours: number | null;
   music: MusicSettings;
   marauderMap: boolean;
   mentor: MentorSettings;
@@ -121,6 +123,7 @@ export interface GameState {
   setTheme: (theme: "dark" | "light") => void;
   setAmbience: (on: boolean) => void;
   setWandFx: (on: boolean) => void;
+  setCastleColours: (year: number | null) => void;
   setMusic: (patch: Partial<MusicSettings>) => void;
   setMarauderMap: (open: boolean) => void;
   setMentor: (patch: Partial<MentorSettings>) => void;
@@ -161,6 +164,7 @@ const initialData = {
   theme: "dark" as const,
   ambience: true,
   wandFx: true,
+  castleColours: null,
   music: DEFAULT_MUSIC,
   marauderMap: false,
   mentor: DEFAULT_MENTOR_SETTINGS,
@@ -593,6 +597,7 @@ export const useGame = create<GameState>()(
       setTheme: (theme) => set({ theme }),
       setAmbience: (ambience) => set({ ambience }),
       setWandFx: (wandFx) => set({ wandFx }),
+      setCastleColours: (castleColours) => set({ castleColours }),
       setMusic: (patch) => set((s) => ({ music: { ...s.music, ...patch } })),
       setMarauderMap: (marauderMap) => set({ marauderMap }),
       setMentor: (patch) => set((s) => ({ mentor: { ...s.mentor, ...patch } })),

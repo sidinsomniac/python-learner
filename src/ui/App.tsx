@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { lessonById, YEARS } from "../engine/content";
-import { currentYear } from "../engine/progress";
+import { currentYear, paletteYear } from "../engine/progress";
 import { useFx, useGame } from "../engine/store";
 import { grantBadge } from "../lore/applyEggs";
 import { KONAMI } from "../lore/easterEggs";
@@ -31,6 +31,9 @@ export default function App() {
   const theme = useGame((s) => s.theme);
   const route = useRoute();
   const year = useYearOnScreen(route);
+  const castleColours = useGame((s) => s.castleColours);
+  const reached = useGame((s) => currentYear(YEARS, s.exercises, s.skipped));
+  const paletteFrom = paletteYear(castleColours, year, reached);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -39,7 +42,7 @@ export default function App() {
     root.dataset.year = String(year);
     // Each year has its own palette. In the light (Lumos) theme only the
     // accents change, so text stays readable on parchment.
-    const t = YEARS.find((y) => y.year === year)?.theme;
+    const t = YEARS.find((y) => y.year === paletteFrom)?.theme;
     const vars: Record<string, string | undefined> =
       theme === "dark" && t
         ? { "--gold": t.gold, "--gold-2": t.gold2, "--bg": t.bg, "--bg-2": t.bg2, "--card": t.card, "--card-2": t.card2, "--line": t.line }
@@ -48,7 +51,7 @@ export default function App() {
       if (v) root.style.setProperty(k, v);
       else root.style.removeProperty(k);
     }
-  }, [theme, house, year]);
+  }, [theme, house, year, paletteFrom]);
 
   // Start waking Python up as soon as the student has a name.
   useEffect(() => {

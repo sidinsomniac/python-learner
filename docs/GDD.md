@@ -245,7 +245,7 @@ Secret badges track the discoveries.
   - Vite, React and TypeScript
   - CodeMirror 6 for the editor
   - Zustand for state
-  - Plain CSS with theme tokens: "Hogwarts at night" by default, and parchment for Lumos
+  - Plain CSS with theme tokens: "Hogwarts at night" by default, and parchment for Lumos. Each year has its own palette; Settings → Castle colours lets the player keep any reached year's palette instead
 - **Python runtime**:
   - Pyodide runs in a Web Worker.
   - A hard timeout terminates and restarts the worker, which handles infinite loops.

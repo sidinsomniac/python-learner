@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { TRACKS } from "../engine/music";
 import { exportSave, readBackups, unwrapSave, useGame } from "../engine/store";
-import { levelFromXp } from "../engine/progress";
+import { currentYear, levelFromXp } from "../engine/progress";
+import { YEARS } from "../engine/content";
 import { HOUSES } from "../lore/lore";
 import { askMentor, MentorError, PROVIDER_LABEL, type Provider } from "../mentor/llm";
 
@@ -89,6 +90,7 @@ export function Settings() {
           />
           Lumos (light theme)
         </label>
+        <CastleColours />
         <label className="row">
           <input
             type="checkbox"
@@ -280,5 +282,45 @@ function MusicSettingsRow() {
         <input type="range" min={0} max={100} value={music.volume} onChange={(e) => setMusic({ volume: Number(e.target.value) })} aria-label="Music volume" />
       </label>
     </div>
+  );
+}
+
+/** Pick a favourite year's castle colours, once that year has been reached. */
+function CastleColours() {
+  const choice = useGame((s) => s.castleColours);
+  const setChoice = useGame((s) => s.setCastleColours);
+  const reached = useGame((s) => currentYear(YEARS, s.exercises, s.skipped));
+  return (
+    <fieldset className="castle-colours" data-testid="castle-colours">
+      <legend>Castle colours</legend>
+      <button type="button" className={`swatch follow ${choice === null ? "chosen" : ""}`} onClick={() => setChoice(null)} aria-pressed={choice === null} data-testid="colours-follow">
+        <span className="swatch-preview" aria-hidden>
+          🔄
+        </span>
+        <span className="small">Follow the year</span>
+      </button>
+      {YEARS.filter((y) => y.theme).map((y) => {
+        const locked = y.year > reached;
+        const t = y.theme!;
+        return (
+          <button
+            key={y.year}
+            type="button"
+            className={`swatch ${choice === y.year ? "chosen" : ""}`}
+            disabled={locked}
+            onClick={() => setChoice(y.year)}
+            aria-pressed={choice === y.year}
+            title={locked ? `Reach Year ${y.year} to use these colours` : t.mood}
+            data-testid={`colours-${y.year}`}
+          >
+            <span className="swatch-preview" aria-hidden style={{ background: t.bg, borderColor: t.line }}>
+              <span style={{ background: t.card }} />
+              <span style={{ background: t.gold }} />
+            </span>
+            <span className="small">{locked ? `🔒 Reach Year ${y.year}` : `Year ${y.year}: ${t.mood}`}</span>
+          </button>
+        );
+      })}
+    </fieldset>
   );
 }

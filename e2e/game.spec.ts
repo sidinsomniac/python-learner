@@ -516,3 +516,15 @@ test("a long story pop-up scrolls inside the screen, keeping Next reachable", as
   }
   await expect(next).toBeInViewport();
 });
+
+test("Settings lets you keep a favourite year's castle colours", async ({ page }) => {
+  await seed(page, { exercises: completed([...YEAR1, "y1-trial"]) });
+  await page.goto("/#/settings");
+  await expect(page.getByTestId("colours-3")).toBeDisabled();
+  const bg = () => page.evaluate(() => document.documentElement.style.getPropertyValue("--bg").trim());
+  const year2 = await bg();
+  await page.getByTestId("colours-1").click();
+  await expect.poll(bg).not.toBe(year2);
+  await page.getByTestId("colours-follow").click();
+  await expect.poll(bg).toBe(year2);
+});

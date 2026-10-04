@@ -108,6 +108,11 @@ export function currentYear(years: Year[], records: Records, skipped: Skipped = 
   return latest;
 }
 
+/** Whose castle colours to show: the chosen year if it's been reached, otherwise the year on screen. */
+export function paletteYear(choice: number | null, onScreen: number, reached: number): number {
+  return choice !== null && choice >= 1 && choice <= reached ? choice : onScreen;
+}
+
 // ---------------------------------------------------------------------------
 // Peeves' Bargain: skipping a lesson costs Galleons AND XP, more each time.
 // ---------------------------------------------------------------------------

@@ -67,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **110** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **111** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **29** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **30** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -257,6 +257,7 @@ Tests run in order and stop at the first failure.
   - `skipped`, `owned`, `equipped`, `aids`, `cards`, `duels`, `badges`, `drafts`, `hintsUnlocked`
   - `duelPaidOn`: `{ opponentId: day }`, the day each opponent last paid in full.
   - `perkState`: `{ ratSavedOn, nifflerOn, phoenixYears }`, day-stamps for once-a-day/week/year perks. Filled in by `merge`.
+  - `castleColours`: a year number or `null` (default, follow the year on screen). A favourite year's palette, used everywhere once that year is reached (`paletteYear` in progress.ts).
   - `wandFx`: boolean, default `true` (wand effects while typing; off under reduced motion anyway). Filled in by `merge`.
   - `music`: `{ enabled, volume }`. Older saves get the defaults through the store's `merge`, so no migration step is needed.
 - **Restoring, in Settings:**
@@ -324,6 +325,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | **Castle colours picker.** Settings has swatches for each year's palette you've reached, plus "Follow the year" (the default). The pick applies on every screen (`paletteYear` in `progress.ts`, used in `App.tsx`). Save field `castleColours`. Tests: 111 unit, 30 e2e (§3, §9). |
 | 2026-10-03 | Claude Code desktop session | **Test-bug sweep: tests no longer depend on a prompt's wording.** `input()` echoes the prompt and answer into the output, so a test that filtered on a prompt word failed correct spells. Fixed `y1-l15` outstanding (The Arithmancy Grid took any prompt but `Size`; now the last `n` rows) and the same family: `y1-r3` r2 (reworded repair prompt), `y1-l12` outstanding, `y1-l12` warmup (rows matched by shape, not `" x "`). Also `y2-l02` and `y2-l03b` outstanding: a `"key=" not in source()` check also tripped on names like `monkey=`; it is now an AST check for a real `key=` argument. New tests in `harness.test.ts` run the real exercise files with `input("Number: ")`, plain `input()` and other prompts, and fail on the old files. Counts: 66 lessons, 201 exercises (§3, §8, §13). |
 | 2026-10-04 | Claude Code desktop session | **Pop-ups fit the screen.** Every `.modal` is capped at the screen height and scrolls. Story pop-ups scroll their dialogue inside the card (keeping the newest line in view), with Next and Skip pinned at the bottom, so long scenes like the Year 2 opening (9 lines) stay clickable. Tests: 110 unit, 29 e2e (§3). |
 | 2026-10-04 | Claude Code desktop session | **Level bonus.** Galleons and house points from exercises, the daily review and duels grow 3% per level above 1 (×1.27 at level 10, ×1.57 at level 20), applied before perks. XP is unscaled, so the levelling curve is unchanged. A repeat duel win still pays 1. The reward pop-up shows the bonus. Tests: 110 unit, 28 e2e (§3, §5). |

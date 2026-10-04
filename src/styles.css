@@ -2007,3 +2007,60 @@ body::before {
   padding-top: 10px;
   border-top: 1px solid var(--line);
 }
+
+/* Settings: pick a favourite year's castle colours. */
+.castle-colours {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px 10px;
+  margin: 8px 0;
+}
+.castle-colours .swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 132px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.castle-colours .swatch.chosen {
+  outline: 2px solid var(--gold);
+}
+.castle-colours .swatch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.swatch-preview {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px;
+}
+.swatch-preview span {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: 3px;
+}
+.swatch-preview span + span {
+  width: 18%;
+  height: 60%;
+}
+.castle-colours .follow .swatch-preview {
+  align-items: center;
+  font-size: 18px;
+}

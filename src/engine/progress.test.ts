@@ -3,6 +3,7 @@ import { CAST, EXERCISES, LESSONS, YEARS, lessonById } from "./content";
 import { splitLecture } from "./lecture";
 import {
   compareProphecy,
+  paletteYear,
   gradeFor,
   isExerciseUnlocked,
   isLessonComplete,
@@ -211,5 +212,13 @@ describe("save migration", () => {
     expect(v2.xp).toBe(300);
     expect(v2.badges).toEqual({ "dobbys-sock": "2026-09-29" });
     expect(v2).not.toHaveProperty("completed");
+  });
+});
+
+describe("castle colours", () => {
+  it("uses a chosen year once it's been reached, and otherwise follows the year on screen", () => {
+    expect(paletteYear(null, 2, 2)).toBe(2);
+    expect(paletteYear(1, 2, 2)).toBe(1);
+    expect(paletteYear(3, 2, 2)).toBe(2); // not reached yet
   });
 });
