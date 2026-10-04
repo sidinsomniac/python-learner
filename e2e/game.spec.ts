@@ -623,3 +623,29 @@ test("without consent, the Time-Turner never calls the AI", async ({ page }) => 
   expect(calls).toEqual([]);
   await expect(page.getByTestId("fresh-tag")).toHaveCount(0);
 });
+
+test.describe("offline", () => {
+  test.use({ serviceWorkers: "allow" });
+
+  test("once visited, the castle and Python work with no network", async ({ page, context }) => {
+    await seed(page);
+    await page.goto("/#/lesson/y1-l01");
+    await page.getByTestId("tab-warmup").click();
+    await waitForPython(page);
+    // Let the service worker take control, then load the lesson once more so its code is cached too.
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+    });
+    await page.reload();
+    await page.getByTestId("tab-warmup").click();
+    await waitForPython(page);
+
+    await context.setOffline(true);
+    await page.reload();
+    await page.getByTestId("tab-warmup").click();
+    await waitForPython(page);
+    await setCode(page, 'print("Lumos")');
+    await page.getByTestId("run").click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  });
+});

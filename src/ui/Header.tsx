@@ -6,7 +6,7 @@ import { HOUSES, LOADING_LINES, levelTitle } from "../lore/lore";
 import { itemById } from "../lore/shop";
 import { python, type RunnerStatus } from "../runtime/pythonRunner";
 import { MusicToggle } from "./BackgroundMusic";
-import { useDueCount } from "./TimeTurner";
+import { useDueCount } from "./deck";
 
 export function Header() {
   const { name, house, xp, galleons, housePoints, marauderMap, equipped, bestLevel } = useGame();
@@ -84,7 +84,15 @@ export function Header() {
 
 function usePythonStatus() {
   const [status, setStatus] = useState<RunnerStatus>(python.status);
-  useEffect(() => python.onStatus(setStatus), []);
+  const [, setProgress] = useState(python.progress);
+  useEffect(
+    () =>
+      python.onStatus((s) => {
+        setStatus(s);
+        setProgress(python.progress);
+      }),
+    [],
+  );
   return status;
 }
 
@@ -92,5 +100,9 @@ function PythonChip({ status }: { status: RunnerStatus }) {
   const [line] = useState(() => LOADING_LINES[Math.floor(Math.random() * LOADING_LINES.length)]);
   if (status === "ready") return <span className="chip ok" title="Python is ready">🐍 Ready</span>;
   if (status === "failed") return <span className="chip bad" title="Python failed to load - try refreshing">🐍 Asleep</span>;
-  return <span className="chip" title={line}>🐍 Waking...</span>;
+  return (
+    <span className="chip" title={line}>
+      🐍 Waking{python.progress > 0 ? ` ${python.progress}%` : "..."}
+    </span>
+  );
 }

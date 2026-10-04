@@ -66,10 +66,10 @@ export interface Lesson {
   scene: SceneLine[];
   outro: SceneLine[];
   clue?: string;
-  lecture: string;
   /** Files on the desk for the lecture's "Try it" examples and the sandbox. */
   files: Record<string, string>;
-  spellbook: string;
+  /** The lecture and Spellbook text load on demand: see loadLessonText in content.ts. */
+  hasSpellbook: boolean;
   exercises: Exercise[];
   review: ReviewCard[];
 }

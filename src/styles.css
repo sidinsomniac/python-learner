@@ -2108,3 +2108,11 @@ body::before {
   background: rgba(240, 192, 64, 0.2);
   border-radius: 3px;
 }
+
+/* Shown for a moment while a screen's code loads. */
+.summoning {
+  text-align: center;
+  opacity: 0.7;
+  font-style: italic;
+  padding: 3rem 0;
+}

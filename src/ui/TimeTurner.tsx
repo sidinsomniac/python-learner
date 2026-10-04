@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { LESSONS, REVIEW_CARDS } from "../engine/content";
-import { compareProphecy, isLessonComplete } from "../engine/progress";
+import { useEffect, useState } from "react";
+import { compareProphecy } from "../engine/progress";
 import { dayKey, dueCards } from "../engine/review";
 import { useFx, useGame } from "../engine/store";
 import { forgeCards, FRESH_PER_SESSION } from "../mentor/cardsmith";
@@ -8,17 +7,8 @@ import { askJson, mentorReady } from "../mentor/llm";
 import type { ReviewCard } from "../engine/types";
 import { FEATURE_LEVEL, hasFeature } from "../lore/levels";
 import { python } from "../runtime/pythonRunner";
+import { useDeck, useDueCount } from "./deck";
 import { renderInline, renderMarkdown } from "./md";
-
-/** Cards from lessons you've properly completed (skipped lessons don't count), plus the AI Professor's saved cards. */
-export function useDeck(): ReviewCard[] {
-  const exercises = useGame((s) => s.exercises);
-  const aiCards = useGame((s) => s.aiCards);
-  return useMemo(() => {
-    const done = new Set(LESSONS.filter((l) => isLessonComplete(l, exercises)).map((l) => l.id));
-    return [...REVIEW_CARDS, ...Object.values(aiCards)].filter((c) => done.has(c.lessonId));
-  }, [exercises, aiCards]);
-}
 
 /** Seconds to wait for fresh cards before giving up on them for this visit. */
 const FRESH_TIMEOUT = 60;
@@ -77,14 +67,6 @@ function interleave(due: ReviewCard[], fresh: ReviewCard[]): ReviewCard[] {
     if (fresh.length) out.push(fresh.shift()!);
   }
   return out;
-}
-
-export function useDueCount(): number {
-  const deck = useDeck();
-  const cards = useGame((s) => s.cards);
-  const bestLevel = useGame((s) => s.bestLevel);
-  if (!hasFeature(bestLevel, "time-turner")) return 0;
-  return dueCards(deck, cards, dayKey(new Date())).length;
 }
 
 export function TimeTurner() {

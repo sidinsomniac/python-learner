@@ -69,7 +69,7 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run typecheck` | TypeScript only |
 | `npm test` | Unit tests (Vitest). **130** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **33** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **34** pass at the moment. Service workers are blocked in e2e (`playwright.config.ts`) except in the `offline` test, so `page.route` still sees every request. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -318,10 +318,15 @@ location.reload();
    - ✅ y2-l10 now teaches `Counter`, `defaultdict` and `json`, and its ⭐ is the Owl Post manifest.
    - All the 🔄 swaps are done.
 4. ✅ **Story polish for Years 2–3 (2026-10-03).** Richer scenes, character arcs and post-clue `outro` reactions. Same plots and clues. See the "Character arcs" sections of `docs/story.md`.
-5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, split the content bundle (see item 8), and add the `owl_post` mock HTTP module to the harness.
+5. **Then Year 4, The Goblet of Objects** (the interview toolkit, plus classes, types, JSON and HTTP). Script it in `docs/story.md` first (the outline is there), then build it. First, add the `owl_post` mock HTTP module to the harness.
 6. **Give every other shop item a purpose** (the owner's rule: everything bought in Diagon Alley must *do* something). Wands, familiars, robes and titles are done (2026-10-03). The 8 new editor themes and the banner backgrounds are done: every item in Diagon Alley now does something.
 7. Still planned, not built: the mastery map, the House Cup ceremony, Chocolate Frog cards, the Golden Snitch, and Draco's times.
-8. **Bundle size.** All content is bundled eagerly by `import.meta.glob(..., eager: true)` in `src/engine/content.ts`. With Year 3, the main chunk (about 1.68 MB, 533 kB gzipped) has passed the 1,600 kB `chunkSizeWarningLimit` in `vite.config.ts`, so `npm run build` prints a warning (it still succeeds). Before Year 4, split content per year (a lazy glob, loaded when a year opens) rather than raising the limit again.
+8. **Bundle size (done 2026-10-04).**
+   - Every screen except the Great Hall, Welcome and Sorting loads lazily in `App.tsx`. The code editor (`parts`, about 500 kB) only loads with a lesson or the shop.
+   - `vite.config.ts` `manualChunks` splits out `react` and `content` (lesson, exercise and review YAML plus js-yaml). Lectures and Spellbook pages load on demand, one chunk per year (`lectures-yN`, via `loadLessonText` in `content.ts` and the `useLessonTexts` hook in `src/ui/lessonText.ts`). `Lesson` now has `hasSpellbook` instead of `lecture` and `spellbook` strings.
+   - The first load went from 1.8 MB in one chunk to about 1.09 MB. Content (660 kB) is the biggest piece; splitting exercise YAML per year would ripple through the store, review and `cardCheck`, which read `LESSONS` synchronously, so it waits until it's needed.
+   - `public/sw.js` (hand-written, registered only in production) caches Python per Pyodide version, hashed assets cache-first and pages network-first. It never touches music or `/llm/`. The game is installable through `public/manifest.webmanifest` and `icon.svg`.
+   - The worker prefetches the big Pyodide files to report real progress (the header chip shows "🐍 Waking 40%").
 
 ## 12. Commit conventions
 
@@ -335,6 +340,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | Speed and offline (§3, §11 item 8): lazy screens, `react` and `content` chunks, lectures and Spellbook pages per year on demand (`hasSpellbook` replaces the text fields on `Lesson`), a Pyodide download percentage, a service worker plus manifest and SVG icon. First load went from 1.8 MB to about 1.09 MB. e2e: 34 (an offline test). |
 | 2026-10-04 | Claude Code desktop session | Fix: AI Time-Turner cards came back empty on `deepseek-v4-pro`. It thinks by default, and spent the whole 6,000-token budget reasoning (`finish_reason: length`, empty `content`). Card (JSON) requests now send `thinking: {type: "disabled"}`. The tutor sends `reasoning_effort: "low"` with `max_tokens` 4000 (was 800), and no temperature. A 400 retries once without these fields for older models, and a thinking-only reply gets a clear message. The fresh-card timeout went from 25 s to 60 s. Tests: 130 unit (§3). |
 | 2026-10-04 | Claude Code desktop session | Fix: each year's background pattern (Year 1's faint stars, Year 2's stone-wall grid) now follows the chosen castle colours. It keys on `data-palette` instead of `data-year`; `data-year` still means the year on screen. |
 | 2026-10-04 | Claude Code desktop session | **AI-written Time-Turner cards**, with consent (Settings → AI Professor). `src/mentor/cardsmith.ts` aims at the weakest finished lessons and asks for 7 candidates, then keeps up to 3 that pass every gate in `cardCheck.ts` plus a blind second opinion for choice cards. They're mixed into the session with a ✨ tag, saved to `aiCards` and scheduled like any card. Duels use them too. 🚩 flags a card, which removes it and feeds the writer's avoid list. A failure or timeout (25 s) falls back to the usual cards. Save fields `aiCards`, `rejectedCards`, `mentor.aiCards`. Tests: 127 unit, 33 e2e (the e2e tests fake the Claude API) (§3, §5, §9, §11). |

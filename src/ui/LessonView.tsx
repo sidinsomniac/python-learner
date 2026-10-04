@@ -23,6 +23,7 @@ import { renderMarkdown } from "./md";
 import { MentorPanel } from "./MentorPanel";
 import { CodeEditor, Console, DeskFilesPanel, InputsBox, Lesson as Lecture, splitInputs, useRunner } from "./parts";
 import { Pensieve } from "./Pensieve";
+import { useLessonTexts } from "./lessonText";
 import { SkipDialog } from "./SkipDialog";
 import { go } from "./router";
 
@@ -70,6 +71,7 @@ function firstOpenExercise(lesson: Lesson, records: Record<string, unknown>): Ex
 }
 
 function LessonScreen({ lesson }: { lesson: Lesson }) {
+  const text = useLessonTexts([lesson.id])?.[lesson.id];
   const records = useGame((s) => s.exercises);
   const skipped = useGame((s) => s.skipped);
   const [skipping, setSkipping] = useState(false);
@@ -158,7 +160,7 @@ function LessonScreen({ lesson }: { lesson: Lesson }) {
         <div className="stack">
           <Cutscene id={lesson.id} lines={lesson.scene} />
           <div className="card">
-            <Lecture markdown={lesson.lecture} files={lesson.files} />
+            {text ? <Lecture markdown={text.lecture} files={lesson.files} /> : <p className="summoning">📜 Unrolling the scroll…</p>}
             {lesson.exercises[0] && (
               <button className="btn primary" onClick={() => setTab(firstOpenExercise(lesson, records)?.id ?? lesson.exercises[0].id)}>
                 {complete ? "Back to the exercises →" : "I'm ready - to the exercises →"}
@@ -209,6 +211,7 @@ function LessonArrow({ target, direction, open }: { target?: Lesson; direction: 
 }
 
 function LessonComplete({ lesson, next }: { lesson: Lesson; next?: Lesson }) {
+  const text = useLessonTexts([lesson.id])?.[lesson.id];
   const records = useGame((s) => s.exercises);
   const outstanding = lesson.exercises.find((e) => e.tier === "outstanding");
   return (
@@ -220,10 +223,10 @@ function LessonComplete({ lesson, next }: { lesson: Lesson; next?: Lesson }) {
         </div>
       )}
       <Cutscene id={`${lesson.id}:outro`} lines={lesson.outro} />
-      {lesson.spellbook && (
+      {text?.spellbook && (
         <details className="card">
           <summary>📖 Your Spellbook page for this lesson</summary>
-          <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(lesson.spellbook) }} />
+          <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(text.spellbook) }} />
         </details>
       )}
       <div className="row">

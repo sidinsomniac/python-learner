@@ -1,11 +1,13 @@
 import { LESSONS } from "../engine/content";
 import { isLessonComplete } from "../engine/progress";
 import { useGame } from "../engine/store";
+import { useLessonTexts } from "./lessonText";
 import { renderMarkdown } from "./md";
 
 export function Spellbook() {
   const records = useGame((s) => s.exercises);
-  const pages = LESSONS.filter((l) => l.spellbook && isLessonComplete(l, records));
+  const pages = LESSONS.filter((l) => l.hasSpellbook && isLessonComplete(l, records));
+  const texts = useLessonTexts(pages.map((l) => l.id));
 
   return (
     <div className="stack">
@@ -14,10 +16,11 @@ export function Spellbook() {
         <p>Every lesson you complete adds a page. These are your own Python notes, to come back to whenever you like.</p>
       </section>
       {pages.length === 0 && <p className="card muted">The pages are blank... for now. Complete a lesson to write your first one.</p>}
-      {pages.map((q, i) => (
+      {pages.length > 0 && !texts && <p className="summoning">📜 Finding your pages…</p>}
+      {texts && pages.map((q, i) => (
         <article key={q.id} className="card spellbook-page">
           <span className="page-no">p. {i + 1}</span>
-          <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(q.spellbook) }} />
+          <div className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(texts[q.id]?.spellbook ?? "") }} />
           <a className="small" href={`#/lesson/${q.id}`}>
             Revisit "{q.title}"
           </a>

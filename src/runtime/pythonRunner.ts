@@ -23,6 +23,8 @@ class PythonRunner {
   private nextId = 1;
   private listeners = new Set<(status: RunnerStatus) => void>();
   status: RunnerStatus = "idle";
+  /** How far through waking up Python is, 0-100. */
+  progress = 0;
 
   onStatus(fn: (status: RunnerStatus) => void) {
     this.listeners.add(fn);
@@ -44,7 +46,11 @@ class PythonRunner {
     this.ready = new Promise<void>((resolve, reject) => {
       worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
         const msg = event.data;
-        if (msg.kind === "ready") {
+        if (msg.kind === "progress") {
+          this.progress = msg.percent;
+          this.setStatus("loading");
+        } else if (msg.kind === "ready") {
+          this.progress = 100;
           this.setStatus("ready");
           resolve();
         } else if (msg.kind === "load-error") {

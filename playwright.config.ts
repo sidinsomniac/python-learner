@@ -6,6 +6,9 @@ export default defineConfig({
   expect: { timeout: 30_000 },
   use: {
     baseURL: "http://localhost:4173",
+    // The offline test turns the service worker back on for itself; elsewhere it
+    // would hide requests from page.route (the fake AI Professor).
+    serviceWorkers: "block",
     launchOptions: { executablePath: process.env.CHROMIUM_PATH || undefined },
   },
   webServer: {

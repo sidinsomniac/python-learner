@@ -16,9 +16,13 @@ import {
 const yearFiles = import.meta.glob("/content/*/year.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const lessonFiles = import.meta.glob("/content/*/*/lesson.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const exerciseFiles = import.meta.glob(["/content/*/*/*.yaml", "!**/lesson.yaml", "!**/review.yaml"], { query: "?raw", import: "default", eager: true }) as Record<string, string>;
-const lectures = import.meta.glob("/content/*/*/lecture.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 const reviewFiles = import.meta.glob("/content/*/*/review.yaml", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
-const spellbooks = import.meta.glob("/content/*/*/spellbook.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+// Lectures and Spellbook pages are the bulk of the prose, and only one lesson
+// needs them at a time, so they load on demand (grouped per year by vite.config.ts).
+type TextLoader = () => Promise<string>;
+const lectures = import.meta.glob("/content/*/*/lecture.md", { query: "?raw", import: "default" }) as Record<string, TextLoader>;
+const spellbooks = import.meta.glob("/content/*/*/spellbook.md", { query: "?raw", import: "default" }) as Record<string, TextLoader>;
+const lessonDirs = new Map<string, string>();
 
 export const CAST = loadYaml(castRaw) as Record<string, CastMember>;
 
@@ -92,6 +96,7 @@ function buildYears(): Year[] {
   const lessons: Lesson[] = Object.entries(lessonFiles).map(([path, raw]) => {
     const dir = dirOf(path);
     const meta = loadYaml(raw) as LessonMeta;
+    lessonDirs.set(meta.id, dir);
     return {
       id: meta.id,
       year: meta.year,
@@ -105,9 +110,8 @@ function buildYears(): Year[] {
       scene: meta.scene ?? [],
       outro: meta.outro ?? [],
       clue: meta.clue,
-      lecture: lectures[`${dir}lecture.md`] ?? "",
       files: meta.files ?? {},
-      spellbook: spellbooks[`${dir}spellbook.md`] ?? "",
+      hasSpellbook: `${dir}spellbook.md` in spellbooks,
       exercises: meta.exercises.map((slot) => buildExercise(meta.id, dir, slot)),
       review: ((loadYaml(reviewFiles[`${dir}review.yaml`] ?? "[]") ?? []) as Omit<ReviewCard, "lessonId">[]).map(
         (card) => ({ ...card, id: `${meta.id}#${card.id}`, lessonId: meta.id }) as ReviewCard,
@@ -141,3 +145,21 @@ export const lessonIndex = (id: string) => LESSONS.findIndex((l) => l.id === id)
 
 export const displayNumber = (l: Lesson) =>
   l.kind === "trial" ? "Trial" : l.part ? `${l.number} · Pt ${l.part.n}` : l.number;
+
+export interface LessonText {
+  lecture: string;
+  spellbook: string;
+}
+const textCache = new Map<string, Promise<LessonText>>();
+
+/** A lesson's lecture and Spellbook page, fetched the first time they're needed. */
+export function loadLessonText(id: string): Promise<LessonText> {
+  let text = textCache.get(id);
+  if (!text) {
+    const dir = lessonDirs.get(id) ?? "";
+    const read = (files: Record<string, TextLoader>, name: string) => files[`${dir}${name}`]?.() ?? Promise.resolve("");
+    text = Promise.all([read(lectures, "lecture.md"), read(spellbooks, "spellbook.md")]).then(([lecture, spellbook]) => ({ lecture, spellbook }));
+    textCache.set(id, text);
+  }
+  return text;
+}

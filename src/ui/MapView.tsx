@@ -17,7 +17,7 @@ import { itemById } from "../lore/shop";
 import { Cutscene } from "./Cutscene";
 import { go } from "./router";
 import { SkipDialog } from "./SkipDialog";
-import { useDueCount } from "./TimeTurner";
+import { useDueCount } from "./deck";
 
 export const YEAR_TOPICS = [
   "print, variables, numbers, strings, if/else, loops, lists",

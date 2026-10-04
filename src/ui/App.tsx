@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { lessonById, YEARS } from "../engine/content";
 import { currentYear, paletteYear } from "../engine/progress";
 import { useFx, useGame } from "../engine/store";
@@ -7,23 +7,30 @@ import { KONAMI } from "../lore/easterEggs";
 import { python } from "../runtime/pythonRunner";
 import { Ambience } from "./Ambience";
 import { BackgroundMusic } from "./BackgroundMusic";
-import { CaseFile } from "./CaseFile";
 import { SceneHost } from "./Cutscene";
-import { DuelingClub } from "./DuelingClub";
 import { Effects } from "./Effects";
 import { Header } from "./Header";
-import { LessonView } from "./LessonView";
 import { LevelUpHost } from "./LevelUp";
 import { MapView } from "./MapView";
 import { useRoute, type Route } from "./router";
-import { MaraudersMap, Page394, Platform934 } from "./SecretPages";
-import { Settings } from "./Settings";
-import { Shop } from "./Shop";
 import { Sorting } from "./Sorting";
-import { Spellbook } from "./Spellbook";
-import { TimeTurner } from "./TimeTurner";
-import { Trophies } from "./Trophies";
 import { Welcome } from "./Welcome";
+
+// Screens load on first visit, so the Great Hall appears without waiting for
+// the code editor, the shop or the Time-Turner.
+const screen = <K extends string>(load: () => Promise<Record<K, ComponentType<any>>>, name: K) =>
+  lazy(() => load().then((m) => ({ default: m[name] })));
+const LessonView = screen(() => import("./LessonView"), "LessonView");
+const CaseFile = screen(() => import("./CaseFile"), "CaseFile");
+const Spellbook = screen(() => import("./Spellbook"), "Spellbook");
+const Trophies = screen(() => import("./Trophies"), "Trophies");
+const Settings = screen(() => import("./Settings"), "Settings");
+const Shop = screen(() => import("./Shop"), "Shop");
+const TimeTurner = screen(() => import("./TimeTurner"), "TimeTurner");
+const DuelingClub = screen(() => import("./DuelingClub"), "DuelingClub");
+const Platform934 = screen(() => import("./SecretPages"), "Platform934");
+const MaraudersMap = screen(() => import("./SecretPages"), "MaraudersMap");
+const Page394 = screen(() => import("./SecretPages"), "Page394");
 
 export default function App() {
   const name = useGame((s) => s.name);
@@ -112,7 +119,9 @@ export default function App() {
       <Ambience sceneKey={sceneKey} />
       <BackgroundMusic />
       {name && house && <Header />}
-      <main className="main">{body}</main>
+      <main className="main">
+        <Suspense fallback={<p className="summoning">✨ Summoning…</p>}>{body}</Suspense>
+      </main>
       <Effects />
       <SceneHost />
       <LevelUpHost />

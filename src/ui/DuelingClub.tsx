@@ -16,7 +16,8 @@ import { useFx, useGame } from "../engine/store";
 import type { ReviewCard } from "../engine/types";
 import { badgeById } from "../lore/badges";
 import { FEATURE_LEVEL, hasFeature } from "../lore/levels";
-import { CardFace, useDeck } from "./TimeTurner";
+import { useDeck } from "./deck";
+import { CardFace } from "./TimeTurner";
 
 const LINES: Record<string, Record<DuelOutcome, string>> = {
   neville: { win: "Wow - you're brilliant at this! Gran would be impressed.", loss: "I... I won? I actually won?!", draw: "A draw! That's the best I've ever done." },

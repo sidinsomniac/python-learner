@@ -72,6 +72,7 @@ export type WorkerRequest =
 
 export type WorkerResponse =
   | { id: 0; kind: "ready" }
+  | { id: 0; kind: "progress"; percent: number }
   | { id: 0; kind: "load-error"; message: string }
   | { id: number; kind: "result"; json: string }
   | { id: number; kind: "error"; message: string };
