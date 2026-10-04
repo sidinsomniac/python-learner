@@ -13,7 +13,8 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "validate-content": "node scripts/validate-content.mjs",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:update": "playwright test visual --update-snapshots"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
