@@ -40,6 +40,8 @@ export default function App() {
     root.dataset.theme = theme;
     root.dataset.house = house ?? "";
     root.dataset.year = String(year);
+    // The background pattern belongs to the palette, so it follows the chosen castle colours.
+    root.dataset.palette = String(paletteFrom);
     // Each year has its own palette. In the light (Lumos) theme only the
     // accents change, so text stays readable on parchment.
     const t = YEARS.find((y) => y.year === paletteFrom)?.theme;

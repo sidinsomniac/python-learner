@@ -525,8 +525,11 @@ test("Settings lets you keep a favourite year's castle colours", async ({ page }
   const year2 = await bg();
   await page.getByTestId("colours-1").click();
   await expect.poll(bg).not.toBe(year2);
+  // The background pattern follows the palette, not the year on screen.
+  await expect(page.locator("html")).toHaveAttribute("data-palette", "1");
   await page.getByTestId("colours-follow").click();
   await expect.poll(bg).toBe(year2);
+  await expect(page.locator("html")).toHaveAttribute("data-palette", "2");
 });
 
 test("the Time-Turner asks you to spot the bug in a spell", async ({ page }) => {
