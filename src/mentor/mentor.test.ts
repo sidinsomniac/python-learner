@@ -69,6 +69,35 @@ describe("DeepSeek transport", () => {
     expect(fetchMock.mock.calls[1][0]).toBe("https://api.deepseek.com/chat/completions");
   });
 
+  it("switches thinking off for JSON card requests, and keeps a short think for the tutor", async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => ok('{"cards": []}'));
+    await _askDeepSeekForTests(deepseek, [], fetchMock, { json: true });
+    const cards = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(cards.thinking).toEqual({ type: "disabled" });
+    expect(cards.response_format).toEqual({ type: "json_object" });
+    await _askDeepSeekForTests(deepseek, [], fetchMock);
+    const chat = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(chat.reasoning_effort).toBe("low");
+    expect(chat.temperature).toBeUndefined();
+    expect(chat.max_tokens).toBeGreaterThanOrEqual(4000);
+  });
+
+  it("retries without the thinking fields if an older model rejects them", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(new Response("unknown field", { status: 400 })).mockResolvedValueOnce(ok("Hello!"));
+    await expect(_askDeepSeekForTests(deepseek, [], fetchMock)).resolves.toBe("Hello!");
+    const retry = JSON.parse(fetchMock.mock.calls[1][1].body);
+    expect(retry.reasoning_effort).toBeUndefined();
+    expect(retry.thinking).toBeUndefined();
+  });
+
+  it("says so when the model spent its whole budget thinking", async () => {
+    const thinkingOnly = new Response(
+      JSON.stringify({ choices: [{ message: { content: "", reasoning_content: "Let me plan seven cards..." }, finish_reason: "length" }] }),
+      { status: 200 },
+    );
+    await expect(_askDeepSeekForTests(deepseek, [], vi.fn().mockResolvedValue(thinkingOnly))).rejects.toThrow(/whole budget thinking/);
+  });
+
   it("explains a bad key", async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 401 }));
     await expect(_askDeepSeekForTests(deepseek, [], fetchMock)).rejects.toThrow(/rejected the API key/);

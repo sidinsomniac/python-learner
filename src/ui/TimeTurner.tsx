@@ -21,7 +21,7 @@ export function useDeck(): ReviewCard[] {
 }
 
 /** Seconds to wait for fresh cards before giving up on them for this visit. */
-const FRESH_TIMEOUT = 25;
+const FRESH_TIMEOUT = 60;
 
 type Fresh = { status: "off" | "writing" | "ready" | "failed"; cards: ReviewCard[]; note?: string };
 

@@ -67,7 +67,7 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **127** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **130** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
 | `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **33** pass at the moment. |
 
@@ -335,6 +335,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | Fix: AI Time-Turner cards came back empty on `deepseek-v4-pro`. It thinks by default, and spent the whole 6,000-token budget reasoning (`finish_reason: length`, empty `content`). Card (JSON) requests now send `thinking: {type: "disabled"}`. The tutor sends `reasoning_effort: "low"` with `max_tokens` 4000 (was 800), and no temperature. A 400 retries once without these fields for older models, and a thinking-only reply gets a clear message. The fresh-card timeout went from 25 s to 60 s. Tests: 130 unit (§3). |
 | 2026-10-04 | Claude Code desktop session | Fix: each year's background pattern (Year 1's faint stars, Year 2's stone-wall grid) now follows the chosen castle colours. It keys on `data-palette` instead of `data-year`; `data-year` still means the year on screen. |
 | 2026-10-04 | Claude Code desktop session | **AI-written Time-Turner cards**, with consent (Settings → AI Professor). `src/mentor/cardsmith.ts` aims at the weakest finished lessons and asks for 7 candidates, then keeps up to 3 that pass every gate in `cardCheck.ts` plus a blind second opinion for choice cards. They're mixed into the session with a ✨ tag, saved to `aiCards` and scheduled like any card. Duels use them too. 🚩 flags a card, which removes it and feeds the writer's avoid list. A failure or timeout (25 s) falls back to the usual cards. Save fields `aiCards`, `rejectedCards`, `mentor.aiCards`. Tests: 127 unit, 33 e2e (the e2e tests fake the Claude API) (§3, §5, §9, §11). |
 | 2026-10-04 | Claude Code desktop session | **Card quality gates** (`src/mentor/cardCheck.ts`), ready for AI-written cards: schema, scope (a feature table mapping syntax to the lesson that teaches it; every built-in card passes at its own lesson), forbidden things (input, files, eval, unsafe modules, unseeded random), running the card in Python (predict must be stable, bug fixes must work, exactly one complete option), usefulness and fingerprints. Tests: 122 unit (§3, §5). |

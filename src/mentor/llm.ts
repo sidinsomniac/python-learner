@@ -78,36 +78,57 @@ const DEEPSEEK_PROXY = "/llm/deepseek/chat/completions";
 const DEEPSEEK_DIRECT = "https://api.deepseek.com/chat/completions";
 
 async function askDeepSeek(s: MentorSettings, turns: ChatTurn[], fetchImpl: typeof fetch = fetch, opts: AskOptions = {}): Promise<string> {
-  const init: RequestInit = {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${s.deepseekKey}` },
-    body: JSON.stringify({
+  // Newer DeepSeek models think before answering, and the thinking counts against max_tokens:
+  // with a small budget they can spend it all and answer nothing. JSON requests (Time-Turner
+  // cards, which are proven by running them anyway) switch thinking off; the tutor keeps a
+  // short, low-effort think with room left for the reply.
+  const thinking = opts.json ? { thinking: { type: "disabled" } } : { reasoning_effort: "low" };
+  const body = (withThinking: boolean) =>
+    JSON.stringify({
       model: s.deepseekModel,
       messages: [{ role: "system", content: opts.system ?? SYSTEM_PROMPT }, ...turns],
-      max_tokens: opts.maxTokens ?? 800,
-      temperature: 0.7,
+      max_tokens: opts.maxTokens ?? 4000,
       stream: false,
       ...(opts.json ? { response_format: { type: "json_object" } } : {}),
-    }),
-  };
-  let res: Response;
-  try {
-    res = await fetchImpl(DEEPSEEK_PROXY, init);
-    if (res.status === 404 || res.status === 405) res = await fetchImpl(DEEPSEEK_DIRECT, init);
-  } catch {
+      // Thinking mode ignores temperature, so only send it when thinking is off.
+      ...(withThinking ? thinking : {}),
+      ...(!withThinking || opts.json ? { temperature: 0.7 } : {}),
+    });
+  const send = async (withThinking: boolean): Promise<Response> => {
+    const init: RequestInit = {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${s.deepseekKey}` },
+      body: body(withThinking),
+    };
     try {
-      res = await fetchImpl(DEEPSEEK_DIRECT, init);
-    } catch (err) {
-      throw new MentorError(`Couldn't reach DeepSeek: ${String(err)}`);
+      const res = await fetchImpl(DEEPSEEK_PROXY, init);
+      return res.status === 404 || res.status === 405 ? await fetchImpl(DEEPSEEK_DIRECT, init) : res;
+    } catch {
+      try {
+        return await fetchImpl(DEEPSEEK_DIRECT, init);
+      } catch (err) {
+        throw new MentorError(`Couldn't reach DeepSeek: ${String(err)}`);
+      }
     }
-  }
+  };
+  let res = await send(true);
+  // Older models may not know the thinking fields: try once more without them.
+  if (res.status === 400) res = await send(false);
   if (res.status === 401) throw new MentorError("DeepSeek rejected the API key. Check it in Settings.");
   if (res.status === 402) throw new MentorError("DeepSeek says the account has insufficient balance.");
   if (res.status === 429) throw new MentorError("DeepSeek is rate-limited right now. Wait a moment and try again.");
   if (!res.ok) throw new MentorError(`DeepSeek error ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  const text = data.choices?.[0]?.message?.content?.trim();
-  if (!text) throw new MentorError("DeepSeek sent back an empty reply.");
+  const data = (await res.json()) as {
+    choices?: { message?: { content?: string; reasoning_content?: string }; finish_reason?: string }[];
+  };
+  const choice = data.choices?.[0];
+  const text = choice?.message?.content?.trim();
+  if (!text) {
+    if (choice?.finish_reason === "length" && choice.message?.reasoning_content) {
+      throw new MentorError("DeepSeek spent its whole budget thinking and never answered. Try again, or pick a non-thinking model in Settings.");
+    }
+    throw new MentorError("DeepSeek sent back an empty reply.");
+  }
   return text;
 }
 
