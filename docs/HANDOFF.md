@@ -67,9 +67,9 @@ npm run dev            # copies Pyodide into public/pyodide, then starts Vite
 | `npm run dev` | Development server (Vite). Your save is stored **per address**: `localhost:5173` and `localhost:5174` each keep a separate save. |
 | `npm run build` | Typecheck (`tsc -b`) plus a production build into `dist/` |
 | `npm run typecheck` | TypeScript only |
-| `npm test` | Unit tests (Vitest). **122** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
+| `npm test` | Unit tests (Vitest). **127** pass at the moment, including `src/runtime/harness.test.ts`, which runs the real grader in Pyodide. |
 | `npm run validate-content` | Runs every exercise through real Python (Pyodide in Node). **66 lessons and 201 exercises** pass at the moment. Add a lesson id prefix to check only part of the content, e.g. `-- y2-l03`. |
-| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **31** pass at the moment. |
+| `npm run e2e` | Browser tests (Playwright). Builds, then serves on port 4173. Set `CHROMIUM_PATH=/path/to/chromium` to use a Chromium you already have (on a Mac with Chrome: `CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`). **33** pass at the moment. |
 
 Before every push, run all four: `validate-content`, `test`, `build` and `e2e`.
 
@@ -108,6 +108,9 @@ src/ui/BackgroundMusic.tsx  quiet background music from music/ (fade in after th
                 shuffled loop, fade out when hidden or muted) and the 🎵 header switch
 src/engine/music.ts  TRACKS (an import.meta.glob of music/*), trackTitle, shuffleOrder, DEFAULT_MUSIC
 music/          drop audio files here (git-ignored except README.md)
+src/mentor/cardsmith.ts  writes fresh Time-Turner cards with the AI (consent only): rankWeakest, forgeCards
+                (candidates -> gates -> blind check for choice cards -> up to 3, mixed types);
+                prompts in cardPrompt.ts; askJson/parseJsonReply in llm.ts
 src/mentor/cardCheck.ts  quality gates for AI-written Time-Turner cards: FEATURES (which lesson teaches
                 each piece of syntax), forbidden things, parseCard, runCheck (Python decides),
                 notUseful, fingerprint
@@ -261,6 +264,9 @@ Tests run in order and stop at the first failure.
   - `skipped`, `owned`, `equipped`, `aids`, `cards`, `duels`, `badges`, `drafts`, `hintsUnlocked`
   - `duelPaidOn`: `{ opponentId: day }`, the day each opponent last paid in full.
   - `perkState`: `{ ratSavedOn, nifflerOn, phoenixYears }`, day-stamps for once-a-day/week/year perks. Filled in by `merge`.
+  - `aiCards`: `{ id: ReviewCard }`, AI-written cards that passed every gate (at most 120; the best-known are dropped first). They join the deck and the Leitner schedule.
+  - `rejectedCards`: `{ fingerprint: description }`, cards the player flagged; the writer is told to avoid them.
+  - `mentor.aiCards`: boolean consent for AI cards (default off).
   - `castleColours`: a year number or `null` (default, follow the year on screen). A favourite year's palette, used everywhere once that year is reached (`paletteYear` in progress.ts).
   - `wandFx`: boolean, default `true` (wand effects while typing; off under reduced motion anyway). Filled in by `merge`.
   - `music`: `{ enabled, volume }`. Older saves get the defaults through the store's `merge`, so no migration step is needed.
@@ -329,6 +335,7 @@ Newest first. Add one line per session or meaningful change: the date, where the
 
 | Date | Where | What changed |
 |---|---|---|
+| 2026-10-04 | Claude Code desktop session | **AI-written Time-Turner cards**, with consent (Settings → AI Professor). `src/mentor/cardsmith.ts` aims at the weakest finished lessons and asks for 7 candidates, then keeps up to 3 that pass every gate in `cardCheck.ts` plus a blind second opinion for choice cards. They're mixed into the session with a ✨ tag, saved to `aiCards` and scheduled like any card. Duels use them too. 🚩 flags a card, which removes it and feeds the writer's avoid list. A failure or timeout (25 s) falls back to the usual cards. Save fields `aiCards`, `rejectedCards`, `mentor.aiCards`. Tests: 127 unit, 33 e2e (the e2e tests fake the Claude API) (§3, §5, §9, §11). |
 | 2026-10-04 | Claude Code desktop session | **Card quality gates** (`src/mentor/cardCheck.ts`), ready for AI-written cards: schema, scope (a feature table mapping syntax to the lesson that teaches it; every built-in card passes at its own lesson), forbidden things (input, files, eval, unsafe modules, unseeded random), running the card in Python (predict must be stable, bug fixes must work, exactly one complete option), usefulness and fingerprints. Tests: 122 unit (§3, §5). |
 | 2026-10-04 | Claude Code desktop session | **Two new Time-Turner card types**: `bug` (click the faulty line; the validator checks the code goes wrong and the `fix` makes it print `expected`) and `complete` (pick the missing line; exactly one option must print `expected`). Examples: y2-l07 `print-not-return`, y1-l13a `fill-accumulator`. Duels now use every type except `predict`. Tests: 111 unit, 31 e2e (§3, §6). |
 | 2026-10-04 | Claude Code desktop session | **Castle colours picker.** Settings has swatches for each year's palette you've reached, plus "Follow the year" (the default). The pick applies on every screen (`paletteYear` in `progress.ts`, used in `App.tsx`). Save field `castleColours`. Tests: 111 unit, 30 e2e (§3, §9). |

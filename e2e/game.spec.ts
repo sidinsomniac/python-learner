@@ -544,3 +544,79 @@ test("the Time-Turner asks you to spot the bug in a spell", async ({ page }) => 
   await expect(page.getByTestId("review-card")).toContainText("Remembered");
   await expect(page.getByTestId("review-card")).toContainText("return total");
 });
+
+/** Answers the Anthropic API like Claude would, with the given JSON as the reply text. */
+async function fakeClaude(page: Page, reply: (body: string) => object, calls: string[] = []) {
+  await page.route("**/v1/messages**", async (route) => {
+    const body = route.request().postData() ?? "";
+    calls.push(body);
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: "msg_test",
+        type: "message",
+        role: "assistant",
+        model: "claude-test",
+        content: [{ type: "text", text: JSON.stringify(reply(body)) }],
+        stop_reason: "end_turn",
+        stop_sequence: null,
+        usage: { input_tokens: 1, output_tokens: 1 },
+      }),
+    });
+  });
+  return calls;
+}
+
+const FRESH_CARDS = {
+  cards: [
+    { type: "complete", lesson: "y1-l12", code: "count = 0\nfor i in range(3):\n    ____\nprint(count)", options: ["count += 3", "count += i", "count = 3"], answer: 0, expected: "9", why: "Adding 3 on each of the 3 passes gives 9." },
+    { type: "bug", lesson: "y1-l13a", code: "total = 0\nfor n in [2, 4, 6]:\n    total = n\nprint(total)", buggyLine: 3, fix: "total += n", expected: "12", why: "= throws the old total away each time; += keeps adding." },
+  ],
+};
+
+test("with consent, the Time-Turner mixes in fresh cards from the Professor, and a flagged one disappears", async ({ page }) => {
+  const calls = await fakeClaude(page, () => FRESH_CARDS);
+  await seed(page, {
+    bestLevel: 2,
+    exercises: completed(["y1-l12", "y1-l13a"]),
+    mentor: { provider: "anthropic", anthropicKey: "sk-ant-test", anthropicModel: "claude-test", deepseekKey: "", deepseekModel: "deepseek-chat", aiCards: true },
+  });
+  await page.goto("/#/time-turner");
+  await expect(page.getByTestId("fresh-ready")).toContainText("2 fresh", { timeout: 60_000 });
+  expect(calls.length).toBe(1); // no choice cards, so no blind check
+  await page.getByTestId("review-start").click();
+  // Walk through the session until a fresh card shows up, then flag it.
+  for (let i = 0; i < 8; i++) {
+    if (await page.getByTestId("fresh-tag").count()) break;
+    const card = page.getByTestId("review-card");
+    const choice = card.locator(".answers button").first();
+    if (await choice.count()) await choice.click();
+    else if (await card.locator(".bug-line").count()) await card.locator(".bug-line").first().click();
+    else {
+      await card.getByLabel("Your prediction").fill("?");
+      await card.getByRole("button", { name: "Check" }).click();
+    }
+    await page.getByTestId("review-next").click();
+  }
+  await expect(page.getByTestId("fresh-tag")).toBeVisible();
+  const card = page.getByTestId("review-card");
+  if (await card.locator(".bug-line").count()) await card.locator(".bug-line").nth(2).click();
+  else await card.locator(".answers button").first().click();
+  const before = await page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem("parseltongue-save-v1")!).state.aiCards).length);
+  await page.getByTestId("flag-card").click();
+  await expect.poll(() => page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem("parseltongue-save-v1")!).state.aiCards).length)).toBe(before - 1);
+});
+
+test("without consent, the Time-Turner never calls the AI", async ({ page }) => {
+  const calls = await fakeClaude(page, () => FRESH_CARDS);
+  await seed(page, {
+    bestLevel: 2,
+    exercises: completed(["y1-l12"]),
+    mentor: { provider: "anthropic", anthropicKey: "sk-ant-test", anthropicModel: "claude-test", deepseekKey: "", deepseekModel: "deepseek-chat", aiCards: false },
+  });
+  await page.goto("/#/time-turner");
+  await page.getByTestId("review-start").click();
+  await expect(page.getByTestId("review-card")).toBeVisible();
+  expect(calls).toEqual([]);
+  await expect(page.getByTestId("fresh-tag")).toHaveCount(0);
+});

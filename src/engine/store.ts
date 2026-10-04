@@ -22,7 +22,11 @@ import {
   xpForCompletion,
 } from "./progress";
 import { answerCard, dayKey, nextStreak, type CardState } from "./review";
-import type { Exercise, ExerciseRecord, Grade, Lesson, SceneLine } from "./types";
+import type { Exercise, ExerciseRecord, Grade, Lesson, ReviewCard, SceneLine } from "./types";
+import { fingerprint } from "../mentor/cardCheck";
+
+/** How many AI-written cards a save keeps. */
+export const MAX_AI_CARDS = 120;
 
 export const SAVE_KEY = "parseltongue-save-v1";
 export const SAVE_VERSION = 3;
@@ -85,6 +89,10 @@ export interface GameState {
   /** Aids bought per `${aid}:${year}` - each year's stock is limited. */
   aidBought: Record<string, number>;
   cards: Record<string, CardState>;
+  /** Time-Turner cards written by the AI Professor that passed every quality gate. */
+  aiCards: Record<string, ReviewCard>;
+  /** Fingerprints of AI cards the player flagged, with a short description (fed back to the writer). */
+  rejectedCards: Record<string, string>;
   reviewLastDay: string | null;
   reviewStreak: number;
   duels: Record<string, { wins: number; losses: number; draws: number }>;
@@ -124,6 +132,8 @@ export interface GameState {
   setAmbience: (on: boolean) => void;
   setWandFx: (on: boolean) => void;
   setCastleColours: (year: number | null) => void;
+  saveAiCards: (cards: ReviewCard[]) => void;
+  rejectCard: (cardId: string) => void;
   setMusic: (patch: Partial<MusicSettings>) => void;
   setMarauderMap: (open: boolean) => void;
   setMentor: (patch: Partial<MentorSettings>) => void;
@@ -156,6 +166,8 @@ const initialData = {
   aids: { felix: 0, sand: 0 },
   aidBought: {},
   cards: {},
+  aiCards: {},
+  rejectedCards: {},
   reviewLastDay: null,
   reviewStreak: 0,
   duels: {},
@@ -598,6 +610,32 @@ export const useGame = create<GameState>()(
       setAmbience: (ambience) => set({ ambience }),
       setWandFx: (wandFx) => set({ wandFx }),
       setCastleColours: (castleColours) => set({ castleColours }),
+      saveAiCards: (fresh) =>
+        set((s) => {
+          const aiCards = { ...s.aiCards };
+          for (const c of fresh) aiCards[c.id] = c;
+          // Keep at most MAX_AI_CARDS: drop the best-known ones first, then the oldest.
+          const ids = Object.keys(aiCards);
+          if (ids.length > MAX_AI_CARDS) {
+            const byKnown = ids
+              .map((id, i) => ({ id, i, box: s.cards[id]?.box ?? -1 }))
+              .sort((a, b) => b.box - a.box || a.i - b.i)
+              .slice(0, ids.length - MAX_AI_CARDS);
+            for (const { id } of byKnown) delete aiCards[id];
+          }
+          return { aiCards };
+        }),
+      rejectCard: (cardId) =>
+        set((s) => {
+          const card = s.aiCards[cardId];
+          if (!card) return {};
+          const aiCards = { ...s.aiCards };
+          delete aiCards[cardId];
+          const cards = { ...s.cards };
+          delete cards[cardId];
+          const text = "code" in card ? card.code.replace(/\s*\n\s*/g, " / ") : card.q;
+          return { aiCards, cards, rejectedCards: { ...s.rejectedCards, [fingerprint(card)]: `[${card.type}] ${text}`.slice(0, 200) } };
+        }),
       setMusic: (patch) => set((s) => ({ music: { ...s.music, ...patch } })),
       setMarauderMap: (marauderMap) => set({ marauderMap }),
       setMentor: (patch) => set((s) => ({ mentor: { ...s.mentor, ...patch } })),

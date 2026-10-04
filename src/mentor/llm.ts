@@ -9,6 +9,8 @@ export interface MentorSettings {
   anthropicModel: string;
   deepseekKey: string;
   deepseekModel: string;
+  /** The player agreed to let the Professor write fresh Time-Turner cards with this key. */
+  aiCards: boolean;
 }
 
 export const DEFAULT_MENTOR_SETTINGS: MentorSettings = {
@@ -17,6 +19,7 @@ export const DEFAULT_MENTOR_SETTINGS: MentorSettings = {
   anthropicModel: "claude-opus-5-5",
   deepseekKey: "",
   deepseekModel: "deepseek-chat",
+  aiCards: false,
 };
 
 export const PROVIDER_LABEL: Record<Provider, string> = {
@@ -32,15 +35,22 @@ export interface ChatTurn {
 
 export class MentorError extends Error {}
 
-async function askAnthropic(s: MentorSettings, turns: ChatTurn[]): Promise<string> {
+interface AskOptions {
+  system?: string;
+  maxTokens?: number;
+  /** Ask for a JSON reply (DeepSeek's JSON mode; Claude is told in the prompt). */
+  json?: boolean;
+}
+
+async function askAnthropic(s: MentorSettings, turns: ChatTurn[], opts: AskOptions = {}): Promise<string> {
   // Loaded on first use so players without a Claude key never download the SDK.
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ apiKey: s.anthropicKey, dangerouslyAllowBrowser: true });
   try {
     const response = await client.beta.messages.create({
       model: s.anthropicModel,
-      max_tokens: 4000,
-      system: SYSTEM_PROMPT,
+      max_tokens: opts.maxTokens ?? 4000,
+      system: opts.system ?? SYSTEM_PROMPT,
       output_config: { effort: "low" },
       betas: ["server-side-fallback-2026-07-01"],
       fallbacks: "default",
@@ -67,16 +77,17 @@ async function askAnthropic(s: MentorSettings, turns: ChatTurn[]): Promise<strin
 const DEEPSEEK_PROXY = "/llm/deepseek/chat/completions";
 const DEEPSEEK_DIRECT = "https://api.deepseek.com/chat/completions";
 
-async function askDeepSeek(s: MentorSettings, turns: ChatTurn[], fetchImpl: typeof fetch = fetch): Promise<string> {
+async function askDeepSeek(s: MentorSettings, turns: ChatTurn[], fetchImpl: typeof fetch = fetch, opts: AskOptions = {}): Promise<string> {
   const init: RequestInit = {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${s.deepseekKey}` },
     body: JSON.stringify({
       model: s.deepseekModel,
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...turns],
-      max_tokens: 800,
+      messages: [{ role: "system", content: opts.system ?? SYSTEM_PROMPT }, ...turns],
+      max_tokens: opts.maxTokens ?? 800,
       temperature: 0.7,
       stream: false,
+      ...(opts.json ? { response_format: { type: "json_object" } } : {}),
     }),
   };
   let res: Response;
@@ -100,11 +111,11 @@ async function askDeepSeek(s: MentorSettings, turns: ChatTurn[], fetchImpl: type
   return text;
 }
 
-type Transport = (s: MentorSettings, turns: ChatTurn[]) => Promise<string>;
+type Transport = (s: MentorSettings, turns: ChatTurn[], opts?: AskOptions) => Promise<string>;
 
 const TRANSPORTS: Record<Exclude<Provider, "none">, Transport> = {
   anthropic: askAnthropic,
-  deepseek: (s, t) => askDeepSeek(s, t),
+  deepseek: (s, t, o) => askDeepSeek(s, t, fetch, o),
 };
 
 export function mentorReady(s: MentorSettings): boolean {
@@ -134,4 +145,34 @@ export async function askMentor(
   return leaksCode(second) ? redactCode(second) : second;
 }
 
+/**
+ * Ask for JSON with a custom system prompt (used by the Time-Turner's card
+ * writer, not the tutor, so the leak guard doesn't apply: these are review
+ * questions about code the player has already learned). Returns parsed JSON.
+ */
+export async function askJson(
+  s: MentorSettings,
+  system: string,
+  user: string,
+  transport: Transport | undefined = s.provider === "none" ? undefined : TRANSPORTS[s.provider],
+): Promise<unknown> {
+  if (!transport || !mentorReady(s)) throw new MentorError("No AI is set up. Add a Claude or DeepSeek key in Settings.");
+  const text = await transport(s, [{ role: "user", content: user }], { system, maxTokens: 6000, json: true });
+  return parseJsonReply(text);
+}
+
+/** JSON from a model's reply, even if it wrapped it in a code fence or a sentence. */
+export function parseJsonReply(text: string): unknown {
+  const unfenced = text.replace(/```(?:json)?/gi, "").trim();
+  const start = unfenced.search(/[[{]/);
+  const end = Math.max(unfenced.lastIndexOf("}"), unfenced.lastIndexOf("]"));
+  if (start < 0 || end < start) throw new MentorError("The AI didn't send back JSON.");
+  try {
+    return JSON.parse(unfenced.slice(start, end + 1));
+  } catch {
+    throw new MentorError("The AI's JSON couldn't be read.");
+  }
+}
+
 export { askDeepSeek as _askDeepSeekForTests };
+export type { Transport };

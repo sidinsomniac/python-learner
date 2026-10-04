@@ -178,6 +178,20 @@ export function Settings() {
           </button>
         )}
         {test && <p className={`fb ${test.ok ? "success" : "error"} small`}>{test.text}</p>}
+        {mentor.provider !== "none" && (
+          <label className="row">
+            <input type="checkbox" checked={mentor.aiCards} onChange={(e) => setMentor({ aiCards: e.target.checked })} data-testid="ai-cards-toggle" />
+            <span>
+              Let the Professor write fresh Time-Turner challenges
+              <span className="small muted">
+                {" "}
+                - new cards for your weakest finished topics, checked by running them in Python before you see them. Each
+                session makes one or two calls with your key, sending lesson titles, concepts and sample cards (never your
+                code).
+              </span>
+            </span>
+          </label>
+        )}
         <p className="small muted">
           🔐 Keys are stored only in this browser (localStorage) and sent only to the provider you chose. They are never
           included in save-file exports. Only use this on your own computer.

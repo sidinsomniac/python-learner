@@ -73,7 +73,7 @@ Full detail is in [exercise-design.md](exercise-design.md).
 
 ## 3. Core loop
 1. **Enter the castle hub.** Check the House Cup and the Daily Prophet (the daily challenge).
-2. **Review.** Do today's **Time-Turner review**, about 5 spaced-repetition cards.
+2. **Review.** Do today's **Time-Turner review**, about 5 spaced-repetition cards (choice, predict, spot the bug, complete the spell). With an AI key **and** the player's consent (Settings → AI Professor), up to 3 fresh cards a session are written by the AI for the weakest finished topics. Every AI card must pass the gates in `src/mentor/cardCheck.ts` (taught syntax only, run in Python to prove the answer, a blind second opinion for multiple choice, no duplicates) before the player sees it. Players can flag a bad card, and the writer avoids ones like it.
 3. **Take the next lesson:** story beat, lecture and checkpoints, Warm-up, then the Core challenge.
 4. **Optionally** attempt the ⭐ Outstanding challenge, or act on Snape's code review, for an **O** grade.
 5. **Collect rewards:** grade, XP, Galleons, house points, a Spellbook page, and maybe a Chocolate Frog card.
@@ -134,7 +134,7 @@ Duels pay in full for the first win against each opponent each day, then 1 Galle
 A level-up pop-up shows the reward; the Trophy Room shows the whole track.
 
 ### Living castle ✅ built
-- **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2, Time-Turner dusk (silver and indigo) for Year 3.
+- **Year themes.** Each `year.yaml` has a `theme` (mood, gold, gold2, bg, bg2, card, card2, line). The page takes the colours of the year you're in: candlelit navy and gold for Year 1, serpent green and stone for Year 2, Time-Turner dusk (silver and indigo) for Year 3. Settings → Castle colours keeps any reached year's palette instead.
 - **Story pop-ups.** Prologues, lesson scenes and outros open as a modal the first time - click through line by line, or Skip. Afterwards they stay on the page as a "📜 Story" card that can be read again.
 - **Background music** (`src/ui/BackgroundMusic.tsx`). Tracks in the project's `music/` folder play quietly behind the game, with no visible player:
   - shuffled and looping;

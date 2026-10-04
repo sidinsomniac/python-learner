@@ -1,20 +1,82 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LESSONS, REVIEW_CARDS } from "../engine/content";
 import { compareProphecy, isLessonComplete } from "../engine/progress";
 import { dayKey, dueCards } from "../engine/review";
-import { useGame } from "../engine/store";
+import { useFx, useGame } from "../engine/store";
+import { forgeCards, FRESH_PER_SESSION } from "../mentor/cardsmith";
+import { askJson, mentorReady } from "../mentor/llm";
 import type { ReviewCard } from "../engine/types";
 import { FEATURE_LEVEL, hasFeature } from "../lore/levels";
 import { python } from "../runtime/pythonRunner";
 import { renderInline, renderMarkdown } from "./md";
 
-/** Cards from lessons you've properly completed (skipped lessons don't count). */
+/** Cards from lessons you've properly completed (skipped lessons don't count), plus the AI Professor's saved cards. */
 export function useDeck(): ReviewCard[] {
   const exercises = useGame((s) => s.exercises);
+  const aiCards = useGame((s) => s.aiCards);
   return useMemo(() => {
     const done = new Set(LESSONS.filter((l) => isLessonComplete(l, exercises)).map((l) => l.id));
-    return REVIEW_CARDS.filter((c) => done.has(c.lessonId));
-  }, [exercises]);
+    return [...REVIEW_CARDS, ...Object.values(aiCards)].filter((c) => done.has(c.lessonId));
+  }, [exercises, aiCards]);
+}
+
+/** Seconds to wait for fresh cards before giving up on them for this visit. */
+const FRESH_TIMEOUT = 25;
+
+type Fresh = { status: "off" | "writing" | "ready" | "failed"; cards: ReviewCard[]; note?: string };
+
+/**
+ * Fresh cards for this visit, if the player agreed to them: unseen saved AI
+ * cards first, and otherwise new ones from the Professor (checked by cardsmith).
+ */
+function useFreshCards(): Fresh {
+  const consent = useGame((s) => s.mentor.aiCards && mentorReady(s.mentor));
+  const hasDeck = useDeck().length > 0;
+  const [fresh, setFresh] = useState<Fresh>({ status: "off", cards: [] });
+  useEffect(() => {
+    if (!consent || !hasDeck) return;
+    const s = useGame.getState();
+    const unseen = Object.values(s.aiCards).filter((c) => !s.cards[c.id]);
+    if (unseen.length >= FRESH_PER_SESSION) {
+      setFresh({ status: "ready", cards: unseen.slice(0, FRESH_PER_SESSION) });
+      return;
+    }
+    let live = true;
+    setFresh({ status: "writing", cards: [] });
+    const timer = setTimeout(() => live && setFresh({ status: "failed", cards: unseen, note: "The Professor took too long - today's session uses the usual cards." }), FRESH_TIMEOUT * 1000);
+    forgeCards({
+      exercises: s.exercises,
+      cards: s.cards,
+      aiCards: s.aiCards,
+      rejected: s.rejectedCards,
+      ask: (system, user) => askJson(useGame.getState().mentor, system, user),
+      run: (code) => python.run(code, [], {}, 4000),
+    })
+      .then((r) => {
+        if (!live) return;
+        useGame.getState().saveAiCards(r.cards);
+        setFresh({ status: "ready", cards: [...unseen, ...r.cards].slice(0, FRESH_PER_SESSION) });
+      })
+      .catch((err) => live && setFresh({ status: "failed", cards: unseen, note: `No fresh cards today (${err instanceof Error ? err.message : String(err)}).` }))
+      .finally(() => clearTimeout(timer));
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [consent, hasDeck]);
+  return fresh;
+}
+
+/** Mix fresh cards in among the due ones: every other card, starting second. */
+function interleave(due: ReviewCard[], fresh: ReviewCard[]): ReviewCard[] {
+  const ids = new Set(fresh.map((c) => c.id));
+  const rest = due.filter((c) => !ids.has(c.id));
+  const out: ReviewCard[] = [];
+  while (rest.length || fresh.length) {
+    if (rest.length) out.push(rest.shift()!);
+    if (fresh.length) out.push(fresh.shift()!);
+  }
+  return out;
 }
 
 export function useDueCount(): number {
@@ -30,6 +92,7 @@ export function TimeTurner() {
   const streak = useGame((s) => s.reviewStreak);
   const deck = useDeck();
   const [session, setSession] = useState<ReviewCard[] | null>(null);
+  const fresh = useFreshCards();
 
   if (!hasFeature(bestLevel, "time-turner")) {
     return (
@@ -40,7 +103,16 @@ export function TimeTurner() {
     );
   }
 
-  const start = () => setSession(dueCards(deck, useGame.getState().cards, dayKey(new Date())));
+  const start = () => {
+    const freshCards = fresh.status === "ready" || fresh.status === "failed" ? fresh.cards : [];
+    const freshIds = new Set(freshCards.map((c) => c.id));
+    const due = dueCards(
+      deck.filter((c) => !freshIds.has(c.id)),
+      useGame.getState().cards,
+      dayKey(new Date()),
+    );
+    setSession(interleave(due, [...freshCards]));
+  };
 
   return (
     <div className="stack">
@@ -55,7 +127,7 @@ export function TimeTurner() {
         </p>
       </section>
       {session === null ? (
-        <SessionStart onStart={start} />
+        <SessionStart onStart={start} fresh={fresh} />
       ) : (
         <Session key={session.map((c) => c.id).join()} cards={session} onDone={() => setSession(null)} />
       )}
@@ -63,18 +135,30 @@ export function TimeTurner() {
   );
 }
 
-function SessionStart({ onStart }: { onStart: () => void }) {
+function SessionStart({ onStart, fresh }: { onStart: () => void; fresh: Fresh }) {
   const due = useDueCount();
   const deck = useDeck();
   if (deck.length === 0) {
     return <p className="card muted">Your deck is empty. Complete a lesson and its cards will join the Time-Turner.</p>;
   }
+  const freshReady = fresh.status === "ready" ? fresh.cards.length : 0;
   return (
     <div className="card center">
-      {due > 0 ? (
+      {fresh.status === "writing" && (
+        <p className="small muted" data-testid="fresh-writing">
+          ⏳ The Professor is writing fresh challenges for your weakest topics...
+        </p>
+      )}
+      {freshReady > 0 && (
+        <p className="small" data-testid="fresh-ready">
+          ✨ {freshReady} fresh challenge{freshReady === 1 ? "" : "s"} from the Professor today.
+        </p>
+      )}
+      {fresh.status === "failed" && fresh.note && <p className="small muted">{fresh.note}</p>}
+      {due > 0 || freshReady > 0 ? (
         <>
           <p>
-            <strong>{due}</strong> card{due === 1 ? "" : "s"} due today.
+            <strong>{due}</strong> card{due === 1 ? "" : "s"} due today{freshReady > 0 ? `, plus ${freshReady} fresh` : ""}.
           </p>
           <button className="btn primary" onClick={onStart} data-testid="review-start">
             Turn the Time-Turner ⏳
@@ -114,6 +198,11 @@ function Session({ cards, onDone }: { cards: ReviewCard[]; onDone: () => void })
   }
 
   const card = cards[index];
+  const flag = () => {
+    useGame.getState().rejectCard(card.id);
+    useFx.getState().toast("🚩 Thanks - that card is gone, and the Professor will avoid ones like it.", "info");
+    next();
+  };
   const answer = (correct: boolean) => {
     useGame.getState().answerReviewCard(card.id, correct);
     if (correct) setCorrectCount((c) => c + 1);
@@ -131,6 +220,12 @@ function Session({ cards, onDone }: { cards: ReviewCard[]; onDone: () => void })
     <div className="card review-card" data-testid="review-card">
       <p className="muted small">
         Card {index + 1} of {cards.length}
+        {card.source === "ai" && (
+          <span className="fresh-tag" data-testid="fresh-tag">
+            {" "}
+            · ✨ Written by the Professor
+          </span>
+        )}
       </p>
       <CardFace key={card.id} card={card} result={result} onAnswer={answer} />
       {result !== null && (
@@ -140,6 +235,11 @@ function Session({ cards, onDone }: { cards: ReviewCard[]; onDone: () => void })
           <button className="btn primary" onClick={next} data-testid="review-next">
             {index + 1 >= cards.length ? "Finish" : "Next card ▸"}
           </button>
+          {card.source === "ai" && (
+            <button className="btn ghost small" onClick={flag} data-testid="flag-card">
+              🚩 This card is wrong or unhelpful
+            </button>
+          )}
         </div>
       )}
     </div>
